@@ -27,7 +27,9 @@
   "require-dev": {
     "phpunit/phpunit": "~4",
     "mockery/mockery": "~0.9",
-    "orchestra/testbench": "^3.2"
+    "orchestra/testbench": "^3.2",
+    "satooshi/php-coveralls": "~1.0",
+    "phpunit/phpcov": "2.*"
   },
   "autoload": {
     "psr-4": {

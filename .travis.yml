@@ -19,3 +19,6 @@ script:
 
 after_script:
   - php vendor/bin/ocular code-coverage:upload --format=php-clover coverage.clover
+
+after_success:
+  - travis_retry php vendor/bin/coveralls
