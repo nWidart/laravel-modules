@@ -1,0 +1,16 @@
+{
+    "name": "Recipe",
+    "alias": "recipe",
+    "description": "recipe module",
+    "version": "0.1",
+    "keywords": [],
+    "active": 1,
+    "order": 1,
+    "providers": [
+        "Modules\\Recipe\\Providers\\RecipeServiceProvider",
+        "Modules\\Recipe\\Providers\\RouteServiceProvider"
+    ],
+    "aliases":{},
+    "files": [
+    ]
+}
