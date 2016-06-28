@@ -3,10 +3,7 @@
 namespace Nwidart\Modules\Generators;
 
 use Illuminate\Filesystem\Filesystem;
-
-class FileAlreadyExistException extends \Exception
-{
-}
+use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 
 class FileGenerator extends Generator
 {
