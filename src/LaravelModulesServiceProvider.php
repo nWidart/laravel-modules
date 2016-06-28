@@ -4,7 +4,8 @@ namespace Nwidart\Modules;
 
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
-use Nwidart\Support\Stub;
+use Nwidart\Modules\Providers\BootstrapServiceProvider;
+use Pingpong\Support\Stub;
 
 class LaravelModulesServiceProvider extends ServiceProvider
 {
@@ -30,7 +31,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
      */
     protected function registerModules()
     {
-        $this->app->register('Nwidart\Modules\Providers\BootstrapServiceProvider');
+        $this->app->register(BootstrapServiceProvider::class);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Nwidart\Support\Stub;
+use Pingpong\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 

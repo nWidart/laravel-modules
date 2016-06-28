@@ -3,9 +3,9 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
-use Nwidart\Generators\Migrations\NameParser;
-use Nwidart\Generators\Migrations\SchemaParser;
-use Nwidart\Support\Stub;
+use Pingpong\Generators\Migrations\NameParser;
+use Pingpong\Generators\Migrations\SchemaParser;
+use Pingpong\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
