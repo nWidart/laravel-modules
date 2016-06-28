@@ -278,7 +278,7 @@ class Module extends ServiceProvider
      */
     public function isStatus($status)
     {
-        return $this->get('active', 0) == $status;
+        return $this->get('active', 0) === $status;
     }
 
     /**
