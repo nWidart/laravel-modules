@@ -5,9 +5,7 @@ namespace Nwidart\Modules\Commands;
 use Illuminate\Console\Command;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Publishing\AssetPublisher;
-use Nwidart\Modules\Publishing\LangPublisher;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 
 class PublishCommand extends Command
 {

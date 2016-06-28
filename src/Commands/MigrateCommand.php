@@ -3,7 +3,6 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
-use Nwidart\Modules\Migrations\Migrator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -60,7 +59,7 @@ class MigrateCommand extends Command
     protected function migrate($name)
     {
         $module = $this->module->findOrFail($name);
-        
+
         $this->call('migrate', [
             '--path' => $this->getPath($module),
             '--database' => $this->option('database'),
@@ -82,7 +81,7 @@ class MigrateCommand extends Command
     protected function getPath($module)
     {
         $path = $module->getExtraPath(config('modules.paths.generator.migration'));
-        
+
         return str_replace(base_path(), '', $path);
     }
 
