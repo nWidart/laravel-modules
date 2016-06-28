@@ -47,4 +47,13 @@ class JsonTest extends BaseTestCase
         $this->assertEquals(1, $this->json->active);
         $this->assertEquals(1, $this->json->order);
     }
+
+    /** @test */
+    public function it_makes_json_class()
+    {
+        $path = __DIR__ . '/stubs/module.json';
+        $json = Json::make($path, $this->app['files']);
+
+        $this->assertInstanceOf(Json::class, $json);
+    }
 }
