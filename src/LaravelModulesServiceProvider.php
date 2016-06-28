@@ -63,7 +63,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
      */
     protected function registerNamespaces()
     {
-        $configPath = __DIR__.'/src/config/config.php';
+        $configPath = __DIR__ . '/../config/config.php';
         $this->mergeConfigFrom($configPath, 'modules');
         $this->publishes([
             $configPath => config_path('modules.php')
