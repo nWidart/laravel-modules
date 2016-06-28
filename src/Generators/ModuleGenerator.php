@@ -364,8 +364,6 @@ class ModuleGenerator extends Generator
     {
         $replacements = $this->module->config('stubs.replacements');
 
-        $namespace = $this->module->config('namespace');
-
         if (!isset($replacements[$stub])) {
             return [];
         }
