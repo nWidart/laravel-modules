@@ -157,8 +157,8 @@ class Module extends ServiceProvider
     {
         $lowerName = $this->getLowerName();
 
-        $langPath = base_path("resources/lang/{$lowerName}");
-        
+        $langPath = $this->getPath() . "/Resources/lang";
+
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $lowerName);
         }
