@@ -263,7 +263,7 @@ class Repository implements RepositoryInterface, Countable
     {
         $modules = $this->enabled();
 
-        uasort($modules, function ($a, $b) use ($direction) {
+        uasort($modules, function (Module $a, Module $b) use ($direction) {
             if ($a->order == $b->order) {
                 return 0;
             }
