@@ -26,11 +26,17 @@
   },
   "require-dev": {
     "phpunit/phpunit": "~4",
-    "mockery/mockery": "~0.9"
+    "mockery/mockery": "~0.9",
+    "orchestra/testbench": "^3.2"
   },
   "autoload": {
     "psr-4": {
       "Nwidart\\Modules\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Nwidart\\Modules\\Tests\\": "tests"
     }
   },
   "minimum-stability": "stable"
