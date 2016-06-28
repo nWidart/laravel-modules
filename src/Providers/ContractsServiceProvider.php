@@ -3,6 +3,8 @@
 namespace Nwidart\Modules\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Repository;
 
 class ContractsServiceProvider extends ServiceProvider
 {
@@ -11,9 +13,6 @@ class ContractsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(
-            'Nwidart\Modules\Contracts\RepositoryInterface',
-            'Nwidart\Modules\Repository'
-        );
+        $this->app->bind(RepositoryInterface::class, Repository::class);
     }
 }

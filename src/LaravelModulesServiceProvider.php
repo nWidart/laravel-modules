@@ -2,9 +2,15 @@
 
 namespace Nwidart\Modules;
 
+use Collective\Html\FormFacade;
+use Collective\Html\HtmlFacade;
+use Collective\Html\HtmlServiceProvider;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
+use Nwidart\Modules\Facades\Module;
 use Nwidart\Modules\Providers\BootstrapServiceProvider;
+use Nwidart\Modules\Providers\ConsoleServiceProvider;
+use Nwidart\Modules\Providers\ContractsServiceProvider;
 use Pingpong\Support\Stub;
 
 class LaravelModulesServiceProvider extends ServiceProvider
@@ -75,12 +81,12 @@ class LaravelModulesServiceProvider extends ServiceProvider
      */
     protected function registerHtml()
     {
-        $this->app->register('Collective\Html\HtmlServiceProvider');
+        $this->app->register(HtmlServiceProvider::class);
 
         $aliases = [
-            'HTML' => 'Collective\Html\HtmlFacade',
-            'Form' => 'Collective\Html\FormFacade',
-            'Module' => 'Nwidart\Modules\Facades\Module',
+            'HTML' => HtmlFacade::class,
+            'Form' => FormFacade::class,
+            'Module' => Module::class,
         ];
 
         AliasLoader::getInstance($aliases)->register();
@@ -105,7 +111,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array('modules');
+        return ['modules'];
     }
 
     /**
@@ -113,7 +119,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
      */
     protected function registerProviders()
     {
-        $this->app->register(__NAMESPACE__.'\\Providers\\ConsoleServiceProvider');
-        $this->app->register('Nwidart\Modules\Providers\ContractsServiceProvider');
+        $this->app->register(ConsoleServiceProvider::class);
+        $this->app->register(ContractsServiceProvider::class);
     }
 }
