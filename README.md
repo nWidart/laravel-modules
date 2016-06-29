@@ -25,6 +25,8 @@
 
 This package is a re-published, re-organised and maintained version of [pingpong/modules](https://github.com/pingpong-labs/modules), which isn't maintained anymore. This package is used in [AsgardCMS](https://asgardcms.com/).
 
+With one big added bonus that the original package didn't have: tests.
+
 <a name="upgrade-guide"></a>
 ## Upgrade Guide
 
