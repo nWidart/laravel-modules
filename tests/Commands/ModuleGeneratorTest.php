@@ -1,6 +1,8 @@
 <?php
 
-namespace Nwidart\Modules\Tests;
+namespace Nwidart\Modules\Tests\Commands;
+
+use Nwidart\Modules\Tests\BaseTestCase;
 
 class ModuleGeneratorTest extends BaseTestCase
 {
