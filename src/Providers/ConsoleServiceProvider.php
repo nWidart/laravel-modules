@@ -3,55 +3,69 @@
 namespace Nwidart\Modules\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Nwidart\Modules\Commands\CommandCommand;
+use Nwidart\Modules\Commands\ControllerCommand;
+use Nwidart\Modules\Commands\DisableCommand;
+use Nwidart\Modules\Commands\DumpCommand;
+use Nwidart\Modules\Commands\EnableCommand;
+use Nwidart\Modules\Commands\GenerateFilterCommand;
+use Nwidart\Modules\Commands\GenerateProviderCommand;
+use Nwidart\Modules\Commands\GenerateRouteProviderCommand;
+use Nwidart\Modules\Commands\InstallCommand;
+use Nwidart\Modules\Commands\ListCommand;
+use Nwidart\Modules\Commands\MakeCommand;
+use Nwidart\Modules\Commands\MakeRequestCommand;
+use Nwidart\Modules\Commands\MigrateCommand;
+use Nwidart\Modules\Commands\MigrateRefreshCommand;
+use Nwidart\Modules\Commands\MigrateResetCommand;
+use Nwidart\Modules\Commands\MigrateRollbackCommand;
+use Nwidart\Modules\Commands\MigrationCommand;
+use Nwidart\Modules\Commands\ModelCommand;
+use Nwidart\Modules\Commands\PublishCommand;
+use Nwidart\Modules\Commands\PublishMigrationCommand;
+use Nwidart\Modules\Commands\PublishTranslationCommand;
+use Nwidart\Modules\Commands\SeedCommand;
+use Nwidart\Modules\Commands\SeedMakeCommand;
+use Nwidart\Modules\Commands\SetupCommand;
+use Nwidart\Modules\Commands\UpdateCommand;
+use Nwidart\Modules\Commands\UseCommand;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
     protected $defer = false;
 
     /**
-     * Parent command namespace.
-     *
-     * @var string
-     */
-    protected $namespace = 'Nwidart\\Modules\\Commands\\';
-
-    /**
-     * The available command shortname.
+     * The available commands
      *
      * @var array
      */
     protected $commands = [
-        'Make',
-        'Command',
-        'Controller',
-        'Disable',
-        'Enable',
-        'GenerateFilter',
-        'GenerateProvider',
-        'GenerateRouteProvider',
-        'Install',
-        'List',
-        'Migrate',
-        'MigrateRefresh',
-        'MigrateReset',
-        'MigrateRollback',
-        'Migration',
-        'Model',
-        'Publish',
-        'PublishMigration',
-        'PublishTranslation',
-        'Seed',
-        'SeedMake',
-        'Setup',
-        'Update',
-        'Use',
-        'Dump',
-        'MakeRequest',
+        MakeCommand::class,
+        CommandCommand::class,
+        ControllerCommand::class,
+        DisableCommand::class,
+        EnableCommand::class,
+        GenerateFilterCommand::class,
+        GenerateProviderCommand::class,
+        GenerateRouteProviderCommand::class,
+        InstallCommand::class,
+        ListCommand::class,
+        MigrateCommand::class,
+        MigrateRefreshCommand::class,
+        MigrateResetCommand::class,
+        MigrateRollbackCommand::class,
+        MigrationCommand::class,
+        ModelCommand::class,
+        PublishCommand::class,
+        PublishMigrationCommand::class,
+        PublishTranslationCommand::class,
+        SeedCommand::class,
+        SeedMakeCommand::class,
+        SetupCommand::class,
+        UpdateCommand::class,
+        UseCommand::class,
+        DumpCommand::class,
+        MakeRequestCommand::class,
     ];
 
     /**
@@ -60,7 +74,7 @@ class ConsoleServiceProvider extends ServiceProvider
     public function register()
     {
         foreach ($this->commands as $command) {
-            $this->commands($this->namespace.$command.'Command');
+            $this->commands($command);
         }
     }
 
@@ -72,7 +86,7 @@ class ConsoleServiceProvider extends ServiceProvider
         $provides = [];
 
         foreach ($this->commands as $command) {
-            $provides[] = $this->namespace.$command.'Command';
+            $provides[] = $command;
         }
 
         return $provides;
