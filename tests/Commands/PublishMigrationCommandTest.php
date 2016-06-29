@@ -27,6 +27,7 @@ class PublishMigrationCommandTest extends BaseTestCase
     public function tearDown()
     {
         $this->finder->deleteDirectory($this->modulePath);
+        $this->finder->delete($this->finder->allFiles(base_path('database/migrations')));
         parent::tearDown();
     }
 
