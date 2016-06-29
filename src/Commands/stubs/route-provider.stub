@@ -1,25 +1,18 @@
-<?php namespace $MODULE_NAMESPACE$\$MODULE$\Providers;
+<?php
+
+namespace $MODULE_NAMESPACE$\$MODULE$\Providers;
 
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
-class $NAME$ extends ServiceProvider {
-    
+class $NAME$ extends ServiceProvider
+{
     /**
      * The root namespace to assume when generating URLs to actions.
      *
      * @var string
      */
     protected $rootUrlNamespace = '$MODULE_NAMESPACE$\$MODULE$\Http\Controllers';
-
-    /**
-     * The controllers to scan for route annotations.
-     *
-     * @var array
-     */
-    protected $scan = [
-        '$MODULE_NAMESPACE$\$MODULE$\Http\Controllers',
-    ];
 
     /**
      * Called before routes are registered.
@@ -43,5 +36,4 @@ class $NAME$ extends ServiceProvider {
     {
         // require __DIR__ . '/../Http/routes.php';
     }
-
 }
