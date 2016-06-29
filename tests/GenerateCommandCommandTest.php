@@ -45,7 +45,6 @@ class GenerateCommandCommandTest extends BaseTestCase
         $this->assertEquals($this->expectedContent(), $file);
     }
 
-
     /** @test */
     public function it_uses_set_command_name_in_class()
     {
