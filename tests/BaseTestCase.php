@@ -9,7 +9,14 @@ abstract class BaseTestCase extends OrchestraTestCase
     {
         parent::setUp();
 
-        $this->setUpDatabase();
+        // $this->setUpDatabase();
+    }
+
+    private function resetDatabase()
+    {
+        $this->artisan('migrate:reset', [
+            '--database' => 'sqlite',
+        ]);
     }
 
     protected function getPackageProviders($app)
@@ -37,15 +44,5 @@ abstract class BaseTestCase extends OrchestraTestCase
     protected function setUpDatabase()
     {
         $this->resetDatabase();
-    }
-
-    protected function resetDatabase()
-    {
-        file_put_contents($this->getTempDirectory().'/database.sqlite', null);
-    }
-
-    private function getTempDirectory()
-    {
-        return __DIR__ . '/temp';
     }
 }
