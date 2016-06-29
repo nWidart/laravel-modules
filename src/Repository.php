@@ -310,13 +310,13 @@ class Repository implements RepositoryInterface, Countable
 
     /**
      * Find a specific module.
-     *
      * @param $name
+     * @return mixed|void
      */
     public function find($name)
     {
         foreach ($this->all() as $module) {
-            if ($module->getLowerName() == strtolower($name)) {
+            if ($module->getLowerName() === strtolower($name)) {
                 return $module;
             }
         }
