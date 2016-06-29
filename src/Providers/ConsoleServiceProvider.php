@@ -8,7 +8,7 @@ use Nwidart\Modules\Commands\ControllerCommand;
 use Nwidart\Modules\Commands\DisableCommand;
 use Nwidart\Modules\Commands\DumpCommand;
 use Nwidart\Modules\Commands\EnableCommand;
-use Nwidart\Modules\Commands\GenerateFilterCommand;
+use Nwidart\Modules\Commands\GenerateMiddlewareCommand;
 use Nwidart\Modules\Commands\GenerateProviderCommand;
 use Nwidart\Modules\Commands\GenerateRouteProviderCommand;
 use Nwidart\Modules\Commands\InstallCommand;
@@ -45,7 +45,7 @@ class ConsoleServiceProvider extends ServiceProvider
         ControllerCommand::class,
         DisableCommand::class,
         EnableCommand::class,
-        GenerateFilterCommand::class,
+        GenerateMiddlewareCommand::class,
         GenerateProviderCommand::class,
         GenerateRouteProviderCommand::class,
         InstallCommand::class,

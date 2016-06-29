@@ -7,7 +7,7 @@ use Pingpong\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class GenerateFilterCommand extends GeneratorCommand
+class GenerateMiddlewareCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
