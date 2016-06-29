@@ -366,7 +366,7 @@ class Module extends ServiceProvider
      */
     public function delete()
     {
-        return $this->json()->getFilesystem()->deleteDirectory($this->getPath(), true);
+        return $this->json()->getFilesystem()->deleteDirectory($this->getPath());
     }
 
     /**
