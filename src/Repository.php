@@ -326,8 +326,8 @@ class Repository implements RepositoryInterface, Countable
 
     /**
      * Alternative for "find" method.
-     *
      * @param $name
+     * @return mixed|void
      */
     public function get($name)
     {
@@ -345,7 +345,9 @@ class Repository implements RepositoryInterface, Countable
      */
     public function findOrFail($name)
     {
-        if (!is_null($module = $this->find($name))) {
+        $module = $this->find($name);
+
+        if ($module !== null) {
             return $module;
         }
 
@@ -474,7 +476,6 @@ class Repository implements RepositoryInterface, Countable
      * Get asset url from a specific module.
      *
      * @param string $asset
-     * @param bool   $secure
      *
      * @return string
      */
@@ -583,11 +584,11 @@ class Repository implements RepositoryInterface, Countable
      */
     public function getStubPath()
     {
-        if (!is_null($this->stubPath)) {
+        if ($this->stubPath !== null) {
             return $this->stubPath;
         }
 
-        if ($this->config('stubs.enabled')) {
+        if ($this->config('stubs.enabled') === true) {
             return $this->config('stubs.path');
         }
 
