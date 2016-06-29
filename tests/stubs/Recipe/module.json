@@ -10,7 +10,6 @@
         "Modules\\Recipe\\Providers\\RecipeServiceProvider",
         "Modules\\Recipe\\Providers\\RouteServiceProvider"
     ],
-    "aliases":{},
-    "files": [
-    ]
+    "aliases": [],
+    "files": []
 }
