@@ -1,4 +1,6 @@
-<?php namespace Nwidart\Modules\Tests;
+<?php 
+
+namespace Nwidart\Modules\Tests;
 
 class GenerateRouteServiceProviderTest extends BaseTestCase
 {

@@ -1,4 +1,6 @@
-<?php namespace Nwidart\Modules\Tests;
+<?php
+
+namespace Nwidart\Modules\Tests;
 
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Collection;
