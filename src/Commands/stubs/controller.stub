@@ -1,4 +1,6 @@
-<?php namespace $CLASS_NAMESPACE$;
+<?php
+
+namespace $CLASS_NAMESPACE$;
 
 use Nwidart\Modules\Routing\Controller;
 

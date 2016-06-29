@@ -1,9 +1,11 @@
-<?php namespace $NAMESPACE$;
+<?php
+
+namespace $NAMESPACE$;
 
 use Illuminate\Support\ServiceProvider;
 
-class $CLASS$ extends ServiceProvider {
-
+class $CLASS$ extends ServiceProvider
+{
 	/**
 	 * Indicates if loading of the provider is deferred.
 	 *
@@ -28,7 +30,6 @@ class $CLASS$ extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array();
+		return [];
 	}
-
 }
