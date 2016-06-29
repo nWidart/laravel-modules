@@ -56,4 +56,37 @@ class ModuleGeneratorTest extends BaseTestCase
             $this->assertTrue(is_file($this->modulePath . '/' . $file));
         }
     }
+
+    /** @test */
+    public function it_generates_correct_composerjson_file()
+    {
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $file = $this->finder->get($this->modulePath . '/composer.json');
+
+        $this->assertEquals($this->getExpectedComposerJson(), $file);
+    }
+
+    private function getExpectedComposerJson()
+    {
+        return <<<TEXT
+{
+	"name": "nwidart/blog",
+	"description": "",
+	"authors": [
+		{
+			"name": "Nicolas Widart",
+			"email": "n.widart@gmail.com"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Modules\\\Blog\\\": ""
+		}
+	}
+}
+
+TEXT;
+
+    }
 }
