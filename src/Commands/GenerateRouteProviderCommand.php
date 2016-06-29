@@ -10,6 +10,7 @@ class GenerateRouteProviderCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
+    protected $argumentName = 'module';
     /**
      * The command name.
      *
