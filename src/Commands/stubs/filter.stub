@@ -1,9 +1,11 @@
-<?php namespace $NAMESPACE$; 
+<?php
+
+namespace $NAMESPACE$;
 
 use Closure;
 
-class $CLASS$ {
-
+class $CLASS$
+{
     /**
      * Handle an incoming request.
      *
@@ -15,5 +17,4 @@ class $CLASS$ {
     {
     	return $next($request);
     }
-    
 }
