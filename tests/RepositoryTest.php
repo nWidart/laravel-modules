@@ -170,4 +170,34 @@ class RepositoryTest extends BaseTestCase
     {
         $this->assertNull($this->repository->getStubPath());
     }
+
+    /** @test */
+    public function it_can_disabled_a_module()
+    {
+        $this->repository->addLocation(__DIR__ . '/stubs/Recipe');
+
+        $this->repository->disable('Recipe');
+
+        $this->assertTrue($this->repository->notActive('Recipe'));
+    }
+
+    /** @test */
+    public function it_can_enable_a_module()
+    {
+        $this->repository->addLocation(__DIR__ . '/stubs/Recipe');
+
+        $this->repository->enable('Recipe');
+
+        $this->assertTrue($this->repository->active('Recipe'));
+    }
+
+    /** @test */
+    public function it_can_delete_a_module()
+    {
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->repository->delete('Blog');
+
+        $this->assertFalse(is_dir(base_path('modules/Blog')));
+    }
 }
