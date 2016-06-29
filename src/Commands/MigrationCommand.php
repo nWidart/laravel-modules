@@ -152,6 +152,9 @@ class MigrationCommand extends GeneratorCommand
     {
         parent::fire();
 
+        if (app()->environment() === 'testing') {
+            return;
+        }
         $this->call('optimize');
     }
 }
