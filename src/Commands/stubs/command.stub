@@ -1,11 +1,13 @@
-<?php namespace $NAMESPACE$;
+<?php
+
+namespace $NAMESPACE$;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class $CLASS$ extends Command {
-
+class $CLASS$ extends Command
+{
 	/**
 	 * The console command name.
 	 *
@@ -63,5 +65,4 @@ class $CLASS$ extends Command {
 			['example', null, InputOption::VALUE_OPTIONAL, 'An example option.', null],
 		];
 	}
-
 }
