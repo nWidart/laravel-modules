@@ -155,5 +155,14 @@ return [
         'key' => 'laravel-modules',
         'lifetime' => 60,
     ],
-
+    /*
+    |--------------------------------------------------------------------------
+    | Choose what laravel-modules will register as custom namespaces.
+    | Setting one to false will require to register that part
+    | in your own Service Provider class.
+    |--------------------------------------------------------------------------
+    */
+    'register' => [
+        'translations' => true,
+    ],
 ];
