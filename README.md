@@ -47,7 +47,7 @@ Next add the following service provider in `config/app.php`.
 
 ```php
 'providers' => [
-  Nwidart\Modules\LaravelModulesServiceProvider:class,
+  Nwidart\Modules\LaravelModulesServiceProvider::class,
 ],
 ```
 
