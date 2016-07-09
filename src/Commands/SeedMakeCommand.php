@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Traits\CanClearModulesCache;
 use Pingpong\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -10,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 
 class SeedMakeCommand extends GeneratorCommand
 {
-    use ModuleCommandTrait;
+    use ModuleCommandTrait, CanClearModulesCache;
 
     /**
      * The console command name.
@@ -65,7 +66,7 @@ class SeedMakeCommand extends GeneratorCommand
             'NAME' => $this->getSeederName(),
             'MODULE' => $this->getModuleName(),
             'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
-            
+
         ]))->render();
     }
 
@@ -74,6 +75,8 @@ class SeedMakeCommand extends GeneratorCommand
      */
     protected function getDestinationFilePath()
     {
+        $this->clearCache();
+
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
         $seederPath = $this->laravel['modules']->config('paths.generator.seeder');
