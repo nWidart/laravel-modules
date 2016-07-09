@@ -312,6 +312,15 @@ For all modules.
 php artisan module:publish-migration
 ```
 
+Publish Module configuration files
+
+```
+php artisan module:publish-config <module-name>
+```
+
+- (optional) `module-name`: The name of the module to publish configuration. Leaving blank will publish all modules.
+- (optional) `--force`: To force the publishing, overwriting already published files
+
 Enable the specified module.
 
 
