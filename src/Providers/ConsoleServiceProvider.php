@@ -22,6 +22,7 @@ use Nwidart\Modules\Commands\MigrateRollbackCommand;
 use Nwidart\Modules\Commands\MigrationCommand;
 use Nwidart\Modules\Commands\ModelCommand;
 use Nwidart\Modules\Commands\PublishCommand;
+use Nwidart\Modules\Commands\PublishConfigurationCommand;
 use Nwidart\Modules\Commands\PublishMigrationCommand;
 use Nwidart\Modules\Commands\PublishTranslationCommand;
 use Nwidart\Modules\Commands\SeedCommand;
@@ -66,6 +67,7 @@ class ConsoleServiceProvider extends ServiceProvider
         UseCommand::class,
         DumpCommand::class,
         MakeRequestCommand::class,
+        PublishConfigurationCommand::class,
     ];
 
     /**
