@@ -42,7 +42,7 @@ class MigrateResetCommand extends Command
         }
 
         foreach (array_reverse($this->laravel['modules']->all()) as $module) {
-            $this->line('Running for module: <info>'.$module->getName().'</info>');
+            $this->line('Running for module: <info>' . $module->getName() . '</info>');
 
             $this->reset($module);
         }

@@ -56,7 +56,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
     public function setupStubPath()
     {
         $this->app->booted(function ($app) {
-            Stub::setBasePath(__DIR__.'/Commands/stubs');
+            Stub::setBasePath(__DIR__ . '/Commands/stubs');
 
             if ($app['modules']->config('stubs.enabled') === true) {
                 Stub::setBasePath($app['modules']->config('stubs.path'));
@@ -72,7 +72,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
         $configPath = __DIR__ . '/../config/config.php';
         $this->mergeConfigFrom($configPath, 'modules');
         $this->publishes([
-            $configPath => config_path('modules.php')
+            $configPath => config_path('modules.php'),
         ], 'config');
     }
 

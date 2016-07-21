@@ -1,4 +1,6 @@
-<?php namespace Nwidart\Modules\Tests\Commands;
+<?php
+
+namespace Nwidart\Modules\tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Nwidart\Modules\Tests;
+namespace Nwidart\Modules\tests;
 
 use Nwidart\Modules\Json;
 use Nwidart\Modules\Module;

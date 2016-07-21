@@ -3,8 +3,8 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
-use Pingpong\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
+use Pingpong\Support\Stub;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -67,7 +67,7 @@ class GenerateProviderCommand extends GeneratorCommand
 
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/'.$stub.'.stub', [
+        return (new Stub('/' . $stub . '.stub', [
             'NAMESPACE'         => $this->getClassNamespace($module),
             'CLASS'             => $this->getClass(),
             'LOWER_NAME'        => $module->getLowerName(),
@@ -77,7 +77,7 @@ class GenerateProviderCommand extends GeneratorCommand
             'MODULE_NAMESPACE'  => $this->laravel['modules']->config('namespace'),
             'PATH_VIEWS'        => $this->laravel['config']->get('modules.paths.generator.views'),
             'PATH_LANG'         => $this->laravel['config']->get('modules.paths.generator.lang'),
-            'PATH_CONFIG'       => $this->laravel['config']->get('modules.paths.generator.config')
+            'PATH_CONFIG'       => $this->laravel['config']->get('modules.paths.generator.config'),
         ]))->render();
     }
 
@@ -90,7 +90,7 @@ class GenerateProviderCommand extends GeneratorCommand
 
         $generatorPath = $this->laravel['modules']->config('paths.generator.provider');
 
-        return $path.$generatorPath.'/'.$this->getFileName().'.php';
+        return $path . $generatorPath . '/' . $this->getFileName() . '.php';
     }
 
     /**

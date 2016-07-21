@@ -227,7 +227,7 @@ class Module extends ServiceProvider
      */
     protected function fireEvent($event)
     {
-        $this->app['events']->fire(sprintf('modules.%s.'.$event, $this->getLowerName()), [$this]);
+        $this->app['events']->fire(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
     }
 
     /**
@@ -257,7 +257,7 @@ class Module extends ServiceProvider
     protected function registerFiles()
     {
         foreach ($this->get('files', []) as $file) {
-            include $this->path.'/'.$file;
+            include $this->path . '/' . $file;
         }
     }
 
@@ -380,7 +380,7 @@ class Module extends ServiceProvider
      */
     public function getExtraPath($path)
     {
-        return $this->getPath().'/'.$path;
+        return $this->getPath() . '/' . $path;
     }
 
     /**

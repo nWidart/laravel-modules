@@ -1,4 +1,6 @@
-<?php namespace Nwidart\Modules\Tests;
+<?php
+
+namespace Nwidart\Modules\tests;
 
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
@@ -48,6 +50,8 @@ abstract class BaseTestCase extends OrchestraTestCase
                 'assets' => 'Assets',
                 'config' => 'Config',
                 'command' => 'Console',
+                'event' => 'Events',
+                'listener' => 'Listeners',
                 'migration' => 'Database/Migrations',
                 'model' => 'Entities',
                 'repository' => 'Repositories',

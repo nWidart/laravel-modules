@@ -2,11 +2,10 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Nwidart\Modules\Commands\GeneratorCommand;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Pingpong\Support\Stub;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class GenerateEventCommand extends GeneratorCommand
 {
@@ -39,7 +38,6 @@ class GenerateEventCommand extends GeneratorCommand
             ['name', InputArgument::REQUIRED, 'The name of the command.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
-
     }
 
     /**
@@ -61,18 +59,16 @@ class GenerateEventCommand extends GeneratorCommand
         return (new Stub('/event.stub', [
             'NAMESPACE' => $this->getClassNamespace($module) . "\\" . config("modules.paths.generator.event"),
             "CLASS" => $this->getClass(),
-            'DUMMYNAMESPACE' => $this->laravel->getNamespace() . "Events"
+            'DUMMYNAMESPACE' => $this->laravel->getNamespace() . "Events",
         ]))->render();
     }
 
     public function getDestinationFilePath()
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
-
         $seederPath = $this->laravel['modules']->config('paths.generator.event');
 
         return $path . $seederPath . '/' . $this->getFileName() . '.php';
-
     }
 
     /**
@@ -82,6 +78,4 @@ class GenerateEventCommand extends GeneratorCommand
     {
         return studly_case($this->argument('name'));
     }
-
-
 }

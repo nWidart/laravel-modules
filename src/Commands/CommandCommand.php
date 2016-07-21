@@ -3,8 +3,8 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
-use Pingpong\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
+use Pingpong\Support\Stub;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -81,7 +81,7 @@ class CommandCommand extends GeneratorCommand
 
         $seederPath = $this->laravel['modules']->config('paths.generator.command');
 
-        return $path.$seederPath.'/'.$this->getFileName().'.php';
+        return $path . $seederPath . '/' . $this->getFileName() . '.php';
     }
 
     /**

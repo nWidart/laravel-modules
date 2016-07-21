@@ -2,12 +2,11 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Nwidart\Modules\Commands\GeneratorCommand;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Pingpong\Support\Stub;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class GenerateListenerCommand extends GeneratorCommand
 {
@@ -63,9 +62,8 @@ class GenerateListenerCommand extends GeneratorCommand
             "EVENTNAME" => $this->getEventName($module),
             "EVENTSHORTENEDNAME" => $this->option('event'),
             "CLASS" => $this->getClass(),
-            'DUMMYNAMESPACE' => $this->laravel->getNamespace() . "Events"
+            'DUMMYNAMESPACE' => $this->laravel->getNamespace() . "Events",
         ]))->render();
-
     }
 
     protected function getDestinationFilePath()
@@ -75,7 +73,6 @@ class GenerateListenerCommand extends GeneratorCommand
         $seederPath = $this->laravel['modules']->config('paths.generator.listener');
 
         return $path . $seederPath . '/' . $this->getFileName() . '.php';
-
     }
 
     /**

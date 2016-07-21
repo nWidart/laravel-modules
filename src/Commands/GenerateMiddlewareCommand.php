@@ -3,8 +3,8 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
-use Pingpong\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
+use Pingpong\Support\Stub;
 use Symfony\Component\Console\Input\InputArgument;
 
 class GenerateMiddlewareCommand extends GeneratorCommand
@@ -72,7 +72,7 @@ class GenerateMiddlewareCommand extends GeneratorCommand
 
         $seederPath = $this->laravel['modules']->config('paths.generator.filter');
 
-        return $path.$seederPath.'/'.$this->getFileName().'.php';
+        return $path . $seederPath . '/' . $this->getFileName() . '.php';
     }
 
     /**

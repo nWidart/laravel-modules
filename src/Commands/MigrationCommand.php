@@ -3,10 +3,10 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Pingpong\Generators\Migrations\NameParser;
 use Pingpong\Generators\Migrations\SchemaParser;
 use Pingpong\Support\Stub;
-use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -113,7 +113,7 @@ class MigrationCommand extends GeneratorCommand
 
         $generatorPath = $this->laravel['modules']->config('paths.generator.migration');
 
-        return $path.$generatorPath.'/'.$this->getFileName().'.php';
+        return $path . $generatorPath . '/' . $this->getFileName() . '.php';
     }
 
     /**
@@ -121,7 +121,7 @@ class MigrationCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return date('Y_m_d_His_').$this->getSchemaName();
+        return date('Y_m_d_His_') . $this->getSchemaName();
     }
 
     /**

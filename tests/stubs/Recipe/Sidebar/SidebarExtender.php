@@ -1,4 +1,6 @@
-<?php namespace Modules\Recipe\Sidebar;
+<?php
+
+namespace Modules\Recipe\Sidebar;
 
 use Maatwebsite\Sidebar\Group;
 use Maatwebsite\Sidebar\Item;

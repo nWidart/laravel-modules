@@ -1,4 +1,6 @@
-<?php namespace Nwidart\Modules\Tests;
+<?php
+
+namespace Nwidart\Modules\tests;
 
 use Nwidart\Modules\Facades\Module;
 

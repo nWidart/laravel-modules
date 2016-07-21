@@ -1,7 +1,9 @@
-<?php namespace Modules\Recipe\Repositories\Cache;
+<?php
 
-use Modules\Recipe\Repositories\RecipeRepository;
+namespace Modules\Recipe\Repositories\Cache;
+
 use Modules\Core\Repositories\Cache\BaseCacheDecorator;
+use Modules\Recipe\Repositories\RecipeRepository;
 
 class CacheRecipeDecorator extends BaseCacheDecorator implements RecipeRepository
 {

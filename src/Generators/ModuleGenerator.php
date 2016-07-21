@@ -6,8 +6,8 @@ use Illuminate\Config\Repository as Config;
 use Illuminate\Console\Command as Console;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
-use Pingpong\Support\Stub;
 use Nwidart\Modules\Repository;
+use Pingpong\Support\Stub;
 
 class ModuleGenerator extends Generator
 {
@@ -271,7 +271,7 @@ class ModuleGenerator extends Generator
     public function generateFolders()
     {
         foreach ($this->getFolders() as $folder) {
-            $path = $this->module->getModulePath($this->getName()).'/'.$folder;
+            $path = $this->module->getModulePath($this->getName()) . '/' . $folder;
 
             $this->filesystem->makeDirectory($path, 0755, true);
 
@@ -286,7 +286,7 @@ class ModuleGenerator extends Generator
      */
     public function generateGitKeep($path)
     {
-        $this->filesystem->put($path.'/.gitkeep', '');
+        $this->filesystem->put($path . '/.gitkeep', '');
     }
 
     /**
@@ -295,7 +295,7 @@ class ModuleGenerator extends Generator
     public function generateFiles()
     {
         foreach ($this->getFiles() as $stub => $file) {
-            $path = $this->module->getModulePath($this->getName()).$file;
+            $path = $this->module->getModulePath($this->getName()) . $file;
 
             if (!$this->filesystem->isDirectory($dir = dirname($path))) {
                 $this->filesystem->makeDirectory($dir, 0775, true);
@@ -319,13 +319,13 @@ class ModuleGenerator extends Generator
         ]);
 
         $this->console->call('module:make-provider', [
-            'name' => $this->getName().'ServiceProvider',
+            'name' => $this->getName() . 'ServiceProvider',
             'module' => $this->getName(),
             '--master' => true,
         ]);
 
         $this->console->call('module:make-controller', [
-            'controller' => $this->getName().'Controller',
+            'controller' => $this->getName() . 'Controller',
             'module' => $this->getName(),
         ]);
     }
@@ -340,7 +340,7 @@ class ModuleGenerator extends Generator
     protected function getStubContents($stub)
     {
         return (new Stub(
-            '/'.$stub.'.stub',
+            '/' . $stub . '.stub',
             $this->getReplacement($stub))
         )->render();
     }
@@ -373,7 +373,7 @@ class ModuleGenerator extends Generator
         $replaces = [];
 
         foreach ($keys as $key) {
-            if (method_exists($this, $method = 'get'.ucfirst(studly_case(strtolower($key))).'Replacement')) {
+            if (method_exists($this, $method = 'get' . ucfirst(studly_case(strtolower($key))) . 'Replacement')) {
                 $replaces[$key] = call_user_func([$this, $method]);
             } else {
                 $replaces[$key] = null;

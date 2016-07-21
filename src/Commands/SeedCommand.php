@@ -98,7 +98,7 @@ class SeedCommand extends Command
 
         $namespace = $this->laravel['modules']->config('namespace');
 
-        return $namespace.'\\'.$name.'\Database\Seeders\\'.$name.'DatabaseSeeder';
+        return $namespace . '\\' . $name . '\Database\Seeders\\' . $name . 'DatabaseSeeder';
     }
 
     /**

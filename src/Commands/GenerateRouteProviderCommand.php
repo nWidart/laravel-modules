@@ -2,8 +2,8 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Pingpong\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
+use Pingpong\Support\Stub;
 use Symfony\Component\Console\Input\InputArgument;
 
 class GenerateRouteProviderCommand extends GeneratorCommand
@@ -68,7 +68,7 @@ class GenerateRouteProviderCommand extends GeneratorCommand
 
         $generatorPath = $this->laravel['modules']->config('paths.generator.provider');
 
-        return $path.$generatorPath.'/'.$this->getFileName().'.php';
+        return $path . $generatorPath . '/' . $this->getFileName() . '.php';
     }
 
     /**

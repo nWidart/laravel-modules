@@ -4,8 +4,8 @@ namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
 use Nwidart\Modules\Traits\CanClearModulesCache;
-use Pingpong\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
+use Pingpong\Support\Stub;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -81,7 +81,7 @@ class SeedMakeCommand extends GeneratorCommand
 
         $seederPath = $this->laravel['modules']->config('paths.generator.seeder');
 
-        return $path.$seederPath.'/'.$this->getSeederName().'.php';
+        return $path . $seederPath . '/' . $this->getSeederName() . '.php';
     }
 
     /**
@@ -93,6 +93,6 @@ class SeedMakeCommand extends GeneratorCommand
     {
         $end = $this->option('master') ? 'DatabaseSeeder' : 'TableSeeder';
 
-        return Str::studly($this->argument('name')).$end;
+        return Str::studly($this->argument('name')) . $end;
     }
 }

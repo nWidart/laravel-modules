@@ -51,7 +51,7 @@ class Migrator
      */
     public function getMigrations($reverse = false)
     {
-        $files = $this->laravel['files']->glob($this->getPath().'/*_*.php');
+        $files = $this->laravel['files']->glob($this->getPath() . '/*_*.php');
 
         // Once we have the array of files in the directory we will just remove the
         // extension and take the basename of the file which is all we need when
@@ -179,7 +179,7 @@ class Migrator
         $path = $this->getPath();
 
         foreach ($files as $file) {
-            $this->laravel['files']->requireOnce($path.'/'.$file.'.php');
+            $this->laravel['files']->requireOnce($path . '/' . $file . '.php');
         }
     }
 

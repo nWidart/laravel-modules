@@ -1,6 +1,6 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
+namespace Nwidart\Modules\tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
 
@@ -83,7 +83,5 @@ class PostWasCreated
 }
 
 TEXT;
-
     }
-
 }

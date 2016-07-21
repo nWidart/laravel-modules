@@ -1,4 +1,6 @@
-<?php namespace Modules\Recipe\Events;
+<?php
+
+namespace Modules\Recipe\Events;
 
 use Modules\Media\Contracts\StoringMedia;
 

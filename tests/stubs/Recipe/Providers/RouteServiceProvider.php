@@ -1,4 +1,6 @@
-<?php namespace Modules\Recipe\Providers;
+<?php
+
+namespace Modules\Recipe\Providers;
 
 use Modules\Core\Providers\RoutingServiceProvider as CoreRoutingServiceProvider;
 

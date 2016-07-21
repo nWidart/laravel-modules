@@ -1,6 +1,6 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
+namespace Nwidart\Modules\tests\Commands;
 
 use Illuminate\Support\Facades\Schema;
 use Nwidart\Modules\Repository;
@@ -31,6 +31,6 @@ abstract class MigrateCommandTest extends BaseTestCase
 
         $this->artisan('module:migrate', ['module' => 'Recipe']);
 
-        dd(Schema::hasTable('recipe__recipes') , $this->app['db']->table('recipe__recipes')->get());
+        dd(Schema::hasTable('recipe__recipes'), $this->app['db']->table('recipe__recipes')->get());
     }
 }

@@ -1,4 +1,6 @@
-<?php namespace Modules\Recipe\Entities;
+<?php
+
+namespace Modules\Recipe\Entities;
 
 use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;

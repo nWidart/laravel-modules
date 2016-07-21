@@ -2,8 +2,8 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Pingpong\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
+use Pingpong\Support\Stub;
 use Symfony\Component\Console\Input\InputArgument;
 
 class ControllerCommand extends GeneratorCommand
@@ -42,7 +42,7 @@ class ControllerCommand extends GeneratorCommand
 
         $controllerPath = $this->laravel['modules']->config('paths.generator.controller');
 
-        return $path.$controllerPath.'/'.$this->getControllerName().'.php';
+        return $path . $controllerPath . '/' . $this->getControllerName() . '.php';
     }
 
     /**
@@ -87,7 +87,7 @@ class ControllerCommand extends GeneratorCommand
         $controller = studly_case($this->argument('controller'));
 
         if (!str_contains(strtolower($controller), 'controller')) {
-            $controller = $controller.'Controller';
+            $controller = $controller . 'Controller';
         }
 
         return $controller;

@@ -95,7 +95,7 @@ class Repository implements RepositoryInterface, Countable
     {
         $paths = $this->paths;
 
-        $paths[] = $this->getPath().'/*';
+        $paths[] = $this->getPath() . '/*';
 
         if ($this->config('scan.enabled')) {
             $paths = array_merge($paths, $this->config('scan.paths'));
@@ -158,7 +158,7 @@ class Repository implements RepositoryInterface, Countable
         $modules = [];
 
         foreach ($cached as $name => $module) {
-            $path = $this->config('paths.modules').'/'.$name;
+            $path = $this->config('paths.modules') . '/' . $name;
 
             $lowerName = strtolower($name);
 
@@ -374,9 +374,9 @@ class Repository implements RepositoryInterface, Countable
     public function getModulePath($module)
     {
         try {
-            return $this->findOrFail($module)->getPath().'/';
+            return $this->findOrFail($module)->getPath() . '/';
         } catch (ModuleNotFoundException $e) {
-            return $this->getPath().'/'.Str::studly($module).'/';
+            return $this->getPath() . '/' . Str::studly($module) . '/';
         }
     }
 
@@ -389,7 +389,7 @@ class Repository implements RepositoryInterface, Countable
      */
     public function assetPath($module)
     {
-        return $this->config('paths.assets').'/'.$module;
+        return $this->config('paths.assets') . '/' . $module;
     }
 
     /**
@@ -401,7 +401,7 @@ class Repository implements RepositoryInterface, Countable
      */
     public function config($key)
     {
-        return $this->app['config']->get('modules.'.$key);
+        return $this->app['config']->get('modules.' . $key);
     }
 
     /**
@@ -415,7 +415,7 @@ class Repository implements RepositoryInterface, Countable
             $this->app['files']->makeDirectory($path, 0777, true);
         }
 
-        return $path.'/modules.used';
+        return $path . '/modules.used';
     }
 
     /**
@@ -485,7 +485,7 @@ class Repository implements RepositoryInterface, Countable
 
         $baseUrl = str_replace(public_path(), '', $this->getAssetsPath());
 
-        $url = $this->app['url']->asset($baseUrl."/{$name}/".$url);
+        $url = $this->app['url']->asset($baseUrl . "/{$name}/" . $url);
 
         return str_replace(['http://', 'https://'], '//', $url);
     }

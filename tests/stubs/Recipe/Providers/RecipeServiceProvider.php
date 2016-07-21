@@ -1,4 +1,6 @@
-<?php namespace Modules\Recipe\Providers;
+<?php
+
+namespace Modules\Recipe\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -46,6 +48,5 @@ class RecipeServiceProvider extends ServiceProvider
             }
         );
 // add bindings
-
     }
 }

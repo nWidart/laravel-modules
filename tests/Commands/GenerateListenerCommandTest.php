@@ -1,6 +1,6 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
+namespace Nwidart\Modules\tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
 
@@ -53,6 +53,7 @@ class GenerateListenerCommandTest extends BaseTestCase
     private function expectedContent()
     {
         $event = '$event';
+
         return <<<TEXT
 <?php
 
@@ -87,7 +88,5 @@ class NotifyUsersOfANewPost
 }
 
 TEXT;
-
     }
-
 }
