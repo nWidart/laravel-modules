@@ -39,6 +39,28 @@ abstract class BaseTestCase extends OrchestraTestCase
             'database' => ':memory:',
             'prefix' => '',
         ));
+        $app['config']->set('modules.paths.modules', base_path('modules'));
+        $app['config']->set('modules.paths', [
+            'modules' => base_path('modules'),
+            'assets' => public_path('modules'),
+            'migration' => base_path('database/migrations'),
+            'generator' => [
+                'assets' => 'Assets',
+                'config' => 'Config',
+                'command' => 'Console',
+                'migration' => 'Database/Migrations',
+                'model' => 'Entities',
+                'repository' => 'Repositories',
+                'seeder' => 'Database/Seeders',
+                'controller' => 'Http/Controllers',
+                'filter' => 'Http/Middleware',
+                'request' => 'Http/Requests',
+                'provider' => 'Providers',
+                'lang' => 'Resources/lang',
+                'views' => 'Resources/views',
+                'test' => 'Tests',
+            ],
+        ]);
     }
 
     protected function setUpDatabase()
