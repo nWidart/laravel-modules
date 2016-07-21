@@ -49,7 +49,7 @@ class GenerateListenerCommand extends GeneratorCommand
     protected function getOptions()
     {
         return [
-            ['event', null, InputOption::VALUE_REQUIRED, 'An example option.', null],
+            ['event', null, InputOption::VALUE_REQUIRED, 'Event name this is listening to', null],
         ];
     }
 
