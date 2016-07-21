@@ -57,9 +57,9 @@ class GenerateEventCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/event.stub', [
-            'NAMESPACE' => $this->getClassNamespace($module) . "\\" . config("modules.paths.generator.event"),
+            'NAMESPACE' => $this->getClassNamespace($module) . "\\" . config('modules.paths.generator.event'),
             "CLASS" => $this->getClass(),
-            'DUMMYNAMESPACE' => $this->laravel->getNamespace() . "Events",
+            'DUMMYNAMESPACE' => $this->laravel->getNamespace() . 'Events',
         ]))->render();
     }
 

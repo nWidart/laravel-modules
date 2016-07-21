@@ -86,7 +86,7 @@ class GenerateListenerCommand extends GeneratorCommand
     public function fire()
     {
         if (!$this->option('event')) {
-            return $this->error("The --event option is neccessary");
+            return $this->error('The --event option is necessary');
         }
 
         parent::fire();
@@ -94,6 +94,6 @@ class GenerateListenerCommand extends GeneratorCommand
 
     protected function getEventName(Module $module)
     {
-        return $this->getClassNamespace($module) . "\\" . config("modules.paths.generator.event") . "\\" . $this->option('event');
+        return $this->getClassNamespace($module) . "\\" . config('modules.paths.generator.event') . "\\" . $this->option('event');
     }
 }
