@@ -58,7 +58,7 @@ class GenerateListenerCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/listener.stub', [
-            'NAMESPACE' => $this->getClassNamespace($module) . "\\" . config("modules.paths.generator.listener"),
+            'NAMESPACE' => $this->getNamespace($module),
             "EVENTNAME" => $this->getEventName($module),
             "EVENTSHORTENEDNAME" => $this->option('event'),
             "CLASS" => $this->getClass(),
@@ -95,5 +95,12 @@ class GenerateListenerCommand extends GeneratorCommand
     protected function getEventName(Module $module)
     {
         return $this->getClassNamespace($module) . "\\" . config('modules.paths.generator.event') . "\\" . $this->option('event');
+    }
+
+    private function getNamespace($module)
+    {
+        $namespace = str_replace('/', '\\', config('modules.paths.generator.listener'));
+
+        return $this->getClassNamespace($module) . "\\" . $namespace;
     }
 }

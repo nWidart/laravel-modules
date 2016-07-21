@@ -51,7 +51,7 @@ abstract class BaseTestCase extends OrchestraTestCase
                 'config' => 'Config',
                 'command' => 'Console',
                 'event' => 'Events',
-                'listener' => 'Listeners',
+                'listener' => 'Events/Handlers',
                 'migration' => 'Database/Migrations',
                 'model' => 'Entities',
                 'repository' => 'Repositories',

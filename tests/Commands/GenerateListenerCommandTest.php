@@ -36,7 +36,7 @@ class GenerateListenerCommandTest extends BaseTestCase
         $this->artisan('module:make-listener',
             ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Listeners/NotifyUsersOfANewPost.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Events/Handlers/NotifyUsersOfANewPost.php'));
     }
 
     /** @test */
@@ -45,7 +45,7 @@ class GenerateListenerCommandTest extends BaseTestCase
         $this->artisan('module:make-listener',
             ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated']);
 
-        $file = $this->finder->get($this->modulePath . '/Listeners/NotifyUsersOfANewPost.php');
+        $file = $this->finder->get($this->modulePath . '/Events/Handlers/NotifyUsersOfANewPost.php');
 
         $this->assertEquals($this->expectedContent(), $file);
     }
@@ -57,7 +57,7 @@ class GenerateListenerCommandTest extends BaseTestCase
         return <<<TEXT
 <?php
 
-namespace Modules\Blog\Listeners;
+namespace Modules\Blog\Events\Handlers;
 
 use Modules\Blog\Events\UserWasCreated;
 use Illuminate\Queue\InteractsWithQueue;
