@@ -77,22 +77,6 @@ class LaravelModulesServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register laravel html package.
-     */
-    protected function registerHtml()
-    {
-        $this->app->register(HtmlServiceProvider::class);
-
-        $aliases = [
-            'HTML' => HtmlFacade::class,
-            'Form' => FormFacade::class,
-            'Module' => Module::class,
-        ];
-
-        AliasLoader::getInstance($aliases)->register();
-    }
-
-    /**
      * Register the service provider.
      */
     protected function registerServices()
