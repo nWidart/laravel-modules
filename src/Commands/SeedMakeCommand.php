@@ -13,6 +13,8 @@ class SeedMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait, CanClearModulesCache;
 
+    protected $argumentName = 'name';
+
     /**
      * The console command name.
      *
@@ -62,10 +64,12 @@ class SeedMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
+        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+
         return (new Stub('/seeder.stub', [
             'NAME' => $this->getSeederName(),
             'MODULE' => $this->getModuleName(),
-            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
+            'NAMESPACE' => $this->getClassNamespace($module)
 
         ]))->render();
     }
