@@ -92,6 +92,6 @@ abstract class GeneratorCommand extends Command
 
         $namespace .= '\\' . $extra;
 
-        return rtrim($namespace, '\\');
+        return trim($namespace, '\\');
     }
 }
