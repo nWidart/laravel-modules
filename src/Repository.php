@@ -123,9 +123,7 @@ class Repository implements RepositoryInterface, Countable
             foreach ($manifests as $manifest) {
                 $name = Json::make($manifest)->get('name');
 
-                $lowerName = strtolower($name);
-
-                $modules[$name] = new Module($this->app, $lowerName, dirname($manifest));
+                $modules[$name] = new Module($this->app, $name, dirname($manifest));
             }
         }
 
@@ -160,9 +158,7 @@ class Repository implements RepositoryInterface, Countable
         foreach ($cached as $name => $module) {
             $path = $this->config('paths.modules') . '/' . $name;
 
-            $lowerName = strtolower($name);
-
-            $modules[$name] = new Module($this->app, $lowerName, $path);
+            $modules[$name] = new Module($this->app, $name, $path);
         }
 
         return $modules;

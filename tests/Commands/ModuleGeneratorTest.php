@@ -25,6 +25,9 @@ class ModuleGeneratorTest extends BaseTestCase
     public function tearDown()
     {
         $this->finder->deleteDirectory($this->modulePath);
+        if ($this->finder->isDirectory(base_path('modules/ModuleName'))) {
+            $this->finder->deleteDirectory(base_path('modules/ModuleName'));
+        }
         parent::tearDown();
     }
 
@@ -65,6 +68,24 @@ class ModuleGeneratorTest extends BaseTestCase
         $file = $this->finder->get($this->modulePath . '/composer.json');
 
         $this->assertEquals($this->getExpectedComposerJson(), $file);
+    }
+
+    /** @test */
+    public function it_generates_module_folder_using_studly_case()
+    {
+        $this->artisan('module:make', ['name' => ['ModuleName']]);
+
+        $this->assertTrue($this->finder->exists(base_path('modules/ModuleName')));
+    }
+
+    /** @test */
+    public function it_generates_module_namespace_using_studly_case()
+    {
+        $this->artisan('module:make', ['name' => ['ModuleName']]);
+
+        $file = $this->finder->get(base_path('modules/ModuleName') . '/Providers/ModuleNameServiceProvider.php');
+
+        $this->assertTrue(str_contains($file, 'namespace Modules\ModuleName\Providers;'));
     }
 
     private function getExpectedComposerJson()
