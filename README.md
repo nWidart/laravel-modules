@@ -69,7 +69,7 @@ php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProv
 
 #### Autoloading
 
-By default controllers, entities or repositories not loaded automatically. You can autoload all that stuff using `psr-4`. For example :
+By default controllers, entities or repositories not loaded automatically. You can autoload your modules using `psr-4`. For example :
 
 ```json
 {
