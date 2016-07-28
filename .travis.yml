@@ -19,7 +19,7 @@ script:
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
-  - if [[ $COMPOSER_FLAGS == '' ]]; then php vendor/bin/ocular code-coverage:upload --format=php-clover coverage.clover; fi
+  - if [[ $COMPOSER_FLAGS == '' && $TRAVIS_PHP_VERSION == '7.0' ]]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
 
 after_success:
   - travis_retry php vendor/bin/coveralls
