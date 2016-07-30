@@ -97,8 +97,8 @@ class ControllerCommand extends GeneratorCommand
     {
         $controller = studly_case($this->argument('controller'));
 
-        if (!str_contains(strtolower($controller), 'controller')) {
-            $controller = $controller . 'Controller';
+        if (str_contains(strtolower($controller), 'controller') === false) {
+            $controller .= 'Controller';
         }
 
         return $controller;
