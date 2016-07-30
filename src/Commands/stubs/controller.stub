@@ -3,7 +3,7 @@
 namespace $CLASS_NAMESPACE$;
 
 use Illuminate\Http\Request;
-use Nwidart\Modules\Routing\Controller;
+use Illuminate\Routing\Controller;
 
 class $CLASS$ extends Controller
 {
