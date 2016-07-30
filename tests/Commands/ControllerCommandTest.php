@@ -55,6 +55,20 @@ class ControllerCommandTest extends BaseTestCase
         $this->assertTrue(is_file($this->modulePath . '/Http/Controllers/MyController.php'));
     }
 
+    /** @test */
+    public function it_generates_a_plain_controller()
+    {
+        $this->artisan('module:make-controller', [
+            'controller' => 'MyController',
+            'module' => 'Blog',
+            '--plain' => true,
+        ]);
+
+        $file = $this->finder->get($this->modulePath . '/Http/Controllers/MyController.php');
+
+        $this->assertEquals($this->expectedPlainContent(), $file);
+    }
+
     private function expectedContent()
     {
         return <<<TEXT
@@ -63,7 +77,7 @@ class ControllerCommandTest extends BaseTestCase
 namespace Modules\Blog\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Nwidart\Modules\Routing\Controller;
+use Illuminate\Routing\Controller;
 
 class MyController extends Controller
 {
@@ -119,6 +133,22 @@ class MyController extends Controller
     public function destroy()
     {
     }
+}
+
+TEXT;
+    }
+
+    private function expectedPlainContent()
+    {
+        return <<<TEXT
+<?php
+
+namespace Modules\Blog\Http\Controllers;
+
+use Illuminate\Routing\Controller;
+
+class MyController extends Controller
+{
 }
 
 TEXT;

@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Commands;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Pingpong\Support\Stub;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class ControllerCommand extends GeneratorCommand
 {
@@ -46,13 +47,13 @@ class ControllerCommand extends GeneratorCommand
     }
 
     /**
-     * @return Stub
+     * @return string
      */
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/controller.stub', [
+        return (new Stub($this->getStubName(), [
             'MODULENAME'        => $module->getStudlyName(),
             'CONTROLLERNAME'    => $this->getControllerName(),
             'NAMESPACE'         => $module->getStudlyName(),
@@ -80,6 +81,16 @@ class ControllerCommand extends GeneratorCommand
     }
 
     /**
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            ['plain', 'p', InputOption::VALUE_NONE, 'Generate a plain controller', null],
+        ];
+    }
+
+    /**
      * @return array|string
      */
     protected function getControllerName()
@@ -101,5 +112,18 @@ class ControllerCommand extends GeneratorCommand
     public function getDefaultNamespace()
     {
         return 'Http\Controllers';
+    }
+
+    /**
+     * Get the stub file name based on the plain option
+     * @return string
+     */
+    private function getStubName()
+    {
+        if ($this->option('plain') === true) {
+            return '/controller-plain.stub';
+        }
+
+        return '/controller.stub';
     }
 }
