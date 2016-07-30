@@ -4,6 +4,16 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next -
 
+## 0.9 - 2016-07-30
+
+### Added
+
+- Adding a plain option to the generate controller command
+
+### Changed
+
+- Generate controller command now generates all resource methods
+
 ## 0.8 - 2016-07-28
 
 ### Fixed
