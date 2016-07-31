@@ -5,3 +5,5 @@ parameters:
     tasks:
       phpcsfixer:
         config_file: .php_cs
+      composer:
+        file: ./composer.json
