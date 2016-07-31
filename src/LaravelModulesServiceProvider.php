@@ -2,12 +2,7 @@
 
 namespace Nwidart\Modules;
 
-use Collective\Html\FormFacade;
-use Collective\Html\HtmlFacade;
-use Collective\Html\HtmlServiceProvider;
-use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
-use Nwidart\Modules\Facades\Module;
 use Nwidart\Modules\Providers\BootstrapServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
 use Nwidart\Modules\Providers\ContractsServiceProvider;
