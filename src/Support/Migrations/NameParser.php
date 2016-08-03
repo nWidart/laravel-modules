@@ -155,7 +155,7 @@ class NameParser
      */
     public function is($type)
     {
-        return $type == $this->getAction();
+        return $type === $this->getAction();
     }
 
     /**
