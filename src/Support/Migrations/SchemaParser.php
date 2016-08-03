@@ -248,7 +248,7 @@ class SchemaParser implements Arrayable
     }
 
     /**
-     * Determinte whether the given column is exist in customAttributes array.
+     * Determine whether the given column is exist in customAttributes array.
      *
      * @param string $column
      *
