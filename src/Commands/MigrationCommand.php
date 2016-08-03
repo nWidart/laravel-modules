@@ -3,10 +3,10 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Support\Migrations\NameParser;
+use Nwidart\Modules\Support\Migrations\SchemaParser;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
-use Pingpong\Generators\Migrations\NameParser;
-use Pingpong\Generators\Migrations\SchemaParser;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -65,7 +65,7 @@ class MigrationCommand extends GeneratorCommand
     }
 
     /**
-     * @throws InvalidMigrationNameException
+     * @throws \InvalidArgumentException
      *
      * @return mixed
      */
