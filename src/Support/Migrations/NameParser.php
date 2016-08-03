@@ -76,16 +76,6 @@ class NameParser
     }
 
     /**
-     * Get table name.
-     *
-     * @return string
-     */
-    public function getTable()
-    {
-        return $this->getTableName();
-    }
-
-    /**
      * Get the table will be used.
      *
      * @return string
