@@ -4,7 +4,7 @@ namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
 use Nwidart\Modules\Process\Installer;
-use Pingpong\Support\Json;
+use Nwidart\Modules\Json;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
