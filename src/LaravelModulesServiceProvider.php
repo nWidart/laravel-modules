@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Providers\BootstrapServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
 use Nwidart\Modules\Providers\ContractsServiceProvider;
-use Pingpong\Support\Stub;
+use Nwidart\Modules\Support\Stub;
 
 class LaravelModulesServiceProvider extends ServiceProvider
 {

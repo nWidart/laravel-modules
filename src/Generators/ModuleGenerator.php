@@ -7,7 +7,7 @@ use Illuminate\Console\Command as Console;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Repository;
-use Pingpong\Support\Stub;
+use Nwidart\Modules\Support\Stub;
 
 class ModuleGenerator extends Generator
 {

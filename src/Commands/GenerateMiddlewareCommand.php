@@ -3,8 +3,8 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
-use Pingpong\Support\Stub;
 use Symfony\Component\Console\Input\InputArgument;
 
 class GenerateMiddlewareCommand extends GeneratorCommand
