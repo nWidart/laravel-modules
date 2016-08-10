@@ -29,6 +29,7 @@ ruleset:
     - action = "opened"
     - count(filter(files, "[name=/^src\/]")) > 1
     - count(filter(files, "[name=/^tests\/]")) = 0
-    message: '@{{ user.login }}, remember that all pull requests should be accompanied
+    message: >
+      "@{{ user.login }}, remember that all pull requests should be accompanied
       with unit tests per our contributing guidelines. Please `/cc` one of our maintainers
-      if you need help with this!'
+      if you need help with this!"
