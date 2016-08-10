@@ -58,7 +58,7 @@ class ControllerCommand extends GeneratorCommand
             'CONTROLLERNAME'    => $this->getControllerName(),
             'NAMESPACE'         => $module->getStudlyName(),
             'CLASS_NAMESPACE'   => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClass(),
+            'CLASS'             => $this->getControllerName(),
             'LOWER_NAME'        => $module->getLowerName(),
             'MODULE'            => $this->getModuleName(),
             'NAME'              => $this->getModuleName(),

@@ -56,6 +56,16 @@ class ControllerCommandTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_appends_controller_to_class_name_if_not_present()
+    {
+        $this->artisan('module:make-controller', ['controller' => 'My', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Http/Controllers/MyController.php');
+
+        $this->assertEquals($this->expectedContent(), $file);
+    }
+
+    /** @test */
     public function it_generates_a_plain_controller()
     {
         $this->artisan('module:make-controller', [
