@@ -4,6 +4,20 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next -
 
+## 0.10 - 2016-08-10
+
+### Added
+
+- Experimental Laravel 5.3 support
+
+### Changed
+
+- Make sure the class name has `Controller` appended to it as well. Previously only the file had it suffixed.
+
+### Removed
+
+- Dependencies: `pingpong/support` and `pingpong/generators`
+
 ## 0.9 - 2016-07-30
 
 ### Added
