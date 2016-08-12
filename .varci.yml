@@ -13,6 +13,8 @@ ruleset:
     close: true
     label: invalid
     when: length(body) < 50
+    message: >
+      "Please add a longer description of your issue. Body needs to be 50 characters."
 
   remove_invalid:
     name: "Remove invalid tag when issue re-opened"
