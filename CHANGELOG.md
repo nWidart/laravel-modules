@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next -
 
+### Changed
+
+- Added force option to module:seed command
+
 ## 0.10 - 2016-08-10
 
 ### Added
