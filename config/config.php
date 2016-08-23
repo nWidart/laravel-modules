@@ -110,6 +110,7 @@ return [
             'lang' => 'Resources/lang',
             'views' => 'Resources/views',
             'test' => 'Tests',
+            'jobs' => 'Jobs',
         ],
     ],
     /*
