@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next -
 
+### Added
+
+- Adding `module:make-job` command to generate a job class
+
 ### Changed
 
 - Added force option to module:seed command
