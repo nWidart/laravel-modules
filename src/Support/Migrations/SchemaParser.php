@@ -227,7 +227,7 @@ class SchemaParser implements Arrayable
      */
     public function getColumn($schema)
     {
-        return array_first(explode(':', $schema));
+        return array_get(explode(':', $schema), 0);
     }
 
     /**
