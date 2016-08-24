@@ -4,9 +4,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next -
 
+
+## 0.11 - 2016-08-24
+
 ### Added
 
 - Adding `module:make-job` command to generate a job class
+- Adding support for Laravel 5.3
 
 ### Changed
 
