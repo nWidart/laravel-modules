@@ -4,11 +4,18 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next -
 
-## 0.11.1 - 2016-08-29
+## 0.11.2 - 2016-08-29
 
 ### Changed
 
 - Using stable version of laravelcollective/html (5.3)
+
+## 0.11.1 - 2016-08-25
+
+### Changed
+
+- Using stable development of laravelcollective/html
+
 
 ## 0.11 - 2016-08-24
 
