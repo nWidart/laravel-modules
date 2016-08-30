@@ -76,11 +76,11 @@ class SomeMail implements Mailable
     /**
      * Build the message.
      *
-     * @return $this
+     * @return \$this
      */
     public function build()
     {
-        return $this->view('view.name');
+        return \$this->view('view.name');
     }
 }
 
