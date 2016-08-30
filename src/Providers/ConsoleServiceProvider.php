@@ -81,9 +81,7 @@ class ConsoleServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        foreach ($this->commands as $command) {
-            $this->commands($command);
-        }
+        $this->commands($this->commands);
     }
 
     /**
@@ -91,11 +89,7 @@ class ConsoleServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        $provides = [];
-
-        foreach ($this->commands as $command) {
-            $provides[] = $command;
-        }
+        $provides = $this->commands;
 
         return $provides;
     }
