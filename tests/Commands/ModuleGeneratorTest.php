@@ -92,19 +92,19 @@ class ModuleGeneratorTest extends BaseTestCase
     {
         return <<<TEXT
 {
-	"name": "nwidart/blog",
-	"description": "",
-	"authors": [
-		{
-			"name": "Nicolas Widart",
-			"email": "n.widart@gmail.com"
-		}
-	],
-	"autoload": {
-		"psr-4": {
-			"Modules\\\Blog\\\": ""
-		}
-	}
+    "name": "nwidart/blog",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Modules\\\Blog\\\": ""
+        }
+    }
 }
 
 TEXT;

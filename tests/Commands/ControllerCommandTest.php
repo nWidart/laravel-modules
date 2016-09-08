@@ -87,11 +87,12 @@ class ControllerCommandTest extends BaseTestCase
 namespace Modules\Blog\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 
 class MyController extends Controller
 {
-	/**
+    /**
      * Display a listing of the resource.
      * @return Response
      */
