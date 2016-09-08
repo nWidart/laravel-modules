@@ -4,6 +4,14 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next -
 
+## 0.13.0 - 2016-09-08
+
+### Changed
+
+- Ability to set default value on the config() method of a module.
+- Mail: Setting default value to config. Using that as the namespace.
+
+
 ## 0.12.0 - 2016-09-08
 
 ### Added
