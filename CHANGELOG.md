@@ -4,6 +4,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next -
 
+## 0.12.0 - 2016-09-08
+
+### Added
+
+- Generation of Mailable classes
+
+
 ## 0.11.2 - 2016-08-29
 
 ### Changed
