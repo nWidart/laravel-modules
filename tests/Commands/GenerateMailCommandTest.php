@@ -59,7 +59,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class SomeMail implements Mailable
+class SomeMail extends Mailable
 {
     use Queueable, SerializesModels;
 
