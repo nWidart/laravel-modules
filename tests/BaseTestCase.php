@@ -64,7 +64,7 @@ abstract class BaseTestCase extends OrchestraTestCase
                 'views' => 'Resources/views',
                 'test' => 'Tests',
                 'jobs' => 'Jobs',
-                'mail' => 'Mail',
+                'emails' => 'Emails',
             ],
         ]);
     }

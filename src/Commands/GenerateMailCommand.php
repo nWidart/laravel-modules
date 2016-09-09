@@ -63,7 +63,7 @@ class GenerateMailCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $mailPath = $this->laravel['modules']->config('paths.generator.mail', 'Mail');
+        $mailPath = $this->laravel['modules']->config('paths.generator.emails', 'Emails');
 
         return $path . $mailPath . '/' . $this->getFileName() . '.php';
     }
@@ -81,6 +81,6 @@ class GenerateMailCommand extends GeneratorCommand
      */
     public function getDefaultNamespace()
     {
-        return $this->laravel['modules']->config('paths.generator.mail', 'Mail');
+        return $this->laravel['modules']->config('paths.generator.emails', 'Emails');
     }
 }

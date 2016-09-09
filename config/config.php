@@ -111,7 +111,7 @@ return [
             'views' => 'Resources/views',
             'test' => 'Tests',
             'jobs' => 'Jobs',
-            'mail' => 'Mail',
+            'emails' => 'Emails',
         ],
     ],
     /*

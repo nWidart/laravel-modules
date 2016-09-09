@@ -34,7 +34,7 @@ class GenerateMailCommandTest extends BaseTestCase
     {
         $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Mail/SomeMail.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Emails/SomeMail.php'));
     }
 
     /** @test */
@@ -42,7 +42,7 @@ class GenerateMailCommandTest extends BaseTestCase
     {
         $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Mail/SomeMail.php');
+        $file = $this->finder->get($this->modulePath . '/Emails/SomeMail.php');
 
         $this->assertEquals($this->expectedContent(), $file);
     }
@@ -52,7 +52,7 @@ class GenerateMailCommandTest extends BaseTestCase
         return <<<TEXT
 <?php
 
-namespace Modules\Blog\Mail;
+namespace Modules\Blog\Emails;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
