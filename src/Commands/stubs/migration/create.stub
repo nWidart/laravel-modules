@@ -3,8 +3,8 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class $CLASS$ extends Migration {
-
+class $CLASS$ extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -12,8 +12,7 @@ class $CLASS$ extends Migration {
      */
     public function up()
     {
-        Schema::create('$TABLE$', function(Blueprint $table)
-        {
+        Schema::create('$TABLE$', function (Blueprint $table) {
             $table->increments('id');
 $FIELDS$
             $table->timestamps();
@@ -27,7 +26,6 @@ $FIELDS$
      */
     public function down()
     {
-        Schema::drop('$TABLE$');
+        Schema::dropIfExists('$TABLE$');
     }
-
 }
