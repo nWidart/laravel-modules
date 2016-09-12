@@ -80,7 +80,9 @@ class MigrateCommand extends Command
      */
     protected function getPath($module)
     {
-        $path = $module->getExtraPath(config('modules.paths.generator.migration'));
+        $config = $module->get('migrate', ['path' => config('modules.paths.generator.migration')]);
+
+        $path = $module->getExtraPath($config['path']);
 
         return str_replace(base_path(), '', $path);
     }
