@@ -54,7 +54,7 @@ class SeedCommand extends Command
 
         foreach ($this->module->getOrdered() as $module) {
             $name = $module->getName();
-            $config = $module->get('migrate');
+            $config = $module->get('migration');
             if(is_array($config) && array_key_exists('seeds', $config)) {
                 foreach((array)$config['seeds'] as $class) {
                     if (class_exists($class)) {
