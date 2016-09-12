@@ -4,6 +4,12 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next -
 
+## 0.14.0 - 2016-09-12
+
+### Added
+
+- `module:make-notification` command to generate a notification class
+
 ## 0.13.1 - 2016-09-09
 
 ### Changed
