@@ -342,6 +342,18 @@ Generate new middleware class.
 php artisan module:make-middleware Auth
 ```
 
+Generate new mailable class.
+
+```
+php artisan module:make-mail WelcomeEmail
+```
+
+Generate new notification class.
+
+```
+php artisan module:make-notification InvoicePaid
+```
+
 Update dependencies for the specified module.
 
 ```
