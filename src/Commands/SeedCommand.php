@@ -54,12 +54,21 @@ class SeedCommand extends Command
 
         foreach ($this->module->getOrdered() as $module) {
             $name = $module->getName();
-
-            if (class_exists($this->getSeederName($name))) {
-                $this->dbseed($name);
-
-                $this->info("Module [$name] seeded.");
+            $config = $module->get('migration');
+            if(is_array($config) && array_key_exists('seeds', $config)) {
+                foreach((array)$config['seeds'] as $class) {
+                    if (class_exists($class)) {
+                        $this->dbseed($class);
+                    } else {
+                        return $this->error("Class [$class] does not exist");
+                    }
+                }
+            } else {
+                if (class_exists($this->getSeederName($name))) {
+                    $this->dbseed($name);
+                }
             }
+            $this->info("Module [$name] seeded.");
         }
 
         return $this->info('All modules seeded.');
