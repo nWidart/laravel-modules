@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -39,7 +40,8 @@ class MigrateCommand extends Command
         $name = $this->argument('module');
 
         if ($name) {
-            return $this->migrate($name);
+            $module = $this->module->findOrFail($name);
+            return $this->migrate($module);
         }
 
         foreach ($this->module->getOrdered($this->option('direction')) as $module) {
@@ -52,14 +54,12 @@ class MigrateCommand extends Command
     /**
      * Run the migration from the specified module.
      *
-     * @param string $name
+     * @param Module $module
      *
      * @return mixed
      */
-    protected function migrate($name)
+    protected function migrate(Module $module)
     {
-        $module = $this->module->findOrFail($name);
-
         $this->call('migrate', [
             '--path' => $this->getPath($module),
             '--database' => $this->option('database'),
@@ -68,7 +68,7 @@ class MigrateCommand extends Command
         ]);
 
         if ($this->option('seed')) {
-            $this->call('module:seed', ['module' => $name]);
+            $this->call('module:seed', ['module' => $module->getName()]);
         }
     }
 

@@ -4,6 +4,9 @@ namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use RuntimeException;
+use Nwidart\Modules\Module;
+use Nwidart\Modules\Repository;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -33,58 +36,93 @@ class SeedCommand extends Command
      */
     public function fire()
     {
-        $this->module = $this->laravel['modules'];
-
-        $name = $this->argument('module');
-
-        if ($name) {
-            if (!$this->module->has(Str::studly($name))) {
-                return $this->error("Module [$name] does not exists.");
-            }
-
-            $class = $this->getSeederName($name);
-            if (class_exists($class)) {
-                $this->dbseed($name);
-
-                return $this->info("Module [$name] seeded.");
+        try {
+            if ($name = $this->argument('module')) {
+                $name = Str::studly($name);
+                $this->moduleSeed($this->getModuleByName($name));
             } else {
-                return $this->error("Class [$class] does not exists.");
+                $modules = $this->getModuleRepository()->getOrdered();
+                array_walk($modules, [$this, 'moduleSeed']);
+                $this->info('All modules seeded.');
+            }
+        } catch (\Exception $e) {
+            $this->error($e->getMessage());
+        }
+    }
+
+    /**
+     * @throws RuntimeException
+     *
+     * @return Repository
+     */
+    public function getModuleRepository()
+    {
+        $modules = $this->laravel['modules'];
+        if (!$modules instanceof Repository) {
+            throw new RuntimeException("Module repository not found!");
+        }
+        return $modules;
+    }
+
+    /**
+     * @param $name
+     *
+     * @throws RuntimeException
+     *
+     * @return Module
+     */
+    public function getModuleByName($name)
+    {
+        $modules = $this->getModuleRepository();
+        if ($modules->has($name) === false) {
+            throw new RuntimeException("Module [$name] does not exists.");
+        }
+
+        return $modules->get($name);
+    }
+
+    /**
+     * @param Module $module
+     *
+     * @return void
+     *
+     * @throws RuntimeException
+     */
+    public function moduleSeed(Module $module)
+    {
+        $seeders = [];
+        $name = $module->getName();
+        $config = $module->get('migration');
+        if (is_array($config) && array_key_exists('seeds', $config)) {
+            foreach ((array)$config['seeds'] as $class) {
+                if (@class_exists($class)) {
+                    $seeders[] = $class;
+                }
+            }
+        } else {
+            $class = $this->getSeederName($name); //legacy support
+            if (@class_exists($class)) {
+                $seeders[] = $class;
             }
         }
 
-        foreach ($this->module->getOrdered() as $module) {
-            $name = $module->getName();
-            $config = $module->get('migration');
-            if(is_array($config) && array_key_exists('seeds', $config)) {
-                foreach((array)$config['seeds'] as $class) {
-                    if (class_exists($class)) {
-                        $this->dbseed($class);
-                    } else {
-                        return $this->error("Class [$class] does not exist");
-                    }
-                }
-            } else {
-                if (class_exists($this->getSeederName($name))) {
-                    $this->dbseed($name);
-                }
-            }
+        if (count($seeders) > 0) {
+            array_walk($seeders, [$this, 'dbSeed']);
             $this->info("Module [$name] seeded.");
         }
-
-        return $this->info('All modules seeded.');
     }
 
     /**
      * Seed the specified module.
      *
-     * @parama string  $name
+     * @parama string  $className
      *
      * @return array
      */
-    protected function dbseed($name)
+    protected function dbSeed($className)
     {
         $params = [
-            '--class' => $this->option('class') ?: $this->getSeederName($name),
+            '--class' => $className,
         ];
 
         if ($option = $this->option('database')) {
@@ -134,8 +172,6 @@ class SeedCommand extends Command
     protected function getOptions()
     {
         return array(
-            array('class', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder', null),
-            array('all', null, InputOption::VALUE_NONE, 'Whether or not we should seed all modules.'),
             array('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to seed.'),
             array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'),
         );
