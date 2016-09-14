@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Migrations\Migrator;
 use Nwidart\Modules\Publishing\MigrationPublisher;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -49,7 +50,7 @@ class PublishMigrationCommand extends Command
      */
     public function publish($module)
     {
-        with(new MigrationPublisher($module))
+        with(new MigrationPublisher(new Migrator($module)))
             ->setRepository($this->laravel['modules'])
             ->setConsole($this)
             ->publish();

@@ -32,6 +32,14 @@ class Migrator
     }
 
     /**
+     * @return Module
+     */
+    public function getModule()
+    {
+        return $this->module;
+    }
+
+    /**
      * Get migration path.
      *
      * @return string
