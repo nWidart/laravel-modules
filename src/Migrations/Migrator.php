@@ -38,9 +38,11 @@ class Migrator
      */
     public function getPath()
     {
-        return $this->module->getExtraPath(
-            config('modules.paths.generator.migration')
-        );
+        $config = $this->module->get('migration');
+
+        $path = (is_array($config) && array_key_exists('path', $config)) ? $config['path'] : config('modules.paths.generator.migration');
+
+        return $this->module->getExtraPath($path);
     }
 
     /**
@@ -177,7 +179,6 @@ class Migrator
     public function requireFiles(array $files)
     {
         $path = $this->getPath();
-
         foreach ($files as $file) {
             $this->laravel['files']->requireOnce($path . '/' . $file . '.php');
         }
@@ -254,8 +255,7 @@ class Migrator
     {
         $query = $this->table()
             ->where('batch', $this->getLastBatchNumber($migrations))
-            ->whereIn('migration', $migrations)
-            ;
+            ->whereIn('migration', $migrations);
 
         $result = $query->orderBy('migration', 'desc')->get();
 
