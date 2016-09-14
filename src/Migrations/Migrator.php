@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Migrations;
 
+use Illuminate\Support\Collection;
 use Nwidart\Modules\Module;
 
 class Migrator
@@ -257,7 +258,7 @@ class Migrator
      *
      * @param array $migrations
      *
-     * @return array
+     * @return Collection
      */
     public function getLast($migrations)
     {
@@ -269,16 +270,16 @@ class Migrator
 
         return collect($result)->map(function ($item) {
             return (array) $item;
-        })->lists('migration');
+        })->pluck('migration');
     }
 
     /**
      * Get the ran migrations.
      *
-     * @return array
+     * @return Collection
      */
     public function getRan()
     {
-        return $this->table()->lists('migration');
+        return $this->table()->pluck('migration');
     }
 }
