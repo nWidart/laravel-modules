@@ -113,7 +113,7 @@ class SeedCommand extends Command
     /**
      * Seed the specified module.
      *
-     * @parama string  $className
+     * @param string $className
      *
      * @return array
      */
