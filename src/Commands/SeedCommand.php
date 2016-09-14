@@ -85,8 +85,6 @@ class SeedCommand extends Command
      * @param Module $module
      *
      * @return void
-     *
-     * @throws RuntimeException
      */
     public function moduleSeed(Module $module)
     {
