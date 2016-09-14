@@ -4,11 +4,16 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next -
 
-## 0.14.0 - 2016-09-12
+## 1.0.0 - 2016-09-xx
 
 ### Added
 
 - `module:make-notification` command to generate a notification class
+
+### Changed
+
+- Usage of the `lists()` method on the laravel collection has been removed in favor of `pluck()`
+- Modules can now overwrite the default migration and seed paths in the `module.json`  file
 
 ## 0.13.1 - 2016-09-09
 
