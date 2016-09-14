@@ -2,8 +2,25 @@
 
 namespace Nwidart\Modules\Publishing;
 
+use Nwidart\Modules\Migrations\Migrator;
+
 class MigrationPublisher extends AssetPublisher
 {
+    /**
+     * @var Migrator
+     */
+    private $migrator;
+
+    /**
+     * MigrationPublisher constructor.
+     * @param Migrator $migrator
+     */
+    public function __construct(Migrator $migrator)
+    {
+        $this->migrator = $migrator;
+        parent::__construct($migrator->getModule());
+    }
+
     /**
      * Get destination path.
      *
@@ -21,6 +38,6 @@ class MigrationPublisher extends AssetPublisher
      */
     public function getSourcePath()
     {
-        return $this->getModule()->getExtraPath($this->repository->config('paths.generator.migration'));
+        return $this->migrator->getPath();
     }
 }
