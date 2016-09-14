@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Migrations\Migrator;
 use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -60,8 +61,9 @@ class MigrateCommand extends Command
      */
     protected function migrate(Module $module)
     {
+        $path = str_replace(base_path(), '', (new Migrator($module))->getPath());
         $this->call('migrate', [
-            '--path' => $this->getPath($module),
+            '--path' => $path,
             '--database' => $this->option('database'),
             '--pretend' => $this->option('pretend'),
             '--force' => $this->option('force'),
@@ -70,23 +72,6 @@ class MigrateCommand extends Command
         if ($this->option('seed')) {
             $this->call('module:seed', ['module' => $module->getName()]);
         }
-    }
-
-    /**
-     * Get migration path for specific module.
-     *
-     * @param  \Nwidart\Modules\Module $module
-     * @return string
-     */
-    protected function getPath($module)
-    {
-        $config = $module->get('migration');
-
-        $path = (is_array($config) && array_key_exists('path', $config)) ? $config['path'] : config('modules.paths.generator.migration');
-
-        $path = $module->getExtraPath($path);
-
-        return str_replace(base_path(), '', $path);
     }
 
     /**
