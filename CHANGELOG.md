@@ -4,7 +4,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next -
 
-## 1.0.0 - 2016-09-xx
+## 1.0.0 - 2016-10-19
 
 ### Added
 
