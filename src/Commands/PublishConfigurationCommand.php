@@ -46,7 +46,7 @@ class PublishConfigurationCommand extends Command
      */
     private function publishConfiguration($module)
     {
-        foreach(Module::get('core')->get('providers') as $provider) {
+        foreach(Module::get($module)->get('providers') as $provider) {
 			$this->call('vendor:publish',
 						[
 							'--provider' => $provider,
