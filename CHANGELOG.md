@@ -4,7 +4,15 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next -
 
-## 1.0.0 - 2016-10-19
+## Next - 2016-10-25
+
+### Changed
+
+- Added missing import of the `Schema` facade on migration stubs
+- A default plain migration will be used if the name was not matched against a predefined structure (create, add, delete and drop)
+- Add tests for all the different migration structures above
+
+## 1.14.0 - 2016-10-19
 
 ### Added
 
