@@ -488,7 +488,7 @@ Module::getModulePath('name');
 Get assets path from the specified module.
 
 ```php
-Module::getAssetPath('name');
+Module::assetPath('name');
 ```
 
 Get config value from this package.
