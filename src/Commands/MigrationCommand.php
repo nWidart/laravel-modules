@@ -101,7 +101,9 @@ class MigrationCommand extends GeneratorCommand
             ]);
         }
 
-        throw new \InvalidArgumentException('Invalid migration name');
+        return Stub::create('/migration/plain.stub', [
+            'class' => $this->getClass(),
+        ]);
     }
 
     /**
