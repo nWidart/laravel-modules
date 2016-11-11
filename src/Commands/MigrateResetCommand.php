@@ -61,6 +61,12 @@ class MigrateResetCommand extends Command
 
         $migrator = new Migrator($module);
 
+        $database = $this->option('database');
+
+        if (!empty($database)) {
+            $migrator->setDatabase($database);
+        }
+
         $migrated = $migrator->reset();
 
         if (count($migrated)) {
