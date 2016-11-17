@@ -480,7 +480,7 @@ class Repository implements RepositoryInterface, Countable
     {
         list($name, $url) = explode(':', $asset);
 
-        $baseUrl = str_replace(public_path(), '', $this->getAssetsPath());
+        $baseUrl = str_replace(public_path() . DIRECTORY_SEPARATOR, '', $this->getAssetsPath());
 
         $url = $this->app['url']->asset($baseUrl . "/{$name}/" . $url);
 
