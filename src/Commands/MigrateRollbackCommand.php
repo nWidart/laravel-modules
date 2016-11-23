@@ -61,6 +61,12 @@ class MigrateRollbackCommand extends Command
 
         $migrator = new Migrator($module);
 
+        $database = $this->option('database');
+
+        if (!empty($database)) {
+            $migrator->setDatabase($database);
+        }
+
         $migrated = $migrator->rollback();
 
         if (count($migrated)) {

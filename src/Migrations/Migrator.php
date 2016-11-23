@@ -22,6 +22,13 @@ class Migrator
     protected $laravel;
 
     /**
+     * The database connection to be used
+     *
+     * @var string
+     */
+    protected $database = '';
+
+    /**
      * Create new instance.
      *
      * @param \Nwidart\Modules\Module $module
@@ -30,6 +37,20 @@ class Migrator
     {
         $this->module = $module;
         $this->laravel = $module->getLaravel();
+    }
+
+    /**
+     * Set the database connection to be used
+     *
+     * @param $database
+     *
+     * @return $this
+     */
+    public function setDatabase($database)
+    {
+        if (is_string($database) && $database) {
+            $this->database = $database;
+        }
     }
 
     /**
@@ -200,7 +221,7 @@ class Migrator
      */
     public function table()
     {
-        return $this->laravel['db']->table(config('database.migrations'));
+        return $this->database ? $this->laravel['db']->connection($this->database)->table(config('database.migrations')) : $this->laravel['db']->table(config('database.migrations'));
     }
 
     /**
