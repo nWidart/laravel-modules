@@ -9,6 +9,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Adding show method on resource controller
 - Added check for cached routes to not load them multiple times
 
+### Changed
+
+- Changed default namespace for Mailables to `Mail` to match Laravel default
+
 ## 1.15.0 - 2017-01-12
 
 ### Added
