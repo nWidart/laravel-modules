@@ -11,5 +11,8 @@
         "Modules\\Recipe\\Providers\\RouteServiceProvider"
     ],
     "aliases": [],
-    "files": []
+    "files": [],
+    "requires": [
+        "requirement"
+    ]
 }
