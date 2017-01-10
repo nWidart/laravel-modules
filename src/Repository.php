@@ -5,6 +5,7 @@ namespace Nwidart\Modules;
 use Countable;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Str;
+use Illuminate\Support\Traits\Macroable;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Process\Installer;
@@ -12,6 +13,8 @@ use Nwidart\Modules\Process\Updater;
 
 class Repository implements RepositoryInterface, Countable
 {
+    use Macroable;
+
     /**
      * Application instance.
      *

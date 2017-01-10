@@ -541,6 +541,19 @@ Update dependencies for the specified module.
 Module::update('hello');
 ```
 
+Add a macro to the module repository.
+
+```php
+Module::macro('hello', function() {
+    echo "I'm a macro";
+});
+
+Call a macro from the module repository.
+
+```php
+Module::hello();
+```
+
 <a name="entity"></a>
 ## Module Entity
 
