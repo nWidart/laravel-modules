@@ -115,6 +115,16 @@ class Module extends ServiceProvider
     }
 
     /**
+     * Get module requirements.
+     *
+     * @return string
+     */
+    public function getRequires()
+    {
+        return $this->get('requires');
+    }
+
+    /**
      * Get path.
      *
      * @return string
