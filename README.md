@@ -547,6 +547,7 @@ Add a macro to the module repository.
 Module::macro('hello', function() {
     echo "I'm a macro";
 });
+```
 
 Call a macro from the module repository.
 
