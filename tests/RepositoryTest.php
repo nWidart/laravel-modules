@@ -210,4 +210,16 @@ class RepositoryTest extends BaseTestCase
 
         $this->assertFalse(is_dir(base_path('modules/Blog')));
     }
+
+    /** @test */
+    public function it_can_find_all_requirements_of_a_module()
+    {
+        $this->repository->addLocation(__DIR__ . '/stubs/Recipe');
+        $this->repository->addLocation(__DIR__ . '/stubs/Requirement');
+
+        $requirements = $this->repository->findRequirements('Recipe');
+
+        $this->assertCount(1, $requirements);
+        $this->assertInstanceOf(Module::class, $requirements[0]);
+    }
 }

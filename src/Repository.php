@@ -340,6 +340,26 @@ class Repository implements RepositoryInterface, Countable
     }
 
     /**
+     * Find all modules that are required by a module. If the module cannot be found, throw an exception.
+     *
+     * @param $name
+     * @return array
+     * @throws ModuleNotFoundException
+     */
+    public function findRequirements($name)
+    {
+        $requirements = [];
+
+        $module = $this->findOrFail($name);
+
+        foreach ($module->getRequires() as $requirementName) {
+            $requirements[] = $this->findByAlias($requirementName);
+        }
+
+        return $requirements;
+    }
+
+    /**
      * Alternative for "find" method.
      * @param $name
      * @return mixed|void
