@@ -324,6 +324,22 @@ class Repository implements RepositoryInterface, Countable
     }
 
     /**
+     * Find a specific module by its alias.
+     * @param $alias
+     * @return mixed|void
+     */
+    public function findByAlias($alias)
+    {
+        foreach ($this->all() as $module) {
+            if ($module->getAlias() === $alias) {
+                return $module;
+            }
+        }
+
+        return;
+    }
+
+    /**
      * Alternative for "find" method.
      * @param $name
      * @return mixed|void
