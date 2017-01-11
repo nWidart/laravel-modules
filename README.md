@@ -555,6 +555,12 @@ Call a macro from the module repository.
 Module::hello();
 ```
 
+Get all required modules of a module
+
+```php
+Module::getRequirements('module name');
+```
+
 <a name="entity"></a>
 ## Module Entity
 
@@ -610,6 +616,12 @@ Delete the specified module.
 
 ```
 $module->delete();
+```
+
+Get an array of module requirements. Note: these should be aliases of the module.
+
+```
+$module->getRequires();
 ```
 
 <a name="namespaces"></a>
