@@ -117,7 +117,7 @@ class Module extends ServiceProvider
     /**
      * Get module requirements.
      *
-     * @return string
+     * @return array
      */
     public function getRequires()
     {
