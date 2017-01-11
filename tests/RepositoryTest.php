@@ -78,6 +78,16 @@ class RepositoryTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_finds_a_module_by_alias()
+    {
+        $this->repository->addLocation(__DIR__ . '/stubs/Recipe');
+        $this->repository->addLocation(__DIR__ . '/stubs/Requirement');
+
+        $this->assertInstanceOf(Module::class, $this->repository->findByAlias('recipe'));
+        $this->assertInstanceOf(Module::class, $this->repository->findByAlias('required_module'));
+    }
+
+    /** @test */
     public function it_find_or_fail_throws_exception_if_module_not_found()
     {
         $this->setExpectedException(ModuleNotFoundException::class);
