@@ -1,6 +1,6 @@
 {
     "name": "Requirement",
-    "alias": "requirement",
+    "alias": "required_module",
     "description": "module that Recipe requires",
     "version": "0.1",
     "keywords": [],

@@ -13,6 +13,6 @@
     "aliases": [],
     "files": [],
     "requires": [
-        "requirement"
+        "required_module"
     ]
 }
