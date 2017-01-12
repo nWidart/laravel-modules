@@ -7,6 +7,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ### Added
 
 - Adding show method on resource controller
+- Added check for cached routes to not load them multiple times
 
 ## 1.15.0 - 2017-01-12
 
