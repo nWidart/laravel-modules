@@ -36,6 +36,15 @@ class $CLASS$ extends Controller
     }
 
     /**
+     * Show the specified resource.
+     * @return Response
+     */
+    public function show()
+    {
+        return view('$LOWER_NAME$::show');
+    }
+
+    /**
      * Show the form for editing the specified resource.
      * @return Response
      */

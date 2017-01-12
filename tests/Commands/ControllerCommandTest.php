@@ -120,6 +120,15 @@ class MyController extends Controller
     }
 
     /**
+     * Show the specified resource.
+     * @return Response
+     */
+    public function show()
+    {
+        return view('blog::show');
+    }
+
+    /**
      * Show the form for editing the specified resource.
      * @return Response
      */

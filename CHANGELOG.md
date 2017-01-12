@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Added
+
+- Adding show method on resource controller
+
 ## 1.15.0 - 2017-01-12
 
 ### Added
