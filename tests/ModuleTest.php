@@ -55,6 +55,12 @@ class ModuleTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_gets_required_modules()
+    {
+        $this->assertEquals([ 'required_module' ], $this->module->getRequires());
+    }
+
+    /** @test */
     public function it_loads_module_translations()
     {
         $this->module->boot();
@@ -80,6 +86,7 @@ class ModuleTest extends BaseTestCase
         $this->assertEquals('Recipe', $this->module->get('name'));
         $this->assertEquals('0.1', $this->module->get('version'));
         $this->assertEquals('my default', $this->module->get('some-thing-non-there', 'my default'));
+        $this->assertEquals([ 'required_module' ], $this->module->get('requires'));
     }
 
     /** @test */

@@ -547,11 +547,18 @@ Add a macro to the module repository.
 Module::macro('hello', function() {
     echo "I'm a macro";
 });
+```
 
 Call a macro from the module repository.
 
 ```php
 Module::hello();
+```
+
+Get all required modules of a module
+
+```php
+Module::getRequirements('module name');
 ```
 
 <a name="entity"></a>
@@ -609,6 +616,12 @@ Delete the specified module.
 
 ```
 $module->delete();
+```
+
+Get an array of module requirements. Note: these should be aliases of the module.
+
+```
+$module->getRequires();
 ```
 
 <a name="namespaces"></a>

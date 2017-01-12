@@ -1,0 +1,14 @@
+{
+    "name": "Requirement",
+    "alias": "required_module",
+    "description": "module that Recipe requires",
+    "version": "0.1",
+    "keywords": [],
+    "active": 1,
+    "order": 1,
+    "providers": [
+    ],
+    "aliases": [],
+    "files": [],
+    "requires": []
+}
