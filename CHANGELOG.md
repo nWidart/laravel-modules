@@ -2,15 +2,23 @@
 
 All Notable changes to `laravel-modules` will be documented in this file.
 
-## Next -
+## Next
 
-## Next - 2016-10-25
+## 1.15.0 - 2017-01-12
+
+### Added
+
+- Module requirements (PR #117)
+- Added `Macroable` trait to `Module` class (PR #116)
 
 ### Changed
 
 - Added missing import of the `Schema` facade on migration stubs
 - A default plain migration will be used if the name was not matched against a predefined structure (create, add, delete and drop)
 - Add tests for all the different migration structures above
+- Fix: respecting order in reverse migrations (PR #98)
+- Fix: `module:reset` and `module:migrate-rollback` didn't have `--database` option (PR #88)
+- Fix: `Module::asset()`, removed obsolete backslash. (PR #91)
 
 ## 1.14.0 - 2016-10-19
 
