@@ -603,13 +603,13 @@ $module->getExtraPath('Assets');
 Disable the specified module.
 
 ```
-$module->enable();
+$module->disable();
 ```
 
 Enable the specified module.
 
 ```
-$module->disable();
+$module->enable();
 ```
 
 Delete the specified module.
