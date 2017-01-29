@@ -133,7 +133,7 @@ php artisan module:make Blog -p
 ```
 
 <a name="naming-convension"></a>
-**Naming Convension**
+**Naming Convention**
 
 Because we are autoloading the modules using `psr-4`, we strongly recommend using `StudlyCase` convension.
 
