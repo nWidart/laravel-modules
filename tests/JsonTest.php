@@ -27,6 +27,20 @@ class JsonTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_throws_an_exception_with_invalid_json()
+    {
+        $path = __DIR__ . '/stubs/InvalidJsonModule/module.json';
+
+        try {
+            new Json($path, $this->app['files']);
+        } catch (\Throwable $e) {
+            $this->assertEquals('Error processing file: ' . $path . '. Error: Syntax error', $e->getMessage());
+        } catch (\Exception $e) {
+            $this->assertEquals('Error processing file: ' . $path . '. Error: Syntax error', $e->getMessage());
+        }
+    }
+
+    /** @test */
     public function it_gets_attributes_from_json_file()
     {
         $this->assertEquals('Order', $this->json->get('name'));
