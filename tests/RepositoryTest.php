@@ -90,7 +90,7 @@ class RepositoryTest extends BaseTestCase
     /** @test */
     public function it_find_or_fail_throws_exception_if_module_not_found()
     {
-        $this->setExpectedException(ModuleNotFoundException::class);
+        $this->expectException(ModuleNotFoundException::class);
 
         $this->repository->findOrFail('something');
     }

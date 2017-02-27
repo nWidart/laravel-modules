@@ -32,7 +32,8 @@ class JsonTest extends BaseTestCase
     {
         $path = __DIR__ . '/stubs/InvalidJsonModule/module.json';
 
-        $this->setExpectedException(InvalidJsonException::class, 'Error processing file: ' . $path . '. Error: Syntax error');
+        $this->expectException(InvalidJsonException::class);
+        $this->expectExceptionMessage('Error processing file: ' . $path . '. Error: Syntax error');
 
         new Json($path, $this->app['files']);
     }
