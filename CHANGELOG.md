@@ -4,6 +4,12 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 1.18.0 - 2017-03-13
+
+### Changed
+
+- The module list command (`module:list`) now returns the native module name
+
 ## 1.17.1 - 2017-03-02
 
 ### Changed
