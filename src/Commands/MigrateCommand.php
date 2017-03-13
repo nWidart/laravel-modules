@@ -42,6 +42,7 @@ class MigrateCommand extends Command
 
         if ($name) {
             $module = $this->module->findOrFail($name);
+
             return $this->migrate($module);
         }
 

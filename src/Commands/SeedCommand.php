@@ -4,10 +4,10 @@ namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use RuntimeException;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Repository;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -61,6 +61,7 @@ class SeedCommand extends Command
         if (!$modules instanceof Repository) {
             throw new RuntimeException("Module repository not found!");
         }
+
         return $modules;
     }
 

@@ -26,6 +26,7 @@ class Updater extends Runner
         $devPackages = $module->getComposerAttr('require-dev', []);
         foreach ($devPackages as $name => $version) {
             $package = "\"{$name}:{$version}\"";
+
             $this->run("composer require --dev {$package}");
         }
     }
