@@ -42,7 +42,7 @@ class ListCommand extends Command
 
         foreach ($this->getModules() as $module) {
             $rows[] = [
-                $module->getStudlyName(),
+                $module->getName(),
                 $module->enabled() ? 'Enabled' : 'Disabled',
                 $module->get('order'),
                 $module->getPath(),
