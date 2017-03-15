@@ -264,14 +264,18 @@ class Migrator
     /**
      * Get the last migration batch number.
      *
-     * @param array $migrations
+     * @param array|null $migrations
      * @return int
      */
-    public function getLastBatchNumber($migrations)
+    public function getLastBatchNumber($migrations = null)
     {
-        return $this->table()
-            ->whereIn('migration', $migrations)
-            ->max('batch');
+        $table = $this->table();
+
+        if (is_array($migrations)) {
+            $table = $table->whereIn('migration', $migrations);
+        }
+
+        return $table->max('batch');
     }
 
     /**
