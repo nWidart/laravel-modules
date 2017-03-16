@@ -4,6 +4,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 1.19.0 - 2017-03-16
+
+### Changed
+
+- `module:update` command now also takes the `require-dev` key into account
+- Making the `$migrations` parameter optional on `getLastBatchNumber()`
+
 ## 1.18.0 - 2017-03-13
 
 ### Changed
