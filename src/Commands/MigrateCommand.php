@@ -63,6 +63,11 @@ class MigrateCommand extends Command
     protected function migrate(Module $module)
     {
         $path = str_replace(base_path(), '', (new Migrator($module))->getPath());
+        
+        if($this->option('subpath')) {
+            $path = $path . "/" . $this->option("subpath");
+        }
+        
         $this->call('migrate', [
             '--path' => $path,
             '--database' => $this->option('database'),
@@ -100,6 +105,7 @@ class MigrateCommand extends Command
             array('pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'),
             array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'),
             array('seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'),
+            array('subpath', null, InputOption::VALUE_OPTIONAL, 'Indicate a subpath to run your migrations from'),
         );
     }
 }
