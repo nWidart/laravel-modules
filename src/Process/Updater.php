@@ -18,6 +18,7 @@ class Updater extends Runner
         chdir(base_path());
 
         $this->installRequires($module);
+        dd('safe');
         $this->installDevRequires($module);
         $this->copyScriptsToMainComposerJson($module);
     }
@@ -28,11 +29,12 @@ class Updater extends Runner
     private function installRequires(Module $module)
     {
         $packages = $module->getComposerAttr('require', []);
-        foreach ($packages as $name => $version) {
-            $package = "\"{$name}:{$version}\"";
 
-            $this->run("composer require {$package}");
+        $package = '';
+        foreach ($packages as $name => $version) {
+            $package .= "\"{$name}:{$version}\" ";
         }
+        $this->run("composer require {$package}");
     }
 
     /**
@@ -41,11 +43,12 @@ class Updater extends Runner
     private function installDevRequires(Module $module)
     {
         $devPackages = $module->getComposerAttr('require-dev', []);
-        foreach ($devPackages as $name => $version) {
-            $package = "\"{$name}:{$version}\"";
 
-            $this->run("composer require --dev {$package}");
+        $package = '';
+        foreach ($devPackages as $name => $version) {
+            $package .= "\"{$name}:{$version}\" ";
         }
+        $this->run("composer require --dev {$package}");
     }
 
     /**
