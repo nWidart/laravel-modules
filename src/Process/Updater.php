@@ -18,7 +18,6 @@ class Updater extends Runner
         chdir(base_path());
 
         $this->installRequires($module);
-        dd('safe');
         $this->installDevRequires($module);
         $this->copyScriptsToMainComposerJson($module);
     }
