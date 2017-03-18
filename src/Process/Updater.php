@@ -29,11 +29,11 @@ class Updater extends Runner
     {
         $packages = $module->getComposerAttr('require', []);
 
-        $package = '';
+        $concatenatedPackages = '';
         foreach ($packages as $name => $version) {
-            $package .= "\"{$name}:{$version}\" ";
+            $concatenatedPackages .= "\"{$name}:{$version}\" ";
         }
-        $this->run("composer require {$package}");
+        $this->run("composer require {$concatenatedPackages}");
     }
 
     /**
@@ -43,11 +43,11 @@ class Updater extends Runner
     {
         $devPackages = $module->getComposerAttr('require-dev', []);
 
-        $package = '';
+        $concatenatedPackages = '';
         foreach ($devPackages as $name => $version) {
-            $package .= "\"{$name}:{$version}\" ";
+            $concatenatedPackages .= "\"{$name}:{$version}\" ";
         }
-        $this->run("composer require --dev {$package}");
+        $this->run("composer require --dev {$concatenatedPackages}");
     }
 
     /**
