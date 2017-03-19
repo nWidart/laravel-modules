@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Module;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -42,25 +43,17 @@ class PublishConfigurationCommand extends Command
 
     /**
      * @param string $module
-     * @return string
-     */
-    private function getServiceProviderForModule($module)
-    {
-        $studlyName = studly_case($module);
-
-        return "Modules\\$studlyName\\Providers\\{$studlyName}ServiceProvider";
-    }
-
-    /**
-     * @param string $module
      */
     private function publishConfiguration($module)
     {
-        $this->call('vendor:publish', [
-            '--provider' => $this->getServiceProviderForModule($module),
-            '--force' => $this->option('force'),
-            '--tag' => ['config'],
-        ]);
+        foreach(Module::get($module)->get('providers') as $provider) {
+			$this->call('vendor:publish',
+						[
+							'--provider' => $provider,
+							'--force' => $this->option('force'),
+							'--tag' => ['config'],
+						]);
+		}
     }
 
     /**
