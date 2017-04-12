@@ -98,7 +98,7 @@ return [
             'config' => 'Config',
             'command' => 'Console',
             'event' => 'Events',
-            'listener' => 'Events/Handlers',
+            'listener' => 'Listeners',
             'migration' => 'Database/Migrations',
             'model' => 'Entities',
             'repository' => 'Repositories',
