@@ -10,7 +10,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 - `module:update`: Copy over the scripts key to main composer.json file
 - Add a `--subpath` option to migrate command
-- `module:update`: Install / require all require & require-dev package at one time instead of multiple calls to composer require.
+- `module:update`: Install / require all require & require-dev package at once, instead of multiple calls to composer require.
 - `module:publish-config` command now uses the namespace set up in the configuration file.
 
 ## 1.19.0 - 2017-03-16
