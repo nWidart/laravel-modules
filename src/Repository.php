@@ -396,7 +396,7 @@ class Repository implements RepositoryInterface, Countable
      *
      * @return Collection
      */
-    public function collections($status)
+    public function collections($status = 1)
     {
         return new Collection($this->getByStatus($status));
     }
