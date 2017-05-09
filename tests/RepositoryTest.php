@@ -222,4 +222,31 @@ class RepositoryTest extends BaseTestCase
         $this->assertCount(1, $requirements);
         $this->assertInstanceOf(Module::class, $requirements[0]);
     }
+
+    /** @test */
+    public function it_can_register_macros()
+    {
+        Module::macro('registeredMacro', function () {});
+
+        $this->assertTrue(Module::hasMacro('registeredMacro'));
+    }
+
+    /** @test */
+    public function it_does_not_have_unregistered_macros()
+    {
+        $this->assertFalse(Module::hasMacro('unregisteredMacro'));
+    }
+
+    /** @test */
+    public function it_calls_macros_on_modules()
+    {
+        Module::macro('getReverseName', function () {
+            return strrev($this->getLowerName());
+        });
+
+        $this->repository->addLocation(__DIR__ . '/stubs/Recipe');
+        $module = $this->repository->find('recipe');
+
+        $this->assertEquals('epicer', $module->getReverseName());
+    }
 }

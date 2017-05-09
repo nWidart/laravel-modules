@@ -6,9 +6,12 @@ use Illuminate\Foundation\AliasLoader;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Illuminate\Support\Traits\Macroable;
 
 class Module extends ServiceProvider
 {
+    use Macroable;
+
     /**
      * The laravel application instance.
      *
