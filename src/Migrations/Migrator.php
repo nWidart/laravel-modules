@@ -51,6 +51,7 @@ class Migrator
         if (is_string($database) && $database) {
             $this->database = $database;
         }
+
         return $this;
     }
 

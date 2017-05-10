@@ -61,11 +61,11 @@ class MigrateCommand extends Command
     protected function migrate(Module $module)
     {
         $path = str_replace(base_path(), '', (new Migrator($module))->getPath());
-        
-        if($this->option('subpath')) {
+
+        if ($this->option('subpath')) {
             $path = $path . "/" . $this->option("subpath");
         }
-        
+
         $this->call('migrate', [
             '--path' => $path,
             '--database' => $this->option('database'),

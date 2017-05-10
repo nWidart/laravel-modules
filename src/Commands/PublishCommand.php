@@ -30,6 +30,7 @@ class PublishCommand extends Command
     {
         if ($name = $this->argument('module')) {
             $this->publish($name);
+
             return;
         }
 

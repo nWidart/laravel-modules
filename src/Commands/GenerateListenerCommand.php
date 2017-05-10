@@ -87,6 +87,7 @@ class GenerateListenerCommand extends GeneratorCommand
     {
         if (!$this->option('event')) {
             $this->error('The --event option is necessary');
+
             return;
         }
 
