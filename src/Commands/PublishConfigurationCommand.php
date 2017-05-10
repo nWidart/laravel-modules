@@ -24,8 +24,6 @@ class PublishConfigurationCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
     public function fire()
     {

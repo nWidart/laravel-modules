@@ -57,8 +57,6 @@ class MigrateCommand extends Command
      * Run the migration from the specified module.
      *
      * @param Module $module
-     *
-     * @return mixed
      */
     protected function migrate(Module $module)
     {
