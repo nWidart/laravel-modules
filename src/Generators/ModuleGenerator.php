@@ -335,7 +335,7 @@ class ModuleGenerator extends Generator
      *
      * @param $stub
      *
-     * @return Stub
+     * @return string
      */
     protected function getStubContents($stub)
     {
