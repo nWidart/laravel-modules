@@ -193,19 +193,15 @@ class Installer
         switch ($this->type) {
             case 'github':
                 return "git@github.com:{$this->name}.git";
-                break;
 
             case 'github-https':
                 return "https://github.com/{$this->name}.git";
-                break;
 
             case 'bitbucket':
                 return "git@bitbucket.org:{$this->name}.git";
-                break;
 
             default:
-                return;
-                break;
+                return null;
         }
     }
 

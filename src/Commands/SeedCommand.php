@@ -31,8 +31,6 @@ class SeedCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
     public function fire()
     {
@@ -115,8 +113,6 @@ class SeedCommand extends Command
      * Seed the specified module.
      *
      * @param string $className
-     *
-     * @return array
      */
     protected function dbSeed($className)
     {

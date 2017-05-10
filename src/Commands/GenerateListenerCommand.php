@@ -86,7 +86,8 @@ class GenerateListenerCommand extends GeneratorCommand
     public function fire()
     {
         if (!$this->option('event')) {
-            return $this->error('The --event option is necessary');
+            $this->error('The --event option is necessary');
+            return;
         }
 
         parent::fire();

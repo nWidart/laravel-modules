@@ -51,6 +51,7 @@ class Migrator
         if (is_string($database) && $database) {
             $this->database = $database;
         }
+        return $this;
     }
 
     /**
@@ -217,11 +218,11 @@ class Migrator
     /**
      * Get table instance.
      *
-     * @return string
+     * @return \Illuminate\Database\Query\Builder
      */
     public function table()
     {
-        return $this->database ? $this->laravel['db']->connection($this->database)->table(config('database.migrations')) : $this->laravel['db']->table(config('database.migrations'));
+        return $this->laravel['db']->connection($this->database ?: null)->table(config('database.migrations'));
     }
 
     /**

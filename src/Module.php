@@ -42,7 +42,7 @@ class Module extends ServiceProvider
      */
     public function __construct(Application $app, $name, $path)
     {
-        $this->app = $app;
+        parent::__construct($app);
         $this->name = $name;
         $this->path = realpath($path);
     }
@@ -181,6 +181,8 @@ class Module extends ServiceProvider
 
     /**
      * Get json contents.
+     *
+     * @param $file
      *
      * @return Json
      */
@@ -350,8 +352,6 @@ class Module extends ServiceProvider
 
     /**
      * Disable the current module.
-     *
-     * @return bool
      */
     public function disable()
     {
