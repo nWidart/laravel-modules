@@ -4,6 +4,18 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 1.21.0 - 2017-05-10
+
+### Added
+
+- Added the `Macroable` trait to the `Module` class.
+
+### Changed
+
+- The `collections` method now accepts an optional parameter to get modules by status, in a laravel collection.
+- Allow laravel `5.5.*` to be used.
+
+
 ## 1.20.0 - 2017-04-19
 
 ### Changed
