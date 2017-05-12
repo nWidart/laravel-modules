@@ -39,7 +39,7 @@ class PublishConfigurationCommandTest extends BaseTestCase
             'command' => 'vendor:publish',
         ];
 
-        $this->mockLaravelPublish($arguments);
+        $this->mockLaravelPublish([$arguments]);
 
         $this->artisan('module:publish-config', ['module' => 'Blog']);
     }
@@ -70,13 +70,59 @@ class PublishConfigurationCommandTest extends BaseTestCase
             'command' => 'vendor:publish',
         ];
 
-        $this->mockLaravelPublish($arguments);
+        $this->mockLaravelPublish([$arguments]);
 
         $this->artisan('module:publish-config', ['module' => $moduleName]);
     }
 
+    /** @test */
+    public function multiple_modules_having_any_count_service_provider_will_publish_them()
+    {
+        $serviceProvider1 = 'Vendor1/PackageNamespace/ServiceProvider';
+        $moduleName1 = 'Name1Module';
+        $module1 = $this->getFakeModule($moduleName1, [
+            $serviceProvider1,
+        ]);
+
+        $serviceProvider2 = 'Vendor2/PackageNamespace/ServiceProvider';
+        $moduleName2 = 'Name2Module';
+        $module2 = $this->getFakeModule($moduleName2, [
+            $serviceProvider2,
+        ]);
+
+        $mock = $this->createMock(Repository::class);
+        $mock->expects($this->once())
+            ->method('enabled')
+            ->willReturn([$module1, $module2]);
+        $mock->expects($this->exactly(2))
+            ->method('find')
+            ->withConsecutive([$moduleName1], [$moduleName2])
+            ->willReturnOnConsecutiveCalls($module1, $module2);
+
+        $this->app->instance('modules', $mock);
+
+        $argumentsBase = [
+            '--force' => false,
+            '--tag' => [
+                'config',
+            ],
+            'command' => 'vendor:publish',
+        ];
+        $arguments1 = $argumentsBase + [
+                '--provider' => $serviceProvider1,
+            ];
+        $arguments2 = $argumentsBase + [
+                '--provider' => $serviceProvider1,
+            ];
+
+        $this->mockLaravelPublish([$arguments1, $arguments2]);
+
+        $this->artisan('module:publish-config');
+    }
+
     /**
      * @param array $arguments
+     * @throws \InvalidArgumentException
      * @throws \PHPUnit_Framework_Exception
      * @throws \PHPUnit_Framework_MockObject_RuntimeException
      */
@@ -97,13 +143,42 @@ class PublishConfigurationCommandTest extends BaseTestCase
             ->method('getAliases')
             ->will($this->returnValue([]));
 
-        $command->expects($this->once())
+        $values = [];
+        foreach ($arguments as $argument) {
+            $values[] = [
+                new ArrayInput($argument),
+                $this->isInstanceOf(OutputInterface::class),
+            ];
+        }
+        $command->expects($this->exactly(count($arguments)))
             ->method('run')
-            ->with(
-                new ArrayInput($arguments),
-                $this->isInstanceOf(OutputInterface::class)
+            ->withConsecutive(
+                ...$values
             );
+        $this->app->extend('command.vendor.publish', function() use ($command) {
+            return $command;
+        });
+    }
 
-        $this->app->instance('command.vendor.publish', $command);
+    /**
+     * @param string $name
+     * @param array $providers
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @throws \InvalidArgumentException
+     * @throws \PHPUnit_Framework_Exception
+     * @throws \PHPUnit_Framework_MockObject_RuntimeException
+     */
+    private function getFakeModule($name, array $providers)
+    {
+        $mockBuilder = $this->getMockBuilder('TestModule')
+            ->setMethods(['getName']);
+        $PHPUnitFrameworkMockObjectMockBuilder = $mockBuilder
+            ->getMock();
+        $module1 = $PHPUnitFrameworkMockObjectMockBuilder;
+        $module1->method('getName')
+            ->willReturn($name);
+        $module1->providers = $providers;
+
+        return $module1;
     }
 }
