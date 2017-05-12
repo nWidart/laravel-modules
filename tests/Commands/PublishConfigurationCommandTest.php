@@ -95,7 +95,7 @@ class PublishConfigurationCommandTest extends BaseTestCase
                 '--provider' => $serviceProvider1,
             ];
         $inputArgument2 = $this->getInputArgumentBase() + [
-                '--provider' => $serviceProvider1,
+                '--provider' => $serviceProvider2,
             ];
 
         $this->mockLaravelPublish([$inputArgument1, $inputArgument2]);
