@@ -30,16 +30,11 @@ class PublishConfigurationCommandTest extends BaseTestCase
 
         $this->app->instance('modules', $mock);
 
-        $arguments = [
-            '--provider' => $serviceProvider,
-            '--force' => false,
-            '--tag' => [
-                'config',
-            ],
-            'command' => 'vendor:publish',
-        ];
+        $inputArgument = $this->getInputArgumentBase() + [
+                '--provider' => $serviceProvider,
+            ];
 
-        $this->mockLaravelPublish([$arguments]);
+        $this->mockLaravelPublish([$inputArgument]);
 
         $this->artisan('module:publish-config', ['module' => 'Blog']);
     }
@@ -61,16 +56,11 @@ class PublishConfigurationCommandTest extends BaseTestCase
         $this->app->instance('modules', $mock);
 
         $moduleName = 'Blog';
-        $arguments = [
-            '--provider' => 'Modules\\' . $moduleName . '\Providers\\' . $moduleName . 'ServiceProvider',
-            '--force' => false,
-            '--tag' => [
-                'config',
-            ],
-            'command' => 'vendor:publish',
-        ];
+        $inputArgument = $this->getInputArgumentBase() + [
+                '--provider' => 'Modules\\' . $moduleName . '\Providers\\' . $moduleName . 'ServiceProvider',
+            ];
 
-        $this->mockLaravelPublish([$arguments]);
+        $this->mockLaravelPublish([$inputArgument]);
 
         $this->artisan('module:publish-config', ['module' => $moduleName]);
     }
@@ -101,32 +91,25 @@ class PublishConfigurationCommandTest extends BaseTestCase
 
         $this->app->instance('modules', $mock);
 
-        $argumentsBase = [
-            '--force' => false,
-            '--tag' => [
-                'config',
-            ],
-            'command' => 'vendor:publish',
-        ];
-        $arguments1 = $argumentsBase + [
+        $inputArgument1 = $this->getInputArgumentBase() + [
                 '--provider' => $serviceProvider1,
             ];
-        $arguments2 = $argumentsBase + [
+        $inputArgument2 = $this->getInputArgumentBase() + [
                 '--provider' => $serviceProvider1,
             ];
 
-        $this->mockLaravelPublish([$arguments1, $arguments2]);
+        $this->mockLaravelPublish([$inputArgument1, $inputArgument2]);
 
         $this->artisan('module:publish-config');
     }
 
     /**
-     * @param array $arguments
+     * @param array $inputArguments
      * @throws \InvalidArgumentException
      * @throws \PHPUnit_Framework_Exception
      * @throws \PHPUnit_Framework_MockObject_RuntimeException
      */
-    private function mockLaravelPublish(array $arguments)
+    private function mockLaravelPublish(array $inputArguments)
     {
         $command = $this->createMock(VendorPublishCommand::class);
 
@@ -143,17 +126,17 @@ class PublishConfigurationCommandTest extends BaseTestCase
             ->method('getAliases')
             ->will($this->returnValue([]));
 
-        $values = [];
-        foreach ($arguments as $argument) {
-            $values[] = [
-                new ArrayInput($argument),
+        $consecutiveValues = [];
+        foreach ($inputArguments as $inputArgument) {
+            $consecutiveValues[] = [
+                new ArrayInput($inputArgument),
                 $this->isInstanceOf(OutputInterface::class),
             ];
         }
-        $command->expects($this->exactly(count($arguments)))
+        $command->expects($this->exactly(count($inputArguments)))
             ->method('run')
             ->withConsecutive(
-                ...$values
+                ...$consecutiveValues
             );
         $this->app->extend('command.vendor.publish', function() use ($command) {
             return $command;
@@ -172,13 +155,25 @@ class PublishConfigurationCommandTest extends BaseTestCase
     {
         $mockBuilder = $this->getMockBuilder('TestModule')
             ->setMethods(['getName']);
-        $PHPUnitFrameworkMockObjectMockBuilder = $mockBuilder
-            ->getMock();
-        $module1 = $PHPUnitFrameworkMockObjectMockBuilder;
-        $module1->method('getName')
+        $module = $mockBuilder->getMock();
+        $module->method('getName')
             ->willReturn($name);
-        $module1->providers = $providers;
+        $module->providers = $providers;
 
-        return $module1;
+        return $module;
+    }
+
+    /**
+     * @return array
+     */
+    private function getInputArgumentBase()
+    {
+        return [
+            '--force' => false,
+            '--tag' => [
+                'config',
+            ],
+            'command' => 'vendor:publish',
+        ];
     }
 }
