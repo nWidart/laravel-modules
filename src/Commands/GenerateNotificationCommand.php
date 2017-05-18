@@ -18,6 +18,13 @@ final class GenerateNotificationCommand extends GeneratorCommand
     protected $name = 'module:make-notification';
 
     protected $argumentName = 'name';
+    
+     /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Generate new notification class for the specified module.';
 
     /**
      * Get template contents.
