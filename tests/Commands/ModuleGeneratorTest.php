@@ -56,8 +56,26 @@ class ModuleGeneratorTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['Blog']]);
 
         foreach (config('modules.stubs.files') as $file) {
-            $this->assertTrue(is_file($this->modulePath . '/' . $file));
+            $path = base_path('modules/Blog') . '/' . $file;
+            $this->assertTrue($this->finder->exists($path), "[$file] does not exists");
         }
+        $path = base_path('modules/Blog') . '/module.json';
+        $this->assertTrue($this->finder->exists($path), '[module.json] does not exists');
+    }
+
+    /** @test */
+    public function it_generates_module_resources()
+    {
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
+        $this->assertTrue($this->finder->exists($path));
+
+        $path = base_path('modules/Blog') . '/Http/Controllers/BlogController.php';
+        $this->assertTrue($this->finder->exists($path));
+
+        $path = base_path('modules/Blog') . '/Database/Seeders/BlogDatabaseSeeder.php';
+        $this->assertTrue($this->finder->exists($path));
     }
 
     /** @test */
@@ -86,6 +104,45 @@ class ModuleGeneratorTest extends BaseTestCase
         $file = $this->finder->get(base_path('modules/ModuleName') . '/Providers/ModuleNameServiceProvider.php');
 
         $this->assertTrue(str_contains($file, 'namespace Modules\ModuleName\Providers;'));
+    }
+
+    /** @test */
+    public function it_generates_a_plain_module_with_no_resources()
+    {
+        $this->artisan('module:make', ['name' => ['ModuleName'], '--plain' => true]);
+
+        $path = base_path('modules/ModuleName') . '/Providers/ModuleNameServiceProvider.php';
+        $this->assertFalse($this->finder->exists($path));
+
+        $path = base_path('modules/ModuleName') . '/Http/Controllers/ModuleNameController.php';
+        $this->assertFalse($this->finder->exists($path));
+
+        $path = base_path('modules/ModuleName') . '/Database/Seeders/ModuleNameDatabaseSeeder.php';
+        $this->assertFalse($this->finder->exists($path));
+    }
+
+    /** @test */
+    public function it_generates_a_plain_module_with_no_files()
+    {
+        $this->artisan('module:make', ['name' => ['ModuleName'], '--plain' => true]);
+
+        foreach (config('modules.stubs.files') as $file) {
+            $path = base_path('modules/ModuleName') . '/' . $file;
+            $this->assertFalse($this->finder->exists($path), "[$file] exists");
+        }
+        $path = base_path('modules/ModuleName') . '/module.json';
+        $this->assertTrue($this->finder->exists($path), '[module.json] does not exists');
+    }
+
+    /** @test */
+    public function it_generates_plain_module_with_no_service_provider_in_modulejson_file()
+    {
+        $this->artisan('module:make', ['name' => ['ModuleName'], '--plain' => true]);
+
+        $path = base_path('modules/ModuleName') . '/module.json';
+        $content = json_decode($this->finder->get($path));
+
+        $this->assertCount(0, $content->providers);
     }
 
     private function getExpectedComposerJson()
