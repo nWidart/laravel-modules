@@ -256,10 +256,15 @@ class ModuleGenerator extends Generator
 
         $this->generateFolders();
 
-        $this->generateFiles();
+        $this->generateModuleJsonFile();
 
-        if (!$this->plain) {
+        if ($this->plain !== true) {
+            $this->generateFiles();
             $this->generateResources();
+        }
+
+        if ($this->plain === true) {
+            $this->cleanModuleJsonFile();
         }
 
         $this->console->info("Module [{$name}] created successfully.");
@@ -381,6 +386,41 @@ class ModuleGenerator extends Generator
         }
 
         return $replaces;
+    }
+
+    /**
+     * Generate the module.json file
+     */
+    private function generateModuleJsonFile()
+    {
+        $path = $this->module->getModulePath($this->getName()) . 'module.json';
+
+        if (!$this->filesystem->isDirectory($dir = dirname($path))) {
+            $this->filesystem->makeDirectory($dir, 0775, true);
+        }
+
+        $this->filesystem->put($path, $this->getStubContents('json'));
+
+        $this->console->info("Created : {$path}");
+    }
+
+    /**
+     * Remove the default service provider that was added in the module.json file
+     * This is needed when a --plain module was created
+     */
+    private function cleanModuleJsonFile()
+    {
+        $path = $this->module->getModulePath($this->getName()) . 'module.json';
+
+        $content = $this->filesystem->get($path);
+        $namespace = $this->getModuleNamespaceReplacement();
+        $studlyName = $this->getStudlyNameReplacement();
+
+        $provider = '"' . $namespace . '\\\\' . $studlyName . '\\\\Providers\\\\' . $studlyName . 'ServiceProvider"';
+
+        $content = str_replace($provider, '', $content);
+
+        $this->filesystem->put($path, $content);
     }
 
     /**
