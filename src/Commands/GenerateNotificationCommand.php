@@ -18,7 +18,7 @@ final class GenerateNotificationCommand extends GeneratorCommand
     protected $name = 'module:make-notification';
 
     protected $argumentName = 'name';
-    
+
      /**
      * The console command description.
      *
