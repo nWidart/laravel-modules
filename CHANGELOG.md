@@ -4,6 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Changed
+
+- Fixed the `--plain` on the `make:module` command, to not include a service provider in the `module.json` file as it's not generated.
+- Add command description to the `GenerateNotificationCommand`.
+
 ## 1.21.0 - 2017-05-10
 
 ### Added
