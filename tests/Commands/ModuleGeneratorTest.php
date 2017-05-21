@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\tests\Commands;
 
+use Illuminate\Support\Facades\Artisan;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class ModuleGeneratorTest extends BaseTestCase
@@ -143,6 +144,31 @@ class ModuleGeneratorTest extends BaseTestCase
         $content = json_decode($this->finder->get($path));
 
         $this->assertCount(0, $content->providers);
+    }
+
+    /** @test */
+    public function it_outputs_error_when_module_exists()
+    {
+        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $expected = 'Module [Blog] already exist!
+';
+        $this->assertEquals($expected, Artisan::output());
+    }
+
+    /** @test */
+    public function it_still_generates_module_if_it_exists_using_force_flag()
+    {
+        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->artisan('module:make', ['name' => ['Blog'], '--force' => true]);
+
+        $output = Artisan::output();
+
+        $notExpected = 'Module [Blog] already exist!
+';
+        $this->assertNotEquals($notExpected, $output);
+        $this->assertTrue(str_contains($output, 'Module [Blog] created successfully.'));
     }
 
     private function getExpectedComposerJson()
