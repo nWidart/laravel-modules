@@ -51,23 +51,6 @@ class Stub
     }
 
     /**
-     * Create new self instance from full path.
-     *
-     * @param string $path
-     * @param array  $replaces
-     *
-     * @return self
-     */
-    public static function createFromPath($path, array $replaces = [])
-    {
-        $stub = static::create($path, $replaces);
-
-        $stub->setBasePath('');
-
-        return $stub;
-    }
-
-    /**
      * Set stub path.
      *
      * @param string $path
