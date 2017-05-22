@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 1.22.0 - 2017-05-22
+
 ### Changed
 
 - Fixed the `--plain` on the `make:module` command, to not include a service provider in the `module.json` file as it's not generated.
