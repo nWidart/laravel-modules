@@ -92,13 +92,13 @@ class SeedCommand extends Command
         $config = $module->get('migration');
         if (is_array($config) && array_key_exists('seeds', $config)) {
             foreach ((array)$config['seeds'] as $class) {
-                if (@class_exists($class)) {
+                if (class_exists($class)) {
                     $seeders[] = $class;
                 }
             }
         } else {
             $class = $this->getSeederName($name); //legacy support
-            if (@class_exists($class)) {
+            if (class_exists($class)) {
                 $seeders[] = $class;
             }
         }
