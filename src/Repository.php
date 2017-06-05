@@ -553,6 +553,18 @@ class Repository implements RepositoryInterface, Countable
     }
 
     /**
+     * Determine if the given module exist and is activated.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function isActive($name)
+    {
+        return ($module = $this->find($name)) && $module->active();
+    }
+
+    /**
      * Enabling a specific module.
      *
      * @param string $name
