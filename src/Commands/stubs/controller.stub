@@ -9,6 +9,17 @@ use Illuminate\Routing\Controller;
 class $CLASS$ extends Controller
 {
     /**
+     * Api example (check routes/api.php)
+     * @return Response
+     */
+    public function api()
+    {
+        return response()->json([
+            'message' => 'Api returning json example.'
+        ]);
+    }
+
+    /**
      * Display a listing of the resource.
      * @return Response
      */

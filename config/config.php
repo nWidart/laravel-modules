@@ -28,14 +28,18 @@ return [
         'files' => [
             'start' => 'start.php',
             'routes' => 'Http/routes.php',
+            'routes/api' => 'routes/api.php',
+            'routes/web' => 'routes/web.php',
             'views/index' => 'Resources/views/index.blade.php',
             'views/master' => 'Resources/views/layouts/master.blade.php',
             'scaffold/config' => 'Config/config.php',
             'composer' => 'composer.json',
         ],
         'replacements' => [
-            'start' => ['LOWER_NAME'],
+            'start' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
             'routes' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
+            'routes/api' => ['LOWER_NAME', 'STUDLY_NAME'],
+            'routes/web' => ['LOWER_NAME', 'STUDLY_NAME'],
             'json' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
             'views/index' => ['LOWER_NAME'],
             'views/master' => ['STUDLY_NAME'],
@@ -112,6 +116,7 @@ return [
             'jobs' => 'Jobs',
             'emails' => 'Emails',
             'notifications' => 'Notifications',
+            'routes' => 'routes',
         ],
     ],
     /*

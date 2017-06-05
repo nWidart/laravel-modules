@@ -1,0 +1,6 @@
+<?php
+
+Route::group(['prefix' => 'api/$LOWER_NAME$'], function()
+{
+    Route::get('/', '$STUDLY_NAME$Controller@api');
+});
