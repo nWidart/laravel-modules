@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Changed
+
+- The default location of event listeners is now in `Listeners/`, from `Events/Handlers`
+
 ## 1.22.0 - 2017-05-22
 
 ### Changed
