@@ -23,8 +23,6 @@ class LaravelModulesServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerNamespaces();
-
-        $this->registerModules();
     }
 
     /**
@@ -43,6 +41,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
         $this->registerServices();
         $this->setupStubPath();
         $this->registerProviders();
+        $this->registerModules();
     }
 
     /**
