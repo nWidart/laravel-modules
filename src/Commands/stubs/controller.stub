@@ -52,6 +52,17 @@ class $CLASS$ extends Controller
     {
         return view('$LOWER_NAME$::edit');
     }
+    
+     /**
+	 * Display the specified resource.
+	 *
+	 * @param  int  $id
+	 * @return Response
+	 */
+	public function show($id)
+	{
+		return view('$LOWER_NAME$::show');
+	}
 
     /**
      * Update the specified resource in storage.
