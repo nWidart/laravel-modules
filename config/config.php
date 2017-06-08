@@ -110,7 +110,7 @@ return [
             'views' => 'Resources/views',
             'test' => 'Tests',
             'jobs' => 'Jobs',
-            'emails' => 'Emails',
+            'mail' => 'Mail',
             'notifications' => 'Notifications',
         ],
     ],
