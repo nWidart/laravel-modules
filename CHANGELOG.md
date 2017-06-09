@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 1.23.0 - 2017-06-09
+
 ## Added
 
 - A `--migration` flag to the `module:make-model` command to generate the migration file with a model
