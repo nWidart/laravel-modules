@@ -8,6 +8,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 - A `--migration` flag to the `module:make-model` command to generate the migration file with a model
 - Factories are now also defined in the master service providers. This is used in the `module:make` command without the `--plain` flag, or using `module:make-provider` with the `--master` flag.
+- `module_path()` helper function.
 
 ## Changed
 
