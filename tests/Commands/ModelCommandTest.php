@@ -69,6 +69,18 @@ class ModelCommandTest extends BaseTestCase
         $this->assertTrue(str_contains($migrationContent, 'Schema::create(\'post\','));
     }
 
+    /** @test */
+    public function it_generates_migration_file_with_model_using_shortcut_option()
+    {
+        $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '-m' => true]);
+
+        $migrations = $this->finder->allFiles($this->modulePath . '/Database/Migrations');
+        $migrationFile = $migrations[0];
+        $migrationContent = $this->finder->get($this->modulePath . '/Database/Migrations/' . $migrationFile->getFilename());
+        $this->assertCount(1, $migrations);
+        $this->assertTrue(str_contains($migrationContent, 'Schema::create(\'post\','));
+    }
+
     private function expectedContent()
     {
         return <<<TEXT

@@ -62,7 +62,7 @@ class ModelCommand extends GeneratorCommand
     {
         return array(
             array('fillable', null, InputOption::VALUE_OPTIONAL, 'The fillable attributes.', null),
-            array('migration', null, InputOption::VALUE_NONE, 'Flag to create associated migrations', null),
+            array('migration', 'm', InputOption::VALUE_NONE, 'Flag to create associated migrations', null),
         );
     }
 
