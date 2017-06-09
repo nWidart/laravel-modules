@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Added
+
+- A `--migration` flag to the `module:make-model` command to generate the migration file with a model
+
 ## Changed
 
 - The default location of event listeners is now in `Listeners/`, from `Events/Handlers`
