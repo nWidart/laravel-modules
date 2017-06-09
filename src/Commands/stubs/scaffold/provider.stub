@@ -23,6 +23,7 @@ class $CLASS$ extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
+        $this->registerFactories();
     }
 
     /**
@@ -84,6 +85,13 @@ class $CLASS$ extends ServiceProvider
         } else {
             $this->loadTranslationsFrom(__DIR__ .'/../$PATH_LANG$', '$LOWER_NAME$');
         }
+    }
+
+    public function registerFactories()
+    {
+        $this->app->singleton(Factory::class, function () {
+            return Factory::construct(__DIR__ . '/Database/factories');
+        });
     }
 
     /**
