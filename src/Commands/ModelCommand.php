@@ -33,6 +33,13 @@ class ModelCommand extends GeneratorCommand
      */
     protected $description = 'Generate new model for the specified module.';
 
+    public function fire()
+    {
+        parent::fire();
+
+        $this->handleOptionalMigrationOption();
+    }
+
     /**
      * Get the console command arguments.
      *
@@ -55,7 +62,19 @@ class ModelCommand extends GeneratorCommand
     {
         return array(
             array('fillable', null, InputOption::VALUE_OPTIONAL, 'The fillable attributes.', null),
+            array('migration', null, InputOption::VALUE_NONE, 'Flag to create associated migrations', null),
         );
+    }
+
+    /**
+     * Create the migration file with the given model if migration flag was used
+     */
+    private function handleOptionalMigrationOption()
+    {
+        if ($this->option('migration') === true) {
+            $migrationName = 'create_' . strtolower($this->argument('model')) . '_table';
+            $this->call('module:make-migration', ['name' => $migrationName, 'module' => $this->argument('module')]);
+        }
     }
 
     /**
