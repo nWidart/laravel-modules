@@ -104,7 +104,6 @@ TEXT;
         \$this->registerTranslations();
         \$this->registerConfig();
         \$this->registerViews();
-        \$this->registerFactories();
 TEXT;
     }
 }
