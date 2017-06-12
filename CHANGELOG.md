@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Removed
+
+- Factory registration in a master service provider
+
 ## 1.23.0 - 2017-06-09
 
 ## Added
