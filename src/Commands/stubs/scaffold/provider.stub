@@ -23,7 +23,6 @@ class $CLASS$ extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->registerFactories();
     }
 
     /**
@@ -58,7 +57,7 @@ class $CLASS$ extends ServiceProvider
      */
     public function registerViews()
     {
-        $viewPath = base_path('resources/views/modules/$LOWER_NAME$');
+        $viewPath = resource_path('views/modules/$LOWER_NAME$');
 
         $sourcePath = __DIR__.'/../$PATH_VIEWS$';
 
@@ -78,20 +77,13 @@ class $CLASS$ extends ServiceProvider
      */
     public function registerTranslations()
     {
-        $langPath = base_path('resources/lang/modules/$LOWER_NAME$');
+        $langPath = resource_path('lang/modules/$LOWER_NAME$');
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, '$LOWER_NAME$');
         } else {
             $this->loadTranslationsFrom(__DIR__ .'/../$PATH_LANG$', '$LOWER_NAME$');
         }
-    }
-
-    public function registerFactories()
-    {
-        $this->app->singleton(Factory::class, function () {
-            return Factory::construct(__DIR__ . '/Database/factories');
-        });
     }
 
     /**
