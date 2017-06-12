@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Changed
+
+- Using `resource_path` to register module views 
+
 ## Removed
 
 - Factory registration in a master service provider
