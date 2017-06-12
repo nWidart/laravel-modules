@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 1.24.0 - 2017-06-12
+
 ## Changed
 
 - Using `resource_path` to register module views
