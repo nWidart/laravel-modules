@@ -27,7 +27,6 @@ return [
         'path' => base_path() . '/vendor/nwidart/laravel-modules/src/Commands/stubs',
         'files' => [
             'start' => 'start.php',
-            'routes' => 'Http/routes.php',
             'routes/api' => 'routes/api.php',
             'routes/web' => 'routes/web.php',
             'views/index' => 'Resources/views/index.blade.php',
@@ -37,7 +36,6 @@ return [
         ],
         'replacements' => [
             'start' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
-            'routes' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
             'routes/api' => ['LOWER_NAME', 'STUDLY_NAME'],
             'routes/web' => ['LOWER_NAME', 'STUDLY_NAME'],
             'json' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
@@ -98,7 +96,7 @@ return [
 
         'generator' => [
             'assets' => 'Assets',
-            'config' => 'Config',
+            'config' => 'config',
             'command' => 'Console',
             'event' => 'Events',
             'listener' => 'Events/Handlers',
@@ -110,8 +108,8 @@ return [
             'filter' => 'Http/Middleware',
             'request' => 'Http/Requests',
             'provider' => 'Providers',
-            'lang' => 'Resources/lang',
-            'views' => 'Resources/views',
+            'lang' => 'resources/lang',
+            'views' => 'resources/views',
             'test' => 'Tests',
             'jobs' => 'Jobs',
             'emails' => 'Emails',

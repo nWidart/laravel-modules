@@ -1,33 +1,4 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Register Namespaces And Routes
-|--------------------------------------------------------------------------
-|
-| When a module starting, this file will executed automatically. This helps
-| to register some namespaces like translator or view. Also this file
-| will load the routes file for each module. You may also modify
-| this file as you want.
-|
-*/
-
-if (!app()->routesAreCached()) {
-    // require __DIR__ . '/Http/routes.php';
-
-    #Laraver 5.3+ Routes
-    Route::group([
-        'middleware' => 'web',
-        'namespace' => '$MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Controllers'
-    ], function() {
-        include __DIR__ . '/routes/web.php';
-    });
-
-    Route::group([
-        'middleware' => 'api',
-        'namespace' => '$MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Controllers'
-    ], function() {
-        include __DIR__ . '/routes/api.php';
-    });
-}
-
+# Old route setter
+# setting moved to the service provider

@@ -3,6 +3,7 @@
 namespace $NAMESPACE$;
 
 use Illuminate\Support\ServiceProvider;
+use Route;
 
 class $CLASS$ extends ServiceProvider
 {
@@ -20,9 +21,34 @@ class $CLASS$ extends ServiceProvider
      */
     public function boot()
     {
+        $this->mapRoutes();
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
+    }
+
+    /**
+     * Map routes.
+     *
+     * @return void
+     */
+    public function mapRoutes()
+    {
+        if (!$this->app->routesAreCached()) {
+            Route::group([
+                'middleware' => 'web',
+                'namespace' => '$MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Controllers'
+            ], function() {
+                include dirname(__DIR__) . '/routes/web.php';
+            });
+
+            Route::group([
+                'middleware' => 'api',
+                'namespace' => '$MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Controllers'
+            ], function() {
+                include dirname(__DIR__) . '/routes/api.php';
+            });
+        }
     }
 
     /**
@@ -43,10 +69,10 @@ class $CLASS$ extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__.'/../$PATH_CONFIG$/config.php' => config_path('$LOWER_NAME$.php'),
+            dirname(__DIR__).'/$PATH_CONFIG$/config.php' => config_path('$LOWER_NAME$.php'),
         ], 'config');
         $this->mergeConfigFrom(
-            __DIR__.'/../$PATH_CONFIG$/config.php', '$LOWER_NAME$'
+            dirname(__DIR__).'/$PATH_CONFIG$/config.php', '$LOWER_NAME$'
         );
     }
 
@@ -59,7 +85,7 @@ class $CLASS$ extends ServiceProvider
     {
         $viewPath = base_path('resources/views/modules/$LOWER_NAME$');
 
-        $sourcePath = __DIR__.'/../$PATH_VIEWS$';
+        $sourcePath = dirname(__DIR__).'/$PATH_VIEWS$';
 
         $this->publishes([
             $sourcePath => $viewPath
@@ -82,7 +108,7 @@ class $CLASS$ extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, '$LOWER_NAME$');
         } else {
-            $this->loadTranslationsFrom(__DIR__ .'/../$PATH_LANG$', '$LOWER_NAME$');
+            $this->loadTranslationsFrom(dirname(__DIR__).'/$PATH_LANG$', '$LOWER_NAME$');
         }
     }
 
