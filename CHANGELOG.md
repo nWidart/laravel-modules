@@ -7,6 +7,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ## Changed
 
 - Using `resource_path` to register module views
+- Changed the method to load additional eloquent factory paths
 
 ## 1.23.0 - 2017-06-09
 
