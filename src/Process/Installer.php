@@ -150,20 +150,15 @@ class Installer
      */
     public function getProcess()
     {
-        switch ($this->type) {
-            case 'github':
-            case 'github-https':
-            case 'bitbucket':
-                if ($this->tree) {
-                    $process = $this->installViaSubtree();
-                }
+        if ($this->type) {
+            if ($this->tree) {
+                $process = $this->installViaSubtree();
+            }
 
-                $process = $this->installViaGit();
-                break;
-
-            default:
-                $process = $this->installViaComposer();
-                break;
+            $process = $this->installViaGit();
+        }
+        else {
+            $process = $this->installViaComposer();
         }
 
         return $process;
@@ -197,11 +192,20 @@ class Installer
             case 'github-https':
                 return "https://github.com/{$this->name}.git";
 
+            case 'gitlab':
+                return "git@gitlab.com:{$this->name}.git";
+                break;
+
             case 'bitbucket':
                 return "git@bitbucket.org:{$this->name}.git";
 
             default:
-                return null;
+                $parts = explode('.', $this->type);
+                if (end($parts) == "git")
+                    return $this->type;
+                else
+                    return "{$this->type}:{$this->name}.git";
+                break;
         }
     }
 
