@@ -150,8 +150,7 @@ class Installer
      */
     public function getProcess()
     {
-        if ($this->type && $this->tree)
-        {
+        if ($this->type && $this->tree) {
             return $this->installViaSubtree();
         }
 
@@ -196,14 +195,12 @@ class Installer
             default:
 
                 // Check of type 'scheme://host/path'
-                if (filter_var($this->type, FILTER_VALIDATE_URL))
-                {
+                if (filter_var($this->type, FILTER_VALIDATE_URL)) {
                     return $this->type;
                 }
 
                 // Check of type 'user@host'
-                if (filter_var($this->type, FILTER_VALIDATE_EMAIL))
-                {
+                if (filter_var($this->type, FILTER_VALIDATE_EMAIL)) {
                     return "{$this->type}:{$this->name}.git";
                 }
 
