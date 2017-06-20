@@ -150,8 +150,12 @@ class Installer
      */
     public function getProcess()
     {
-        if ($this->type && $this->tree) {
-            return $this->installViaSubtree();
+        if ($this->type) {
+            if ($this->tree) {
+                return $this->installViaSubtree();
+            }
+
+            return $this->installViaGit();
         }
 
         return $this->installViaComposer();
