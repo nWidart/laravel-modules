@@ -150,23 +150,15 @@ class Installer
      */
     public function getProcess()
     {
-        switch ($this->type) {
-            case 'github':
-            case 'github-https':
-            case 'bitbucket':
-                if ($this->tree) {
-                    $process = $this->installViaSubtree();
-                }
+        if ($this->type) {
+            if ($this->tree) {
+                return $this->installViaSubtree();
+            }
 
-                $process = $this->installViaGit();
-                break;
-
-            default:
-                $process = $this->installViaComposer();
-                break;
+            return $this->installViaGit();
         }
 
-        return $process;
+        return $this->installViaComposer();
     }
 
     /**
@@ -197,11 +189,27 @@ class Installer
             case 'github-https':
                 return "https://github.com/{$this->name}.git";
 
+            case 'gitlab':
+                return "git@gitlab.com:{$this->name}.git";
+                break;
+
             case 'bitbucket':
                 return "git@bitbucket.org:{$this->name}.git";
 
             default:
-                return null;
+
+                // Check of type 'scheme://host/path'
+                if (filter_var($this->type, FILTER_VALIDATE_URL)) {
+                    return $this->type;
+                }
+
+                // Check of type 'user@host'
+                if (filter_var($this->type, FILTER_VALIDATE_EMAIL)) {
+                    return "{$this->type}:{$this->name}.git";
+                }
+
+                return;
+                break;
         }
     }
 
