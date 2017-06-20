@@ -150,18 +150,12 @@ class Installer
      */
     public function getProcess()
     {
-        if ($this->type) {
-            if ($this->tree) {
-                $process = $this->installViaSubtree();
-            }
-
-            $process = $this->installViaGit();
-        }
-        else {
-            $process = $this->installViaComposer();
+        if ($this->type && $this->tree)
+        {
+            return $this->installViaSubtree();
         }
 
-        return $process;
+        return $this->installViaComposer();
     }
 
     /**
@@ -200,11 +194,20 @@ class Installer
                 return "git@bitbucket.org:{$this->name}.git";
 
             default:
-                $parts = explode('.', $this->type);
-                if (end($parts) == "git")
+
+                // Check of type 'scheme://host/path'
+                if (filter_var($this->type, FILTER_VALIDATE_URL))
+                {
                     return $this->type;
-                else
+                }
+
+                // Check of type 'user@host'
+                if (filter_var($this->type, FILTER_VALIDATE_EMAIL))
+                {
                     return "{$this->type}:{$this->name}.git";
+                }
+
+                return;
                 break;
         }
     }
