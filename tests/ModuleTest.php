@@ -71,7 +71,7 @@ class ModuleTest extends BaseTestCase
     /** @test */
     public function it_reads_module_json_files()
     {
-        $jsonModule = $this->module->moduleJson;
+        $jsonModule = $this->module->json();
         $composerJson = $this->module->json('composer.json');
 
         $this->assertInstanceOf(Json::class, $jsonModule);

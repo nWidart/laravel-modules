@@ -27,15 +27,16 @@ class Module extends ServiceProvider
     protected $name;
 
     /**
-     * The module path,.
+     * The module path.
      *
      * @var string
      */
     protected $path;
+
     /**
-     * @var Json
+     * @var array of cached Json objects, keyed by filename
      */
-    public $moduleJson;
+    protected $moduleJson = [];
 
     /**
      * The constructor.
@@ -49,7 +50,6 @@ class Module extends ServiceProvider
         parent::__construct($app);
         $this->name = $name;
         $this->path = realpath($path);
-        $this->moduleJson = new Json($this->getPath() . '/module.json', $this->app['files']);
     }
 
     /**
@@ -185,7 +185,7 @@ class Module extends ServiceProvider
     }
 
     /**
-     * Get json contents.
+     * Get json contents from the cache, setting as needed.
      *
      * @param $file
      *
@@ -194,10 +194,12 @@ class Module extends ServiceProvider
     public function json($file = null)
     {
         if ($file === null) {
-            return $this->moduleJson;
+            $file = 'module.json';
         }
 
-        return new Json($this->getPath() . '/' . $file, $this->app['files']);
+        return array_get($this->moduleJson, $file, function () use ($file) {
+            return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->app['files']);
+        });
     }
 
     /**
@@ -210,7 +212,7 @@ class Module extends ServiceProvider
      */
     public function get($key, $default = null)
     {
-        return $this->moduleJson->get($key, $default);
+        return $this->json()->get($key, $default);
     }
 
     /**
@@ -352,7 +354,7 @@ class Module extends ServiceProvider
      */
     public function setActive($active)
     {
-        return $this->moduleJson->set('active', $active)->save();
+        return $this->json()->set('active', $active)->save();
     }
 
     /**
@@ -386,7 +388,7 @@ class Module extends ServiceProvider
      */
     public function delete()
     {
-        return $this->moduleJson->getFilesystem()->deleteDirectory($this->getPath());
+        return $this->json()->getFilesystem()->deleteDirectory($this->getPath());
     }
 
     /**
