@@ -32,6 +32,10 @@ class Module extends ServiceProvider
      * @var string
      */
     protected $path;
+    /**
+     * @var Json
+     */
+    public $moduleJson;
 
     /**
      * The constructor.
@@ -45,6 +49,7 @@ class Module extends ServiceProvider
         parent::__construct($app);
         $this->name = $name;
         $this->path = realpath($path);
+        $this->moduleJson = new Json($this->getPath() . '/module.json', $this->app['files']);
     }
 
     /**
@@ -188,8 +193,8 @@ class Module extends ServiceProvider
      */
     public function json($file = null)
     {
-        if (is_null($file)) {
-            $file = 'module.json';
+        if ($file === null) {
+            return $this->moduleJson;
         }
 
         return new Json($this->getPath() . '/' . $file, $this->app['files']);
@@ -205,7 +210,7 @@ class Module extends ServiceProvider
      */
     public function get($key, $default = null)
     {
-        return $this->json()->get($key, $default);
+        return $this->moduleJson->get($key, $default);
     }
 
     /**
@@ -347,7 +352,7 @@ class Module extends ServiceProvider
      */
     public function setActive($active)
     {
-        return $this->json()->set('active', $active)->save();
+        return $this->moduleJson->set('active', $active)->save();
     }
 
     /**
@@ -381,7 +386,7 @@ class Module extends ServiceProvider
      */
     public function delete()
     {
-        return $this->json()->getFilesystem()->deleteDirectory($this->getPath());
+        return $this->moduleJson->getFilesystem()->deleteDirectory($this->getPath());
     }
 
     /**
