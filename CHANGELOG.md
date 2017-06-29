@@ -4,16 +4,22 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 1.25.1 - 2017-06-29
+
+### Changed
+
+- More flexibility to the `json()` method, while keeping the performance improvements.
+
 ## 1.25.0 - 2017-06-29
 
-## Changed
+### Changed
 
 - Improving performance by only instantiating Json class for the module.json file once
 - Added support for generic git hosts
 
 ## 1.24.0 - 2017-06-12
 
-## Changed
+### Changed
 
 - Using `resource_path` to register module views
 - Changed the method to load additional eloquent factory paths
@@ -26,7 +32,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Factories are now also defined in the master service providers. This is used in the `module:make` command without the `--plain` flag, or using `module:make-provider` with the `--master` flag.
 - `module_path()` helper function.
 
-## Changed
+### Changed
 
 - The default location of event listeners is now in `Listeners/`, from `Events/Handlers`
 
