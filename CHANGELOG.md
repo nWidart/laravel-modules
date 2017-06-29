@@ -4,6 +4,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 1.25.0 - 2017-06-29
+
+## Changed
+
+- Improving performance by only instantiating Json class for the module.json file once
+- Added support for generic git hosts
+
 ## 1.24.0 - 2017-06-12
 
 ## Changed
