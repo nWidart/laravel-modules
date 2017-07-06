@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Changed
+
+- Throw an exception if asset name structure was not correct when using `{!! Module::asset() !!}`
+
 ## 1.25.1 - 2017-06-29
 
 ### Changed
@@ -86,7 +90,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ## 1.17.0 - 2017-02-27
 
 ### Changed
- 
+
 - Add checking for failure to parse module JSON
 
 ## 1.16.0 - 2017-01-24
