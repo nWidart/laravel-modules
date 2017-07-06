@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 1.26.0 - 2017-07-06
+
 ### Changed
 
 - Throw an exception if asset name structure was not correct when using `{!! Module::asset() !!}`
