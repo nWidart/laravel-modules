@@ -450,11 +450,11 @@ class Repository implements RepositoryInterface, Countable
      */
     public function getUsedStoragePath()
     {
-        if (!$this->app['files']->exists($path = storage_path('app/modules'))) {
-            $this->app['files']->makeDirectory($path, 0777, true);
+        if (!$this->app['files']->exists($path = storage_path('app/modules/modules.used'))) {
+            $this->app['files']->put($path, '');
         }
 
-        return $path . '/modules.used';
+        return $path;
     }
 
     /**
