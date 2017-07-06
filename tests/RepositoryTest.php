@@ -4,6 +4,7 @@ namespace Nwidart\Modules\tests;
 
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Collection;
+use Nwidart\Modules\Exceptions\InvalidAssetPath;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Repository;
@@ -141,6 +142,15 @@ class RepositoryTest extends BaseTestCase
         $path = $this->repository->asset('recipe:test.js');
 
         $this->assertEquals('//localhost/modules/recipe/test.js', $path);
+    }
+
+    /** @test */
+    public function it_throws_exception_if_module_is_omitted()
+    {
+        $this->expectException(InvalidAssetPath::class);
+        $this->expectExceptionMessage('Module name was not specified in asset [test.js].');
+
+        $this->repository->asset('test.js');
     }
 
     /** @test */
