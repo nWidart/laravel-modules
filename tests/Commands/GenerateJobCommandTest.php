@@ -2,7 +2,7 @@
 
 namespace Nwidart\Modules\tests\Commands;
 
-use Nwidart\Modules\tests\BaseTestCase;
+use Nwidart\Modules\Tests\BaseTestCase;
 
 class GenerateJobCommandTest extends BaseTestCase
 {
