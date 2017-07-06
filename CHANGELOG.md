@@ -7,6 +7,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ### Changed
 
 - Throw an exception if asset name structure was not correct when using `{!! Module::asset() !!}`
+- Create the module used file if non existent. Will provide for a better error message if module is omitted in console commands without a module:use.
 
 ## 1.25.1 - 2017-06-29
 
