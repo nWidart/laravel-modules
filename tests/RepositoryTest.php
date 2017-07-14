@@ -236,7 +236,8 @@ class RepositoryTest extends BaseTestCase
     /** @test */
     public function it_can_register_macros()
     {
-        Module::macro('registeredMacro', function () {});
+        Module::macro('registeredMacro', function () {
+        });
 
         $this->assertTrue(Module::hasMacro('registeredMacro'));
     }

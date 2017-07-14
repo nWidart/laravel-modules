@@ -30,7 +30,6 @@ class Collection extends BaseCollection
             }
 
             return $value instanceof Arrayable ? $value->toArray() : $value;
-
         }, $this->items);
     }
 }
