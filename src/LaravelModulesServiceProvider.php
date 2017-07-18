@@ -43,6 +43,12 @@ class LaravelModulesServiceProvider extends ServiceProvider
         $this->registerServices();
         $this->setupStubPath();
         $this->registerProviders();
+
+        // Lumen doesn't support boot()
+        if (get_class($this->app) == "Laravel\Lumen\Application") {
+            $this->registerNamespaces();
+            $this->registerModules();
+        }
     }
 
     /**
@@ -50,13 +56,23 @@ class LaravelModulesServiceProvider extends ServiceProvider
      */
     public function setupStubPath()
     {
-        $this->app->booted(function ($app) {
-            Stub::setBasePath(__DIR__ . '/Commands/stubs');
+        Stub::setBasePath(__DIR__ . '/Commands/stubs');
 
-            if ($app['modules']->config('stubs.enabled') === true) {
-                Stub::setBasePath($app['modules']->config('stubs.path'));
-            }
-        });
+        switch (get_class($this->app)) {
+            // // Lumen doesn't support boot()
+            case "Laravel\Lumen\Application":
+                if (app('modules')->config('stubs.enabled') === true) {
+                    Stub::setBasePath(app('modules')->config('stubs.path'));
+                }
+                break;
+            default:
+                $this->app->booted(function ($app) {
+                    if ($app['modules']->config('stubs.enabled') === true) {
+                        Stub::setBasePath($app['modules']->config('stubs.path'));
+                    }
+                });
+                break;
+        }
     }
 
     /**
@@ -65,6 +81,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
     protected function registerNamespaces()
     {
         $configPath = __DIR__ . '/../config/config.php';
+
         $this->mergeConfigFrom($configPath, 'modules');
         $this->publishes([
             $configPath => config_path('modules.php'),

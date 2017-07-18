@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules;
 
+use Illuminate\Container\Container;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
@@ -41,11 +42,11 @@ class Module extends ServiceProvider
     /**
      * The constructor.
      *
-     * @param Application $app
+     * @param Container $app
      * @param $name
      * @param $path
      */
-    public function __construct(Application $app, $name, $path)
+    public function __construct(Container $app, $name, $path)
     {
         parent::__construct($app);
         $this->name = $name;
