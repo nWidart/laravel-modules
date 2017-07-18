@@ -56,7 +56,7 @@ return [
         | Modules path
         |--------------------------------------------------------------------------
         |
-        | This path used for save the generated module. This path also will added
+        | This path used for save the generated module. This path also will be added
         | automatically to list of scanned folders.
         |
         */
