@@ -4,6 +4,17 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 1.27.0 - 2017-07-19
+
+### Added
+
+- Laravel Lumen support
+
+### Changed
+
+- Update dev dependencies grumphp and phpcsfixer to latest versions
+- The `make:model` command with the `-m` flag to create the associated migration is now using a current migration file name
+
 ## 1.26.0 - 2017-07-06
 
 ### Changed
