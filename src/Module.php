@@ -175,7 +175,7 @@ class Module extends ServiceProvider
     {
         $lowerName = $this->getLowerName();
 
-        $langPath = $this->getPath().'/Resources/lang';
+        $langPath = $this->getPath() . "/Resources/lang";
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $lowerName);
@@ -196,7 +196,7 @@ class Module extends ServiceProvider
         }
 
         return array_get($this->moduleJson, $file, function () use ($file) {
-            return $this->moduleJson[$file] = new Json($this->getPath().'/'.$file, $this->app['files']);
+            return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->app['files']);
         });
     }
 
@@ -247,7 +247,7 @@ class Module extends ServiceProvider
      */
     protected function fireEvent($event)
     {
-        $this->app['events']->fire(sprintf('modules.%s.'.$event, $this->getLowerName()), [$this]);
+        $this->app['events']->fire(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
     }
 
     /**
@@ -277,7 +277,7 @@ class Module extends ServiceProvider
     protected function registerFiles()
     {
         foreach ($this->get('files', []) as $file) {
-            include $this->path.'/'.$file;
+            include $this->path . '/' . $file;
         }
     }
 
@@ -398,7 +398,7 @@ class Module extends ServiceProvider
      */
     public function getExtraPath($path)
     {
-        return $this->getPath().'/'.$path;
+        return $this->getPath() . '/' . $path;
     }
 
     /**
