@@ -7,7 +7,7 @@ use Nwidart\Modules\Providers\BootstrapServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
 use Nwidart\Modules\Providers\ContractsServiceProvider;
 
-class ModulesServiceProvider extends ServiceProvider
+abstract class ModulesServiceProvider extends ServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.
@@ -25,6 +25,8 @@ class ModulesServiceProvider extends ServiceProvider
 
         $this->registerModules();
     }
+
+    abstract public function register();
 
     /**
      * Register all modules.
