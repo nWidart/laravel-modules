@@ -66,7 +66,7 @@ class ModelCommandTest extends BaseTestCase
         $migrationFile = $migrations[0];
         $migrationContent = $this->finder->get($this->modulePath . '/Database/Migrations/' . $migrationFile->getFilename());
         $this->assertCount(1, $migrations);
-        $this->assertTrue(str_contains($migrationContent, 'Schema::create(\'post\','));
+        $this->assertContains('Schema::create(\'posts\',', $migrationContent);
     }
 
     /** @test */
@@ -78,7 +78,18 @@ class ModelCommandTest extends BaseTestCase
         $migrationFile = $migrations[0];
         $migrationContent = $this->finder->get($this->modulePath . '/Database/Migrations/' . $migrationFile->getFilename());
         $this->assertCount(1, $migrations);
-        $this->assertTrue(str_contains($migrationContent, 'Schema::create(\'post\','));
+        $this->assertContains('Schema::create(\'posts\',', $migrationContent);
+    }
+
+    /** @test */
+    public function it_generates_correct_migration_file_name_with_multiple_words_model()
+    {
+        $this->artisan('module:make-model', ['model' => 'ProductDetail', 'module' => 'Blog', '-m' => true]);
+
+        $migrations = $this->finder->allFiles($this->modulePath . '/Database/Migrations');
+        $migrationFile = $migrations[0];
+
+        $this->assertContains('create_product_details_table', $migrationFile->getFilename());
     }
 
     private function expectedContent()
