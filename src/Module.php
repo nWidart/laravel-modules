@@ -2,8 +2,8 @@
 
 namespace Nwidart\Modules;
 
+use Illuminate\Container\Container;
 use Illuminate\Foundation\AliasLoader;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
@@ -13,9 +13,9 @@ class Module extends ServiceProvider
     use Macroable;
 
     /**
-     * The laravel application instance.
+     * The laravel|lumen application instance.
      *
-     * @var Application
+     * @var \Illuminate\Foundation\Application|\Laravel\Lumen\Application
      */
     protected $app;
 
@@ -41,11 +41,11 @@ class Module extends ServiceProvider
     /**
      * The constructor.
      *
-     * @param Application $app
+     * @param Container $app
      * @param $name
      * @param $path
      */
-    public function __construct(Application $app, $name, $path)
+    public function __construct(Container $app, $name, $path)
     {
         parent::__construct($app);
         $this->name = $name;
@@ -55,7 +55,7 @@ class Module extends ServiceProvider
     /**
      * Get laravel instance.
      *
-     * @return \Illuminate\Foundation\Application
+     * @return \Illuminate\Foundation\Application|\Laravel\Lumen\Application
      */
     public function getLaravel()
     {
@@ -170,14 +170,12 @@ class Module extends ServiceProvider
 
     /**
      * Register module's translation.
-     *
-     * @return void
      */
     protected function registerTranslation()
     {
         $lowerName = $this->getLowerName();
 
-        $langPath = $this->getPath() . "/Resources/lang";
+        $langPath = $this->getPath().'/Resources/lang';
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $lowerName);
@@ -198,7 +196,7 @@ class Module extends ServiceProvider
         }
 
         return array_get($this->moduleJson, $file, function () use ($file) {
-            return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->app['files']);
+            return $this->moduleJson[$file] = new Json($this->getPath().'/'.$file, $this->app['files']);
         });
     }
 
@@ -249,7 +247,7 @@ class Module extends ServiceProvider
      */
     protected function fireEvent($event)
     {
-        $this->app['events']->fire(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
+        $this->app['events']->fire(sprintf('modules.%s.'.$event, $this->getLowerName()), [$this]);
     }
 
     /**
@@ -279,7 +277,7 @@ class Module extends ServiceProvider
     protected function registerFiles()
     {
         foreach ($this->get('files', []) as $file) {
-            include $this->path . '/' . $file;
+            include $this->path.'/'.$file;
         }
     }
 
@@ -400,7 +398,7 @@ class Module extends ServiceProvider
      */
     public function getExtraPath($path)
     {
-        return $this->getPath() . '/' . $path;
+        return $this->getPath().'/'.$path;
     }
 
     /**
