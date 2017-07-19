@@ -30,6 +30,6 @@ class HelpersTest extends BaseTestCase
     /** @test */
     public function it_finds_the_module_path()
     {
-        $this->assertTrue(str_contains(module_path('Blog'), 'Modules/Blog'));
+        $this->assertTrue(str_contains(module_path('Blog'), 'modules/Blog'));
     }
 }

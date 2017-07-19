@@ -4,7 +4,6 @@ namespace Nwidart\Modules;
 
 use Countable;
 use Illuminate\Container\Container;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Nwidart\Modules\Contracts\RepositoryInterface;
@@ -20,7 +19,7 @@ class Repository implements RepositoryInterface, Countable
     /**
      * Application instance.
      *
-     * @var Application
+     * @var \Illuminate\Foundation\Application|\Laravel\Lumen\Application
      */
     protected $app;
 
@@ -46,7 +45,7 @@ class Repository implements RepositoryInterface, Countable
     /**
      * The constructor.
      *
-     * @param Container $app
+     * @param Container   $app
      * @param string|null $path
      */
     public function __construct(Container $app, $path = null)
@@ -100,7 +99,7 @@ class Repository implements RepositoryInterface, Countable
     {
         $paths = $this->paths;
 
-        $paths[] = $this->getPath() . '/*';
+        $paths[] = $this->getPath().'/*';
 
         if ($this->config('scan.enabled')) {
             $paths = array_merge($paths, $this->config('scan.paths'));
@@ -161,7 +160,7 @@ class Repository implements RepositoryInterface, Countable
         $modules = [];
 
         foreach ($cached as $name => $module) {
-            $path = $this->config('paths.modules') . '/' . $name;
+            $path = $this->config('paths.modules').'/'.$name;
 
             $modules[$name] = new Module($this->app, $name, $path);
         }
@@ -311,7 +310,9 @@ class Repository implements RepositoryInterface, Countable
 
     /**
      * Find a specific module.
+     *
      * @param $name
+     *
      * @return mixed|void
      */
     public function find($name)
@@ -327,7 +328,9 @@ class Repository implements RepositoryInterface, Countable
 
     /**
      * Find a specific module by its alias.
+     *
      * @param $alias
+     *
      * @return mixed|void
      */
     public function findByAlias($alias)
@@ -345,7 +348,9 @@ class Repository implements RepositoryInterface, Countable
      * Find all modules that are required by a module. If the module cannot be found, throw an exception.
      *
      * @param $name
+     *
      * @return array
+     *
      * @throws ModuleNotFoundException
      */
     public function findRequirements($name)
@@ -363,7 +368,9 @@ class Repository implements RepositoryInterface, Countable
 
     /**
      * Alternative for "find" method.
+     *
      * @param $name
+     *
      * @return mixed|void
      */
     public function get($name)
@@ -413,9 +420,9 @@ class Repository implements RepositoryInterface, Countable
     public function getModulePath($module)
     {
         try {
-            return $this->findOrFail($module)->getPath() . '/';
+            return $this->findOrFail($module)->getPath().'/';
         } catch (ModuleNotFoundException $e) {
-            return $this->getPath() . '/' . Str::studly($module) . '/';
+            return $this->getPath().'/'.Str::studly($module).'/';
         }
     }
 
@@ -428,20 +435,20 @@ class Repository implements RepositoryInterface, Countable
      */
     public function assetPath($module)
     {
-        return $this->config('paths.assets') . '/' . $module;
+        return $this->config('paths.assets').'/'.$module;
     }
 
     /**
      * Get a specific config data from a configuration file.
      *
      * @param $key
-     *
      * @param null $default
+     *
      * @return mixed
      */
     public function config($key, $default = null)
     {
-        return $this->app['config']->get('modules.' . $key, $default);
+        return $this->app['config']->get('modules.'.$key, $default);
     }
 
     /**
@@ -532,9 +539,9 @@ class Repository implements RepositoryInterface, Countable
         }
         list($name, $url) = explode(':', $asset);
 
-        $baseUrl = str_replace(public_path() . DIRECTORY_SEPARATOR, '', $this->getAssetsPath());
+        $baseUrl = str_replace(public_path().DIRECTORY_SEPARATOR, '', $this->getAssetsPath());
 
-        $url = $this->app['url']->asset($baseUrl . "/{$name}/" . $url);
+        $url = $this->app['url']->asset($baseUrl."/{$name}/".$url);
 
         return str_replace(['http://', 'https://'], '//', $url);
     }
