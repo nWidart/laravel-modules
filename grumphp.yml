@@ -4,6 +4,6 @@ parameters:
     stop_on_failure: true
     tasks:
       phpcsfixer:
-        config_file: .php_cs
+        config_file: .php_cs.dist
       composer:
         file: ./composer.json
