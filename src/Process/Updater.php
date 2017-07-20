@@ -33,7 +33,10 @@ class Updater extends Runner
         foreach ($packages as $name => $version) {
             $concatenatedPackages .= "\"{$name}:{$version}\" ";
         }
-        $this->run("composer require {$concatenatedPackages}");
+
+        if(!empty($concatenatedPackages)) {
+            $this->run("composer require {$concatenatedPackages}");
+        }
     }
 
     /**
@@ -47,7 +50,10 @@ class Updater extends Runner
         foreach ($devPackages as $name => $version) {
             $concatenatedPackages .= "\"{$name}:{$version}\" ";
         }
-        $this->run("composer require --dev {$concatenatedPackages}");
+
+        if(!empty($concatenatedPackages)) {
+            $this->run("composer require --dev {$concatenatedPackages}");
+        }
     }
 
     /**
