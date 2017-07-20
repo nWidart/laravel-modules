@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Commands;
 use Illuminate\Console\Command;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class UpdateCommand extends Command
 {
@@ -29,7 +30,7 @@ class UpdateCommand extends Command
      */
     public function fire()
     {
-        $this->laravel['modules']->update($name = $this->getModuleName());
+        $this->laravel['modules']->update($this->getModuleName(), $this->option('copy-to-main'));
 
         $this->info("Module [{$name}] updated successfully.");
     }
@@ -43,6 +44,18 @@ class UpdateCommand extends Command
     {
         return array(
             array('module', InputArgument::OPTIONAL, 'The name of module will be updated.'),
+        );
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return array(
+            array('copy-to-main', null, InputOption::VALUE_NONE, 'Save to main composer.json.')
         );
     }
 }

@@ -11,7 +11,7 @@ class Updater extends Runner
      *
      * @param string $module
      */
-    public function update($module)
+    public function update($module, $copyToMainComposer = false)
     {
         $module = $this->module->findOrFail($module);
 
@@ -19,7 +19,10 @@ class Updater extends Runner
 
         $this->installRequires($module);
         $this->installDevRequires($module);
-        $this->copyScriptsToMainComposerJson($module);
+        
+        if($copyToMainComposer) {
+            $this->copyScriptsToMainComposerJson($module);
+        }
     }
 
     /**
