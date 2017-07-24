@@ -64,6 +64,8 @@ By default the module classes are not loaded automatically. You can autoload you
 }
 ```
 
+**Tip: don't forget to run `composer dump-autoload` afterwards**
+
 ## Documentation
 
 You'll find installation instructions and full documentation on [https://nwidart.com/laravel-modules/](https://nwidart.com/laravel-modules/).
