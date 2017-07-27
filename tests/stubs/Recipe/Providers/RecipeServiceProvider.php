@@ -47,6 +47,6 @@ class RecipeServiceProvider extends ServiceProvider
                 return new \Modules\Recipe\Repositories\Cache\CacheRecipeDecorator($repository);
             }
         );
-// add bindings
+        // add bindings
     }
 }

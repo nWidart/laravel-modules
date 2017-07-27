@@ -24,7 +24,7 @@ class ListCommand extends Command
     /**
      * Execute the console command.
      */
-    public function fire()
+    public function handle()
     {
         $this->table(['Name', 'Status', 'Order', 'Path'], $this->getRows());
     }

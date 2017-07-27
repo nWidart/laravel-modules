@@ -33,8 +33,10 @@ class GenerateListenerCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_a_new_event_class()
     {
-        $this->artisan('module:make-listener',
-            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated']);
+        $this->artisan(
+            'module:make-listener',
+            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated']
+        );
 
         $this->assertTrue(is_file($this->modulePath . '/Listeners/NotifyUsersOfANewPost.php'));
     }
@@ -42,8 +44,10 @@ class GenerateListenerCommandTest extends BaseTestCase
     /** @test */
     public function it_generated_correct_file_with_content()
     {
-        $this->artisan('module:make-listener',
-            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated']);
+        $this->artisan(
+            'module:make-listener',
+            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated']
+        );
 
         $file = $this->finder->get($this->modulePath . '/Listeners/NotifyUsersOfANewPost.php');
 

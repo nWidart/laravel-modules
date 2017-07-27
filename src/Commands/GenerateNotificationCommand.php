@@ -19,11 +19,11 @@ final class GenerateNotificationCommand extends GeneratorCommand
 
     protected $argumentName = 'name';
 
-     /**
-     * The console command description.
-     *
-     * @var string
-     */
+    /**
+    * The console command description.
+    *
+    * @var string
+    */
     protected $description = 'Generate new notification class for the specified module.';
 
     /**

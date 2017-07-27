@@ -346,7 +346,8 @@ class ModuleGenerator extends Generator
     {
         return (new Stub(
             '/' . $stub . '.stub',
-            $this->getReplacement($stub))
+            $this->getReplacement($stub)
+        )
         )->render();
     }
 

@@ -34,7 +34,7 @@ class MigrateCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         $this->module = $this->laravel['modules'];
 

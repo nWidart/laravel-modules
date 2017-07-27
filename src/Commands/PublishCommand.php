@@ -26,7 +26,7 @@ class PublishCommand extends Command
     /**
      * Execute the console command.
      */
-    public function fire()
+    public function handle()
     {
         if ($name = $this->argument('module')) {
             $this->publish($name);

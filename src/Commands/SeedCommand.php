@@ -32,7 +32,7 @@ class SeedCommand extends Command
     /**
      * Execute the console command.
      */
-    public function fire()
+    public function handle()
     {
         try {
             if ($name = $this->argument('module')) {

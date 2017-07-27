@@ -15,5 +15,5 @@ $router->group(['prefix' =>'/recipe'], function (Router $router) {
             'update' => 'admin.recipe.recipe.update',
             'destroy' => 'admin.recipe.recipe.destroy',
         ]]);
-// append
+    // append
 });

@@ -150,9 +150,9 @@ class MigrationCommand extends GeneratorCommand
     /**
      * Run the command.
      */
-    public function fire()
+    public function handle()
     {
-        parent::fire();
+        parent::handle();
 
         if (app()->environment() === 'testing') {
             return;

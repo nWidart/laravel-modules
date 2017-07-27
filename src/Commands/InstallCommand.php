@@ -35,7 +35,7 @@ class InstallCommand extends Command
     /**
      * Execute the console command.
      */
-    public function fire()
+    public function handle()
     {
         if (is_null($this->argument('name'))) {
             $this->installFromFile();

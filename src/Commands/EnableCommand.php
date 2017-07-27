@@ -24,7 +24,7 @@ class EnableCommand extends Command
     /**
      * Execute the console command.
      */
-    public function fire()
+    public function handle()
     {
         $module = $this->laravel['modules']->findOrFail($this->argument('module'));
 

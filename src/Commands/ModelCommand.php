@@ -33,9 +33,9 @@ class ModelCommand extends GeneratorCommand
      */
     protected $description = 'Generate new model for the specified module.';
 
-    public function fire()
+    public function handle()
     {
-        parent::fire();
+        parent::handle();
 
         $this->handleOptionalMigrationOption();
     }
