@@ -13,17 +13,11 @@ use Nwidart\Modules\Repository;
 abstract class ModuleBaseEvent
 {
     /**
-     * The module name.
+     * The module instance.
      *
-     * @var string
+     * @var Module
      */
-    protected $name;
-    /**
-     * The module repository instance.
-     *
-     * @var Repository
-     */
-    protected $repository;
+    protected $module;
 
     /**
      * The console command instance.
@@ -32,20 +26,10 @@ abstract class ModuleBaseEvent
      */
     protected $console;
 
-    public function __construct($name, $repository = null, $console = null)
+    public function __construct($name, Repository $repository, Command $console)
     {
-        $this->name = $name;
-        $this->repository = $repository;
+        $this->module = $repository->get($name);
         $this->console = $console;
-    }
-
-    /**
-     * Get the module name
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 
     /**
@@ -53,7 +37,7 @@ abstract class ModuleBaseEvent
      */
     public function getModule()
     {
-        return $this->repository->get($this->name);
+        return $this->module;
     }
 
     /**
