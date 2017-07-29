@@ -63,10 +63,10 @@ class Installer
      */
     public function __construct($name, $version = null, $type = null, $tree = false)
     {
-        $this->name    = $name;
+        $this->name = $name;
         $this->version = $version;
-        $this->type    = $type;
-        $this->tree    = $tree;
+        $this->type = $type;
+        $this->tree = $tree;
     }
 
     /**
@@ -133,7 +133,7 @@ class Installer
     public function run()
     {
         $process = $this->getProcess();
-        $app     = $this->console->getLaravel();
+        $app = $this->console->getLaravel();
 
         $app['events']->dispatch(new ModuleIsInstalling(
             $this->getModuleName(),
