@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Repository;
 use Symfony\Component\Process\Process;
+use Nwidart\Modules\Events\ModuleIsInstalling;
+use Nwidart\Modules\Events\ModuleWasInstalled;
 
 class Installer
 {
@@ -131,6 +133,14 @@ class Installer
     public function run()
     {
         $process = $this->getProcess();
+        $app = $this->console->getLaravel();
+        $module = $this->repository->get($this->getModuleName());
+
+        $app['events']->dispatch(new ModuleIsInstalling(
+            $module,
+            $this->console
+        ));
+
 
         $process->setTimeout($this->timeout);
 
@@ -139,6 +149,11 @@ class Installer
                 $this->console->line($line);
             });
         }
+
+        $app['events']->dispatch(new ModuleWasInstalled(
+            $module,
+            $this->console
+        ));
 
         return $process;
     }
