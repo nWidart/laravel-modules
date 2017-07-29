@@ -59,7 +59,7 @@ class Installer
      * @param string $name
      * @param string $version
      * @param string $type
-     * @param bool $tree
+     * @param bool   $tree
      */
     public function __construct($name, $version = null, $type = null, $tree = false)
     {
