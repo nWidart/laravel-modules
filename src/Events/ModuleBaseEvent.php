@@ -4,7 +4,6 @@ namespace Nwidart\Modules\Events;
 
 use Illuminate\Console\Command;
 use Nwidart\Modules\Module;
-use Nwidart\Modules\Repository;
 
 /**
  * Class ModuleBaseEvent
@@ -26,9 +25,9 @@ abstract class ModuleBaseEvent
      */
     protected $console;
 
-    public function __construct($name, Repository $repository, Command $console)
+    public function __construct(Module $module, Command $console)
     {
-        $this->module = $repository->get($name);
+        $this->module = $module;
         $this->console = $console;
     }
 

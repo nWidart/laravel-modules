@@ -134,10 +134,10 @@ class Installer
     {
         $process = $this->getProcess();
         $app = $this->console->getLaravel();
+        $module = $this->repository->get($this->getModuleName());
 
         $app['events']->dispatch(new ModuleIsInstalling(
-            $this->getModuleName(),
-            $this->repository,
+            $module,
             $this->console
         ));
 
@@ -151,8 +151,7 @@ class Installer
         }
 
         $app['events']->dispatch(new ModuleWasInstalled(
-            $this->getModuleName(),
-            $this->repository,
+            $module,
             $this->console
         ));
 
