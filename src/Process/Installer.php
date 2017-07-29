@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Repository;
 use Symfony\Component\Process\Process;
+use Nwidart\Modules\Events\ModuleIsInstalling;
+use Nwidart\Modules\Events\ModuleWasInstalled;
 
 class Installer
 {
@@ -57,14 +59,14 @@ class Installer
      * @param string $name
      * @param string $version
      * @param string $type
-     * @param bool   $tree
+     * @param bool $tree
      */
     public function __construct($name, $version = null, $type = null, $tree = false)
     {
-        $this->name = $name;
+        $this->name    = $name;
         $this->version = $version;
-        $this->type = $type;
-        $this->tree = $tree;
+        $this->type    = $type;
+        $this->tree    = $tree;
     }
 
     /**
@@ -131,6 +133,14 @@ class Installer
     public function run()
     {
         $process = $this->getProcess();
+        $app     = $this->console->getLaravel();
+
+        $app['events']->dispatch(new ModuleIsInstalling(
+            $this->getModuleName(),
+            $this->repository,
+            $this->console
+        ));
+
 
         $process->setTimeout($this->timeout);
 
@@ -139,6 +149,12 @@ class Installer
                 $this->console->line($line);
             });
         }
+
+        $app['events']->dispatch(new ModuleWasInstalled(
+            $this->getModuleName(),
+            $this->repository,
+            $this->console
+        ));
 
         return $process;
     }
