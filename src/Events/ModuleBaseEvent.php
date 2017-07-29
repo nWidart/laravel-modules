@@ -34,51 +34,9 @@ abstract class ModuleBaseEvent
 
     public function __construct($name, $repository = null, $console = null)
     {
-        $this->name       = $name;
-        $this->repository = $repository;
-        $this->console    = $console;
-    }
-
-    /**
-     * Set the module name
-     *
-     * @param $name
-     *
-     * @return $this
-     */
-    public function setName($name)
-    {
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Set console command instance.
-     *
-     * @param \Illuminate\Console\Command $console
-     *
-     * @return $this
-     */
-    public function setConsole(Command $console)
-    {
-        $this->console = $console;
-
-        return $this;
-    }
-
-    /**
-     * Set the module repository instance.
-     *
-     * @param Repository $repository
-     *
-     * @return $this
-     */
-    public function setRepository(Repository $repository)
-    {
         $this->repository = $repository;
-
-        return $this;
+        $this->console = $console;
     }
 
     /**
