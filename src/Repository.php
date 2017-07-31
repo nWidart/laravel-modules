@@ -3,7 +3,7 @@
 namespace Nwidart\Modules;
 
 use Countable;
-use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Container\Container;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Nwidart\Modules\Contracts\RepositoryInterface;
@@ -19,7 +19,7 @@ class Repository implements RepositoryInterface, Countable
     /**
      * Application instance.
      *
-     * @var Application
+     * @var Illuminate\Contracts\Foundation\Application|Laravel\Lumen\Application
      */
     protected $app;
 
@@ -45,10 +45,10 @@ class Repository implements RepositoryInterface, Countable
     /**
      * The constructor.
      *
-     * @param Application $app
+     * @param Container $app
      * @param string|null $path
      */
-    public function __construct(Application $app, $path = null)
+    public function __construct(Container $app, $path = null)
     {
         $this->app = $app;
         $this->path = $path;
