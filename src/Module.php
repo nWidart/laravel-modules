@@ -2,7 +2,7 @@
 
 namespace Nwidart\Modules;
 
-use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Container\Container;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -15,7 +15,7 @@ class Module extends ServiceProvider
     /**
      * The laravel|lumen application instance.
      *
-     * @var Application
+     * @var Illuminate\Contracts\Foundation\Application|Laravel\Lumen\Application
      */
     protected $app;
 
@@ -41,11 +41,11 @@ class Module extends ServiceProvider
     /**
      * The constructor.
      *
-     * @param Application $app
+     * @param Container $app
      * @param $name
      * @param $path
      */
-    public function __construct(Application $app, $name, $path)
+    public function __construct(Container $app, $name, $path)
     {
         parent::__construct($app);
         $this->name = $name;
@@ -55,7 +55,7 @@ class Module extends ServiceProvider
     /**
      * Get laravel instance.
      *
-     * @return Application
+     * @return Illuminate\Contracts\Foundation\Application|Laravel\Lumen\Application
      */
     public function getLaravel()
     {
