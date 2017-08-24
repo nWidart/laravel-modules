@@ -362,11 +362,11 @@ class Module extends ServiceProvider
      */
     public function disable()
     {
-        $this->app['events']->fire('module.disabling', [$this]);
+        $this->fireEvent('disabling');
 
         $this->setActive(0);
 
-        $this->app['events']->fire('module.disabled', [$this]);
+        $this->fireEvent('disabled');
     }
 
     /**
@@ -374,11 +374,11 @@ class Module extends ServiceProvider
      */
     public function enable()
     {
-        $this->app['events']->fire('module.enabling', [$this]);
+        $this->fireEvent('enabling');
 
         $this->setActive(1);
 
-        $this->app['events']->fire('module.enabled', [$this]);
+        $this->fireEvent('enabled');
     }
 
     /**
