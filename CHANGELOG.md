@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Changed
+
+- Allow migrate-refresh command to be run without module argument
+
 ## 1.27.1 - 2017-07-31
 
 ### Changed
