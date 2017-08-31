@@ -4,6 +4,20 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 1.27.2 - 2017-08-29
+
+### Changed
+
+- Allow migrate-refresh command to be run without module argument
+- Module name was added to the module enable and disable events
+
+## 1.27.1 - 2017-07-31
+
+### Changed
+
+- Only run composer require on the module:update command if there's something to require
+- Fixing lumen support
+
 ## 1.27.0 - 2017-07-19
 
 ### Added
