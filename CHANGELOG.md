@@ -4,6 +4,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 2.0.0 - 2017-08-31
+
+### Added
+
+- Support Laravel 5.5
+
+
 ## 1.27.2 - 2017-08-29
 
 ### Changed
