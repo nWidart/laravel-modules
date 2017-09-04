@@ -3,7 +3,9 @@
 namespace Nwidart\Modules;
 
 use Illuminate\Container\Container;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Foundation\ProviderRepository;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
@@ -90,6 +92,16 @@ class Module extends ServiceProvider
     public function getStudlyName()
     {
         return Str::studly($this->name);
+    }
+
+  /**
+   * Get name in snake case.
+   *
+   * @return string
+   */
+    public function getSnakeName()
+    {
+      return Str::snake($this->name);
     }
 
     /**
@@ -268,9 +280,18 @@ class Module extends ServiceProvider
      */
     protected function registerProviders()
     {
-        foreach ($this->get('providers', []) as $provider) {
-            $this->app->register($provider);
-        }
+      (new ProviderRepository($this->app, new Filesystem, $this->getCachedServicesPath()))
+        ->load($this->get('providers', []));
+    }
+
+  /**
+   * Get the path to the cached *_module.php file.
+   *
+   * @return string
+   */
+    public function getCachedServicesPath()
+    {
+      return Str::replaceLast('services.php', $this->getSnakeName().'_module.php', $this->app->getCachedServicesPath());
     }
 
     /**

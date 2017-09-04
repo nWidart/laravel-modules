@@ -15,25 +15,31 @@ class ModuleTest extends BaseTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->module = new Module($this->app, 'Recipe', __DIR__ . '/stubs/Recipe');
+        $this->module = new Module($this->app, 'Recipe Name', __DIR__ . '/stubs/Recipe');
     }
 
     /** @test */
     public function it_gets_module_name()
     {
-        $this->assertEquals('Recipe', $this->module->getName());
+        $this->assertEquals('Recipe Name', $this->module->getName());
     }
 
     /** @test */
     public function it_gets_lowercase_module_name()
     {
-        $this->assertEquals('recipe', $this->module->getLowerName());
+        $this->assertEquals('recipe name', $this->module->getLowerName());
     }
 
     /** @test */
     public function it_gets_studly_name()
     {
-        $this->assertEquals('Recipe', $this->module->getName());
+        $this->assertEquals('RecipeName', $this->module->getName());
+    }
+
+    /** @test */
+    public function it_gets_snake_name()
+    {
+        $this->assertEquals('recipe_name', $this->module->getName());
     }
 
     /** @test */
