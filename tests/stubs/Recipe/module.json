@@ -8,7 +8,7 @@
     "order": 1,
     "providers": [
         "Modules\\Recipe\\Providers\\RecipeServiceProvider",
-        "Modules\\Recipe\\Providers\\RouteServiceProvider"
+        "Modules\\Recipe\\Providers\\DeferredServiceProvider"
     ],
     "aliases": [],
     "files": [],
