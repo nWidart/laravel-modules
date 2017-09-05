@@ -2,20 +2,22 @@
 
 namespace Nwidart\Modules\Tests;
 
+use Modules\Recipe\Providers\DeferredServiceProvider;
+use Modules\Recipe\Providers\RecipeServiceProvider;
 use Nwidart\Modules\Json;
 use Nwidart\Modules\Module;
 
 class ModuleTest extends BaseTestCase
 {
     /**
-     * @var Module
+     * @var TestingModule
      */
     private $module;
 
     public function setUp()
     {
         parent::setUp();
-        $this->module = new Module($this->app, 'Recipe Name', __DIR__ . '/stubs/Recipe');
+        $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/Recipe');
     }
 
     /** @test */
@@ -33,13 +35,13 @@ class ModuleTest extends BaseTestCase
     /** @test */
     public function it_gets_studly_name()
     {
-        $this->assertEquals('RecipeName', $this->module->getName());
+        $this->assertEquals('RecipeName', $this->module->getStudlyName());
     }
 
     /** @test */
     public function it_gets_snake_name()
     {
-        $this->assertEquals('recipe_name', $this->module->getName());
+        $this->assertEquals('recipe_name', $this->module->getSnakeName());
     }
 
     /** @test */
@@ -63,14 +65,13 @@ class ModuleTest extends BaseTestCase
     /** @test */
     public function it_gets_required_modules()
     {
-        $this->assertEquals([ 'required_module' ], $this->module->getRequires());
+        $this->assertEquals(['required_module'], $this->module->getRequires());
     }
 
     /** @test */
     public function it_loads_module_translations()
     {
-        $this->module->boot();
-
+        (new TestingModule($this->app, 'Recipe', __DIR__ . '/stubs/Recipe'))->boot();
         $this->assertEquals('Recipe', trans('recipe::recipes.title.recipes'));
     }
 
@@ -92,7 +93,7 @@ class ModuleTest extends BaseTestCase
         $this->assertEquals('Recipe', $this->module->get('name'));
         $this->assertEquals('0.1', $this->module->get('version'));
         $this->assertEquals('my default', $this->module->get('some-thing-non-there', 'my default'));
-        $this->assertEquals([ 'required_module' ], $this->module->get('requires'));
+        $this->assertEquals(['required_module'], $this->module->get('requires'));
     }
 
     /** @test */
@@ -104,7 +105,7 @@ class ModuleTest extends BaseTestCase
     /** @test */
     public function it_casts_module_to_string()
     {
-        $this->assertEquals('Recipe', (string) $this->module);
+        $this->assertEquals('RecipeName', (string) $this->module);
     }
 
     /** @test */
@@ -143,5 +144,66 @@ class ModuleTest extends BaseTestCase
         ]);
 
         $this->module->enable();
+    }
+
+    /** @test */
+    public function it_has_a_good_providers_manifest_path()
+    {
+        $this->assertEquals(
+            $this->app->bootstrapPath("cache/{$this->module->getSnakeName()}_module.php"),
+            $this->module->getCachedServicesPath()
+        );
+    }
+
+    /** @test */
+    public function it_makes_a_manifest_file_when_providers_are_loaded()
+    {
+        $cachedServicesPath = $this->module->getCachedServicesPath();
+
+        @unlink($cachedServicesPath);
+        $this->assertFileNotExists($cachedServicesPath);
+
+        $this->module->registerProviders();
+
+        $this->assertFileExists($cachedServicesPath);
+        $manifest = require $cachedServicesPath;
+
+        $this->assertEquals([
+            'providers' => [
+                RecipeServiceProvider::class,
+                DeferredServiceProvider::class,
+            ],
+            'eager'     => [RecipeServiceProvider::class],
+            'deferred'  => ['deferred' => DeferredServiceProvider::class],
+            'when'      =>
+                [DeferredServiceProvider::class => []],
+        ], $manifest);
+    }
+
+    /** @test */
+    public function it_can_load_a_deferred_provider()
+    {
+        @unlink($this->module->getCachedServicesPath());
+
+        $this->module->registerProviders();
+
+        try {
+            app('foo');
+            $this->assertTrue(false, "app('foo') should throw an exception.");
+        } catch (\Exception $e) {
+            $this->assertEquals("Class foo does not exist", $e->getMessage());
+        }
+
+        app('deferred');
+
+        $this->assertEquals('bar', app('foo'));
+    }
+}
+
+class TestingModule extends Module
+{
+    public function registerProviders()
+    {
+        parent::registerProviders();
     }
 }
