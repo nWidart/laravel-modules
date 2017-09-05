@@ -1,8 +1,8 @@
 <?php
 
-namespace Nwidart\Modules\tests\Commands;
+namespace Nwidart\Modules\Tests\Commands;
 
-use Nwidart\Modules\tests\BaseTestCase;
+use Nwidart\Modules\Tests\BaseTestCase;
 
 class GenerateMailCommandTest extends BaseTestCase
 {

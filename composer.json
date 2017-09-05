@@ -38,7 +38,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Nwidart\\Modules\\Tests\\": "tests"
+      "Nwidart\\Modules\\Tests\\": "tests",
+      "Modules\\Recipe\\": "tests/stubs/Recipe"
     }
   },
   "extra": {
