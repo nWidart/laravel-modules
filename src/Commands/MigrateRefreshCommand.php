@@ -79,7 +79,7 @@ class MigrateRefreshCommand extends Command
     {
         $module = $this->argument('module');
 
-        app('modules')->find($module);
+        $module = app('modules')->find($module);
 
         if ($module === null) {
             return $module;
