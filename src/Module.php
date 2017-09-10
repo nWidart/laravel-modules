@@ -280,7 +280,7 @@ class Module extends ServiceProvider
      */
     protected function registerProviders()
     {
-        (new ProviderRepository($this->app, new Filesystem, $this->getCachedServicesPath()))
+        (new ProviderRepository($this->app, new Filesystem(), $this->getCachedServicesPath()))
         ->load($this->get('providers', []));
     }
 
