@@ -1,9 +1,0 @@
-parameters:
-    git_dir: .
-    bin_dir: vendor/bin
-    stop_on_failure: true
-    tasks:
-      phpcsfixer2:
-        config: .php_cs.dist
-      composer:
-        file: ./composer.json
