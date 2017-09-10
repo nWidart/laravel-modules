@@ -17,7 +17,7 @@ class Module extends ServiceProvider
     /**
      * The laravel|lumen application instance.
      *
-     * @var Illuminate\Contracts\Foundation\Application|Laravel\Lumen\Application
+     * @var \Illuminate\Contracts\Foundation\Application|Laravel\Lumen\Application
      */
     protected $app;
 
@@ -57,7 +57,7 @@ class Module extends ServiceProvider
     /**
      * Get laravel instance.
      *
-     * @return Illuminate\Contracts\Foundation\Application|Laravel\Lumen\Application
+     * @return \Illuminate\Contracts\Foundation\Application|Laravel\Lumen\Application
      */
     public function getLaravel()
     {
@@ -101,7 +101,7 @@ class Module extends ServiceProvider
    */
     public function getSnakeName()
     {
-      return Str::snake($this->name);
+        return Str::snake($this->name);
     }
 
     /**
@@ -280,7 +280,7 @@ class Module extends ServiceProvider
      */
     protected function registerProviders()
     {
-      (new ProviderRepository($this->app, new Filesystem, $this->getCachedServicesPath()))
+        (new ProviderRepository($this->app, new Filesystem, $this->getCachedServicesPath()))
         ->load($this->get('providers', []));
     }
 
@@ -291,7 +291,7 @@ class Module extends ServiceProvider
    */
     public function getCachedServicesPath()
     {
-      return Str::replaceLast('services.php', $this->getSnakeName().'_module.php', $this->app->getCachedServicesPath());
+        return Str::replaceLast('services.php', $this->getSnakeName() . '_module.php', $this->app->getCachedServicesPath());
     }
 
     /**
