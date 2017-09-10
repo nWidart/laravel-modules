@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 2.1.0 - 2017-09-10
+
 ### Changed
 
 - Register module migrations
