@@ -12,7 +12,7 @@ use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Process\Installer;
 use Nwidart\Modules\Process\Updater;
 
-class Repository implements RepositoryInterface, Countable
+abstract class Repository implements RepositoryInterface, Countable
 {
     use Macroable;
 
@@ -113,26 +113,7 @@ class Repository implements RepositoryInterface, Countable
      *
      * @return array
      */
-    public function scan()
-    {
-        $paths = $this->getScanPaths();
-
-        $modules = [];
-
-        foreach ($paths as $key => $path) {
-            $manifests = $this->app['files']->glob("{$path}/module.json");
-
-            is_array($manifests) || $manifests = [];
-
-            foreach ($manifests as $manifest) {
-                $name = Json::make($manifest)->get('name');
-
-                $modules[$name] = new Module($this->app, $name, dirname($manifest));
-            }
-        }
-
-        return $modules;
-    }
+    abstract public function scan();
 
     /**
      * Get all modules.
@@ -155,18 +136,7 @@ class Repository implements RepositoryInterface, Countable
      *
      * @return array
      */
-    protected function formatCached($cached)
-    {
-        $modules = [];
-
-        foreach ($cached as $name => $module) {
-            $path = $this->config('paths.modules') . '/' . $name;
-
-            $modules[$name] = new Module($this->app, $name, $path);
-        }
-
-        return $modules;
-    }
+    abstract protected function formatCached($cached);
 
     /**
      * Get cached modules.
