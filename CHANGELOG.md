@@ -4,6 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 2.2.1 - 2017-09-14
+
+## Changed
+
+- Fixed class namespace to `Repository` in `ContractsServiceProvider`
 
 ## 2.2.0 - 2017-09-14
 
