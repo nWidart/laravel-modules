@@ -38,4 +38,16 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
             }
         });
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function registerServices()
+    {
+        $this->app->singleton('modules', function ($app) {
+            $path = $app['config']->get('modules.paths.modules');
+
+            return new \Nwidart\Modules\Laravel\Repository($app, $path);
+        });
+    }
 }

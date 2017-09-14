@@ -200,7 +200,7 @@ class ModuleTest extends BaseTestCase
     }
 }
 
-class TestingModule extends Module
+class TestingModule extends \Nwidart\Modules\Laravel\Module
 {
     public function registerProviders()
     {

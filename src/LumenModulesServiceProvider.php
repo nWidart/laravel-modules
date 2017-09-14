@@ -36,4 +36,16 @@ class LumenModulesServiceProvider extends ModulesServiceProvider
             Stub::setBasePath(app('modules')->config('stubs.path'));
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function registerServices()
+    {
+        $this->app->singleton('modules', function ($app) {
+            $path = $app['config']->get('modules.paths.modules');
+
+            return new \Nwidart\Modules\Lumen\Repository($app, $path);
+        });
+    }
 }
