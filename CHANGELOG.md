@@ -4,6 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Added
+
+- Lumen compatibility with new way to register providers
+
+
 ## 2.1.0 - 2017-09-10
 
 ### Changed
