@@ -87,11 +87,9 @@ return [
         |--------------------------------------------------------------------------
         | Generator path
         |--------------------------------------------------------------------------
-        |
-        | Here you may update the modules generator path.
-        |
+        | Here you may update the modules generated folder paths.
+        | Set the value to false to not generate a folder.
         */
-
         'generator' => [
             'assets' => 'Assets',
             'config' => 'Config',
