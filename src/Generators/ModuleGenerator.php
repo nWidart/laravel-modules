@@ -276,6 +276,10 @@ class ModuleGenerator extends Generator
     public function generateFolders()
     {
         foreach ($this->getFolders() as $folder) {
+            if ($folder === false) {
+                return;
+            }
+
             $path = $this->module->getModulePath($this->getName()) . '/' . $folder;
 
             $this->filesystem->makeDirectory($path, 0755, true);

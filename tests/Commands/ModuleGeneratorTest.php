@@ -171,6 +171,18 @@ class ModuleGeneratorTest extends BaseTestCase
         $this->assertTrue(str_contains($output, 'Module [Blog] created successfully.'));
     }
 
+    /** @test */
+    public function it_can_ignore_some_folders_to_generate()
+    {
+        $this->app['config']->set('modules.paths.generator.assets', false);
+        $this->app['config']->set('modules.paths.generator.emails', false);
+
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertFalse(is_dir($this->modulePath . '/Assets'));
+        $this->assertFalse(is_dir($this->modulePath . '/Emails'));
+    }
+
     private function getExpectedComposerJson()
     {
         return <<<TEXT
