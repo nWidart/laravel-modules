@@ -33,6 +33,7 @@ use Nwidart\Modules\Commands\PublishTranslationCommand;
 use Nwidart\Modules\Commands\SeedCommand;
 use Nwidart\Modules\Commands\SeedMakeCommand;
 use Nwidart\Modules\Commands\SetupCommand;
+use Nwidart\Modules\Commands\UnUseCommand;
 use Nwidart\Modules\Commands\UpdateCommand;
 use Nwidart\Modules\Commands\UseCommand;
 
@@ -72,6 +73,7 @@ class ConsoleServiceProvider extends ServiceProvider
         SetupCommand::class,
         UpdateCommand::class,
         UseCommand::class,
+        UnUseCommand::class,
         DumpCommand::class,
         MakeRequestCommand::class,
         PublishConfigurationCommand::class,

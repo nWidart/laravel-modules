@@ -448,6 +448,16 @@ abstract class Repository implements RepositoryInterface, Countable
     }
 
     /**
+     * Forget the module used for cli session.
+     */
+    public function forgetUsed()
+    {
+        if ($this->app['files']->exists($this->getUsedStoragePath())) {
+            $this->app['files']->delete($this->getUsedStoragePath());
+        }
+    }
+
+    /**
      * Get module used for cli session.
      *
      * @return string
