@@ -30,21 +30,14 @@ class MakeFactoryCommandTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_generates_a_new_factory_class()
+    public function it_makes_factory()
     {
         $this->artisan('module:make-factory', ['name' => 'PostFactory', 'module' => 'Blog']);
-
-        $this->assertTrue(is_file($this->modulePath . '/Database/factories/PostFactory.php'));
-    }
-
-    /** @test */
-    public function it_generated_correct_file_with_content()
-    {
-        $this->artisan('module:make-factory', ['name' => 'PostFactory', 'module' => 'Blog']);
-
-        $file = $this->finder->get($this->modulePath . '/Database/factories/PostFactory.php');
         
-        $this->assertEquals($this->expectedContent(), $file);
+        $factoryFile = $this->modulePath . '/Database/factories/PostFactory.php';
+
+        $this->assertTrue(is_file($factoryFile), 'Factory file was not created.');   
+        $this->assertEquals($this->expectedContent(), $this->finder->get($factoryFile), 'Content of factory file is not correct.');
     }
 
     private function expectedContent()
