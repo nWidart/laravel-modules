@@ -106,6 +106,7 @@ return [
             'provider' => 'Providers',
             'lang' => 'Resources/lang',
             'views' => 'Resources/views',
+            'policies' => false,
             'test' => 'Tests',
             'jobs' => 'Jobs',
             'emails' => 'Emails',

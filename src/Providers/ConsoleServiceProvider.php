@@ -18,6 +18,7 @@ use Nwidart\Modules\Commands\GenerateProviderCommand;
 use Nwidart\Modules\Commands\GenerateRouteProviderCommand;
 use Nwidart\Modules\Commands\InstallCommand;
 use Nwidart\Modules\Commands\ListCommand;
+use Nwidart\Modules\Commands\MakePolicyCommand;
 use Nwidart\Modules\Commands\MakeCommand;
 use Nwidart\Modules\Commands\MakeRequestCommand;
 use Nwidart\Modules\Commands\MigrateCommand;
@@ -50,6 +51,7 @@ class ConsoleServiceProvider extends ServiceProvider
         MakeCommand::class,
         CommandCommand::class,
         ControllerCommand::class,
+        MakePolicyCommand::class,
         DisableCommand::class,
         EnableCommand::class,
         GenerateEventCommand::class,
