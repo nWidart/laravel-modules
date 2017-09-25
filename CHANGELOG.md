@@ -10,6 +10,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 - Ability to ignore some folders to generate
 - Creating an module:unuse command to forget the previously saved module
+- New command to generate Policy classes
 
 ## 2.2.1 - 2017-09-14
 
