@@ -107,6 +107,7 @@ return [
             'lang' => 'Resources/lang',
             'views' => 'Resources/views',
             'policies' => false,
+            'rules' => false,
             'test' => 'Tests',
             'jobs' => 'Jobs',
             'emails' => 'Emails',

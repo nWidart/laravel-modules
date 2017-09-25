@@ -21,6 +21,7 @@ use Nwidart\Modules\Commands\ListCommand;
 use Nwidart\Modules\Commands\MakePolicyCommand;
 use Nwidart\Modules\Commands\MakeCommand;
 use Nwidart\Modules\Commands\MakeFactoryCommand;
+use Nwidart\Modules\Commands\MakeRuleCommand;
 use Nwidart\Modules\Commands\MakeRequestCommand;
 use Nwidart\Modules\Commands\MigrateCommand;
 use Nwidart\Modules\Commands\MigrateRefreshCommand;
@@ -51,6 +52,7 @@ class ConsoleServiceProvider extends ServiceProvider
     protected $commands = [
         MakeCommand::class,
         MakeFactoryCommand::class,
+        MakeRuleCommand::class,
         CommandCommand::class,
         ControllerCommand::class,
         MakePolicyCommand::class,
