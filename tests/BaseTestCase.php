@@ -62,6 +62,7 @@ abstract class BaseTestCase extends OrchestraTestCase
                 'provider' => 'Providers',
                 'lang' => 'Resources/lang',
                 'policies' => 'Policies',
+                'rules' => 'Rules',
                 'views' => 'Resources/views',
                 'test' => 'Tests',
                 'jobs' => 'Jobs',
