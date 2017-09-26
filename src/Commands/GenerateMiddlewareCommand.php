@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class GenerateMiddlewareCommand extends GeneratorCommand
 {
+
     use ModuleCommandTrait;
 
     /**
@@ -30,7 +31,19 @@ class GenerateMiddlewareCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Generate new middleware class for the specified module.';
+    protected $description = 'Create a new middleware class for the specified module.';
+
+
+    /**
+     * Get default namespace.
+     *
+     * @return string
+     */
+    public function getDefaultNamespace()
+    {
+        return 'Http\Middleware';
+    }
+
 
     /**
      * Get the console command arguments.
@@ -39,11 +52,12 @@ class GenerateMiddlewareCommand extends GeneratorCommand
      */
     protected function getArguments()
     {
-        return array(
-            array('name', InputArgument::REQUIRED, 'The name of the command.'),
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['name', InputArgument::REQUIRED, 'The name of the command.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
+
 
     /**
      * @return mixed
@@ -53,15 +67,11 @@ class GenerateMiddlewareCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/middleware.stub', [
-            'NAMESPACE'         => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClass(),
-            'LOWER_NAME'        => $module->getLowerName(),
-            'MODULE'            => $this->getModuleName(),
-            'NAME'              => $this->getFileName(),
-            'STUDLY_NAME'       => $this->getFileName(),
-            'MODULE_NAMESPACE'  => $this->laravel['modules']->config('namespace'),
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS'     => $this->getClass(),
         ]))->render();
     }
+
 
     /**
      * @return mixed
@@ -72,8 +82,9 @@ class GenerateMiddlewareCommand extends GeneratorCommand
 
         $seederPath = $this->laravel['modules']->config('paths.generator.filter');
 
-        return $path . $seederPath . '/' . $this->getFileName() . '.php';
+        return $path.$seederPath.'/'.$this->getFileName().'.php';
     }
+
 
     /**
      * @return string
@@ -81,15 +92,5 @@ class GenerateMiddlewareCommand extends GeneratorCommand
     private function getFileName()
     {
         return Str::studly($this->argument('name'));
-    }
-
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace()
-    {
-        return 'Http\Middleware';
     }
 }
