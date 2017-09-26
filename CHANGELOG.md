@@ -4,7 +4,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
-## 2.3.0 - unreleased
+## 2.3.0 - 2017-09-26
 
 ## Added
 
