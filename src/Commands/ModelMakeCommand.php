@@ -8,7 +8,7 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class ModelCommand extends GeneratorCommand
+class ModelMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
@@ -31,7 +31,7 @@ class ModelCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Generate new model for the specified module.';
+    protected $description = 'Create a new model for the specified module.';
 
     public function handle()
     {
