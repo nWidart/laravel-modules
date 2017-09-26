@@ -6,7 +6,7 @@ use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class GenerateMailCommand extends GeneratorCommand
+class MailMakeCommand extends GeneratorCommand
 {
 
     use ModuleCommandTrait;
