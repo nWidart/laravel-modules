@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class GenerateJobCommand extends GeneratorCommand
 {
+
     use ModuleCommandTrait;
 
     /**
@@ -22,9 +23,19 @@ class GenerateJobCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Generate a new Job Class for the specified module';
+    protected $description = 'Create a new job class for the specified module';
 
     protected $argumentName = 'name';
+
+
+    /**
+     * @return string
+     */
+    public function getDefaultNamespace()
+    {
+        return 'Jobs';
+    }
+
 
     /**
      * Get the console command arguments.
@@ -39,6 +50,7 @@ class GenerateJobCommand extends GeneratorCommand
         ];
     }
 
+
     /**
      * Get template contents.
      *
@@ -49,10 +61,11 @@ class GenerateJobCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/job.stub', [
-            'NAMESPACE'         => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClass(),
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS'     => $this->getClass(),
         ]))->render();
     }
+
 
     /**
      * Get the destination file path.
@@ -65,8 +78,9 @@ class GenerateJobCommand extends GeneratorCommand
 
         $jobPath = $this->laravel['modules']->config('paths.generator.jobs');
 
-        return $path . $jobPath . '/' . $this->getFileName() . '.php';
+        return $path.$jobPath.'/'.$this->getFileName().'.php';
     }
+
 
     /**
      * @return string
@@ -74,13 +88,5 @@ class GenerateJobCommand extends GeneratorCommand
     private function getFileName()
     {
         return studly_case($this->argument('name'));
-    }
-
-    /**
-     * @return string
-     */
-    public function getDefaultNamespace()
-    {
-        return 'Jobs';
     }
 }
