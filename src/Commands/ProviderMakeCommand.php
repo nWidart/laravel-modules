@@ -8,7 +8,7 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class GenerateProviderCommand extends GeneratorCommand
+class ProviderMakeCommand extends GeneratorCommand
 {
 
     use ModuleCommandTrait;

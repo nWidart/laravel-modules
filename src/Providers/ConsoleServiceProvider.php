@@ -14,7 +14,7 @@ use Nwidart\Modules\Commands\ListenerMakeCommand;
 use Nwidart\Modules\Commands\MailMakeCommand;
 use Nwidart\Modules\Commands\MiddlewareMakeCommand;
 use Nwidart\Modules\Commands\NotificationMakeCommand;
-use Nwidart\Modules\Commands\GenerateProviderCommand;
+use Nwidart\Modules\Commands\ProviderMakeCommand;
 use Nwidart\Modules\Commands\GenerateRouteProviderCommand;
 use Nwidart\Modules\Commands\InstallCommand;
 use Nwidart\Modules\Commands\ListCommand;
@@ -62,7 +62,7 @@ class ConsoleServiceProvider extends ServiceProvider
         MailMakeCommand::class,
         MiddlewareMakeCommand::class,
         NotificationMakeCommand::class,
-        GenerateProviderCommand::class,
+        ProviderMakeCommand::class,
         GenerateRouteProviderCommand::class,
         InstallCommand::class,
         ListCommand::class,
