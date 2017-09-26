@@ -26,7 +26,7 @@ class MigrationCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Generate a new migration for the specified module.';
+    protected $description = 'Create a new migration for the specified module.';
 
     /**
      * Get the console command arguments.
