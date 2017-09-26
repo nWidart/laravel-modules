@@ -161,6 +161,7 @@ class ModelCommand extends GeneratorCommand
      */
     public function getDefaultNamespace()
     {
+        //TODO: Nicolas is this correct?
         return $this->laravel['modules']->config('paths.generator.model');
     }
 }
