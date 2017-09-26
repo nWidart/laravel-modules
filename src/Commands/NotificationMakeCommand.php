@@ -6,7 +6,7 @@ use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-final class GenerateNotificationCommand extends GeneratorCommand
+final class NotificationMakeCommand extends GeneratorCommand
 {
 
     use ModuleCommandTrait;
