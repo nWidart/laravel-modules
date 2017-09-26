@@ -33,7 +33,7 @@ class MakeRuleCommandTest extends BaseTestCase
     public function it_makes_rule()
     {
         $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
-        
+
         $ruleFile = $this->modulePath . '/Rules/UniqueRule.php';
 
         $this->assertTrue(is_file($ruleFile), 'Rule file was not created.');
