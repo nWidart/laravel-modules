@@ -81,8 +81,8 @@ class MakePolicyCommand extends GeneratorCommand
     /**
      * @return string
      */
-     public function getDefaultNamespace()
-     {
-         return $this->laravel['modules']->config('paths.generator.policies', 'Policies');
-     }
+    public function getDefaultNamespace()
+    {
+        return $this->laravel['modules']->config('paths.generator.policies', 'Policies');
+    }
 }

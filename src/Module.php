@@ -3,7 +3,6 @@
 namespace Nwidart\Modules;
 
 use Illuminate\Container\Container;
-use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
@@ -261,17 +260,10 @@ abstract class Module extends ServiceProvider
     {
         $this->app['events']->fire(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
     }
-
     /**
      * Register the aliases from this module.
      */
-    protected function registerAliases()
-    {
-        $loader = AliasLoader::getInstance();
-        foreach ($this->get('aliases', []) as $aliasName => $aliasClass) {
-            $loader->alias($aliasName, $aliasClass);
-        }
-    }
+    abstract public function registerAliases();
 
     /**
      * Register the service providers from this module.

@@ -33,7 +33,7 @@ class MakePolicyCommandTest extends BaseTestCase
     public function it_makes_policy()
     {
         $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
-        
+
         $policyFile = $this->modulePath . '/Policies/PostPolicy.php';
 
         $this->assertTrue(is_file($policyFile), 'Policy file was not created.');

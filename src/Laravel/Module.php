@@ -25,4 +25,15 @@ class Module extends BaseModule
         (new ProviderRepository($this->app, new Filesystem(), $this->getCachedServicesPath()))
             ->load($this->get('providers', []));
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function registerAliases()
+    {
+        $loader = AliasLoader::getInstance();
+        foreach ($this->get('aliases', []) as $aliasName => $aliasClass) {
+            $loader->alias($aliasName, $aliasClass);
+        }
+    }
 }
