@@ -4,15 +4,19 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
-## 2.3.0 - 2017-09-18
+## 2.3.0 - unreleased
 
-### Added
+## Added
 
 - Ability to ignore some folders to generate
 - Creating an module:unuse command to forget the previously saved module
 - New command to generate Policy classes
 - New command for creating factories
 - New command for creating rules
+
+## Changed
+
+- Refactored class names that generate something to be fully consistent
 
 ## 2.2.1 - 2017-09-14
 
