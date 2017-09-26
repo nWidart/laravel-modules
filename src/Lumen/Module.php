@@ -24,4 +24,11 @@ class Module extends BaseModule
             $this->app->register($provider);
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function registerAliases()
+    {
+    }
 }

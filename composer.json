@@ -18,14 +18,14 @@
     }
   ],
   "require": {
-    "php": ">=7.0",
-    "laravel/framework": "5.5.*"
+    "php": ">=7.0"
   },
   "require-dev": {
     "phpunit/phpunit": "~6.0",
     "mockery/mockery": "~0.9",
     "orchestra/testbench": "^3.5",
-    "friendsofphp/php-cs-fixer": "^2.6"
+    "friendsofphp/php-cs-fixer": "^2.6",
+    "laravel/framework": "5.5.*"
   },
   "autoload": {
     "psr-4": {

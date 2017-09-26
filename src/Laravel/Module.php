@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Laravel;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Foundation\ProviderRepository;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Module as BaseModule;
@@ -24,5 +25,16 @@ class Module extends BaseModule
     {
         (new ProviderRepository($this->app, new Filesystem(), $this->getCachedServicesPath()))
             ->load($this->get('providers', []));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function registerAliases()
+    {
+        $loader = AliasLoader::getInstance();
+        foreach ($this->get('aliases', []) as $aliasName => $aliasClass) {
+            $loader->alias($aliasName, $aliasClass);
+        }
     }
 }
