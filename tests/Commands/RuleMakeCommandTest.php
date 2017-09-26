@@ -4,7 +4,7 @@ namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
 
-class MakeRuleCommandTest extends BaseTestCase
+class RuleMakeCommandTest extends BaseTestCase
 {
     /**
      * @var \Illuminate\Filesystem\Filesystem

@@ -4,7 +4,7 @@ namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
 
-class MakeRequestCommandTest extends BaseTestCase
+class JobMakeCommandTest extends BaseTestCase
 {
     /**
      * @var \Illuminate\Filesystem\Filesystem
@@ -30,19 +30,19 @@ class MakeRequestCommandTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_generates_a_new_form_request_class()
+    public function it_generates_the_job_class()
     {
-        $this->artisan('module:make-request', ['name' => 'CreateBlogPostRequest', 'module' => 'Blog']);
+        $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Http/Requests/CreateBlogPostRequest.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Jobs/SomeJob.php'));
     }
 
     /** @test */
     public function it_generated_correct_file_with_content()
     {
-        $this->artisan('module:make-request', ['name' => 'CreateBlogPostRequest', 'module' => 'Blog']);
+        $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Http/Requests/CreateBlogPostRequest.php');
+        $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
 
         $this->assertEquals($this->expectedContent(), $file);
     }
@@ -52,32 +52,35 @@ class MakeRequestCommandTest extends BaseTestCase
         return <<<TEXT
 <?php
 
-namespace Modules\Blog\Http\Requests;
+namespace Modules\Blog\Jobs;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Bus\Queueable;
 
-class CreateBlogPostRequest extends FormRequest
+class SomeJob implements ShouldQueue
 {
+    use InteractsWithQueue, SerializesModels, Queueable;
+
     /**
-     * Get the validation rules that apply to the request.
+     * Create a new job instance.
      *
-     * @return array
+     * @return void
      */
-    public function rules()
+    public function __construct()
     {
-        return [
-            //
-        ];
+        //
     }
 
     /**
-     * Determine if the user is authorized to make this request.
+     * Execute the job.
      *
-     * @return bool
+     * @return void
      */
-    public function authorize()
+    public function handle()
     {
-        return true;
+        //
     }
 }
 

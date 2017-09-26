@@ -5,7 +5,7 @@ namespace Nwidart\Modules\Tests\Commands;
 use Illuminate\Support\Facades\Artisan;
 use Nwidart\Modules\Tests\BaseTestCase;
 
-class ModuleGeneratorTest extends BaseTestCase
+class ModuleMakeCommandTest extends BaseTestCase
 {
     /**
      * @var \Illuminate\Filesystem\Filesystem

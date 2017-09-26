@@ -4,7 +4,7 @@ namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
 
-class GenerateProviderCommandTest extends BaseTestCase
+class ProviderMakeCommandTest extends BaseTestCase
 {
     /**
      * @var \Illuminate\Filesystem\Filesystem

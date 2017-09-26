@@ -4,7 +4,7 @@ namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
 
-class MakeFactoryCommandTest extends BaseTestCase
+class PolicyMakeCommandTest extends BaseTestCase
 {
     /**
      * @var \Illuminate\Filesystem\Filesystem
@@ -30,14 +30,14 @@ class MakeFactoryCommandTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_makes_factory()
+    public function it_makes_policy()
     {
-        $this->artisan('module:make-factory', ['name' => 'PostFactory', 'module' => 'Blog']);
+        $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
-        $factoryFile = $this->modulePath . '/Database/factories/PostFactory.php';
+        $policyFile = $this->modulePath . '/Policies/PostPolicy.php';
 
-        $this->assertTrue(is_file($factoryFile), 'Factory file was not created.');
-        $this->assertEquals($this->expectedContent(), $this->finder->get($factoryFile), 'Content of factory file is not correct.');
+        $this->assertTrue(is_file($policyFile), 'Policy file was not created.');
+        $this->assertEquals($this->expectedContent(), $this->finder->get($policyFile), 'Content of policy file is not correct.');
     }
 
     private function expectedContent()
@@ -45,13 +45,24 @@ class MakeFactoryCommandTest extends BaseTestCase
         return <<<TEXT
 <?php
 
-use Faker\Generator as Faker;
+namespace Modules\Blog\Policies;
 
-\$factory->define(Model::class, function (Faker \$faker) {
-    return [
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class PostPolicy
+{
+    use HandlesAuthorization;
+
+    /**
+     * Create a new policy instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
         //
-    ];
-});
+    }
+}
 
 TEXT;
     }

@@ -4,7 +4,7 @@ namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
 
-class GenerateJobCommandTest extends BaseTestCase
+class RequestMakeCommandTest extends BaseTestCase
 {
     /**
      * @var \Illuminate\Filesystem\Filesystem
@@ -30,19 +30,19 @@ class GenerateJobCommandTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_generates_the_job_class()
+    public function it_generates_a_new_form_request_class()
     {
-        $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
+        $this->artisan('module:make-request', ['name' => 'CreateBlogPostRequest', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Jobs/SomeJob.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Http/Requests/CreateBlogPostRequest.php'));
     }
 
     /** @test */
     public function it_generated_correct_file_with_content()
     {
-        $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
+        $this->artisan('module:make-request', ['name' => 'CreateBlogPostRequest', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
+        $file = $this->finder->get($this->modulePath . '/Http/Requests/CreateBlogPostRequest.php');
 
         $this->assertEquals($this->expectedContent(), $file);
     }
@@ -52,35 +52,32 @@ class GenerateJobCommandTest extends BaseTestCase
         return <<<TEXT
 <?php
 
-namespace Modules\Blog\Jobs;
+namespace Modules\Blog\Http\Requests;
 
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Http\FormRequest;
 
-class SomeJob implements ShouldQueue
+class CreateBlogPostRequest extends FormRequest
 {
-    use InteractsWithQueue, SerializesModels, Queueable;
-
     /**
-     * Create a new job instance.
+     * Get the validation rules that apply to the request.
      *
-     * @return void
+     * @return array
      */
-    public function __construct()
+    public function rules()
     {
-        //
+        return [
+            //
+        ];
     }
 
     /**
-     * Execute the job.
+     * Determine if the user is authorized to make this request.
      *
-     * @return void
+     * @return bool
      */
-    public function handle()
+    public function authorize()
     {
-        //
+        return true;
     }
 }
 

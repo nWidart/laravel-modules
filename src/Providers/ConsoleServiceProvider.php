@@ -10,7 +10,7 @@ use Nwidart\Modules\Commands\DumpCommand;
 use Nwidart\Modules\Commands\EnableCommand;
 use Nwidart\Modules\Commands\EventMakeCommand;
 use Nwidart\Modules\Commands\FactoryMakeCommand;
-use Nwidart\Modules\Commands\GenerateRouteProviderCommand;
+use Nwidart\Modules\Commands\RouteProviderMakeCommand;
 use Nwidart\Modules\Commands\InstallCommand;
 use Nwidart\Modules\Commands\JobMakeCommand;
 use Nwidart\Modules\Commands\ListCommand;
@@ -62,7 +62,7 @@ class ConsoleServiceProvider extends ServiceProvider
         MiddlewareMakeCommand::class,
         NotificationMakeCommand::class,
         ProviderMakeCommand::class,
-        GenerateRouteProviderCommand::class,
+        RouteProviderMakeCommand::class,
         InstallCommand::class,
         ListCommand::class,
         ModuleMakeCommand::class,

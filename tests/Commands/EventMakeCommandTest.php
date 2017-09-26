@@ -4,12 +4,13 @@ namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
 
-class GenerateMailCommandTest extends BaseTestCase
+class EventMakeCommandTest extends BaseTestCase
 {
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -30,19 +31,19 @@ class GenerateMailCommandTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_generates_the_mail_class()
+    public function it_generates_a_new_event_class()
     {
-        $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
+        $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Emails/SomeMail.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Events/PostWasCreated.php'));
     }
 
     /** @test */
     public function it_generated_correct_file_with_content()
     {
-        $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
+        $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Emails/SomeMail.php');
+        $file = $this->finder->get($this->modulePath . '/Events/PostWasCreated.php');
 
         $this->assertEquals($this->expectedContent(), $file);
     }
@@ -52,19 +53,16 @@ class GenerateMailCommandTest extends BaseTestCase
         return <<<TEXT
 <?php
 
-namespace Modules\Blog\Emails;
+namespace Modules\Blog\Events;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
-class SomeMail extends Mailable
+class PostWasCreated
 {
-    use Queueable, SerializesModels;
+    use SerializesModels;
 
     /**
-     * Create a new message instance.
+     * Create a new event instance.
      *
      * @return void
      */
@@ -74,13 +72,13 @@ class SomeMail extends Mailable
     }
 
     /**
-     * Build the message.
+     * Get the channels the event should be broadcast on.
      *
-     * @return \$this
+     * @return array
      */
-    public function build()
+    public function broadcastOn()
     {
-        return \$this->view('view.name');
+        return [];
     }
 }
 

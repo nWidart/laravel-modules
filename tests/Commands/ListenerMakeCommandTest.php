@@ -4,7 +4,7 @@ namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
 
-class GenerateEventCommandTest extends BaseTestCase
+class ListenerMakeCommandTest extends BaseTestCase
 {
     /**
      * @var \Illuminate\Filesystem\Filesystem
@@ -33,36 +33,44 @@ class GenerateEventCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_a_new_event_class()
     {
-        $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
+        $this->artisan(
+            'module:make-listener',
+            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated']
+        );
 
-        $this->assertTrue(is_file($this->modulePath . '/Events/PostWasCreated.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Listeners/NotifyUsersOfANewPost.php'));
     }
 
     /** @test */
     public function it_generated_correct_file_with_content()
     {
-        $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
+        $this->artisan(
+            'module:make-listener',
+            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated']
+        );
 
-        $file = $this->finder->get($this->modulePath . '/Events/PostWasCreated.php');
+        $file = $this->finder->get($this->modulePath . '/Listeners/NotifyUsersOfANewPost.php');
 
         $this->assertEquals($this->expectedContent(), $file);
     }
 
     private function expectedContent()
     {
+        $event = '$event';
+
         return <<<TEXT
 <?php
 
-namespace Modules\Blog\Events;
+namespace Modules\Blog\Listeners;
 
-use Illuminate\Queue\SerializesModels;
+use Modules\Blog\Events\UserWasCreated;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class PostWasCreated
+class NotifyUsersOfANewPost
 {
-    use SerializesModels;
-
     /**
-     * Create a new event instance.
+     * Create the event listener.
      *
      * @return void
      */
@@ -72,13 +80,14 @@ class PostWasCreated
     }
 
     /**
-     * Get the channels the event should be broadcast on.
+     * Handle the event.
      *
-     * @return array
+     * @param \Modules\Blog\Events\UserWasCreated $event
+     * @return void
      */
-    public function broadcastOn()
+    public function handle(\Modules\Blog\Events\UserWasCreated $event)
     {
-        return [];
+        //
     }
 }
 

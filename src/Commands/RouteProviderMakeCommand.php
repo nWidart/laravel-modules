@@ -6,7 +6,7 @@ use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class GenerateRouteProviderCommand extends GeneratorCommand
+class RouteProviderMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
@@ -24,7 +24,7 @@ class GenerateRouteProviderCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Generate a new route service provider for the specified module.';
+    protected $description = 'Create a new route service provider for the specified module.';
 
     /**
      * The command arguments.

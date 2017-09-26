@@ -4,13 +4,12 @@ namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
 
-class GenerateListenerCommandTest extends BaseTestCase
+class MailMakeCommandTest extends BaseTestCase
 {
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
-
     /**
      * @var string
      */
@@ -31,46 +30,41 @@ class GenerateListenerCommandTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_generates_a_new_event_class()
+    public function it_generates_the_mail_class()
     {
-        $this->artisan(
-            'module:make-listener',
-            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated']
-        );
+        $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Listeners/NotifyUsersOfANewPost.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Emails/SomeMail.php'));
     }
 
     /** @test */
     public function it_generated_correct_file_with_content()
     {
-        $this->artisan(
-            'module:make-listener',
-            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated']
-        );
+        $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Listeners/NotifyUsersOfANewPost.php');
+        $file = $this->finder->get($this->modulePath . '/Emails/SomeMail.php');
 
         $this->assertEquals($this->expectedContent(), $file);
     }
 
     private function expectedContent()
     {
-        $event = '$event';
-
         return <<<TEXT
 <?php
 
-namespace Modules\Blog\Listeners;
+namespace Modules\Blog\Emails;
 
-use Modules\Blog\Events\UserWasCreated;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class NotifyUsersOfANewPost
+class SomeMail extends Mailable
 {
+    use Queueable, SerializesModels;
+
     /**
-     * Create the event listener.
+     * Create a new message instance.
      *
      * @return void
      */
@@ -80,14 +74,13 @@ class NotifyUsersOfANewPost
     }
 
     /**
-     * Handle the event.
+     * Build the message.
      *
-     * @param \Modules\Blog\Events\UserWasCreated $event
-     * @return void
+     * @return \$this
      */
-    public function handle(\Modules\Blog\Events\UserWasCreated $event)
+    public function build()
     {
-        //
+        return \$this->view('view.name');
     }
 }
 
