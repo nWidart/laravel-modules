@@ -8,8 +8,9 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class CommandCommand extends GeneratorCommand
+class CommandMakeCommand extends GeneratorCommand
 {
+
     use ModuleCommandTrait;
 
     /**
@@ -33,6 +34,18 @@ class CommandCommand extends GeneratorCommand
      */
     protected $description = 'Generate new Artisan command for the specified module.';
 
+
+    /**
+     * Get default namespace.
+     *
+     * @return string
+     */
+    public function getDefaultNamespace()
+    {
+        return 'Console';
+    }
+
+
     /**
      * Get the console command arguments.
      *
@@ -40,11 +53,12 @@ class CommandCommand extends GeneratorCommand
      */
     protected function getArguments()
     {
-        return array(
-            array('name', InputArgument::REQUIRED, 'The name of the command.'),
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['name', InputArgument::REQUIRED, 'The name of the command.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
+
 
     /**
      * Get the console command options.
@@ -53,10 +67,11 @@ class CommandCommand extends GeneratorCommand
      */
     protected function getOptions()
     {
-        return array(
-            array('command', null, InputOption::VALUE_OPTIONAL, 'The terminal command that should be assigned.', null),
-        );
+        return [
+            ['command', null, InputOption::VALUE_OPTIONAL, 'The terminal command that should be assigned.', null],
+        ];
     }
+
 
     /**
      * @return mixed
@@ -67,10 +82,20 @@ class CommandCommand extends GeneratorCommand
 
         return (new Stub('/command.stub', [
             'COMMAND_NAME' => $this->getCommandName(),
-            'NAMESPACE' => $this->getClassNamespace($module),
-            'CLASS' => $this->getClass(),
+            'NAMESPACE'    => $this->getClassNamespace($module),
+            'CLASS'        => $this->getClass(),
         ]))->render();
     }
+
+
+    /**
+     * @return string
+     */
+    private function getCommandName()
+    {
+        return $this->option('command') ?: 'command:name';
+    }
+
 
     /**
      * @return mixed
@@ -81,8 +106,9 @@ class CommandCommand extends GeneratorCommand
 
         $seederPath = $this->laravel['modules']->config('paths.generator.command');
 
-        return $path . $seederPath . '/' . $this->getFileName() . '.php';
+        return $path.$seederPath.'/'.$this->getFileName().'.php';
     }
+
 
     /**
      * @return string
@@ -90,23 +116,5 @@ class CommandCommand extends GeneratorCommand
     private function getFileName()
     {
         return Str::studly($this->argument('name'));
-    }
-
-    /**
-     * @return string
-     */
-    private function getCommandName()
-    {
-        return $this->option('command') ?: 'command:name';
-    }
-
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace()
-    {
-        return 'Console';
     }
 }
