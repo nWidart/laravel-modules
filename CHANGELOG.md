@@ -13,6 +13,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - New command to generate Policy classes
 - New command for creating factories
 - New command for creating rules
+- new `public_path` helper for Lumen
 
 ## Changed
 
