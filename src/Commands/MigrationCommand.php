@@ -35,10 +35,10 @@ class MigrationCommand extends GeneratorCommand
      */
     protected function getArguments()
     {
-        return array(
-            array('name', InputArgument::REQUIRED, 'The migration name will be created.'),
-            array('module', InputArgument::OPTIONAL, 'The name of module will be created.'),
-        );
+        return [
+            ['name', InputArgument::REQUIRED, 'The migration name will be created.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module will be created.'],
+        ];
     }
 
     /**
@@ -48,10 +48,10 @@ class MigrationCommand extends GeneratorCommand
      */
     protected function getOptions()
     {
-        return array(
-            array('fields', null, InputOption::VALUE_OPTIONAL, 'The specified fields table.', null),
-            array('plain', null, InputOption::VALUE_NONE, 'Create plain migration.'),
-        );
+        return [
+            ['fields', null, InputOption::VALUE_OPTIONAL, 'The specified fields table.', null],
+            ['plain', null, InputOption::VALUE_NONE, 'Create plain migration.'],
+        ];
     }
 
     /**
