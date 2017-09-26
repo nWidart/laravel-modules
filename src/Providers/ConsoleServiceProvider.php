@@ -8,7 +8,7 @@ use Nwidart\Modules\Commands\ControllerMakeCommand;
 use Nwidart\Modules\Commands\DisableCommand;
 use Nwidart\Modules\Commands\DumpCommand;
 use Nwidart\Modules\Commands\EnableCommand;
-use Nwidart\Modules\Commands\GenerateEventCommand;
+use Nwidart\Modules\Commands\EventMakeCommand;
 use Nwidart\Modules\Commands\GenerateJobCommand;
 use Nwidart\Modules\Commands\GenerateListenerCommand;
 use Nwidart\Modules\Commands\GenerateMailCommand;
@@ -56,7 +56,7 @@ class ConsoleServiceProvider extends ServiceProvider
         DisableCommand::class,
         DumpCommand::class,
         EnableCommand::class,
-        GenerateEventCommand::class,
+        EventMakeCommand::class,
         GenerateJobCommand::class,
         GenerateListenerCommand::class,
         GenerateMailCommand::class,
