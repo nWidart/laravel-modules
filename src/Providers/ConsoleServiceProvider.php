@@ -18,11 +18,11 @@ use Nwidart\Modules\Commands\GenerateProviderCommand;
 use Nwidart\Modules\Commands\GenerateRouteProviderCommand;
 use Nwidart\Modules\Commands\InstallCommand;
 use Nwidart\Modules\Commands\ListCommand;
-use Nwidart\Modules\Commands\MakePolicyCommand;
 use Nwidart\Modules\Commands\MakeCommand;
 use Nwidart\Modules\Commands\MakeFactoryCommand;
-use Nwidart\Modules\Commands\MakeRuleCommand;
+use Nwidart\Modules\Commands\MakePolicyCommand;
 use Nwidart\Modules\Commands\MakeRequestCommand;
+use Nwidart\Modules\Commands\MakeRuleCommand;
 use Nwidart\Modules\Commands\MigrateCommand;
 use Nwidart\Modules\Commands\MigrateRefreshCommand;
 use Nwidart\Modules\Commands\MigrateResetCommand;
@@ -42,6 +42,7 @@ use Nwidart\Modules\Commands\UseCommand;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
+
     protected $defer = false;
 
     /**
@@ -50,21 +51,26 @@ class ConsoleServiceProvider extends ServiceProvider
      * @var array
      */
     protected $commands = [
-        MakeCommand::class,
-        MakeFactoryCommand::class,
-        MakeRuleCommand::class,
         CommandCommand::class,
         ControllerCommand::class,
-        MakePolicyCommand::class,
         DisableCommand::class,
+        DumpCommand::class,
         EnableCommand::class,
         GenerateEventCommand::class,
+        GenerateJobCommand::class,
         GenerateListenerCommand::class,
+        GenerateMailCommand::class,
         GenerateMiddlewareCommand::class,
+        GenerateNotificationCommand::class,
         GenerateProviderCommand::class,
         GenerateRouteProviderCommand::class,
         InstallCommand::class,
         ListCommand::class,
+        MakeCommand::class,
+        MakeFactoryCommand::class,
+        MakePolicyCommand::class,
+        MakeRequestCommand::class,
+        MakeRuleCommand::class,
         MigrateCommand::class,
         MigrateRefreshCommand::class,
         MigrateResetCommand::class,
@@ -72,21 +78,17 @@ class ConsoleServiceProvider extends ServiceProvider
         MigrationCommand::class,
         ModelCommand::class,
         PublishCommand::class,
+        PublishConfigurationCommand::class,
         PublishMigrationCommand::class,
         PublishTranslationCommand::class,
         SeedCommand::class,
         SeedMakeCommand::class,
         SetupCommand::class,
+        UnUseCommand::class,
         UpdateCommand::class,
         UseCommand::class,
-        UnUseCommand::class,
-        DumpCommand::class,
-        MakeRequestCommand::class,
-        PublishConfigurationCommand::class,
-        GenerateJobCommand::class,
-        GenerateMailCommand::class,
-        GenerateNotificationCommand::class,
     ];
+
 
     /**
      * Register the commands.
@@ -95,6 +97,7 @@ class ConsoleServiceProvider extends ServiceProvider
     {
         $this->commands($this->commands);
     }
+
 
     /**
      * @return array
