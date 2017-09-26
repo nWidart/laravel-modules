@@ -6,7 +6,7 @@ use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class GenerateJobCommand extends GeneratorCommand
+class JobMakeCommand extends GeneratorCommand
 {
 
     use ModuleCommandTrait;
