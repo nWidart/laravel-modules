@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class MakeRuleCommand extends GeneratorCommand
 {
+
     use ModuleCommandTrait;
 
     /**
@@ -30,7 +31,17 @@ class MakeRuleCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Create a new rule for the specified module.';
+    protected $description = 'Create a new validation rule for the specified module.';
+
+
+    /**
+     * @return string
+     */
+    public function getDefaultNamespace()
+    {
+        return 'Rules';
+    }
+
 
     /**
      * Get the console command arguments.
@@ -39,11 +50,12 @@ class MakeRuleCommand extends GeneratorCommand
      */
     protected function getArguments()
     {
-        return array(
-            array('name', InputArgument::REQUIRED, 'The name of the rule class.'),
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['name', InputArgument::REQUIRED, 'The name of the rule class.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
+
 
     /**
      * @return mixed
@@ -53,10 +65,11 @@ class MakeRuleCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/rule.stub', [
-            'NAMESPACE'         => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClass(),
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS'     => $this->getClass(),
         ]))->render();
     }
+
 
     /**
      * @return mixed
@@ -67,8 +80,9 @@ class MakeRuleCommand extends GeneratorCommand
 
         $rulePath = $this->laravel['modules']->config('paths.generator.rules');
 
-        return $path . $rulePath . '/' . $this->getFileName() . '.php';
+        return $path.$rulePath.'/'.$this->getFileName().'.php';
     }
+
 
     /**
      * @return string
@@ -77,12 +91,4 @@ class MakeRuleCommand extends GeneratorCommand
     {
         return Str::studly($this->argument('name'));
     }
-
-    /**
-     * @return string
-     */
-     public function getDefaultNamespace()
-     {
-         return 'Rules';
-     }
 }
