@@ -7,7 +7,7 @@ use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class MakeFactoryCommand extends GeneratorCommand
+class FactoryMakeCommand extends GeneratorCommand
 {
 
     use ModuleCommandTrait;
@@ -63,7 +63,7 @@ class MakeFactoryCommand extends GeneratorCommand
     protected function getDestinationFilePath()
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
-        
+
         return $path.'Database/factories/'.$this->getFileName();
     }
 

@@ -19,7 +19,7 @@ use Nwidart\Modules\Commands\GenerateRouteProviderCommand;
 use Nwidart\Modules\Commands\InstallCommand;
 use Nwidart\Modules\Commands\ListCommand;
 use Nwidart\Modules\Commands\MakeCommand;
-use Nwidart\Modules\Commands\MakeFactoryCommand;
+use Nwidart\Modules\Commands\FactoryMakeCommand;
 use Nwidart\Modules\Commands\MakePolicyCommand;
 use Nwidart\Modules\Commands\MakeRequestCommand;
 use Nwidart\Modules\Commands\MakeRuleCommand;
@@ -67,7 +67,7 @@ class ConsoleServiceProvider extends ServiceProvider
         InstallCommand::class,
         ListCommand::class,
         MakeCommand::class,
-        MakeFactoryCommand::class,
+        FactoryMakeCommand::class,
         MakePolicyCommand::class,
         MakeRequestCommand::class,
         MakeRuleCommand::class,
