@@ -10,7 +10,7 @@ use Nwidart\Modules\Commands\DumpCommand;
 use Nwidart\Modules\Commands\EnableCommand;
 use Nwidart\Modules\Commands\EventMakeCommand;
 use Nwidart\Modules\Commands\JobMakeCommand;
-use Nwidart\Modules\Commands\GenerateListenerCommand;
+use Nwidart\Modules\Commands\ListenerMakeCommand;
 use Nwidart\Modules\Commands\GenerateMailCommand;
 use Nwidart\Modules\Commands\GenerateMiddlewareCommand;
 use Nwidart\Modules\Commands\GenerateNotificationCommand;
@@ -58,7 +58,7 @@ class ConsoleServiceProvider extends ServiceProvider
         EnableCommand::class,
         EventMakeCommand::class,
         JobMakeCommand::class,
-        GenerateListenerCommand::class,
+        ListenerMakeCommand::class,
         GenerateMailCommand::class,
         GenerateMiddlewareCommand::class,
         GenerateNotificationCommand::class,
