@@ -8,7 +8,7 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class GenerateListenerCommand extends GeneratorCommand
+class ListenerMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
@@ -26,7 +26,18 @@ class GenerateListenerCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Generate a new Listener Class for the specified module';
+    protected $description = 'Create a new event listener class for the specified module';
+
+    public function handle()
+    {
+        if (! $this->option('event')) {
+            $this->error('The --event option is necessary');
+
+            return;
+        }
+
+        parent::handle();
+    }
 
     /**
      * Get the console command arguments.
@@ -60,10 +71,20 @@ class GenerateListenerCommand extends GeneratorCommand
         return (new Stub('/listener.stub', [
             'NAMESPACE' => $this->getNamespace($module),
             "EVENTNAME" => $this->getEventName($module),
-            "EVENTSHORTENEDNAME" => $this->option('event'),
-            "CLASS" => $this->getClass(),
-            'DUMMYNAMESPACE' => $this->laravel->getNamespace() . "Events",
+            "CLASS"     => $this->getClass(),
         ]))->render();
+    }
+
+    private function getNamespace($module)
+    {
+        $namespace = str_replace('/', '\\', config('modules.paths.generator.listener'));
+
+        return $this->getClassNamespace($module) . "\\" . $namespace;
+    }
+
+    protected function getEventName(Module $module)
+    {
+        return $this->getClassNamespace($module) . "\\" . config('modules.paths.generator.event') . "\\" . $this->option('event');
     }
 
     protected function getDestinationFilePath()
@@ -81,28 +102,5 @@ class GenerateListenerCommand extends GeneratorCommand
     protected function getFileName()
     {
         return studly_case($this->argument('name'));
-    }
-
-    public function handle()
-    {
-        if (!$this->option('event')) {
-            $this->error('The --event option is necessary');
-
-            return;
-        }
-
-        parent::handle();
-    }
-
-    protected function getEventName(Module $module)
-    {
-        return $this->getClassNamespace($module) . "\\" . config('modules.paths.generator.event') . "\\" . $this->option('event');
-    }
-
-    private function getNamespace($module)
-    {
-        $namespace = str_replace('/', '\\', config('modules.paths.generator.listener'));
-
-        return $this->getClassNamespace($module) . "\\" . $namespace;
     }
 }

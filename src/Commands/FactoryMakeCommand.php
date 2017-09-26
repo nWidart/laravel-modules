@@ -7,7 +7,7 @@ use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class MakeFactoryCommand extends GeneratorCommand
+class FactoryMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
@@ -39,10 +39,10 @@ class MakeFactoryCommand extends GeneratorCommand
      */
     protected function getArguments()
     {
-        return array(
-            array('name', InputArgument::REQUIRED, 'The name of the factory.'),
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['name', InputArgument::REQUIRED, 'The name of the factory.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
 
     /**
@@ -50,8 +50,6 @@ class MakeFactoryCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
-
         return (new Stub('/factory.stub'))->render();
     }
 
@@ -61,8 +59,6 @@ class MakeFactoryCommand extends GeneratorCommand
     protected function getDestinationFilePath()
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
-
-        // $factoryPath = $this->laravel['modules']->config('paths.generator.factories');
 
         return $path . 'Database/factories/' . $this->getFileName();
     }

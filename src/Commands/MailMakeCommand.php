@@ -6,7 +6,7 @@ use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class GenerateMailCommand extends GeneratorCommand
+class MailMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
@@ -22,9 +22,17 @@ class GenerateMailCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Generate a new Mailable Class for the specified module';
+    protected $description = 'Create a new email class for the specified module';
 
     protected $argumentName = 'name';
+
+    /**
+     * @return string
+     */
+    public function getDefaultNamespace()
+    {
+        return 'Emails';
+    }
 
     /**
      * Get the console command arguments.
@@ -49,8 +57,8 @@ class GenerateMailCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/mail.stub', [
-            'NAMESPACE'         => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClass(),
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS'     => $this->getClass(),
         ]))->render();
     }
 
@@ -74,13 +82,5 @@ class GenerateMailCommand extends GeneratorCommand
     private function getFileName()
     {
         return studly_case($this->argument('name'));
-    }
-
-    /**
-     * @return string
-     */
-    public function getDefaultNamespace()
-    {
-        return $this->laravel['modules']->config('paths.generator.emails', 'Emails');
     }
 }

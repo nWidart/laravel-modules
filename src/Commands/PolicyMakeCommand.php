@@ -7,7 +7,7 @@ use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class MakePolicyCommand extends GeneratorCommand
+class PolicyMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
@@ -30,7 +30,15 @@ class MakePolicyCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Create a new policy for the specified module.';
+    protected $description = 'Create a new policy class for the specified module.';
+
+    /**
+     * @return string
+     */
+    public function getDefaultNamespace()
+    {
+        return 'Policies';
+    }
 
     /**
      * Get the console command arguments.
@@ -39,10 +47,10 @@ class MakePolicyCommand extends GeneratorCommand
      */
     protected function getArguments()
     {
-        return array(
-            array('name', InputArgument::REQUIRED, 'The name of the policy class.'),
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['name', InputArgument::REQUIRED, 'The name of the policy class.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
 
     /**
@@ -53,8 +61,8 @@ class MakePolicyCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/policy.plain.stub', [
-            'NAMESPACE'         => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClass(),
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS'     => $this->getClass(),
         ]))->render();
     }
 
@@ -77,12 +85,4 @@ class MakePolicyCommand extends GeneratorCommand
     {
         return Str::studly($this->argument('name'));
     }
-
-    /**
-     * @return string
-     */
-     public function getDefaultNamespace()
-     {
-         return $this->laravel['modules']->config('paths.generator.policies', 'Policies');
-     }
 }

@@ -6,7 +6,7 @@ use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-final class GenerateNotificationCommand extends GeneratorCommand
+final class NotificationMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
@@ -20,11 +20,19 @@ final class GenerateNotificationCommand extends GeneratorCommand
     protected $argumentName = 'name';
 
     /**
-    * The console command description.
-    *
-    * @var string
-    */
-    protected $description = 'Generate new notification class for the specified module.';
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Create a new notification class for the specified module.';
+
+    /**
+     * @return string
+     */
+    public function getDefaultNamespace()
+    {
+        return 'Notifications';
+    }
 
     /**
      * Get template contents.
@@ -36,8 +44,8 @@ final class GenerateNotificationCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/notification.stub', [
-            'NAMESPACE'         => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClass(),
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS'     => $this->getClass(),
         ]))->render();
     }
 
@@ -56,6 +64,14 @@ final class GenerateNotificationCommand extends GeneratorCommand
     }
 
     /**
+     * @return string
+     */
+    private function getFileName()
+    {
+        return studly_case($this->argument('name'));
+    }
+
+    /**
      * Get the console command arguments.
      *
      * @return array
@@ -66,21 +82,5 @@ final class GenerateNotificationCommand extends GeneratorCommand
             ['name', InputArgument::REQUIRED, 'The name of the notification class.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
-    }
-
-    /**
-     * @return string
-     */
-    private function getFileName()
-    {
-        return studly_case($this->argument('name'));
-    }
-
-    /**
-     * @return string
-     */
-    public function getDefaultNamespace()
-    {
-        return $this->laravel['modules']->config('paths.generator.notifications', 'Notifications');
     }
 }
