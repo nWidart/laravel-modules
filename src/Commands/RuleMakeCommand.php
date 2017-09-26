@@ -7,7 +7,7 @@ use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class MakeRuleCommand extends GeneratorCommand
+class RuleMakeCommand extends GeneratorCommand
 {
 
     use ModuleCommandTrait;

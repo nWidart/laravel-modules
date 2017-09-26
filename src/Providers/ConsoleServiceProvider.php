@@ -22,7 +22,7 @@ use Nwidart\Modules\Commands\MakeCommand;
 use Nwidart\Modules\Commands\FactoryMakeCommand;
 use Nwidart\Modules\Commands\PolicyMakeCommand;
 use Nwidart\Modules\Commands\RequestMakeCommand;
-use Nwidart\Modules\Commands\MakeRuleCommand;
+use Nwidart\Modules\Commands\RuleMakeCommand;
 use Nwidart\Modules\Commands\MigrateCommand;
 use Nwidart\Modules\Commands\MigrateRefreshCommand;
 use Nwidart\Modules\Commands\MigrateResetCommand;
@@ -70,7 +70,7 @@ class ConsoleServiceProvider extends ServiceProvider
         FactoryMakeCommand::class,
         PolicyMakeCommand::class,
         RequestMakeCommand::class,
-        MakeRuleCommand::class,
+        RuleMakeCommand::class,
         MigrateCommand::class,
         MigrateRefreshCommand::class,
         MigrateResetCommand::class,
