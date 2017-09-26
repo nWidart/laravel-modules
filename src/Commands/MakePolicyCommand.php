@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class MakePolicyCommand extends GeneratorCommand
 {
+
     use ModuleCommandTrait;
 
     /**
@@ -30,7 +31,17 @@ class MakePolicyCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Create a new policy for the specified module.';
+    protected $description = 'Create a new policy class for the specified module.';
+
+
+    /**
+     * @return string
+     */
+    public function getDefaultNamespace()
+    {
+        return $this->laravel['modules']->config('paths.generator.policies', 'Policies');
+    }
+
 
     /**
      * Get the console command arguments.
@@ -39,11 +50,12 @@ class MakePolicyCommand extends GeneratorCommand
      */
     protected function getArguments()
     {
-        return array(
-            array('name', InputArgument::REQUIRED, 'The name of the policy class.'),
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['name', InputArgument::REQUIRED, 'The name of the policy class.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
+
 
     /**
      * @return mixed
@@ -53,10 +65,11 @@ class MakePolicyCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/policy.plain.stub', [
-            'NAMESPACE'         => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClass(),
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS'     => $this->getClass(),
         ]))->render();
     }
+
 
     /**
      * @return mixed
@@ -67,8 +80,9 @@ class MakePolicyCommand extends GeneratorCommand
 
         $policyPath = $this->laravel['modules']->config('paths.generator.policies');
 
-        return $path . $policyPath . '/' . $this->getFileName() . '.php';
+        return $path.$policyPath.'/'.$this->getFileName().'.php';
     }
+
 
     /**
      * @return string
@@ -77,12 +91,4 @@ class MakePolicyCommand extends GeneratorCommand
     {
         return Str::studly($this->argument('name'));
     }
-
-    /**
-     * @return string
-     */
-     public function getDefaultNamespace()
-     {
-         return $this->laravel['modules']->config('paths.generator.policies', 'Policies');
-     }
 }
