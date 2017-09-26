@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class RequestMakeCommand extends GeneratorCommand
 {
-
     use ModuleCommandTrait;
 
     /**
@@ -33,7 +32,6 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new form request class for the specified module.';
 
-
     /**
      * Get default namespace.
      *
@@ -43,7 +41,6 @@ class RequestMakeCommand extends GeneratorCommand
     {
         return 'Http\Requests';
     }
-
 
     /**
      * Get the console command arguments.
@@ -58,7 +55,6 @@ class RequestMakeCommand extends GeneratorCommand
         ];
     }
 
-
     /**
      * @return mixed
      */
@@ -72,7 +68,6 @@ class RequestMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-
     /**
      * @return mixed
      */
@@ -82,9 +77,8 @@ class RequestMakeCommand extends GeneratorCommand
 
         $seederPath = $this->laravel['modules']->config('paths.generator.request');
 
-        return $path.$seederPath.'/'.$this->getFileName().'.php';
+        return $path . $seederPath . '/' . $this->getFileName() . '.php';
     }
-
 
     /**
      * @return string

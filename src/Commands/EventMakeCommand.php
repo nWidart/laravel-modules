@@ -8,7 +8,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class EventMakeCommand extends GeneratorCommand
 {
-
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
@@ -27,26 +26,23 @@ class EventMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new event class for the specified module';
 
-
     public function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/event.stub', [
-            'NAMESPACE' => $this->getClassNamespace($module)."\\".config('modules.paths.generator.event'),
+            'NAMESPACE' => $this->getClassNamespace($module) . "\\" . config('modules.paths.generator.event'),
             "CLASS"     => $this->getClass(),
         ]))->render();
     }
-
 
     public function getDestinationFilePath()
     {
         $path       = $this->laravel['modules']->getModulePath($this->getModuleName());
         $seederPath = $this->laravel['modules']->config('paths.generator.event');
 
-        return $path.$seederPath.'/'.$this->getFileName().'.php';
+        return $path . $seederPath . '/' . $this->getFileName() . '.php';
     }
-
 
     /**
      * @return string
@@ -55,7 +51,6 @@ class EventMakeCommand extends GeneratorCommand
     {
         return studly_case($this->argument('name'));
     }
-
 
     /**
      * Get the console command arguments.

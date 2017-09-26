@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class RuleMakeCommand extends GeneratorCommand
 {
-
     use ModuleCommandTrait;
 
     /**
@@ -33,7 +32,6 @@ class RuleMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new validation rule for the specified module.';
 
-
     /**
      * @return string
      */
@@ -41,7 +39,6 @@ class RuleMakeCommand extends GeneratorCommand
     {
         return 'Rules';
     }
-
 
     /**
      * Get the console command arguments.
@@ -56,7 +53,6 @@ class RuleMakeCommand extends GeneratorCommand
         ];
     }
 
-
     /**
      * @return mixed
      */
@@ -70,7 +66,6 @@ class RuleMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-
     /**
      * @return mixed
      */
@@ -80,9 +75,8 @@ class RuleMakeCommand extends GeneratorCommand
 
         $rulePath = $this->laravel['modules']->config('paths.generator.rules');
 
-        return $path.$rulePath.'/'.$this->getFileName().'.php';
+        return $path . $rulePath . '/' . $this->getFileName() . '.php';
     }
-
 
     /**
      * @return string

@@ -8,7 +8,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class GenerateRouteProviderCommand extends GeneratorCommand
 {
-
     use ModuleCommandTrait;
 
     protected $argumentName = 'module';
@@ -27,7 +26,6 @@ class GenerateRouteProviderCommand extends GeneratorCommand
      */
     protected $description = 'Generate a new route service provider for the specified module.';
 
-
     /**
      * The command arguments.
      *
@@ -39,7 +37,6 @@ class GenerateRouteProviderCommand extends GeneratorCommand
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
-
 
     /**
      * Get template contents.
@@ -55,7 +52,6 @@ class GenerateRouteProviderCommand extends GeneratorCommand
         ]))->render();
     }
 
-
     /**
      * @return string
      */
@@ -63,7 +59,6 @@ class GenerateRouteProviderCommand extends GeneratorCommand
     {
         return 'RouteServiceProvider';
     }
-
 
     /**
      * Get the destination file path.
@@ -76,6 +71,6 @@ class GenerateRouteProviderCommand extends GeneratorCommand
 
         $generatorPath = $this->laravel['modules']->config('paths.generator.provider');
 
-        return $path.$generatorPath.'/'.$this->getFileName().'.php';
+        return $path . $generatorPath . '/' . $this->getFileName() . '.php';
     }
 }

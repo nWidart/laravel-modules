@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class CommandMakeCommand extends GeneratorCommand
 {
-
     use ModuleCommandTrait;
 
     /**
@@ -34,7 +33,6 @@ class CommandMakeCommand extends GeneratorCommand
      */
     protected $description = 'Generate new Artisan command for the specified module.';
 
-
     /**
      * Get default namespace.
      *
@@ -44,7 +42,6 @@ class CommandMakeCommand extends GeneratorCommand
     {
         return 'Console';
     }
-
 
     /**
      * Get the console command arguments.
@@ -59,7 +56,6 @@ class CommandMakeCommand extends GeneratorCommand
         ];
     }
 
-
     /**
      * Get the console command options.
      *
@@ -71,7 +67,6 @@ class CommandMakeCommand extends GeneratorCommand
             ['command', null, InputOption::VALUE_OPTIONAL, 'The terminal command that should be assigned.', null],
         ];
     }
-
 
     /**
      * @return mixed
@@ -87,7 +82,6 @@ class CommandMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-
     /**
      * @return string
      */
@@ -95,7 +89,6 @@ class CommandMakeCommand extends GeneratorCommand
     {
         return $this->option('command') ?: 'command:name';
     }
-
 
     /**
      * @return mixed
@@ -106,9 +99,8 @@ class CommandMakeCommand extends GeneratorCommand
 
         $seederPath = $this->laravel['modules']->config('paths.generator.command');
 
-        return $path.$seederPath.'/'.$this->getFileName().'.php';
+        return $path . $seederPath . '/' . $this->getFileName() . '.php';
     }
-
 
     /**
      * @return string

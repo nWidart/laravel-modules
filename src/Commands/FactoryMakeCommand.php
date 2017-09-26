@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class FactoryMakeCommand extends GeneratorCommand
 {
-
     use ModuleCommandTrait;
 
     /**
@@ -33,7 +32,6 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new model factory for the specified module.';
 
-
     /**
      * Get the console command arguments.
      *
@@ -47,7 +45,6 @@ class FactoryMakeCommand extends GeneratorCommand
         ];
     }
 
-
     /**
      * @return mixed
      */
@@ -56,7 +53,6 @@ class FactoryMakeCommand extends GeneratorCommand
         return (new Stub('/factory.stub'))->render();
     }
 
-
     /**
      * @return mixed
      */
@@ -64,15 +60,14 @@ class FactoryMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        return $path.'Database/factories/'.$this->getFileName();
+        return $path . 'Database/factories/' . $this->getFileName();
     }
-
 
     /**
      * @return string
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name')).'.php';
+        return Str::studly($this->argument('name')) . '.php';
     }
 }

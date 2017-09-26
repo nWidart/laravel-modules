@@ -8,7 +8,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class MailMakeCommand extends GeneratorCommand
 {
-
     use ModuleCommandTrait;
 
     /**
@@ -27,7 +26,6 @@ class MailMakeCommand extends GeneratorCommand
 
     protected $argumentName = 'name';
 
-
     /**
      * @return string
      */
@@ -35,7 +33,6 @@ class MailMakeCommand extends GeneratorCommand
     {
         return 'Emails';
     }
-
 
     /**
      * Get the console command arguments.
@@ -49,7 +46,6 @@ class MailMakeCommand extends GeneratorCommand
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
-
 
     /**
      * Get template contents.
@@ -66,7 +62,6 @@ class MailMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-
     /**
      * Get the destination file path.
      *
@@ -78,9 +73,8 @@ class MailMakeCommand extends GeneratorCommand
 
         $mailPath = $this->laravel['modules']->config('paths.generator.emails', 'Emails');
 
-        return $path.$mailPath.'/'.$this->getFileName().'.php';
+        return $path . $mailPath . '/' . $this->getFileName() . '.php';
     }
-
 
     /**
      * @return string

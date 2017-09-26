@@ -8,7 +8,6 @@ use Nwidart\Modules\Laravel\Repository;
 
 class ContractsServiceProvider extends ServiceProvider
 {
-
     /**
      * Register some binding.
      */

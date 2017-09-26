@@ -9,30 +9,30 @@ use Nwidart\Modules\Commands\DisableCommand;
 use Nwidart\Modules\Commands\DumpCommand;
 use Nwidart\Modules\Commands\EnableCommand;
 use Nwidart\Modules\Commands\EventMakeCommand;
-use Nwidart\Modules\Commands\JobMakeCommand;
-use Nwidart\Modules\Commands\ListenerMakeCommand;
-use Nwidart\Modules\Commands\MailMakeCommand;
-use Nwidart\Modules\Commands\MiddlewareMakeCommand;
-use Nwidart\Modules\Commands\NotificationMakeCommand;
-use Nwidart\Modules\Commands\ProviderMakeCommand;
+use Nwidart\Modules\Commands\FactoryMakeCommand;
 use Nwidart\Modules\Commands\GenerateRouteProviderCommand;
 use Nwidart\Modules\Commands\InstallCommand;
+use Nwidart\Modules\Commands\JobMakeCommand;
 use Nwidart\Modules\Commands\ListCommand;
+use Nwidart\Modules\Commands\ListenerMakeCommand;
+use Nwidart\Modules\Commands\MailMakeCommand;
 use Nwidart\Modules\Commands\MakeCommand;
-use Nwidart\Modules\Commands\FactoryMakeCommand;
-use Nwidart\Modules\Commands\PolicyMakeCommand;
-use Nwidart\Modules\Commands\RequestMakeCommand;
-use Nwidart\Modules\Commands\RuleMakeCommand;
+use Nwidart\Modules\Commands\MiddlewareMakeCommand;
 use Nwidart\Modules\Commands\MigrateCommand;
 use Nwidart\Modules\Commands\MigrateRefreshCommand;
 use Nwidart\Modules\Commands\MigrateResetCommand;
 use Nwidart\Modules\Commands\MigrateRollbackCommand;
 use Nwidart\Modules\Commands\MigrationCommand;
 use Nwidart\Modules\Commands\ModelCommand;
+use Nwidart\Modules\Commands\NotificationMakeCommand;
+use Nwidart\Modules\Commands\PolicyMakeCommand;
+use Nwidart\Modules\Commands\ProviderMakeCommand;
 use Nwidart\Modules\Commands\PublishCommand;
 use Nwidart\Modules\Commands\PublishConfigurationCommand;
 use Nwidart\Modules\Commands\PublishMigrationCommand;
 use Nwidart\Modules\Commands\PublishTranslationCommand;
+use Nwidart\Modules\Commands\RequestMakeCommand;
+use Nwidart\Modules\Commands\RuleMakeCommand;
 use Nwidart\Modules\Commands\SeedCommand;
 use Nwidart\Modules\Commands\SeedMakeCommand;
 use Nwidart\Modules\Commands\SetupCommand;
@@ -42,7 +42,6 @@ use Nwidart\Modules\Commands\UseCommand;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
-
     protected $defer = false;
 
     /**
@@ -89,7 +88,6 @@ class ConsoleServiceProvider extends ServiceProvider
         UseCommand::class,
     ];
 
-
     /**
      * Register the commands.
      */
@@ -97,7 +95,6 @@ class ConsoleServiceProvider extends ServiceProvider
     {
         $this->commands($this->commands);
     }
-
 
     /**
      * @return array

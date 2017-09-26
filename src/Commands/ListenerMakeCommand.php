@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class ListenerMakeCommand extends GeneratorCommand
 {
-
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
@@ -29,10 +28,9 @@ class ListenerMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new event listener class for the specified module';
 
-
     public function handle()
     {
-        if ( ! $this->option('event')) {
+        if (! $this->option('event')) {
             $this->error('The --event option is necessary');
 
             return;
@@ -40,7 +38,6 @@ class ListenerMakeCommand extends GeneratorCommand
 
         parent::handle();
     }
-
 
     /**
      * Get the console command arguments.
@@ -55,7 +52,6 @@ class ListenerMakeCommand extends GeneratorCommand
         ];
     }
 
-
     /**
      * Get the console command options.
      *
@@ -68,7 +64,6 @@ class ListenerMakeCommand extends GeneratorCommand
         ];
     }
 
-
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
@@ -80,20 +75,17 @@ class ListenerMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-
     private function getNamespace($module)
     {
         $namespace = str_replace('/', '\\', config('modules.paths.generator.listener'));
 
-        return $this->getClassNamespace($module)."\\".$namespace;
+        return $this->getClassNamespace($module) . "\\" . $namespace;
     }
-
 
     protected function getEventName(Module $module)
     {
-        return $this->getClassNamespace($module)."\\".config('modules.paths.generator.event')."\\".$this->option('event');
+        return $this->getClassNamespace($module) . "\\" . config('modules.paths.generator.event') . "\\" . $this->option('event');
     }
-
 
     protected function getDestinationFilePath()
     {
@@ -101,9 +93,8 @@ class ListenerMakeCommand extends GeneratorCommand
 
         $seederPath = $this->laravel['modules']->config('paths.generator.listener');
 
-        return $path.$seederPath.'/'.$this->getFileName().'.php';
+        return $path . $seederPath . '/' . $this->getFileName() . '.php';
     }
-
 
     /**
      * @return string

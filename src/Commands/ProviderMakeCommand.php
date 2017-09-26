@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class ProviderMakeCommand extends GeneratorCommand
 {
-
     use ModuleCommandTrait;
 
     /**
@@ -34,7 +33,6 @@ class ProviderMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new service provider class for the specified module.';
 
-
     /**
      * Get default namespace.
      *
@@ -44,7 +42,6 @@ class ProviderMakeCommand extends GeneratorCommand
     {
         return 'Providers';
     }
-
 
     /**
      * Get the console command arguments.
@@ -59,7 +56,6 @@ class ProviderMakeCommand extends GeneratorCommand
         ];
     }
 
-
     /**
      * Get the console command options.
      *
@@ -72,7 +68,6 @@ class ProviderMakeCommand extends GeneratorCommand
         ];
     }
 
-
     /**
      * @return mixed
      */
@@ -82,12 +77,11 @@ class ProviderMakeCommand extends GeneratorCommand
 
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/'.$stub.'.stub', [
+        return (new Stub('/' . $stub . '.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS'     => $this->getClass(),
         ]))->render();
     }
-
 
     /**
      * @return mixed
@@ -98,9 +92,8 @@ class ProviderMakeCommand extends GeneratorCommand
 
         $generatorPath = $this->laravel['modules']->config('paths.generator.provider');
 
-        return $path.$generatorPath.'/'.$this->getFileName().'.php';
+        return $path . $generatorPath . '/' . $this->getFileName() . '.php';
     }
-
 
     /**
      * @return string

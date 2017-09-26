@@ -8,7 +8,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 final class NotificationMakeCommand extends GeneratorCommand
 {
-
     use ModuleCommandTrait;
 
     /**
@@ -27,7 +26,6 @@ final class NotificationMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new notification class for the specified module.';
 
-
     /**
      * @return string
      */
@@ -35,7 +33,6 @@ final class NotificationMakeCommand extends GeneratorCommand
     {
         return 'Notifications';
     }
-
 
     /**
      * Get template contents.
@@ -52,7 +49,6 @@ final class NotificationMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-
     /**
      * Get the destination file path.
      *
@@ -64,9 +60,8 @@ final class NotificationMakeCommand extends GeneratorCommand
 
         $mailPath = $this->laravel['modules']->config('paths.generator.notifications', 'Notifications');
 
-        return $path.$mailPath.'/'.$this->getFileName().'.php';
+        return $path . $mailPath . '/' . $this->getFileName() . '.php';
     }
-
 
     /**
      * @return string
@@ -75,7 +70,6 @@ final class NotificationMakeCommand extends GeneratorCommand
     {
         return studly_case($this->argument('name'));
     }
-
 
     /**
      * Get the console command arguments.

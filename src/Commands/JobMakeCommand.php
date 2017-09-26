@@ -8,7 +8,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class JobMakeCommand extends GeneratorCommand
 {
-
     use ModuleCommandTrait;
 
     /**
@@ -27,7 +26,6 @@ class JobMakeCommand extends GeneratorCommand
 
     protected $argumentName = 'name';
 
-
     /**
      * @return string
      */
@@ -35,7 +33,6 @@ class JobMakeCommand extends GeneratorCommand
     {
         return 'Jobs';
     }
-
 
     /**
      * Get the console command arguments.
@@ -49,7 +46,6 @@ class JobMakeCommand extends GeneratorCommand
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
-
 
     /**
      * Get template contents.
@@ -66,7 +62,6 @@ class JobMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-
     /**
      * Get the destination file path.
      *
@@ -78,9 +73,8 @@ class JobMakeCommand extends GeneratorCommand
 
         $jobPath = $this->laravel['modules']->config('paths.generator.jobs');
 
-        return $path.$jobPath.'/'.$this->getFileName().'.php';
+        return $path . $jobPath . '/' . $this->getFileName() . '.php';
     }
-
 
     /**
      * @return string

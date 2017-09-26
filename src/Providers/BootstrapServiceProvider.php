@@ -6,7 +6,6 @@ use Illuminate\Support\ServiceProvider;
 
 class BootstrapServiceProvider extends ServiceProvider
 {
-
     /**
      * Booting the package.
      */
@@ -14,7 +13,6 @@ class BootstrapServiceProvider extends ServiceProvider
     {
         $this->app['modules']->boot();
     }
-
 
     /**
      * Register the provider.

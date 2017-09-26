@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class PolicyMakeCommand extends GeneratorCommand
 {
-
     use ModuleCommandTrait;
 
     /**
@@ -33,7 +32,6 @@ class PolicyMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new policy class for the specified module.';
 
-
     /**
      * @return string
      */
@@ -41,7 +39,6 @@ class PolicyMakeCommand extends GeneratorCommand
     {
         return 'Policies';
     }
-
 
     /**
      * Get the console command arguments.
@@ -56,7 +53,6 @@ class PolicyMakeCommand extends GeneratorCommand
         ];
     }
 
-
     /**
      * @return mixed
      */
@@ -70,7 +66,6 @@ class PolicyMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-
     /**
      * @return mixed
      */
@@ -80,9 +75,8 @@ class PolicyMakeCommand extends GeneratorCommand
 
         $policyPath = $this->laravel['modules']->config('paths.generator.policies');
 
-        return $path.$policyPath.'/'.$this->getFileName().'.php';
+        return $path . $policyPath . '/' . $this->getFileName() . '.php';
     }
-
 
     /**
      * @return string
