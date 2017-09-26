@@ -8,9 +8,11 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class GenerateRouteProviderCommand extends GeneratorCommand
 {
+
     use ModuleCommandTrait;
 
     protected $argumentName = 'module';
+
     /**
      * The command name.
      *
@@ -25,6 +27,7 @@ class GenerateRouteProviderCommand extends GeneratorCommand
      */
     protected $description = 'Generate a new route service provider for the specified module.';
 
+
     /**
      * The command arguments.
      *
@@ -32,10 +35,11 @@ class GenerateRouteProviderCommand extends GeneratorCommand
      */
     protected function getArguments()
     {
-        return array(
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
+
 
     /**
      * Get template contents.
@@ -44,18 +48,22 @@ class GenerateRouteProviderCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
-
         return (new Stub('/route-provider.stub', [
-            'NAMESPACE'         => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClass(),
-            'LOWER_NAME'        => $module->getLowerName(),
-            'MODULE'            => $this->getModuleName(),
-            'NAME'              => $this->getFileName(),
-            'STUDLY_NAME'       => $module->getStudlyName(),
-            'MODULE_NAMESPACE'  => $this->laravel['modules']->config('namespace'),
+            'MODULE'           => $this->getModuleName(),
+            'NAME'             => $this->getFileName(),
+            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
         ]))->render();
     }
+
+
+    /**
+     * @return string
+     */
+    private function getFileName()
+    {
+        return 'RouteServiceProvider';
+    }
+
 
     /**
      * Get the destination file path.
@@ -68,14 +76,6 @@ class GenerateRouteProviderCommand extends GeneratorCommand
 
         $generatorPath = $this->laravel['modules']->config('paths.generator.provider');
 
-        return $path . $generatorPath . '/' . $this->getFileName() . '.php';
-    }
-
-    /**
-     * @return string
-     */
-    private function getFileName()
-    {
-        return 'RouteServiceProvider';
+        return $path.$generatorPath.'/'.$this->getFileName().'.php';
     }
 }
