@@ -4,6 +4,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 2.4.1 - 2017-09-27
+
+## Changed
+
+- Setting a default value for `modules.paths.modules` configuration key
+
+
 ## 2.4.0 - 2017-09-27
 
 ## Added

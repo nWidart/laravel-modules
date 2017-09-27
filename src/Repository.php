@@ -256,7 +256,7 @@ abstract class Repository implements RepositoryInterface, Countable
      */
     public function getPath() : string
     {
-        return $this->path ?: $this->config('paths.modules');
+        return $this->path ?: $this->config('paths.modules', base_path('Modules'));
     }
 
     /**
