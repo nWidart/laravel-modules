@@ -4,13 +4,18 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
-## 2.4.0 - unreleased
+## 2.4.0 - 2017-09-27
+
+## Added
+
+- New `module:make-resource` command to generate resource classes
 
 ## Changed
 
 - Improved error output of the `module:seed` command
 - Marking methods that served as proxies in `Module` and `Repository` classes as deprecated for next major
 - Fixed `module:make` and `module:make-provider` to generate the correct master service provider
+- Tests: tests are now using `spatie/phpunit-snapshot-assertions` to make sure the generated files have the correct content
 
 ## 2.3.0 - 2017-09-26
 

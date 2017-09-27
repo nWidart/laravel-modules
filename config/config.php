@@ -112,6 +112,7 @@ return [
             'jobs' => 'Jobs',
             'emails' => 'Emails',
             'notifications' => 'Notifications',
+            'resource' => false,
         ],
     ],
     /*
