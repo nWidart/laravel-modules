@@ -52,6 +52,8 @@ class SeedCommand extends Command
             $this->reportException($e);
 
             $this->renderException($this->getOutput(), $e);
+
+            return 1;
         }
     }
 
