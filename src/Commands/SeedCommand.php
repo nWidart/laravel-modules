@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Repository;
@@ -10,6 +11,7 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class SeedCommand extends Command
 {
@@ -31,6 +33,7 @@ class SeedCommand extends Command
 
     /**
      * Execute the console command.
+     * @throws FatalThrowableError
      */
     public function handle()
     {
@@ -44,7 +47,11 @@ class SeedCommand extends Command
                 $this->info('All modules seeded.');
             }
         } catch (\Exception $e) {
-            $this->error($e->getMessage());
+            $e = new FatalThrowableError($e);
+
+            $this->reportException($e);
+
+            $this->renderException($this->getOutput(), $e);
         }
     }
 
@@ -145,6 +152,29 @@ class SeedCommand extends Command
         $namespace = $this->laravel['modules']->config('namespace');
 
         return $namespace . '\\' . $name . '\Database\Seeders\\' . $name . 'DatabaseSeeder';
+    }
+
+    /**
+     * Report the exception to the exception handler.
+     *
+     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
+     * @param  \Exception  $e
+     * @return void
+     */
+    protected function renderException($output, \Exception $e)
+    {
+        $this->laravel[ExceptionHandler::class]->renderForConsole($output, $e);
+    }
+
+    /**
+     * Report the exception to the exception handler.
+     *
+     * @param  \Exception  $e
+     * @return void
+     */
+    protected function reportException(\Exception $e)
+    {
+        $this->laravel[ExceptionHandler::class]->report($e);
     }
 
     /**
