@@ -4,6 +4,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 2.4.0 - unreleased
+
+## Changed
+
+- Improved error output of the `module:seed` command
+- Marking methods that served as proxies in `Module` and `Repository` classes as deprecated for next major
+
 ## 2.3.0 - 2017-09-26
 
 ## Added
