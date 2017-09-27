@@ -80,6 +80,18 @@ class ModuleMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_generates_correct_service_provider_content()
+    {
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
+        $content = $this->finder->get($path);
+
+        $expected = $this->finder->get(__DIR__ . '/expectations/master-service-provider.stub');
+        $this->assertEquals($expected, $content);
+    }
+
+    /** @test */
     public function it_generates_correct_composerjson_file()
     {
         $this->artisan('module:make', ['name' => ['Blog']]);
