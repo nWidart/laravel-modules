@@ -18,6 +18,9 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Fixed `module:make` and `module:make-provider` to generate the correct master service provider
 - Tests: tests are now using `spatie/phpunit-snapshot-assertions` to make sure the generated files have the correct content
 - Adding a sync option to the `module:make-job` command to make a synchronous job class
+- Changed `module:make-event` command to allow duck typed events (not type hinted event class)
+- Changed `module:make-event` to allow a `--queued` option to make the event queueable
+- Changed `module:make-event` command to not use the full class typehint when class was previous imported
 
 ## 2.3.0 - 2017-09-26
 

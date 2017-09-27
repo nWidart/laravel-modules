@@ -2,12 +2,13 @@
 
 namespace $NAMESPACE$;
 
-use $EVENTNAME$;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class $CLASS$
+class $CLASS$ implements ShouldQueue
 {
+    use InteractsWithQueue;
+
     /**
      * Create the event listener.
      *
@@ -21,10 +22,10 @@ class $CLASS$
     /**
      * Handle the event.
      *
-     * @param $SHORTEVENTNAME$ $event
+     * @param  object  $event
      * @return void
      */
-    public function handle($SHORTEVENTNAME$ $event)
+    public function handle($event)
     {
         //
     }
