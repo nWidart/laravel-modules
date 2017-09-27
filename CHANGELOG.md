@@ -9,6 +9,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ## Added
 
 - New `module:make-resource` command to generate resource classes
+- New `module:make-test` command to generate test classes
 
 ## Changed
 
