@@ -10,6 +10,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 - Improved error output of the `module:seed` command
 - Marking methods that served as proxies in `Module` and `Repository` classes as deprecated for next major
+- Fixed `module:make` and `module:make-provider` to generate the correct master service provider
 
 ## 2.3.0 - 2017-09-26
 

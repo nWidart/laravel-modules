@@ -25,7 +25,8 @@
     "mockery/mockery": "~0.9",
     "orchestra/testbench": "^3.5",
     "friendsofphp/php-cs-fixer": "^2.6",
-    "laravel/framework": "5.5.*"
+    "laravel/framework": "5.5.*",
+    "spatie/phpunit-snapshot-assertions": "^1.0"
   },
   "autoload": {
     "psr-4": {

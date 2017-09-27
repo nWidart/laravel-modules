@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class ProviderMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -53,8 +55,7 @@ class ProviderMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
 
-        $expected = $this->finder->get(__DIR__ . '/expectations/master-service-provider.stub');
-        $this->assertEquals($expected, $file);
+        $this->assertMatchesSnapshot($file);
     }
 
     private function expectedPlainContent()

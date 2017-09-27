@@ -4,9 +4,11 @@ namespace Nwidart\Modules\Tests\Commands;
 
 use Illuminate\Support\Facades\Artisan;
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class ModuleMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -85,10 +87,8 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['Blog']]);
 
         $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
-        $content = $this->finder->get($path);
 
-        $expected = $this->finder->get(__DIR__ . '/expectations/master-service-provider.stub');
-        $this->assertEquals($expected, $content);
+        $this->assertMatchesSnapshot($this->finder->get($path));
     }
 
     /** @test */
