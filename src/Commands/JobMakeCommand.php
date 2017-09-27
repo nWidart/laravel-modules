@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Commands;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class JobMakeCommand extends GeneratorCommand
 {
@@ -48,6 +49,18 @@ class JobMakeCommand extends GeneratorCommand
     }
 
     /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            ['sync', null, InputOption::VALUE_NONE, 'Indicates that job should be synchronous.'],
+        ];
+    }
+
+    /**
      * Get template contents.
      *
      * @return string
@@ -56,7 +69,7 @@ class JobMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/job.stub', [
+        return (new Stub($this->getStubName(), [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS'     => $this->getClass(),
         ]))->render();
@@ -82,5 +95,17 @@ class JobMakeCommand extends GeneratorCommand
     private function getFileName()
     {
         return studly_case($this->argument('name'));
+    }
+
+    /**
+     * @return string
+     */
+    protected function getStubName(): string
+    {
+        if ($this->option('sync')) {
+            return '/job.stub';
+        }
+
+        return '/job-queued.stub';
     }
 }

@@ -48,4 +48,14 @@ class JobMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_generated_correct_sync_job_file_with_content()
+    {
+        $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog', '--sync' => true]);
+
+        $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

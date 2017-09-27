@@ -17,6 +17,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Marking methods that served as proxies in `Module` and `Repository` classes as deprecated for next major
 - Fixed `module:make` and `module:make-provider` to generate the correct master service provider
 - Tests: tests are now using `spatie/phpunit-snapshot-assertions` to make sure the generated files have the correct content
+- Adding a sync option to the `module:make-job` command to make a synchronous job class
 
 ## 2.3.0 - 2017-09-26
 
