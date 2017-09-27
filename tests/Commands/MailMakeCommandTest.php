@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class MailMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -44,46 +46,6 @@ class MailMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/Emails/SomeMail.php');
 
-        $this->assertEquals($this->expectedContent(), $file);
-    }
-
-    private function expectedContent()
-    {
-        return <<<TEXT
-<?php
-
-namespace Modules\Blog\Emails;
-
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
-
-class SomeMail extends Mailable
-{
-    use Queueable, SerializesModels;
-
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Build the message.
-     *
-     * @return \$this
-     */
-    public function build()
-    {
-        return \$this->view('view.name');
-    }
-}
-
-TEXT;
+        $this->assertMatchesSnapshot($file);
     }
 }

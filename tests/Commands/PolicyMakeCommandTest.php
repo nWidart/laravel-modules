@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class PolicyMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -37,33 +39,6 @@ class PolicyMakeCommandTest extends BaseTestCase
         $policyFile = $this->modulePath . '/Policies/PostPolicy.php';
 
         $this->assertTrue(is_file($policyFile), 'Policy file was not created.');
-        $this->assertEquals($this->expectedContent(), $this->finder->get($policyFile), 'Content of policy file is not correct.');
-    }
-
-    private function expectedContent()
-    {
-        return <<<TEXT
-<?php
-
-namespace Modules\Blog\Policies;
-
-use Illuminate\Auth\Access\HandlesAuthorization;
-
-class PostPolicy
-{
-    use HandlesAuthorization;
-
-    /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-}
-
-TEXT;
+        $this->assertMatchesSnapshot($this->finder->get($policyFile));
     }
 }

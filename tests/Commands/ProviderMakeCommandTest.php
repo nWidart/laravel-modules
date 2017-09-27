@@ -45,7 +45,7 @@ class ProviderMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/Providers/MyBlogServiceProvider.php');
 
-        $this->assertEquals($this->expectedPlainContent(), $file);
+        $this->assertMatchesSnapshot($file);
     }
 
     /** @test */
@@ -56,57 +56,5 @@ class ProviderMakeCommandTest extends BaseTestCase
         $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
 
         $this->assertMatchesSnapshot($file);
-    }
-
-    private function expectedPlainContent()
-    {
-        return <<<TEXT
-<?php
-
-namespace Modules\Blog\Providers;
-
-use Illuminate\Support\ServiceProvider;
-
-class MyBlogServiceProvider extends ServiceProvider
-{
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected \$defer = false;
-
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [];
-    }
-}
-
-TEXT;
-    }
-
-    private function getExpectedMasterPart()
-    {
-        return <<<TEXT
-        \$this->registerTranslations();
-        \$this->registerConfig();
-        \$this->registerViews();
-        \$this->registerFactories();
-TEXT;
     }
 }

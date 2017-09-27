@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class ListenerMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -51,46 +53,6 @@ class ListenerMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/Listeners/NotifyUsersOfANewPost.php');
 
-        $this->assertEquals($this->expectedContent(), $file);
-    }
-
-    private function expectedContent()
-    {
-        $event = '$event';
-
-        return <<<TEXT
-<?php
-
-namespace Modules\Blog\Listeners;
-
-use Modules\Blog\Events\UserWasCreated;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-
-class NotifyUsersOfANewPost
-{
-    /**
-     * Create the event listener.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Handle the event.
-     *
-     * @param \Modules\Blog\Events\UserWasCreated $event
-     * @return void
-     */
-    public function handle(\Modules\Blog\Events\UserWasCreated $event)
-    {
-        //
-    }
-}
-
-TEXT;
+        $this->assertMatchesSnapshot($file);
     }
 }

@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class FactoryMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -37,22 +39,6 @@ class FactoryMakeCommandTest extends BaseTestCase
         $factoryFile = $this->modulePath . '/Database/factories/PostFactory.php';
 
         $this->assertTrue(is_file($factoryFile), 'Factory file was not created.');
-        $this->assertEquals($this->expectedContent(), $this->finder->get($factoryFile), 'Content of factory file is not correct.');
-    }
-
-    private function expectedContent()
-    {
-        return <<<TEXT
-<?php
-
-use Faker\Generator as Faker;
-
-\$factory->define(Model::class, function (Faker \$faker) {
-    return [
-        //
-    ];
-});
-
-TEXT;
+        $this->assertMatchesSnapshot($this->finder->get($factoryFile));
     }
 }

@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class MiddlewareMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -44,7 +46,6 @@ class MiddlewareMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/Http/Middleware/SomeMiddleware.php');
 
-        $this->assertTrue(str_contains($file, 'class SomeMiddleware'));
-        $this->assertTrue(str_contains($file, 'public function handle(Request $request, Closure $next)'));
+        $this->assertMatchesSnapshot($file);
     }
 }

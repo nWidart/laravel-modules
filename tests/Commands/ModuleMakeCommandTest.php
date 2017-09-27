@@ -64,6 +64,7 @@ class ModuleMakeCommandTest extends BaseTestCase
         }
         $path = base_path('modules/Blog') . '/module.json';
         $this->assertTrue($this->finder->exists($path), '[module.json] does not exists');
+        $this->assertMatchesSnapshot($this->finder->get($path));
     }
 
     /** @test */
@@ -73,21 +74,14 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
         $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
 
         $path = base_path('modules/Blog') . '/Http/Controllers/BlogController.php';
         $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
 
         $path = base_path('modules/Blog') . '/Database/Seeders/BlogDatabaseSeeder.php';
         $this->assertTrue($this->finder->exists($path));
-    }
-
-    /** @test */
-    public function it_generates_correct_service_provider_content()
-    {
-        $this->artisan('module:make', ['name' => ['Blog']]);
-
-        $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
-
         $this->assertMatchesSnapshot($this->finder->get($path));
     }
 
@@ -98,7 +92,7 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/composer.json');
 
-        $this->assertEquals($this->getExpectedComposerJson(), $file);
+        $this->assertMatchesSnapshot($file);
     }
 
     /** @test */
@@ -116,7 +110,7 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get(base_path('modules/ModuleName') . '/Providers/ModuleNameServiceProvider.php');
 
-        $this->assertTrue(str_contains($file, 'namespace Modules\ModuleName\Providers;'));
+        $this->assertMatchesSnapshot($file);
     }
 
     /** @test */
@@ -193,27 +187,5 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->assertFalse(is_dir($this->modulePath . '/Assets'));
         $this->assertFalse(is_dir($this->modulePath . '/Emails'));
-    }
-
-    private function getExpectedComposerJson()
-    {
-        return <<<TEXT
-{
-    "name": "nwidart/blog",
-    "description": "",
-    "authors": [
-        {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "Modules\\\Blog\\\": ""
-        }
-    }
-}
-
-TEXT;
     }
 }

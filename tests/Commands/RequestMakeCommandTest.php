@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class RequestMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -44,43 +46,6 @@ class RequestMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/Http/Requests/CreateBlogPostRequest.php');
 
-        $this->assertEquals($this->expectedContent(), $file);
-    }
-
-    private function expectedContent()
-    {
-        return <<<TEXT
-<?php
-
-namespace Modules\Blog\Http\Requests;
-
-use Illuminate\Foundation\Http\FormRequest;
-
-class CreateBlogPostRequest extends FormRequest
-{
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
-    {
-        return [
-            //
-        ];
-    }
-
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return true;
-    }
-}
-
-TEXT;
+        $this->assertMatchesSnapshot($file);
     }
 }

@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class ModelMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -44,7 +46,7 @@ class ModelMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/Entities/Post.php');
 
-        $this->assertEquals($this->expectedContent(), $file);
+        $this->assertMatchesSnapshot($file);
     }
 
     /** @test */
@@ -54,7 +56,7 @@ class ModelMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/Entities/Post.php');
 
-        $this->assertTrue(str_contains($file, "protected \$fillable = [\"title\",\"slug\"];"));
+        $this->assertMatchesSnapshot($file);
     }
 
     /** @test */
@@ -66,7 +68,7 @@ class ModelMakeCommandTest extends BaseTestCase
         $migrationFile = $migrations[0];
         $migrationContent = $this->finder->get($this->modulePath . '/Database/Migrations/' . $migrationFile->getFilename());
         $this->assertCount(1, $migrations);
-        $this->assertContains('Schema::create(\'posts\',', $migrationContent);
+        $this->assertMatchesSnapshot($migrationContent);
     }
 
     /** @test */
@@ -78,7 +80,7 @@ class ModelMakeCommandTest extends BaseTestCase
         $migrationFile = $migrations[0];
         $migrationContent = $this->finder->get($this->modulePath . '/Database/Migrations/' . $migrationFile->getFilename());
         $this->assertCount(1, $migrations);
-        $this->assertContains('Schema::create(\'posts\',', $migrationContent);
+        $this->assertMatchesSnapshot($migrationContent);
     }
 
     /** @test */
@@ -88,24 +90,9 @@ class ModelMakeCommandTest extends BaseTestCase
 
         $migrations = $this->finder->allFiles($this->modulePath . '/Database/Migrations');
         $migrationFile = $migrations[0];
+        $migrationContent = $this->finder->get($this->modulePath . '/Database/Migrations/' . $migrationFile->getFilename());
 
         $this->assertContains('create_product_details_table', $migrationFile->getFilename());
-    }
-
-    private function expectedContent()
-    {
-        return <<<TEXT
-<?php
-
-namespace Modules\Blog\Entities;
-
-use Illuminate\Database\Eloquent\Model;
-
-class Post extends Model
-{
-    protected \$fillable = [];
-}
-
-TEXT;
+        $this->assertMatchesSnapshot($migrationContent);
     }
 }

@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class JobMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -44,46 +46,6 @@ class JobMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
 
-        $this->assertEquals($this->expectedContent(), $file);
-    }
-
-    private function expectedContent()
-    {
-        return <<<TEXT
-<?php
-
-namespace Modules\Blog\Jobs;
-
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Bus\Queueable;
-
-class SomeJob implements ShouldQueue
-{
-    use InteractsWithQueue, SerializesModels, Queueable;
-
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        //
-    }
-}
-
-TEXT;
+        $this->assertMatchesSnapshot($file);
     }
 }

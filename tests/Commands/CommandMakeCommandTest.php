@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class CommandMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -44,7 +46,7 @@ class CommandMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/Console/MyAwesomeCommand.php');
 
-        $this->assertEquals($this->expectedContent(), $file);
+        $this->assertMatchesSnapshot($file);
     }
 
     /** @test */
@@ -54,81 +56,6 @@ class CommandMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/Console/MyAwesomeCommand.php');
 
-        $this->assertTrue(str_contains($file, "protected \$name = 'my:awesome';"));
-    }
-
-    private function expectedContent()
-    {
-        return <<<TEXT
-<?php
-
-namespace Modules\Blog\Console;
-
-use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
-
-class MyAwesomeCommand extends Command
-{
-    /**
-     * The console command name.
-     *
-     * @var string
-     */
-    protected \$name = 'command:name';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected \$description = 'Command description.';
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
-    {
-        //
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['example', InputArgument::REQUIRED, 'An example argument.'],
-        ];
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['example', null, InputOption::VALUE_OPTIONAL, 'An example option.', null],
-        ];
-    }
-}
-
-TEXT;
+        $this->assertMatchesSnapshot($file);
     }
 }

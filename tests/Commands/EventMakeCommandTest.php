@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class EventMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -45,43 +47,6 @@ class EventMakeCommandTest extends BaseTestCase
 
         $file = $this->finder->get($this->modulePath . '/Events/PostWasCreated.php');
 
-        $this->assertEquals($this->expectedContent(), $file);
-    }
-
-    private function expectedContent()
-    {
-        return <<<TEXT
-<?php
-
-namespace Modules\Blog\Events;
-
-use Illuminate\Queue\SerializesModels;
-
-class PostWasCreated
-{
-    use SerializesModels;
-
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Get the channels the event should be broadcast on.
-     *
-     * @return array
-     */
-    public function broadcastOn()
-    {
-        return [];
-    }
-}
-
-TEXT;
+        $this->assertMatchesSnapshot($file);
     }
 }

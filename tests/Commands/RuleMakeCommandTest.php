@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class RuleMakeCommandTest extends BaseTestCase
 {
+    use MatchesSnapshots;
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -37,53 +39,6 @@ class RuleMakeCommandTest extends BaseTestCase
         $ruleFile = $this->modulePath . '/Rules/UniqueRule.php';
 
         $this->assertTrue(is_file($ruleFile), 'Rule file was not created.');
-        $this->assertEquals($this->expectedContent(), $this->finder->get($ruleFile), 'Content of rule file is not correct.');
-    }
-
-    private function expectedContent()
-    {
-        return <<<TEXT
-<?php
-
-namespace Modules\Blog\Rules;
-
-use Illuminate\Contracts\Validation\Rule;
-
-class UniqueRule implements Rule
-{
-    /**
-     * Create a new rule instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param  string  \$attribute
-     * @param  mixed  \$value
-     * @return bool
-     */
-    public function passes(\$attribute, \$value)
-    {
-        //
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return 'The validation error message.';
-    }
-}
-
-TEXT;
+        $this->assertMatchesSnapshot($this->finder->get($ruleFile));
     }
 }
