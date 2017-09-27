@@ -196,11 +196,11 @@ abstract class Module extends ServiceProvider
     /**
      * Get json contents from the cache, setting as needed.
      *
-     * @param $file
+     * @param string $file
      *
      * @return Json
      */
-    public function json($file = null)
+    public function json($file = null) : Json
     {
         if ($file === null) {
             $file = 'module.json';
