@@ -49,11 +49,12 @@ class ProviderMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_a_master_service_provider_with_resource_loading()
     {
-        $this->artisan('module:make-provider', ['name' => 'MyBlogServiceProvider', 'module' => 'Blog', '--master' => true]);
+        $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
 
-        $file = $this->finder->get($this->modulePath . '/Providers/MyBlogServiceProvider.php');
+        $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
 
-        $this->assertTrue(str_contains($file, $this->getExpectedMasterPart()));
+        $expected = $this->finder->get(__DIR__ . '/expectations/master-service-provider.stub');
+        $this->assertEquals($expected, $file);
     }
 
     private function expectedPlainContent()
