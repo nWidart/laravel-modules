@@ -214,12 +214,12 @@ abstract class Module extends ServiceProvider
     /**
      * Get a specific data from json file by given the key.
      *
-     * @param $key
+     * @param string $key
      * @param null $default
      *
      * @return mixed
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         return $this->json()->get($key, $default);
     }
@@ -304,7 +304,7 @@ abstract class Module extends ServiceProvider
      *
      * @return bool
      */
-    public function isStatus($status)
+    public function isStatus($status) : bool
     {
         return $this->get('active', 0) === $status;
     }
@@ -314,15 +314,16 @@ abstract class Module extends ServiceProvider
      *
      * @return bool
      */
-    public function enabled()
+    public function enabled() : bool
     {
-        return $this->active();
+        return $this->isStatus(1);
     }
 
     /**
      * Alternate for "enabled" method.
      *
      * @return bool
+     * @deprecated
      */
     public function active()
     {
@@ -333,6 +334,7 @@ abstract class Module extends ServiceProvider
      * Determine whether the current module not activated.
      *
      * @return bool
+     * @deprecated
      */
     public function notActive()
     {
@@ -340,11 +342,11 @@ abstract class Module extends ServiceProvider
     }
 
     /**
-     * Alias for "notActive" method.
+     *  Determine whether the current module not disabled.
      *
      * @return bool
      */
-    public function disabled()
+    public function disabled() : bool
     {
         return !$this->enabled();
     }
@@ -398,11 +400,11 @@ abstract class Module extends ServiceProvider
     /**
      * Get extra path.
      *
-     * @param $path
+     * @param string $path
      *
      * @return string
      */
-    public function getExtraPath($path)
+    public function getExtraPath(string $path) : string
     {
         return $this->getPath() . '/' . $path;
     }
