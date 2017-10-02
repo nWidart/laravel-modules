@@ -24,7 +24,7 @@
     "phpunit/phpunit": "~6.0",
     "mockery/mockery": "~0.9",
     "orchestra/testbench": "^3.5",
-    "friendsofphp/php-cs-fixer": "^2.6",
+    "friendsofphp/php-cs-fixer": "^2.7",
     "laravel/framework": "5.5.*",
     "spatie/phpunit-snapshot-assertions": "^1.0"
   },
