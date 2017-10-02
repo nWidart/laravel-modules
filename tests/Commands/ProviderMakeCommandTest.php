@@ -57,4 +57,15 @@ class ProviderMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_have_custom_migration_resources_location_paths()
+    {
+        $this->app['config']->set('modules.paths.generator.migration', 'migrations');
+        $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
+
+        $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }
