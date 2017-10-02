@@ -60,7 +60,9 @@ class FactoryMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        return $path . 'Database/factories/' . $this->getFileName();
+        $factoryPath = $this->laravel['modules']->config('paths.generator.factory', 'Database/factories');
+
+        return $path . $factoryPath  . '/' . $this->getFileName();
     }
 
     /**

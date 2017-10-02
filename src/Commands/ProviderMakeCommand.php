@@ -89,6 +89,7 @@ class ProviderMakeCommand extends GeneratorCommand
             'PATH_LANG'         => $this->laravel['config']->get('modules.paths.generator.lang'),
             'PATH_CONFIG'       => $this->laravel['config']->get('modules.paths.generator.config'),
             'MIGRATIONS_PATH'   => $this->laravel['config']->get('modules.paths.generator.migration', 'Database/Migrations'),
+            'FACTORIES_PATH'   => $this->laravel['config']->get('modules.paths.generator.factory', 'Database/factories'),
         ]))->render();
     }
 

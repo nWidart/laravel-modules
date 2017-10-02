@@ -97,6 +97,7 @@ return [
             'event' => 'Events',
             'listener' => 'Listeners',
             'migration' => 'Database/Migrations',
+            'factory' => 'Database/factories',
             'model' => 'Entities',
             'repository' => 'Repositories',
             'seeder' => 'Database/Seeders',

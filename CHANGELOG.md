@@ -7,6 +7,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ## Changed
 
 - Making the path to migrations for `loadMigrationsFrom()` call dynamic based of configuration
+- Making the factory path dynamic for master service provider & make-factory command
 
 ## 2.4.1 - 2017-09-27
 
