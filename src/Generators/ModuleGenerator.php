@@ -490,6 +490,6 @@ class ModuleGenerator extends Generator
 
     protected function getRoutesLocationReplacement()
     {
-        return $this->module->config('stubs.files.routes');
+        return '/' . $this->module->config('stubs.files.routes');
     }
 }
