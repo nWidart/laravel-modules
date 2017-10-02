@@ -35,7 +35,7 @@ class $NAME$ extends ServiceProvider
     public function map(Router $router)
     {
         // if (!app()->routesAreCached()) {
-        //    require __DIR__ . '/Http/routes.php';
+        //    require __DIR__ . '$ROUTES_PATH$';
         // }
     }
 }
