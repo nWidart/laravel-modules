@@ -384,7 +384,7 @@ class ModuleGenerator extends Generator
 
         foreach ($keys as $key) {
             if (method_exists($this, $method = 'get' . ucfirst(studly_case(strtolower($key))) . 'Replacement')) {
-                $replaces[$key] = call_user_func([$this, $method]);
+                $replaces[$key] = $this->$method();
             } else {
                 $replaces[$key] = null;
             }
