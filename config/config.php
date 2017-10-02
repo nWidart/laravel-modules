@@ -34,7 +34,7 @@ return [
             'composer' => 'composer.json',
         ],
         'replacements' => [
-            'start' => ['LOWER_NAME'],
+            'start' => ['LOWER_NAME', 'ROUTES_LOCATION'],
             'routes' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
             'json' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
             'views/index' => ['LOWER_NAME'],
