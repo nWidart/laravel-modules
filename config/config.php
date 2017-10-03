@@ -91,7 +91,7 @@ return [
         | Se the generate key to false to not generate that folder
         */
         'generator' => [
-            'assets' => ['path' => 'resources/assets', 'generate' => true],
+            'assets' => ['path' => 'Resources/assets', 'generate' => true],
             'config' => ['path' => 'Config', 'generate' => true],
             'command' => ['path' => 'Console', 'generate' => true],
             'migration' => ['path' => 'Database/Migrations', 'generate' => true],
