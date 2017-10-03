@@ -164,7 +164,7 @@ return [
     /*
     |--------------------------------------------------------------------------
     | Choose what laravel-modules will register as custom namespaces.
-    | Setting one to false will require to register that part
+    | Setting one to false will require you to register that part
     | in your own Service Provider class.
     |--------------------------------------------------------------------------
     */
