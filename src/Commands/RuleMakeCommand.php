@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -73,9 +74,9 @@ class RuleMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $rulePath = $this->laravel['modules']->config('paths.generator.rules');
+        $rulePath = GenerateConfigReader::read('rules');
 
-        return $path . $rulePath . '/' . $this->getFileName() . '.php';
+        return $path . $rulePath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

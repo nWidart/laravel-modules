@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -84,9 +85,9 @@ class JobMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $jobPath = $this->laravel['modules']->config('paths.generator.jobs');
+        $jobPath = GenerateConfigReader::read('jobs');
 
-        return $path . $jobPath . '/' . $this->getFileName() . '.php';
+        return $path . $jobPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

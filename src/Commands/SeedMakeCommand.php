@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\CanClearModulesCache;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -83,9 +84,9 @@ class SeedMakeCommand extends GeneratorCommand
 
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $seederPath = $this->laravel['modules']->config('paths.generator.seeder');
+        $seederPath = GenerateConfigReader::read('seeder');
 
-        return $path . $seederPath . '/' . $this->getSeederName() . '.php';
+        return $path . $seederPath->getPath() . '/' . $this->getSeederName() . '.php';
     }
 
     /**

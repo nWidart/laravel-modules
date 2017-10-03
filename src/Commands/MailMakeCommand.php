@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -71,9 +72,9 @@ class MailMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $mailPath = $this->laravel['modules']->config('paths.generator.emails', 'Emails');
+        $mailPath = GenerateConfigReader::read('emails');
 
-        return $path . $mailPath . '/' . $this->getFileName() . '.php';
+        return $path . $mailPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

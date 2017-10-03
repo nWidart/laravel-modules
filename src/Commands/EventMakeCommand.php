@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -30,8 +31,10 @@ class EventMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
+        $eventPath = GenerateConfigReader::read('event');
+
         return (new Stub('/event.stub', [
-            'NAMESPACE' => $this->getClassNamespace($module) . "\\" . config('modules.paths.generator.event'),
+            'NAMESPACE' => $this->getClassNamespace($module) . "\\" . $eventPath->getPath(),
             "CLASS"     => $this->getClass(),
         ]))->render();
     }
@@ -39,9 +42,10 @@ class EventMakeCommand extends GeneratorCommand
     public function getDestinationFilePath()
     {
         $path       = $this->laravel['modules']->getModulePath($this->getModuleName());
-        $seederPath = $this->laravel['modules']->config('paths.generator.event');
 
-        return $path . $seederPath . '/' . $this->getFileName() . '.php';
+        $eventPath = GenerateConfigReader::read('event');
+
+        return $path . $eventPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

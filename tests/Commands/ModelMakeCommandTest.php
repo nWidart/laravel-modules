@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests\Commands;
 
+use Illuminate\Support\Facades\Artisan;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -94,5 +95,14 @@ class ModelMakeCommandTest extends BaseTestCase
 
         $this->assertContains('create_product_details_table', $migrationFile->getFilename());
         $this->assertMatchesSnapshot($migrationContent);
+    }
+
+    /** @test */
+    public function it_displays_error_if_model_already_exists()
+    {
+        $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog']);
+        $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog']);
+
+        $this->assertContains('already exists', Artisan::output());
     }
 }

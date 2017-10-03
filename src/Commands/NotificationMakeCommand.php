@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -58,9 +59,9 @@ final class NotificationMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $mailPath = $this->laravel['modules']->config('paths.generator.notifications', 'Notifications');
+        $notificationPath = GenerateConfigReader::read('notifications');
 
-        return $path . $mailPath . '/' . $this->getFileName() . '.php';
+        return $path . $notificationPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

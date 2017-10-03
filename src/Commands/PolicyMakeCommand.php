@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -73,9 +74,9 @@ class PolicyMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $policyPath = $this->laravel['modules']->config('paths.generator.policies');
+        $policyPath = GenerateConfigReader::read('policies');
 
-        return $path . $policyPath . '/' . $this->getFileName() . '.php';
+        return $path . $policyPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

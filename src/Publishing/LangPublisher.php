@@ -2,6 +2,8 @@
 
 namespace Nwidart\Modules\Publishing;
 
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
+
 class LangPublisher extends Publisher
 {
     /**
@@ -31,7 +33,7 @@ class LangPublisher extends Publisher
     public function getSourcePath()
     {
         return $this->getModule()->getExtraPath(
-            $this->repository->config('paths.generator.lang')
+            GenerateConfigReader::read('lang')->getPath()
         );
     }
 }

@@ -87,33 +87,33 @@ return [
         |--------------------------------------------------------------------------
         | Generator path
         |--------------------------------------------------------------------------
-        | Here you may update the modules generated folder paths.
-        | Set the value to false to not generate a folder.
+        | Customise the paths where the folders will be generated.
+        | Se the generate key to false to not generate that folder
         */
         'generator' => [
-            'assets' => 'Assets',
-            'config' => 'Config',
-            'command' => 'Console',
-            'event' => 'Events',
-            'listener' => 'Listeners',
-            'migration' => 'Database/Migrations',
-            'factory' => 'Database/factories',
-            'model' => 'Entities',
-            'repository' => 'Repositories',
-            'seeder' => 'Database/Seeders',
-            'controller' => 'Http/Controllers',
-            'filter' => 'Http/Middleware',
-            'request' => 'Http/Requests',
-            'provider' => 'Providers',
-            'lang' => 'Resources/lang',
-            'views' => 'Resources/views',
-            'policies' => false,
-            'rules' => false,
-            'test' => 'Tests',
-            'jobs' => 'Jobs',
-            'emails' => 'Emails',
-            'notifications' => 'Notifications',
-            'resource' => false,
+            'assets' => ['path' => 'Assets', 'generate' => true],
+            'config' => ['path' => 'Config', 'generate' => true],
+            'command' => ['path' => 'Console', 'generate' => true],
+            'event' => ['path' => 'Events', 'generate' => false],
+            'listener' => ['path' => 'Listeners', 'generate' => false],
+            'migration' => ['path' => 'Database/Migrations', 'generate' => true],
+            'factory' => ['path' => 'Database/factories', 'generate' => true],
+            'model' => ['path' => 'Entities', 'generate' => true],
+            'repository' => ['path' => 'Repositories', 'generate' => false],
+            'seeder' => ['path' => 'Database/Seeders', 'generate' => true],
+            'controller' => ['path' => 'Http/Controllers', 'generate' => true],
+            'filter' => ['path' => 'Http/Middleware', 'generate' => true],
+            'request' => ['path' => 'Http/Requests', 'generate' => true],
+            'provider' => ['path' => 'Providers', 'generate' => true],
+            'lang' => ['path' => 'Resources/lang', 'generate' => true],
+            'views' => ['path' => 'Resources/views', 'generate' => true],
+            'policies' => ['path' => 'Policies', 'generate' => false],
+            'rules' => ['path' => 'Rules', 'generate' => false],
+            'test' => ['path' => 'Tests', 'generate' => true],
+            'jobs' => ['path' => 'Jobs', 'generate' => false],
+            'emails' => ['path' => 'Emails', 'generate' => false],
+            'notifications' => ['path' => 'Notifications', 'generate' => false],
+            'resource' => ['path' => 'Transformers', 'generate' => false],
         ],
     ],
     /*

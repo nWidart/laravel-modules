@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -97,9 +98,9 @@ class CommandMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $seederPath = $this->laravel['modules']->config('paths.generator.command');
+        $commandPath = GenerateConfigReader::read('command');
 
-        return $path . $seederPath . '/' . $this->getFileName() . '.php';
+        return $path . $commandPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

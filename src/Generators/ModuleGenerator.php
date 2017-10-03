@@ -7,6 +7,7 @@ use Illuminate\Console\Command as Console;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Repository;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 
 class ModuleGenerator extends Generator
@@ -210,7 +211,7 @@ class ModuleGenerator extends Generator
      */
     public function getFolders()
     {
-        return array_values($this->module->config('paths.generator'));
+        return $this->module->config('paths.generator');
     }
 
     /**
@@ -275,12 +276,14 @@ class ModuleGenerator extends Generator
      */
     public function generateFolders()
     {
-        foreach ($this->getFolders() as $folder) {
-            if ($folder === false) {
-                return;
+        foreach ($this->getFolders() as $key => $folder) {
+            $folder = GenerateConfigReader::read($key);
+
+            if ($folder->generate() === false) {
+                continue;
             }
 
-            $path = $this->module->getModulePath($this->getName()) . '/' . $folder;
+            $path = $this->module->getModulePath($this->getName()) . '/' . $folder->getPath();
 
             $this->filesystem->makeDirectory($path, 0755, true);
 

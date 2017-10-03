@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Nwidart\Modules\Module;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -68,23 +69,27 @@ class ListenerMakeCommand extends GeneratorCommand
 
     private function getNamespace($module)
     {
-        $namespace = str_replace('/', '\\', config('modules.paths.generator.listener'));
+        $listenerPath = GenerateConfigReader::read('listener');
+
+        $namespace = str_replace('/', '\\', $listenerPath->getPath());
 
         return $this->getClassNamespace($module) . "\\" . $namespace;
     }
 
     protected function getEventName(Module $module)
     {
-        return $this->getClassNamespace($module) . "\\" . config('modules.paths.generator.event') . "\\" . $this->option('event');
+        $eventPath = GenerateConfigReader::read('event');
+
+        return $this->getClassNamespace($module) . "\\" . $eventPath->getPath() . "\\" . $this->option('event');
     }
 
     protected function getDestinationFilePath()
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $seederPath = $this->laravel['modules']->config('paths.generator.listener');
+        $listenerPath = GenerateConfigReader::read('listener');
 
-        return $path . $seederPath . '/' . $this->getFileName() . '.php';
+        return $path . $listenerPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

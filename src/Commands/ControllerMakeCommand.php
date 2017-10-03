@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -41,9 +42,9 @@ class ControllerMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $controllerPath = $this->laravel['modules']->config('paths.generator.controller');
+        $controllerPath = GenerateConfigReader::read('controller');
 
-        return $path . $controllerPath . '/' . $this->getControllerName() . '.php';
+        return $path . $controllerPath->getPath() . '/' . $this->getControllerName() . '.php';
     }
 
     /**

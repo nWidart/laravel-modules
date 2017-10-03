@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -75,9 +76,9 @@ class MiddlewareMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $seederPath = $this->laravel['modules']->config('paths.generator.filter');
+        $middlewarePath = GenerateConfigReader::read('filter');
 
-        return $path . $seederPath . '/' . $this->getFileName() . '.php';
+        return $path . $middlewarePath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

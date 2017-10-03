@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -66,9 +67,9 @@ class ResourceMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $seederPath = $this->laravel['modules']->config('paths.generator.resource');
+        $resourcePath = GenerateConfigReader::read('resource');
 
-        return $path . $seederPath . '/' . $this->getFileName() . '.php';
+        return $path . $resourcePath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

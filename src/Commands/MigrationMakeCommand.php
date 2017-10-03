@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Migrations\NameParser;
 use Nwidart\Modules\Support\Migrations\SchemaParser;
 use Nwidart\Modules\Support\Stub;
@@ -113,9 +114,9 @@ class MigrationMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $generatorPath = $this->laravel['modules']->config('paths.generator.migration');
+        $generatorPath = GenerateConfigReader::read('migration');
 
-        return $path . $generatorPath . '/' . $this->getFileName() . '.php';
+        return $path . $generatorPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -85,11 +86,11 @@ class ProviderMakeCommand extends GeneratorCommand
             'NAME'              => $this->getFileName(),
             'STUDLY_NAME'       => $module->getStudlyName(),
             'MODULE_NAMESPACE'  => $this->laravel['modules']->config('namespace'),
-            'PATH_VIEWS'        => $this->laravel['config']->get('modules.paths.generator.views'),
-            'PATH_LANG'         => $this->laravel['config']->get('modules.paths.generator.lang'),
-            'PATH_CONFIG'       => $this->laravel['config']->get('modules.paths.generator.config'),
-            'MIGRATIONS_PATH'   => $this->laravel['config']->get('modules.paths.generator.migration', 'Database/Migrations'),
-            'FACTORIES_PATH'   => $this->laravel['config']->get('modules.paths.generator.factory', 'Database/factories'),
+            'PATH_VIEWS'        => GenerateConfigReader::read('views')->getPath(),
+            'PATH_LANG'         => GenerateConfigReader::read('lang')->getPath(),
+            'PATH_CONFIG'       => GenerateConfigReader::read('config')->getPath(),
+            'MIGRATIONS_PATH'   => GenerateConfigReader::read('migration')->getPath(),
+            'FACTORIES_PATH'   => GenerateConfigReader::read('factory')->getPath(),
         ]))->render();
     }
 
@@ -100,9 +101,9 @@ class ProviderMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $generatorPath = $this->laravel['modules']->config('paths.generator.provider');
+        $generatorPath = GenerateConfigReader::read('provider');
 
-        return $path . $generatorPath . '/' . $this->getFileName() . '.php';
+        return $path . $generatorPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

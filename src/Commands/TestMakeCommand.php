@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
@@ -58,9 +59,9 @@ class TestMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $seederPath = $this->laravel['modules']->config('paths.generator.test');
+        $testPath = GenerateConfigReader::read('test');
 
-        return $path . $seederPath . '/' . $this->getFileName() . '.php';
+        return $path . $testPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**
