@@ -91,17 +91,17 @@ return [
         | Se the generate key to false to not generate that folder
         */
         'generator' => [
-            'assets' => ['path' => 'Resources/assets', 'generate' => true],
             'config' => ['path' => 'Config', 'generate' => true],
             'command' => ['path' => 'Console', 'generate' => true],
             'migration' => ['path' => 'Database/Migrations', 'generate' => true],
+            'seeder' => ['path' => 'Database/Seeders', 'generate' => true],
             'factory' => ['path' => 'Database/factories', 'generate' => true],
             'model' => ['path' => 'Entities', 'generate' => true],
-            'seeder' => ['path' => 'Database/Seeders', 'generate' => true],
             'controller' => ['path' => 'Http/Controllers', 'generate' => true],
             'filter' => ['path' => 'Http/Middleware', 'generate' => true],
             'request' => ['path' => 'Http/Requests', 'generate' => true],
             'provider' => ['path' => 'Providers', 'generate' => true],
+            'assets' => ['path' => 'Resources/assets', 'generate' => true],
             'lang' => ['path' => 'Resources/lang', 'generate' => true],
             'views' => ['path' => 'Resources/views', 'generate' => true],
             'test' => ['path' => 'Tests', 'generate' => true],
