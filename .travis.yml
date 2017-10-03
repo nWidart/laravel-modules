@@ -13,7 +13,7 @@ before_script:
   - travis_retry composer update --no-interaction --prefer-dist
 
 script:
-  - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
+  - if [ $(phpenv version-name) == "7.1" ]; then vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover; else vendor/bin/phpunit; fi
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
