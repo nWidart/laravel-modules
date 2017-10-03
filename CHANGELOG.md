@@ -10,6 +10,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Making the factory path dynamic for master service provider & make-factory command
 - Make the route file location dynamic in start.php based of `stubs.files.routes`
 - Making the route path dynamic on the route service provider based of `stubs.files.routes`
+- New structure in configuration to set which folders will be generated on module:make
 
 ## 2.4.1 - 2017-09-27
 
