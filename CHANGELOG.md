@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 2.5.0 - 2017-10-03
+
 ## Changed
 
 - Making the path to migrations for `loadMigrationsFrom()` call dynamic based of configuration
