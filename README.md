@@ -29,13 +29,25 @@ To install through Composer, by run the following command:
 composer require nwidart/laravel-modules
 ```
 
-The package will automatically register a service provider and alias.
+In Laravel 5.5+, this package will automatically register a service provider and alias. If you are running Laravel 5.4, you will need to add them manually by editing your `config/app.php` as follows:
+
+``` php
+'providers' => [
+  Nwidart\Modules\LaravelModulesServiceProvider::class,
+],
+
+'aliases' => [
+  'Module' => Nwidart\Modules\Facades\Module::class,
+],
+```
 
 Optionally, publish the package's configuration file by running:
 
 ``` bash
 php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider"
 ```
+
+This creates `config/modules.php`, which allows you to customize what files and folders will be generated for each module by default, among [other options](https://nwidart.com/laravel-modules/v2/basic-usage/configuration). 
 
 ### Autoloading
 
