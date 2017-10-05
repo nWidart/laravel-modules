@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Changed
+
+- Adding the ability to correctly load modules from multiple locations, together
+
 ## 2.5.0 - 2017-10-03
 
 ## Changed

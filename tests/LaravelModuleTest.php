@@ -17,7 +17,7 @@ class ModuleTest extends BaseTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/Recipe');
+        $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');
     }
 
     /** @test */
@@ -59,7 +59,7 @@ class ModuleTest extends BaseTestCase
     /** @test */
     public function it_gets_module_path()
     {
-        $this->assertEquals(__DIR__ . '/stubs/Recipe', $this->module->getPath());
+        $this->assertEquals(__DIR__ . '/stubs/valid/Recipe', $this->module->getPath());
     }
 
     /** @test */
@@ -71,7 +71,7 @@ class ModuleTest extends BaseTestCase
     /** @test */
     public function it_loads_module_translations()
     {
-        (new TestingModule($this->app, 'Recipe', __DIR__ . '/stubs/Recipe'))->boot();
+        (new TestingModule($this->app, 'Recipe', __DIR__ . '/stubs/valid/Recipe'))->boot();
         $this->assertEquals('Recipe', trans('recipe::recipes.title.recipes'));
     }
 

@@ -15,14 +15,14 @@ class JsonTest extends BaseTestCase
     public function setUp()
     {
         parent::setUp();
-        $path = __DIR__ . '/stubs/module.json';
+        $path = __DIR__ . '/stubs/valid/module.json';
         $this->json = new Json($path, $this->app['files']);
     }
 
     /** @test */
     public function it_gets_the_file_path()
     {
-        $path = __DIR__ . '/stubs/module.json';
+        $path = __DIR__ . '/stubs/valid/module.json';
 
         $this->assertEquals($path, $this->json->getPath());
     }
@@ -65,7 +65,7 @@ class JsonTest extends BaseTestCase
     /** @test */
     public function it_makes_json_class()
     {
-        $path = __DIR__ . '/stubs/module.json';
+        $path = __DIR__ . '/stubs/valid/module.json';
         $json = Json::make($path, $this->app['files']);
 
         $this->assertInstanceOf(Json::class, $json);
@@ -74,7 +74,7 @@ class JsonTest extends BaseTestCase
     /** @test */
     public function it_sets_a_path()
     {
-        $path = __DIR__ . '/stubs/module.json';
+        $path = __DIR__ . '/stubs/valid/module.json';
         $this->assertEquals($path, $this->json->getPath());
 
         $this->json->setPath('some/path.json');
