@@ -60,5 +60,4 @@ class TestMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
-
 }

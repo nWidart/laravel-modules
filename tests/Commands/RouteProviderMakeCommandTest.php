@@ -60,5 +60,4 @@ class RouteProviderMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
-
 }
