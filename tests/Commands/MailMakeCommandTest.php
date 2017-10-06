@@ -48,4 +48,16 @@ class MailMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.emails.path', 'SuperEmails');
+
+        $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/SuperEmails/SomeMail.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

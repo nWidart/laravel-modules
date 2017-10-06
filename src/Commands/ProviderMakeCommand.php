@@ -34,14 +34,9 @@ class ProviderMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new service provider class for the specified module.';
 
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace()
+    public function getDefaultNamespace() : string
     {
-        return 'Providers';
+        return $this->laravel['modules']->config('paths.generator.provider.path', 'Providers');
     }
 
     /**

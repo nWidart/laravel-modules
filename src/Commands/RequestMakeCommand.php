@@ -33,14 +33,9 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new form request class for the specified module.';
 
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace()
+    public function getDefaultNamespace() : string
     {
-        return 'Http\Requests';
+        return $this->laravel['modules']->config('paths.generator.request.path', 'Http/Requests');
     }
 
     /**

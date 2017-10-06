@@ -17,14 +17,9 @@ class ResourceMakeCommand extends GeneratorCommand
     protected $name = 'module:make-resource';
     protected $description = 'Create a new resource class for the specified module.';
 
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace()
+    public function getDefaultNamespace() : string
     {
-        return 'Transformers';
+        return $this->laravel['modules']->config('paths.generator.resource.path', 'Transformers');
     }
 
     /**

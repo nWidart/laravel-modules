@@ -16,14 +16,9 @@ class TestMakeCommand extends GeneratorCommand
     protected $name = 'module:make-test';
     protected $description = 'Create a new test class for the specified module.';
 
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace()
+    public function getDefaultNamespace() : string
     {
-        return 'Tests';
+        return $this->laravel['modules']->config('paths.generator.test.path', 'Tests');
     }
 
     /**

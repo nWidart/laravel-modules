@@ -58,4 +58,16 @@ class CommandMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.command.path', 'Commands');
+
+        $this->artisan('module:make-command', ['name' => 'AwesomeCommand', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Commands/AwesomeCommand.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

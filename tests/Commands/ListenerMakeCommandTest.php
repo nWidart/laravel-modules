@@ -94,4 +94,19 @@ class ListenerMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.listener.path', 'Events/Handlers');
+
+        $this->artisan(
+            'module:make-listener',
+            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog']
+        );
+
+        $file = $this->finder->get($this->modulePath . '/Events/Handlers/NotifyUsersOfANewPost.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

@@ -48,4 +48,16 @@ class MiddlewareMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.filter.path', 'Middleware');
+
+        $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Middleware/SomeMiddleware.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

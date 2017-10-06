@@ -31,11 +31,9 @@ class EventMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        $eventPath = GenerateConfigReader::read('event');
-
         return (new Stub('/event.stub', [
-            'NAMESPACE' => $this->getClassNamespace($module) . "\\" . $eventPath->getPath(),
-            "CLASS"     => $this->getClass(),
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS' => $this->getClass(),
         ]))->render();
     }
 
@@ -54,6 +52,11 @@ class EventMakeCommand extends GeneratorCommand
     protected function getFileName()
     {
         return studly_case($this->argument('name'));
+    }
+
+    public function getDefaultNamespace() : string
+    {
+        return $this->laravel['modules']->config('paths.generator.event.path', 'Events');
     }
 
     /**

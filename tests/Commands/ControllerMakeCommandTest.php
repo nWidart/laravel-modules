@@ -80,4 +80,16 @@ class ControllerMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.controller.path', 'Controllers');
+
+        $this->artisan('module:make-controller', ['controller' => 'MyController', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Controllers/MyController.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

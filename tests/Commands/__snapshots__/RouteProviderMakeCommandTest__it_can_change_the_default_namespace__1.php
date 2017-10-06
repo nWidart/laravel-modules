@@ -1,18 +1,18 @@
-<?php
+<?php return '<?php
 
-namespace $NAMESPACE$;
+namespace Modules\\Blog\\SuperProviders;
 
-use Illuminate\Routing\Router;
-use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\\Routing\\Router;
+use Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider as ServiceProvider;
 
-class $CLASS$ extends ServiceProvider
+class RouteServiceProvider extends ServiceProvider
 {
     /**
      * The root namespace to assume when generating URLs to actions.
      *
      * @var string
      */
-    protected $rootUrlNamespace = '$MODULE_NAMESPACE$\$MODULE$\Http\Controllers';
+    protected $rootUrlNamespace = \'Modules\\Blog\\Http\\Controllers\';
 
     /**
      * Called before routes are registered.
@@ -35,7 +35,8 @@ class $CLASS$ extends ServiceProvider
     public function map(Router $router)
     {
         // if (!app()->routesAreCached()) {
-        //    require __DIR__ . '$ROUTES_PATH$';
+        //    require __DIR__ . \'/Http/routes.php\';
         // }
     }
 }
+';

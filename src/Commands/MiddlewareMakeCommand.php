@@ -33,14 +33,9 @@ class MiddlewareMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new middleware class for the specified module.';
 
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace()
+    public function getDefaultNamespace() : string
     {
-        return 'Http\Middleware';
+        return $this->laravel['modules']->config('paths.generator.filter.path', 'Http/Middleware');
     }
 
     /**

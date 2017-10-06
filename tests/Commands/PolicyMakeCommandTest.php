@@ -41,4 +41,16 @@ class PolicyMakeCommandTest extends BaseTestCase
         $this->assertTrue(is_file($policyFile), 'Policy file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($policyFile));
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.policies.path', 'SuperPolicies');
+
+        $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/SuperPolicies/PostPolicy.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

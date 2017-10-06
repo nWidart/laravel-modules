@@ -160,8 +160,8 @@ class ModelMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    public function getDefaultNamespace()
+    public function getDefaultNamespace() : string
     {
-        return 'Entities';
+        return $this->laravel['modules']->config('paths.generator.model.path', 'Entities');
     }
 }

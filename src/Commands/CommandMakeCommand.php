@@ -34,14 +34,9 @@ class CommandMakeCommand extends GeneratorCommand
      */
     protected $description = 'Generate new Artisan command for the specified module.';
 
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace()
+    public function getDefaultNamespace() : string
     {
-        return 'Console';
+        return $this->laravel['modules']->config('paths.generator.command.path', 'Console');
     }
 
     /**

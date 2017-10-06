@@ -48,4 +48,17 @@ class RouteProviderMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.provider.path', 'SuperProviders');
+
+        $this->artisan('module:route-provider', ['module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/SuperProviders/RouteServiceProvider.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
+
 }

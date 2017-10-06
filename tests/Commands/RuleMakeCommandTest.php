@@ -41,4 +41,16 @@ class RuleMakeCommandTest extends BaseTestCase
         $this->assertTrue(is_file($ruleFile), 'Rule file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($ruleFile));
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.rules.path', 'SuperRules');
+
+        $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/SuperRules/UniqueRule.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

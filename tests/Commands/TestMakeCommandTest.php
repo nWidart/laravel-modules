@@ -48,4 +48,17 @@ class TestMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.test.path', 'SuperTests');
+
+        $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/SuperTests/EloquentPostRepositoryTest.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
+
 }

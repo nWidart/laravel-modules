@@ -33,12 +33,9 @@ class RuleMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new validation rule for the specified module.';
 
-    /**
-     * @return string
-     */
-    public function getDefaultNamespace()
+    public function getDefaultNamespace() : string
     {
-        return 'Rules';
+        return $this->laravel['modules']->config('paths.generator.rules.path', 'Rules');
     }
 
     /**

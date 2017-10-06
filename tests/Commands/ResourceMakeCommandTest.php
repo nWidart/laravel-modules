@@ -58,4 +58,16 @@ class ResourceMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.resource.path', 'Http/Resources');
+
+        $this->artisan('module:make-resource', ['name' => 'PostsTransformer', 'module' => 'Blog', '--collection' => true]);
+
+        $file = $this->finder->get($this->modulePath . '/Http/Resources/PostsTransformer.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

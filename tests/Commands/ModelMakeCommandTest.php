@@ -105,4 +105,16 @@ class ModelMakeCommandTest extends BaseTestCase
 
         $this->assertContains('already exists', Artisan::output());
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.model.path', 'Models');
+
+        $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Models/Post.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

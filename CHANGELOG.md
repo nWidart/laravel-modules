@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Added
+
+- Ability to customise the destination folder & namespace of a generated class
+
 ## Changed
 
 - Adding the ability to correctly load modules from multiple locations, together
