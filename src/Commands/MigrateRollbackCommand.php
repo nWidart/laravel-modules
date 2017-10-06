@@ -92,9 +92,9 @@ class MigrateRollbackCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
 
     /**
@@ -104,11 +104,11 @@ class MigrateRollbackCommand extends Command
      */
     protected function getOptions()
     {
-        return array(
-            array('direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'desc'),
-            array('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'),
-            array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'),
-            array('pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'),
-        );
+        return [
+            ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'desc'],
+            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
+            ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
+        ];
     }
 }

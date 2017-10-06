@@ -37,10 +37,10 @@ class SeedMakeCommand extends GeneratorCommand
      */
     protected function getArguments()
     {
-        return array(
-            array('name', InputArgument::REQUIRED, 'The name of seeder will be created.'),
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['name', InputArgument::REQUIRED, 'The name of seeder will be created.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
 
     /**
@@ -50,14 +50,14 @@ class SeedMakeCommand extends GeneratorCommand
      */
     protected function getOptions()
     {
-        return array(
-            array(
+        return [
+            [
                 'master',
                 null,
                 InputOption::VALUE_NONE,
                 'Indicates the seeder will created is a master database seeder.',
-            ),
-        );
+            ],
+        ];
     }
 
     /**

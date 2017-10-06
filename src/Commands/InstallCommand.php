@@ -122,10 +122,10 @@ class InstallCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('name', InputArgument::OPTIONAL, 'The name of module will be installed.'),
-            array('version', InputArgument::OPTIONAL, 'The version of module will be installed.'),
-        );
+        return [
+            ['name', InputArgument::OPTIONAL, 'The name of module will be installed.'],
+            ['version', InputArgument::OPTIONAL, 'The version of module will be installed.'],
+        ];
     }
 
     /**
@@ -135,12 +135,12 @@ class InstallCommand extends Command
      */
     protected function getOptions()
     {
-        return array(
-            array('timeout', null, InputOption::VALUE_OPTIONAL, 'The process timeout.', null),
-            array('path', null, InputOption::VALUE_OPTIONAL, 'The installation path.', null),
-            array('type', null, InputOption::VALUE_OPTIONAL, 'The type of installation.', null),
-            array('tree', null, InputOption::VALUE_NONE, 'Install the module as a git subtree', null),
-            array('no-update', null, InputOption::VALUE_NONE, 'Disables the automatic update of the dependencies.', null),
-        );
+        return [
+            ['timeout', null, InputOption::VALUE_OPTIONAL, 'The process timeout.', null],
+            ['path', null, InputOption::VALUE_OPTIONAL, 'The installation path.', null],
+            ['type', null, InputOption::VALUE_OPTIONAL, 'The type of installation.', null],
+            ['tree', null, InputOption::VALUE_NONE, 'Install the module as a git subtree', null],
+            ['no-update', null, InputOption::VALUE_NONE, 'Disables the automatic update of the dependencies.', null],
+        ];
     }
 }

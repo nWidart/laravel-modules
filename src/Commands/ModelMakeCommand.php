@@ -70,10 +70,10 @@ class ModelMakeCommand extends GeneratorCommand
      */
     protected function getArguments()
     {
-        return array(
-            array('model', InputArgument::REQUIRED, 'The name of model will be created.'),
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['model', InputArgument::REQUIRED, 'The name of model will be created.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
 
     /**
@@ -83,10 +83,10 @@ class ModelMakeCommand extends GeneratorCommand
      */
     protected function getOptions()
     {
-        return array(
-            array('fillable', null, InputOption::VALUE_OPTIONAL, 'The fillable attributes.', null),
-            array('migration', 'm', InputOption::VALUE_NONE, 'Flag to create associated migrations', null),
-        );
+        return [
+            ['fillable', null, InputOption::VALUE_OPTIONAL, 'The fillable attributes.', null],
+            ['migration', 'm', InputOption::VALUE_NONE, 'Flag to create associated migrations', null],
+        ];
     }
 
     /**

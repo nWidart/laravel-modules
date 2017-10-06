@@ -85,9 +85,9 @@ class MigrateCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
 
     /**
@@ -97,13 +97,13 @@ class MigrateCommand extends Command
      */
     protected function getOptions()
     {
-        return array(
-            array('direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'asc'),
-            array('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'),
-            array('pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'),
-            array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'),
-            array('seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'),
-            array('subpath', null, InputOption::VALUE_OPTIONAL, 'Indicate a subpath to run your migrations from'),
-        );
+        return [
+            ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'asc'],
+            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
+            ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
+            ['seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'],
+            ['subpath', null, InputOption::VALUE_OPTIONAL, 'Indicate a subpath to run your migrations from'],
+        ];
     }
 }

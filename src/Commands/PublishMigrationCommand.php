@@ -61,8 +61,8 @@ class PublishMigrationCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('module', InputArgument::OPTIONAL, 'The name of module being used.'),
-        );
+        return [
+            ['module', InputArgument::OPTIONAL, 'The name of module being used.'],
+        ];
     }
 }

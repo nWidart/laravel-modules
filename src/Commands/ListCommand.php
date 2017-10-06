@@ -78,9 +78,9 @@ class ListCommand extends Command
      */
     protected function getOptions()
     {
-        return array(
-            array('only', null, InputOption::VALUE_OPTIONAL, 'Types of modules will be displayed.', null),
-            array('direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'asc'),
-        );
+        return [
+            ['only', null, InputOption::VALUE_OPTIONAL, 'Types of modules will be displayed.', null],
+            ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'asc'],
+        ];
     }
 }
