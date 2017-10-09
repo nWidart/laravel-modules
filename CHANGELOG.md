@@ -11,6 +11,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ## Changed
 
 - Adding the ability to correctly load modules from multiple locations, together
+- Custom seeder path now also used in the `module:seed` command
 
 ## 2.5.0 - 2017-10-03
 
