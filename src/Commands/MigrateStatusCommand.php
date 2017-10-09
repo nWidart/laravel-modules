@@ -90,5 +90,4 @@ class MigrateStatusCommand extends Command
             array('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'),
         );
     }
-
 }
