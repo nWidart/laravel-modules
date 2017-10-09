@@ -7,7 +7,7 @@ use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class MigrateStatusCommand
+class MigrateStatusCommand extends Command
 {
 
     /**
