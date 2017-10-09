@@ -1,4 +1,5 @@
 <?php
+
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
@@ -9,7 +10,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class MigrateStatusCommand extends Command
 {
-
     /**
      * The console command name.
      *
@@ -42,6 +42,7 @@ class MigrateStatusCommand extends Command
 
         if ($name) {
             $module = $this->module->findOrFail($name);
+
             return $this->migrateStatus($module);
         }
 
@@ -62,7 +63,7 @@ class MigrateStatusCommand extends Command
 
         $this->call('migrate:status', [
             '--path' => $path,
-            '--database' => $this->option('database')
+            '--database' => $this->option('database'),
         ]);
     }
 
