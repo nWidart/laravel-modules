@@ -22,7 +22,7 @@ class MigrateStatusCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Status for all migrations';
+    protected $description = 'Status for all module migrations';
 
     /**
      * @var \Nwidart\Modules\Repository
