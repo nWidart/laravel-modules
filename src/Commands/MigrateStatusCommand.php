@@ -34,7 +34,7 @@ class MigrateStatusCommand extends Command
      *
      * @return mixed
      */
-    public function fire()
+    public function handle()
     {
         $this->module = $this->laravel['modules'];
 
@@ -73,9 +73,9 @@ class MigrateStatusCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
 
     /**
@@ -85,9 +85,9 @@ class MigrateStatusCommand extends Command
      */
     protected function getOptions()
     {
-        return array(
-            array('direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'asc'),
-            array('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'),
-        );
+        return [
+            ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'asc'],
+            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
+        ];
     }
 }
