@@ -7,6 +7,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ## Added
 
 - Ability to customise the destination folder & namespace of a generated class
+- Added `php artisan module:migrate-status` command
 
 ## Changed
 
