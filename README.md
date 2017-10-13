@@ -40,7 +40,7 @@ php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProv
 ### Lumen
 Lumen doesn't come with a vendor publisher. In order to use laravel-modules with lumen you have to set it up manually.
 
-create a config folder inside the root directory and copy vendor/nwidart/laravel-modules/config/config.php to into that folder named modules.php
+create a config folder inside the root directory and copy vendor/nwidart/laravel-modules/config/config.php to that folder named modules.php
 
 ``` bash
 mkdir config
