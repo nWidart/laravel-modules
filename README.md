@@ -37,6 +37,32 @@ Optionally, publish the package's configuration file by running:
 php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider"
 ```
 
+### Lumen
+Lumen doesn't come with a vendor publisher. In order to use laravel-modules with lumen you have to set it up manually.
+
+create a config folder inside the root directory and copy vendor/nwidart/laravel-modules/config/config.php to into that folder named modules.php
+
+``` bash
+mkdir config
+cp vendor/nwidart/laravel-modules/config/config.php config/modules.php
+```
+
+then load the config and the serviceprovider in app/bootstrap.php
+
+``` php 
+$app->configure('modules');
+$app->register(Nwidart\Modules\LumenModulesServiceProvider::class)
+```
+
+Laravel-modules uses path.public which isn't defined by default in Lumen.
+register path.public before loading the serviceprovider.
+
+``` php
+$app->bind('path.public', function() {
+ return __DIR__ . 'public/';
+});
+```
+
 ### Autoloading
 
 By default the module classes are not loaded automatically. You can autoload your modules using `psr-4`. For example:
