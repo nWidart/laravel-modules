@@ -9,8 +9,7 @@ if (! function_exists('module_path')) {
     }
 }
 
-if ( ! function_exists('config_path'))
-{
+if (! function_exists('config_path')) {
     /**
      * Get the configuration path.
      *
