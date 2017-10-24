@@ -7,6 +7,16 @@
             "email": "$AUTHOR_EMAIL$"
         }
     ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "$MODULE_NAMESPACE$\\$STUDLY_NAME$\\Providers\\$STUDLY_NAME$ServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
     "autoload": {
         "psr-4": {
             "$MODULE_NAMESPACE$\\$STUDLY_NAME$\\": ""
