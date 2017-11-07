@@ -9,6 +9,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Ability to customise the destination folder & namespace of a generated class
 - Added `php artisan module:migrate-status` command
 - `config_path()` helper for Lumen
+- Added views tag to view config in ServiceProvider
+- added package auto discovery for laravel 5.5 in generated module `composer.json`
 
 ## Changed
 
