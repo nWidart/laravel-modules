@@ -66,7 +66,7 @@ class ModuleNameServiceProvider extends ServiceProvider
 
         $this->publishes([
             $sourcePath => $viewPath
-        ]);
+        ],\'views\');
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
             return $path . \'/modules/modulename\';
