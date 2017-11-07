@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 2.6.0 - 2017-11-07
+
 ## Added
 
 - Ability to customise the destination folder & namespace of a generated class
