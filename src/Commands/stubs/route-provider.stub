@@ -19,10 +19,9 @@ class $CLASS$ extends ServiceProvider
      *
      * Register any model bindings or pattern based filters.
      *
-     * @param  Router $router
      * @return void
      */
-    public function before(Router $router)
+    public function boot()
     {
         //
     }
