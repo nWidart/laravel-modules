@@ -39,7 +39,7 @@ class Repository extends BaseRepository
         $modules = [];
 
         foreach ($cached as $name => $module) {
-            $path = $this->config('paths.modules') . '/' . $name;
+            $path = $module["path"];
 
             $modules[$name] = new Module($this->app, $name, $path);
         }
