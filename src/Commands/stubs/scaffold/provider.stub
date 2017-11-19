@@ -46,11 +46,19 @@ class $CLASS$ extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__.'/../$PATH_CONFIG$/config.php' => config_path('$LOWER_NAME$.php'),
+            dirname(__DIR__).'/$PATH_CONFIG$/config.php' => config_path('$LOWER_NAME$.php'),
         ], 'config');
         $this->mergeConfigFrom(
-            __DIR__.'/../$PATH_CONFIG$/config.php', '$LOWER_NAME$'
+            dirname(__DIR__).'/$PATH_CONFIG$/config.php', '$LOWER_NAME$'
         );
+        #Load other config files
+        $files = collect(scandir(dirname(__DIR__).'/config'))->filter(function($file) {
+            return substr($file, -4) === '.php' && $file !== 'config.php';
+        })->each(function($file) {
+            $this->mergeConfigFrom(
+                dirname(__DIR__).'/config/'.$file, 'blog.'.substr($file, 0, -4)
+            );
+        });
     }
 
     /**
@@ -62,7 +70,7 @@ class $CLASS$ extends ServiceProvider
     {
         $viewPath = resource_path('views/modules/$LOWER_NAME$');
 
-        $sourcePath = __DIR__.'/../$PATH_VIEWS$';
+        $sourcePath = dirname(__DIR__).'/$PATH_VIEWS$';
 
         $this->publishes([
             $sourcePath => $viewPath
@@ -85,7 +93,7 @@ class $CLASS$ extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, '$LOWER_NAME$');
         } else {
-            $this->loadTranslationsFrom(__DIR__ .'/../$PATH_LANG$', '$LOWER_NAME$');
+            $this->loadTranslationsFrom(dirname(__DIR__).'/$PATH_LANG$', '$LOWER_NAME$');
         }
     }
 

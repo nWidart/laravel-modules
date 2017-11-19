@@ -1,5 +1,8 @@
 <?php
 
+# Old route setter
+# setting moved to the service provider
+
 /*
 |--------------------------------------------------------------------------
 | Register Namespaces And Routes

@@ -1,18 +1,31 @@
 <?php
 
-namespace $NAMESPACE$;
+namespace $MODULE_NAMESPACE$\$STUDLY_NAME$\Providers;
 
-use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Route;
 
-class $CLASS$ extends ServiceProvider
+class RouteServiceProvider extends ServiceProvider
 {
     /**
-     * The root namespace to assume when generating URLs to actions.
+     * This namespace is applied to your controller routes.
+     *
+     * In addition, it is set as the URL generator's root namespace.
      *
      * @var string
      */
-    protected $rootUrlNamespace = '$MODULE_NAMESPACE$\$MODULE$\Http\Controllers';
+    protected $namespace = '$MODULE_NAMESPACE$\\$STUDLY_NAME$\\Http\\Controllers';
+
+    /**
+     * Define your route model bindings, pattern filters, etc.
+     *
+     * @return void
+     */
+    // public function boot()
+    // {
+    //     parent::boot();
+    // }
 
     /**
      * Called before routes are registered.
@@ -31,10 +44,22 @@ class $CLASS$ extends ServiceProvider
      *
      * @return void
      */
-    public function map(Router $router)
+    public function map()
     {
-        // if (!app()->routesAreCached()) {
-        //    require __DIR__ . '$ROUTES_PATH$';
-        // }
+        if (!$this->app->routesAreCached()) {
+            Route::group([
+                'middleware' => 'web',
+                'namespace' => $this->namespace
+            ], function() {
+                include dirname(__DIR__) . '/routes/web.php';
+            });
+
+            Route::group([
+                'middleware' => 'api',
+                'namespace' => $this->namespace
+            ], function() {
+                include dirname(__DIR__) . '/routes/api.php';
+            });
+        }
     }
 }

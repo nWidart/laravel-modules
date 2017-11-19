@@ -6,11 +6,10 @@
     "active": 1,
     "order": 0,
     "providers": [
-        "$MODULE_NAMESPACE$\\$STUDLY_NAME$\\Providers\\$STUDLY_NAME$ServiceProvider"
+        "$MODULE_NAMESPACE$\\$STUDLY_NAME$\\Providers\\$STUDLY_NAME$ServiceProvider",
+        "$MODULE_NAMESPACE$\\$STUDLY_NAME$\\Providers\\RouteServiceProvider"
     ],
     "aliases": {},
-    "files": [
-        "start.php"
-    ],
+    "files": [],
     "requires": []
 }
