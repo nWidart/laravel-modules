@@ -3,7 +3,6 @@
 namespace $NAMESPACE$;
 
 use Illuminate\Support\ServiceProvider;
-use Route;
 
 class $CLASS$ extends ServiceProvider
 {
@@ -21,34 +20,9 @@ class $CLASS$ extends ServiceProvider
      */
     public function boot()
     {
-        $this->mapRoutes();
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-    }
-
-    /**
-     * Map routes.
-     *
-     * @return void
-     */
-    public function mapRoutes()
-    {
-        if (!$this->app->routesAreCached()) {
-            Route::group([
-                'middleware' => 'web',
-                'namespace' => '$MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Controllers'
-            ], function() {
-                include dirname(__DIR__) . '/routes/web.php';
-            });
-
-            Route::group([
-                'middleware' => 'api',
-                'namespace' => '$MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Controllers'
-            ], function() {
-                include dirname(__DIR__) . '/routes/api.php';
-            });
-        }
     }
 
     /**
@@ -74,6 +48,14 @@ class $CLASS$ extends ServiceProvider
         $this->mergeConfigFrom(
             dirname(__DIR__).'/$PATH_CONFIG$/config.php', '$LOWER_NAME$'
         );
+        #Load other config files
+        $files = collect(scandir(dirname(__DIR__).'/config'))->filter(function($file) {
+            return substr($file, -4) === '.php' && $file !== 'config.php';
+        })->each(function($file) {
+            $this->mergeConfigFrom(
+                dirname(__DIR__).'/config/'.$file, 'blog.'.substr($file, 0, -4)
+            );
+        });
     }
 
     /**
