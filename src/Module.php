@@ -190,6 +190,7 @@ abstract class Module extends ServiceProvider
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $lowerName);
+            $this->loadJSONTranslationsFrom($langPath);
         }
     }
 
