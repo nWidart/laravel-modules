@@ -3,13 +3,16 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Repository;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class SeedCommand extends Command
 {
@@ -31,8 +34,9 @@ class SeedCommand extends Command
 
     /**
      * Execute the console command.
+     * @throws FatalThrowableError
      */
-    public function fire()
+    public function handle()
     {
         try {
             if ($name = $this->argument('module')) {
@@ -44,7 +48,13 @@ class SeedCommand extends Command
                 $this->info('All modules seeded.');
             }
         } catch (\Exception $e) {
-            $this->error($e->getMessage());
+            $e = new FatalThrowableError($e);
+
+            $this->reportException($e);
+
+            $this->renderException($this->getOutput(), $e);
+
+            return 1;
         }
     }
 
@@ -143,8 +153,33 @@ class SeedCommand extends Command
         $name = Str::studly($name);
 
         $namespace = $this->laravel['modules']->config('namespace');
+        $seederPath = GenerateConfigReader::read('seeder');
+        $seederPath = str_replace('/', '\\', $seederPath->getPath());
 
-        return $namespace . '\\' . $name . '\Database\Seeders\\' . $name . 'DatabaseSeeder';
+        return $namespace . '\\' . $name . '\\' . $seederPath . '\\' . $name . 'DatabaseSeeder';
+    }
+
+    /**
+     * Report the exception to the exception handler.
+     *
+     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
+     * @param  \Exception  $e
+     * @return void
+     */
+    protected function renderException($output, \Exception $e)
+    {
+        $this->laravel[ExceptionHandler::class]->renderForConsole($output, $e);
+    }
+
+    /**
+     * Report the exception to the exception handler.
+     *
+     * @param  \Exception  $e
+     * @return void
+     */
+    protected function reportException(\Exception $e)
+    {
+        $this->laravel[ExceptionHandler::class]->report($e);
     }
 
     /**
@@ -154,9 +189,9 @@ class SeedCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
 
     /**
@@ -166,9 +201,9 @@ class SeedCommand extends Command
      */
     protected function getOptions()
     {
-        return array(
-            array('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to seed.'),
-            array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'),
-        );
+        return [
+            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to seed.'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
+        ];
     }
 }

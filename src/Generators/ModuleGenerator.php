@@ -7,6 +7,7 @@ use Illuminate\Console\Command as Console;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Repository;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 
 class ModuleGenerator extends Generator
@@ -210,7 +211,7 @@ class ModuleGenerator extends Generator
      */
     public function getFolders()
     {
-        return array_values($this->module->config('paths.generator'));
+        return $this->module->config('paths.generator');
     }
 
     /**
@@ -275,12 +276,19 @@ class ModuleGenerator extends Generator
      */
     public function generateFolders()
     {
-        foreach ($this->getFolders() as $folder) {
-            $path = $this->module->getModulePath($this->getName()) . '/' . $folder;
+        foreach ($this->getFolders() as $key => $folder) {
+            $folder = GenerateConfigReader::read($key);
+
+            if ($folder->generate() === false) {
+                continue;
+            }
+
+            $path = $this->module->getModulePath($this->getName()) . '/' . $folder->getPath();
 
             $this->filesystem->makeDirectory($path, 0755, true);
-
-            $this->generateGitKeep($path);
+            if (config('modules.stubs.gitkeep')) {
+                $this->generateGitKeep($path);
+            }
         }
     }
 
@@ -346,7 +354,8 @@ class ModuleGenerator extends Generator
     {
         return (new Stub(
             '/' . $stub . '.stub',
-            $this->getReplacement($stub))
+            $this->getReplacement($stub)
+        )
         )->render();
     }
 
@@ -379,7 +388,7 @@ class ModuleGenerator extends Generator
 
         foreach ($keys as $key) {
             if (method_exists($this, $method = 'get' . ucfirst(studly_case(strtolower($key))) . 'Replacement')) {
-                $replaces[$key] = call_user_func([$this, $method]);
+                $replaces[$key] = $this->$method();
             } else {
                 $replaces[$key] = null;
             }
@@ -481,5 +490,10 @@ class ModuleGenerator extends Generator
     protected function getAuthorEmailReplacement()
     {
         return $this->module->config('composer.author.email');
+    }
+
+    protected function getRoutesLocationReplacement()
+    {
+        return '/' . $this->module->config('stubs.files.routes');
     }
 }

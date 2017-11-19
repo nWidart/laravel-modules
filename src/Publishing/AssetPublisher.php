@@ -2,6 +2,8 @@
 
 namespace Nwidart\Modules\Publishing;
 
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
+
 class AssetPublisher extends Publisher
 {
     /**
@@ -29,7 +31,7 @@ class AssetPublisher extends Publisher
     public function getSourcePath()
     {
         return $this->getModule()->getExtraPath(
-            $this->repository->config('paths.generator.assets')
+            GenerateConfigReader::read('assets')->getPath()
         );
     }
 }

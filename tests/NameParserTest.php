@@ -1,10 +1,10 @@
 <?php
 
-namespace Nwidart\Modules\tests;
+namespace Nwidart\Modules\Tests;
 
 use Nwidart\Modules\Support\Migrations\NameParser;
 
-class NameParserTest extends \PHPUnit_Framework_TestCase
+class NameParserTest extends \PHPUnit\Framework\TestCase
 {
     /** @test */
     public function it_gets_the_original_name()

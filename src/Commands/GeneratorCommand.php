@@ -32,7 +32,7 @@ abstract class GeneratorCommand extends Command
     /**
      * Execute the console command.
      */
-    public function fire()
+    public function handle()
     {
         $path = str_replace('\\', '/', $this->getDestinationFilePath());
 
@@ -66,7 +66,7 @@ abstract class GeneratorCommand extends Command
      *
      * @return string
      */
-    public function getDefaultNamespace()
+    public function getDefaultNamespace() : string
     {
         return '';
     }
@@ -91,6 +91,8 @@ abstract class GeneratorCommand extends Command
         $namespace .= '\\' . $this->getDefaultNamespace();
 
         $namespace .= '\\' . $extra;
+
+        $namespace = str_replace('/', '\\', $namespace);
 
         return trim($namespace, '\\');
     }

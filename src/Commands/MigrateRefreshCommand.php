@@ -28,7 +28,7 @@ class MigrateRefreshCommand extends Command
     /**
      * Execute the console command.
      */
-    public function fire()
+    public function handle()
     {
         $this->call('module:migrate-reset', [
             'module' => $this->getModuleName(),
@@ -56,9 +56,9 @@ class MigrateRefreshCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('module', InputArgument::OPTIONAL, 'The name of module will be used.'),
-        );
+        return [
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
 
     /**
@@ -68,10 +68,23 @@ class MigrateRefreshCommand extends Command
      */
     protected function getOptions()
     {
-        return array(
-            array('database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'),
-            array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'),
-            array('seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'),
-        );
+        return [
+            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
+            ['seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'],
+        ];
+    }
+
+    public function getModuleName()
+    {
+        $module = $this->argument('module');
+
+        $module = app('modules')->find($module);
+
+        if ($module === null) {
+            return $module;
+        }
+
+        return $module->getStudlyName();
     }
 }

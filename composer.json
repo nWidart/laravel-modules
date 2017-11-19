@@ -18,24 +18,28 @@
     }
   ],
   "require": {
-    "php": ">=5.5",
-    "laravel/framework": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*"
+    "php": ">=7.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "~5.7",
+    "phpunit/phpunit": "~6.0",
     "mockery/mockery": "~0.9",
-    "orchestra/testbench": "^3.1|^3.2|^3.3|^3.4",
-    "phpro/grumphp": "^0.9.1",
-    "friendsofphp/php-cs-fixer": "^1.11"
+    "orchestra/testbench": "^3.5",
+    "friendsofphp/php-cs-fixer": "^2.7",
+    "laravel/framework": "5.5.*",
+    "spatie/phpunit-snapshot-assertions": "^1.0"
   },
   "autoload": {
     "psr-4": {
       "Nwidart\\Modules\\": "src"
-    }
+    },
+    "files": [
+      "src/helpers.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {
-      "Nwidart\\Modules\\Tests\\": "tests"
+      "Nwidart\\Modules\\Tests\\": "tests",
+      "Modules\\Recipe\\": "tests/stubs/valid/Recipe"
     }
   },
   "extra": {
@@ -46,6 +50,9 @@
       "aliases": {
         "Module": "Nwidart\\Modules\\Facades\\Module"
       }
+    },
+    "branch-alias": {
+      "dev-master": "2.0-dev"
     }
   },
   "minimum-stability": "dev",

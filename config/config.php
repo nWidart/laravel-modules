@@ -29,9 +29,9 @@ return [
             'route-provider' => 'Providers/RouteServiceProvider.php',
             'routes/api' => 'routes/api.php',
             'routes/web' => 'routes/web.php',
-            'views/index' => 'Resources/views/index.blade.php',
-            'views/master' => 'Resources/views/layouts/master.blade.php',
-            'scaffold/config' => 'Config/config.php',
+            'views/index' => 'resources/views/index.blade.php',
+            'views/master' => 'resources/views/layouts/master.blade.php',
+            'scaffold/config' => 'config/config.php',
             'composer' => 'composer.json',
         ],
         'replacements' => [
@@ -51,6 +51,7 @@ return [
                 'MODULE_NAMESPACE',
             ],
         ],
+        'gitkeep' => true,
     ],
     'paths' => [
         /*
@@ -58,7 +59,7 @@ return [
         | Modules path
         |--------------------------------------------------------------------------
         |
-        | This path used for save the generated module. This path also will added
+        | This path used for save the generated module. This path also will be added
         | automatically to list of scanned folders.
         |
         */
@@ -89,32 +90,34 @@ return [
         |--------------------------------------------------------------------------
         | Generator path
         |--------------------------------------------------------------------------
-        |
-        | Here you may update the modules generator path.
-        |
+        | Customise the paths where the folders will be generated.
+        | Set the generate key to false to not generate that folder
         */
-
         'generator' => [
-            'assets' => 'Assets',
-            'config' => 'config',
-            'command' => 'Console',
-            'event' => 'Events',
-            'listener' => 'Events/Handlers',
-            'migration' => 'Database/Migrations',
-            'model' => 'Entities',
-            'repository' => 'Repositories',
-            'seeder' => 'Database/Seeders',
-            'controller' => 'Http/Controllers',
-            'filter' => 'Http/Middleware',
-            'request' => 'Http/Requests',
-            'provider' => 'Providers',
-            'lang' => 'resources/lang',
-            'views' => 'resources/views',
-            'test' => 'Tests',
-            'jobs' => 'Jobs',
-            'emails' => 'Emails',
-            'notifications' => 'Notifications',
-            'routes' => 'routes',
+            'config' => ['path' => 'config', 'generate' => true],
+            'command' => ['path' => 'Console', 'generate' => true],
+            'migration' => ['path' => 'database/migrations', 'generate' => true],
+            'seeder' => ['path' => 'database/seeders', 'generate' => true],
+            'factory' => ['path' => 'database/factories', 'generate' => true],
+            'model' => ['path' => 'Entities', 'generate' => true],
+            'controller' => ['path' => 'Http/Controllers', 'generate' => true],
+            'filter' => ['path' => 'Http/Middleware', 'generate' => true],
+            'request' => ['path' => 'Http/Requests', 'generate' => true],
+            'provider' => ['path' => 'Providers', 'generate' => true],
+            'assets' => ['path' => 'resources/assets', 'generate' => true],
+            'lang' => ['path' => 'resources/lang', 'generate' => true],
+            'views' => ['path' => 'resources/views', 'generate' => true],
+            'test' => ['path' => 'Tests', 'generate' => true],
+            'repository' => ['path' => 'Repositories', 'generate' => false],
+            'event' => ['path' => 'Events', 'generate' => false],
+            'listener' => ['path' => 'Listeners', 'generate' => false],
+            'policies' => ['path' => 'Policies', 'generate' => false],
+            'rules' => ['path' => 'Rules', 'generate' => false],
+            'jobs' => ['path' => 'Jobs', 'generate' => false],
+            'emails' => ['path' => 'Emails', 'generate' => false],
+            'notifications' => ['path' => 'Notifications', 'generate' => false],
+            'resource' => ['path' => 'Transformers', 'generate' => false],
+            'routes' => ['path' => 'routes', 'generate' => true],
         ],
     ],
     /*
@@ -165,7 +168,7 @@ return [
     /*
     |--------------------------------------------------------------------------
     | Choose what laravel-modules will register as custom namespaces.
-    | Setting one to false will require to register that part
+    | Setting one to false will require you to register that part
     | in your own Service Provider class.
     |--------------------------------------------------------------------------
     */

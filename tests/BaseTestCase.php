@@ -1,6 +1,6 @@
 <?php
 
-namespace Nwidart\Modules\tests;
+namespace Nwidart\Modules\Tests;
 
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
@@ -47,24 +47,29 @@ abstract class BaseTestCase extends OrchestraTestCase
             'assets' => public_path('modules'),
             'migration' => base_path('database/migrations'),
             'generator' => [
-                'assets' => 'Assets',
-                'config' => 'Config',
-                'command' => 'Console',
-                'event' => 'Events',
-                'listener' => 'Events/Handlers',
-                'migration' => 'Database/Migrations',
-                'model' => 'Entities',
-                'repository' => 'Repositories',
-                'seeder' => 'Database/Seeders',
-                'controller' => 'Http/Controllers',
-                'filter' => 'Http/Middleware',
-                'request' => 'Http/Requests',
-                'provider' => 'Providers',
-                'lang' => 'Resources/lang',
-                'views' => 'Resources/views',
-                'test' => 'Tests',
-                'jobs' => 'Jobs',
-                'emails' => 'Emails',
+                'assets' => ['path' => 'Assets', 'generate' => true],
+                'config' => ['path' => 'Config', 'generate' => true],
+                'command' => ['path' => 'Console', 'generate' => true],
+                'event' => ['path' => 'Events', 'generate' => true],
+                'listener' => ['path' => 'Listeners', 'generate' => true],
+                'migration' => ['path' => 'Database/Migrations', 'generate' => true],
+                'factory' => ['path' => 'Database/factories', 'generate' => true],
+                'model' => ['path' => 'Entities', 'generate' => true],
+                'repository' => ['path' => 'Repositories', 'generate' => true],
+                'seeder' => ['path' => 'Database/Seeders', 'generate' => true],
+                'controller' => ['path' => 'Http/Controllers', 'generate' => true],
+                'filter' => ['path' => 'Http/Middleware', 'generate' => true],
+                'request' => ['path' => 'Http/Requests', 'generate' => true],
+                'provider' => ['path' => 'Providers', 'generate' => true],
+                'lang' => ['path' => 'Resources/lang', 'generate' => true],
+                'views' => ['path' => 'Resources/views', 'generate' => true],
+                'policies' => ['path' => 'Policies', 'generate' => true],
+                'rules' => ['path' => 'Rules', 'generate' => true],
+                'test' => ['path' => 'Tests', 'generate' => true],
+                'jobs' => ['path' => 'Jobs', 'generate' => true],
+                'emails' => ['path' => 'Emails', 'generate' => true],
+                'notifications' => ['path' => 'Notifications', 'generate' => true],
+                'resource' => ['path' => 'Transformers', 'generate' => true],
             ],
         ]);
     }

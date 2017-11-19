@@ -4,6 +4,173 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 2.6.0 - 2017-11-07
+
+## Added
+
+- Ability to customise the destination folder & namespace of a generated class
+- Added `php artisan module:migrate-status` command
+- `config_path()` helper for Lumen
+- Added views tag to view config in ServiceProvider
+- added package auto discovery for laravel 5.5 in generated module `composer.json`
+
+## Changed
+
+- Adding the ability to correctly load modules from multiple locations, together
+- Custom seeder path now also used in the `module:seed` command
+
+## 2.5.1 - 2017-10-13
+
+## Changed
+
+- added config_path helper to helpers for Lumen support
+- updated readme on how to install laravel-modules in Lumen
+
+## 2.5.0 - 2017-10-03
+
+## Changed
+
+- Making the path to migrations for `loadMigrationsFrom()` call dynamic based of configuration
+- Making the factory path dynamic for master service provider & make-factory command
+- Make the route file location dynamic in start.php based of `stubs.files.routes`
+- Making the route path dynamic on the route service provider based of `stubs.files.routes`
+- New structure in configuration to set which folders will be generated on `module:make` (old format still supported)
+- Setting new sensible defaults to what folders to generate by default.
+- Change the assets directory default location `resources/assets`
+
+## 2.4.1 - 2017-09-27
+
+## Changed
+
+- Setting a default value for `modules.paths.modules` configuration key
+
+
+## 2.4.0 - 2017-09-27
+
+## Added
+
+- New `module:make-resource` command to generate resource classes
+- New `module:make-test` command to generate test classes
+
+## Changed
+
+- Improved error output of the `module:seed` command
+- Marking methods that served as proxies in `Module` and `Repository` classes as deprecated for next major
+- Fixed `module:make` and `module:make-provider` to generate the correct master service provider
+- Tests: tests are now using `spatie/phpunit-snapshot-assertions` to make sure the generated files have the correct content
+- Adding a sync option to the `module:make-job` command to make a synchronous job class
+- Changed `module:make-event` command to allow duck typed events (not type hinted event class)
+- Changed `module:make-listener` to allow a `--queued` option to make the event queueable
+- Changed `module:make-listener` command to not use the full class typehint when class was previous imported
+
+## 2.3.0 - 2017-09-26
+
+## Added
+
+- Ability to ignore some folders to generate
+- Creating an module:unuse command to forget the previously saved module
+- New command to generate Policy classes
+- New command for creating factories
+- New command for creating rules
+- new `public_path` helper for Lumen
+
+## Changed
+
+- Refactored class names that generate something to be fully consistent
+
+## 2.2.1 - 2017-09-14
+
+## Changed
+
+- Fixed class namespace to `Repository` in `ContractsServiceProvider`
+
+## 2.2.0 - 2017-09-14
+
+### Added
+
+- Lumen compatibility with new way to register providers
+
+
+## 2.1.0 - 2017-09-10
+
+### Changed
+
+- Register module migrations
+- Fixed issue with `module:migrate-refresh` command
+- Improved module loading of their service providers. Using laravel caching system. Allowing usage of deferred providers.
+- Fixed path to module factories
+
+## 2.0.0 - 2017-08-31
+
+### Added
+
+- Support Laravel 5.5
+
+
+## 1.27.2 - 2017-08-29
+
+### Changed
+
+- Allow migrate-refresh command to be run without module argument
+- Module name was added to the module enable and disable events
+
+## 1.27.1 - 2017-07-31
+
+### Changed
+
+- Only run composer require on the module:update command if there's something to require
+- Fixing lumen support
+
+## 1.27.0 - 2017-07-19
+
+### Added
+
+- Laravel Lumen support
+
+### Changed
+
+- Update dev dependencies grumphp and phpcsfixer to latest versions
+- The `make:model` command with the `-m` flag to create the associated migration is now using a current migration file name
+
+## 1.26.0 - 2017-07-06
+
+### Changed
+
+- Throw an exception if asset name structure was not correct when using `{!! Module::asset() !!}`
+- Create the module used file if non existent. Will provide for a better error message if module is omitted in console commands without a module:use.
+
+## 1.25.1 - 2017-06-29
+
+### Changed
+
+- More flexibility to the `json()` method, while keeping the performance improvements.
+
+## 1.25.0 - 2017-06-29
+
+### Changed
+
+- Improving performance by only instantiating Json class for the module.json file once
+- Added support for generic git hosts
+
+## 1.24.0 - 2017-06-12
+
+### Changed
+
+- Using `resource_path` to register module views
+- Changed the method to load additional eloquent factory paths
+
+## 1.23.0 - 2017-06-09
+
+## Added
+
+- A `--migration` flag to the `module:make-model` command to generate the migration file with a model
+- Factories are now also defined in the master service providers. This is used in the `module:make` command without the `--plain` flag, or using `module:make-provider` with the `--master` flag.
+- `module_path()` helper function.
+
+### Changed
+
+- The default location of event listeners is now in `Listeners/`, from `Events/Handlers`
+
 ## 1.22.0 - 2017-05-22
 
 ### Changed
@@ -54,7 +221,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ## 1.17.0 - 2017-02-27
 
 ### Changed
- 
+
 - Add checking for failure to parse module JSON
 
 ## 1.16.0 - 2017-01-24

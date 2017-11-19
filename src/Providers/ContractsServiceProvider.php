@@ -4,7 +4,7 @@ namespace Nwidart\Modules\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Repository;
+use Nwidart\Modules\Laravel\Repository;
 
 class ContractsServiceProvider extends ServiceProvider
 {

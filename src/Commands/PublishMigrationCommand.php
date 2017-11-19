@@ -26,7 +26,7 @@ class PublishMigrationCommand extends Command
     /**
      * Execute the console command.
      */
-    public function fire()
+    public function handle()
     {
         if ($name = $this->argument('module')) {
             $module = $this->laravel['modules']->findOrFail($name);
@@ -61,8 +61,8 @@ class PublishMigrationCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('module', InputArgument::OPTIONAL, 'The name of module being used.'),
-        );
+        return [
+            ['module', InputArgument::OPTIONAL, 'The name of module being used.'],
+        ];
     }
 }

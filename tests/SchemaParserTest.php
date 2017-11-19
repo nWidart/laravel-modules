@@ -1,10 +1,10 @@
 <?php
 
-namespace Nwidart\Modules\tests;
+namespace Nwidart\Modules\Tests;
 
 use Nwidart\Modules\Support\Migrations\SchemaParser;
 
-class SchemaParserTest extends \PHPUnit_Framework_TestCase
+class SchemaParserTest extends \PHPUnit\Framework\TestCase
 {
     /** @test */
     public function it_generates_migration_method_calls()
