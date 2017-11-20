@@ -28,6 +28,7 @@ class Collection extends BaseCollection
             if ($value instanceof Module) {
                 $attributes = $value->json()->getAttributes();
                 $attributes["path"] = $value->getPath();
+
                 return $attributes;
             }
 
