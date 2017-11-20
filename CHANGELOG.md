@@ -4,6 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Changed
+
+- Rename the `before` method to `boot` in the `RouterServiceProvider` stub file
+- Fixing caching issue if modules were loaded from a different directory
+
 ## 2.6.0 - 2017-11-07
 
 ## Added
