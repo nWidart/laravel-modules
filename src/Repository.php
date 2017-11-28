@@ -113,11 +113,40 @@ abstract class Repository implements RepositoryInterface, Countable
     }
 
     /**
+     * Creates a new Module instance
+     * 
+     * @param Container $app
+     * @param $name
+     * @param $path
+     * @return \Nwidart\Modules\Module
+     */
+    abstract protected function createModule(...$args);
+
+    /**
      * Get & scan all modules.
      *
      * @return array
      */
-    abstract public function scan();
+    public function scan()
+    {
+        $paths = $this->getScanPaths();
+
+        $modules = [];
+
+        foreach ($paths as $key => $path) {
+            $manifests = $this->app['files']->glob("{$path}/module.json");
+
+            is_array($manifests) || $manifests = [];
+
+            foreach ($manifests as $manifest) {
+                $name = Json::make($manifest)->get('name');
+
+                $modules[$name] = $this->createModule($this->app, $name, dirname($manifest));
+            }
+        }
+
+        return $modules;
+    }
 
     /**
      * Get all modules.
@@ -140,7 +169,18 @@ abstract class Repository implements RepositoryInterface, Countable
      *
      * @return array
      */
-    abstract protected function formatCached($cached);
+    protected function formatCached($cached)
+    {
+        $modules = [];
+
+        foreach ($cached as $name => $module) {
+            $path = $module["path"];
+
+            $modules[$name] = $this->createModule($this->app, $name, $path);
+        }
+
+        return $modules;
+    }
 
     /**
      * Get cached modules.
