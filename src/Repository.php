@@ -105,8 +105,9 @@ abstract class Repository implements RepositoryInterface, Countable
         if ($this->config('scan.enabled')) {
             $paths = array_merge($paths, $this->config('scan.paths'));
         }
+
         $paths = array_map(function ($path) {
-            return str_finish($path, '/*');
+            return ends_with($path, '/*') ? $path : str_finish($path, '/*');
         }, $paths);
 
         return $paths;
