@@ -174,6 +174,8 @@ abstract class Module extends ServiceProvider
             $this->registerTranslation();
         }
 
+        $this->registerFiles();
+
         $this->fireEvent('boot');
     }
 
@@ -245,8 +247,6 @@ abstract class Module extends ServiceProvider
         $this->registerAliases();
 
         $this->registerProviders();
-
-        $this->registerFiles();
 
         $this->fireEvent('register');
     }
