@@ -36,7 +36,10 @@ return [
             'webpack' => 'webpack.mix.js',
         ],
         'replacements' => [
-            'start' => ['LOWER_NAME', 'ROUTES_LOCATION'],
+            'start' => ['LOWER_NAME', 'MODULE_NAMESPACE','STUDLY_NAME'],
+            'webpack' => ['LOWER_NAME'],
+            'routes-web' => ['LOWER_NAME','STUDLY_NAME'],
+            'routes-api' => ['LOWER_NAME','STUDLY_NAME'],
             'routes' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
             'json' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
             'views/index' => ['LOWER_NAME'],
