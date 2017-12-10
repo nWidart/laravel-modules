@@ -31,6 +31,8 @@ return [
             'routes-api' => 'routes/api.php',
             'views/index' => 'Resources/views/index.blade.php',
             'views/master' => 'Resources/views/layouts/master.blade.php',
+            'assets/js/app' => 'Resources/assets/js/app.js',
+            'assets/sass/app' => 'Resources/assets/sass/app.scss',
             'scaffold/config' => 'Config/config.php',
             'composer' => 'composer.json',
             'webpack' => 'webpack.mix.js',
