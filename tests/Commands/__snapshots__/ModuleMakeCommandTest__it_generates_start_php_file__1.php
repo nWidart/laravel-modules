@@ -21,7 +21,7 @@ if (!app()->routesAreCached()) {
         ->namespace($namespace)
         ->group(module_path(\'blog\') . \'/routes/web.php\');
 
-    Route::prefix(\'blog/api\')
+    Route::prefix(\'api/blog\')
         ->middleware(\'api\')
         ->namespace($namespace)
         ->group(module_path(\'blog\') . \'/routes/api.php\');
