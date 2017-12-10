@@ -27,11 +27,15 @@ return [
         'path' => base_path() . '/vendor/nwidart/laravel-modules/src/Commands/stubs',
         'files' => [
             'start' => 'start.php',
-            'routes' => 'Http/routes.php',
+            'routes' => [
+                'routes/web.php',
+                'routes/api.php',
+            ],
             'views/index' => 'Resources/views/index.blade.php',
             'views/master' => 'Resources/views/layouts/master.blade.php',
             'scaffold/config' => 'Config/config.php',
             'composer' => 'composer.json',
+            'webpack' => 'webpack.mix.js',
         ],
         'replacements' => [
             'start' => ['LOWER_NAME', 'ROUTES_LOCATION'],
