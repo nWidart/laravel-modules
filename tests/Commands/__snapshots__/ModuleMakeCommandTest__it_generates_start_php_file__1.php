@@ -13,6 +13,16 @@
 */
 
 if (!app()->routesAreCached()) {
-    require __DIR__ . \'/Http/routes.php\';
+
+    $namespace = \'Modules\Blog\Http\Controllers\';
+
+    Route::middleware(\'web\')
+        ->namespace($namespace)
+        ->group(module_path(\'blog\') . \'/routes/web.php\');
+
+    Route::prefix(\'api\')
+        ->middleware(\'api\')
+        ->namespace($namespace)
+        ->group(module_path(\'blog\') . \'/routes/api.php\');
 }
 ';
