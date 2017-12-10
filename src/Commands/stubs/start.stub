@@ -16,11 +16,12 @@ if (!app()->routesAreCached()) {
 
     $namespace = '$MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Controllers';
 
-    Route::middleware('web')
+    Route::prefix('$LOWER_NAME$')
+        ->middleware('web')
         ->namespace($namespace)
         ->group(module_path('$LOWER_NAME$') . '/routes/web.php');
 
-    Route::prefix('api')
+    Route::prefix('$LOWER_NAME$/api')
         ->middleware('api')
         ->namespace($namespace)
         ->group(module_path('$LOWER_NAME$') . '/routes/api.php');

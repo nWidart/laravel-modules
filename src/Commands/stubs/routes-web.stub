@@ -1,6 +1,3 @@
 <?php
 
-Route::group(['prefix' => '$LOWER_NAME$'], function()
-{
-    Route::get('/', '$STUDLY_NAME$Controller@index');
-});
+Route::get('/', '$STUDLY_NAME$Controller@index');
