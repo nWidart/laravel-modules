@@ -20,9 +20,11 @@ class StubTest extends BaseTestCase
     public function tearDown()
     {
         parent::tearDown();
-        if ($this->finder->exists(base_path('my-command.php'))) {
-            $this->finder->delete(base_path('my-command.php'));
-        }
+        $this->finder->delete([
+            base_path('my-command.php'),
+            base_path('stub-override-exists.php'),
+            base_path('stub-override-not-exists.php')
+        ]);
     }
 
     /** @test */
@@ -71,5 +73,36 @@ class StubTest extends BaseTestCase
         $stub->setPath('/new-path/');
 
         $this->assertTrue(str_contains($stub->getPath(), 'Commands/stubs/new-path/'));
+    }
+
+    /** @test */
+    public function use_default_stub_if_override_not_exists()
+    {
+        $stub = new Stub('/command.stub', [
+            'COMMAND_NAME' => 'my:command',
+            'NAMESPACE' => 'Blog\Commands',
+            'CLASS' => 'MyCommand',
+        ]);
+
+        $stub->setBasePath(__DIR__ . '/stubs');
+
+        $stub->saveTo(base_path(), 'stub-override-not-exists.php');
+
+        $this->assertTrue($this->finder->exists(base_path('stub-override-not-exists.php')));
+    }
+
+    /** @test */
+    public function use_override_stub_if_exists()
+    {
+        $stub = new Stub('/model.stub', [
+            'NAME' => 'Name',
+        ]);
+
+        $stub->setBasePath(__DIR__ . '/stubs');
+
+        $stub->saveTo(base_path(), 'stub-override-exists.php');
+
+        $this->assertTrue($this->finder->exists(base_path('stub-override-exists.php')));
+        $this->assertEquals('stub-override', $this->finder->get(base_path('stub-override-exists.php')));
     }
 }
