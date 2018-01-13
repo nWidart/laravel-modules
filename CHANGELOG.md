@@ -10,6 +10,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Fixing caching issue if modules were loaded from a different directory
 - Fixing how modules are loaded from vendor directory (#423 #417)
 - Update to Mockery 1.0
+- Fix non well formed numeric value in seed command
 
 ## 2.6.0 - 2017-11-07
 
