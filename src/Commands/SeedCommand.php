@@ -12,9 +12,6 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Debug\Exception\Fatal
-    
-    ableError;
 
 class SeedCommand extends Command
 {
