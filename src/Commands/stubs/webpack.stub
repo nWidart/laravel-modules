@@ -1,0 +1,4 @@
+const { mix } = require('laravel-mix');
+
+mix.js(__dirname + '/resources/assets/js/app.js', 'public/modules/$LOWER_NAME$/js')
+    .sass( __dirname + '/resources/assets/sass/app.scss', 'public/modules/$LOWER_NAME$/css');

@@ -13,5 +13,16 @@
 */
 
 if (!app()->routesAreCached()) {
-    require __DIR__ . '$ROUTES_LOCATION$';
+
+    $namespace = '$MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Controllers';
+
+    Route::prefix('$LOWER_NAME$')
+        ->middleware('web')
+        ->namespace($namespace)
+        ->group(module_path('$LOWER_NAME$') . '/routes/web.php');
+
+    Route::prefix('api/$LOWER_NAME$')
+        ->middleware('api')
+        ->namespace($namespace)
+        ->group(module_path('$LOWER_NAME$') . '/routes/api.php');
 }
