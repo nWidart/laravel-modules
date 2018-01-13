@@ -4,6 +4,9 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+
+## 2.7.0 - 2018-01-13
+
 ## Changed
 
 - Rename the `before` method to `boot` in the `RouterServiceProvider` stub file
