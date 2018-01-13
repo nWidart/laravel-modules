@@ -23,6 +23,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Added `php artisan module:migrate-status` command
 - `config_path()` helper for Lumen
 - Added views tag to view config in ServiceProvider
+- use default file stubs only if override does not exists
 - added package auto discovery for laravel 5.5 in generated module `composer.json`
 
 ## Changed
