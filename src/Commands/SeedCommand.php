@@ -12,7 +12,9 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
+use Symfony\Component\Debug\Exception\Fatal
+    
+    ableError;
 
 class SeedCommand extends Command
 {
@@ -47,9 +49,7 @@ class SeedCommand extends Command
                 array_walk($modules, [$this, 'moduleSeed']);
                 $this->info('All modules seeded.');
             }
-        } catch (\Exception $e) {
-            $e = new FatalThrowableError($e);
-
+        } catch (\Throwable $e) {
             $this->reportException($e);
 
             $this->renderException($this->getOutput(), $e);
