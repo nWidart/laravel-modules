@@ -10,7 +10,7 @@
     ],
     "aliases": {},
     "files": [
-        "start.php"
+        "$START_FILE$"
     ],
     "requires": []
 }

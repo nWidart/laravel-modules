@@ -443,6 +443,16 @@ class ModuleGenerator extends Generator
     }
 
     /**
+     * Get replacement for $START_FILE$.
+     *
+     * @return string
+     */
+    protected function getStartFileReplacement()
+    {
+        return $this->module->config('stubs.files.start');
+    }
+
+    /**
      * Get the module name in studly case.
      *
      * @return string
