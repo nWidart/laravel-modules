@@ -4,6 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Added
+
+- Added support for laravel 5.6
+- Using phpunit 7
+
 
 ## 2.7.0 - 2018-01-13
 
