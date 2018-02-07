@@ -9,6 +9,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Added support for laravel 5.6
 - Using phpunit 7
 
+## Removed
+
+- Dropped php 7.0 support
+
 
 ## 2.7.0 - 2018-01-13
 
