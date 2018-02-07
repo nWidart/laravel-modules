@@ -115,7 +115,7 @@ abstract class Repository implements RepositoryInterface, Countable
 
     /**
      * Creates a new Module instance
-     * 
+     *
      * @param Container $app
      * @param $name
      * @param $path
@@ -242,7 +242,7 @@ abstract class Repository implements RepositoryInterface, Countable
      *
      * @return array
      */
-    public function enabled() : array
+    public function allEnabled() : array
     {
         return $this->getByStatus(1);
     }
@@ -252,7 +252,7 @@ abstract class Repository implements RepositoryInterface, Countable
      *
      * @return array
      */
-    public function disabled() : array
+    public function allDisabled() : array
     {
         return $this->getByStatus(0);
     }
@@ -276,7 +276,7 @@ abstract class Repository implements RepositoryInterface, Countable
      */
     public function getOrdered($direction = 'asc') : array
     {
-        $modules = $this->enabled();
+        $modules = $this->allEnabled();
 
         uasort($modules, function (Module $a, Module $b) use ($direction) {
             if ($a->order == $b->order) {
@@ -566,26 +566,24 @@ abstract class Repository implements RepositoryInterface, Countable
 
     /**
      * Determine whether the given module is activated.
-     *
      * @param string $name
-     *
      * @return bool
+     * @throws ModuleNotFoundException
      */
-    public function active($name) : bool
+    public function enabled($name) : bool
     {
-        return $this->findOrFail($name)->active();
+        return $this->findOrFail($name)->enabled();
     }
 
     /**
      * Determine whether the given module is not activated.
-     *
      * @param string $name
-     *
      * @return bool
+     * @throws ModuleNotFoundException
      */
-    public function notActive($name) : bool
+    public function disabled($name) : bool
     {
-        return !$this->active($name);
+        return !$this->enabled($name);
     }
 
     /**

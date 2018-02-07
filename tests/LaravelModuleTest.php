@@ -119,8 +119,6 @@ class ModuleTest extends BaseTestCase
     public function it_checks_module_enabled_status()
     {
         $this->assertTrue($this->module->enabled());
-        $this->assertTrue($this->module->active());
-        $this->assertFalse($this->module->notActive());
         $this->assertFalse($this->module->disabled());
     }
 

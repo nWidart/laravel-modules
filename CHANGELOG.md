@@ -9,9 +9,18 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Added support for laravel 5.6
 - Using phpunit 7
 
+## Changed
+
+- **BC:** `Repository` class: renamed `enabled` to `allEnabled`
+- **BC:** `Repository` class: renamed `disabled` to `allDisabled`
+- **BC:** `Repository` class: renamed `active` to `enabled`
+- **BC:** `Repository` class: renamed `notActive` to `disabled`
+
 ## Removed
 
 - Dropped php 7.0 support
+- **BC:** `Module` class: Deprecated `active()` method, use `enabled()`
+- **BC:** `Module` class: Deprecated `notActive()` method, use `disabled()`
 
 
 ## 2.7.0 - 2018-01-13

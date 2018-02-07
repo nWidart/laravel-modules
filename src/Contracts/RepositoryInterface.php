@@ -44,14 +44,14 @@ interface RepositoryInterface
      *
      * @return mixed
      */
-    public function enabled();
+    public function allEnabled();
 
     /**
      * Get list of disabled modules.
      *
      * @return mixed
      */
-    public function disabled();
+    public function allDisabled();
 
     /**
      * Get count from all modules.

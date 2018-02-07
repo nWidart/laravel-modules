@@ -326,28 +326,6 @@ abstract class Module extends ServiceProvider
     }
 
     /**
-     * Alternate for "enabled" method.
-     *
-     * @return bool
-     * @deprecated
-     */
-    public function active()
-    {
-        return $this->isStatus(1);
-    }
-
-    /**
-     * Determine whether the current module not activated.
-     *
-     * @return bool
-     * @deprecated
-     */
-    public function notActive()
-    {
-        return !$this->active();
-    }
-
-    /**
      *  Determine whether the current module not disabled.
      *
      * @return bool

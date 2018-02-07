@@ -49,7 +49,7 @@ class RepositoryTest extends BaseTestCase
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
         $this->assertCount(2, $this->repository->getByStatus(1));
-        $this->assertCount(2, $this->repository->enabled());
+        $this->assertCount(2, $this->repository->allEnabled());
     }
 
     /** @test */
@@ -58,7 +58,7 @@ class RepositoryTest extends BaseTestCase
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
         $this->assertCount(1, $this->repository->getByStatus(0));
-        $this->assertCount(1, $this->repository->disabled());
+        $this->assertCount(1, $this->repository->allDisabled());
     }
 
     /** @test */
@@ -157,7 +157,7 @@ class RepositoryTest extends BaseTestCase
     {
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-        $this->assertTrue($this->repository->active('Recipe'));
+        $this->assertTrue($this->repository->enabled('Recipe'));
     }
 
     /** @test */
@@ -165,7 +165,7 @@ class RepositoryTest extends BaseTestCase
     {
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-        $this->assertFalse($this->repository->notActive('Recipe'));
+        $this->assertFalse($this->repository->disabled('Recipe'));
     }
 
     /** @test */
@@ -197,7 +197,7 @@ class RepositoryTest extends BaseTestCase
 
         $this->repository->disable('Recipe');
 
-        $this->assertTrue($this->repository->notActive('Recipe'));
+        $this->assertTrue($this->repository->disabled('Recipe'));
     }
 
     /** @test */
@@ -207,7 +207,7 @@ class RepositoryTest extends BaseTestCase
 
         $this->repository->enable('Recipe');
 
-        $this->assertTrue($this->repository->active('Recipe'));
+        $this->assertTrue($this->repository->enabled('Recipe'));
     }
 
     /** @test */
