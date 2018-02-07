@@ -84,7 +84,7 @@ class SeedCommand extends Command
             throw new RuntimeException("Module [$name] does not exists.");
         }
 
-        return $modules->get($name);
+        return $modules->find($name);
     }
 
     /**
