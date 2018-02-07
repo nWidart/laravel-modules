@@ -21,6 +21,9 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Dropped php 7.0 support
 - **BC:** `Module` class: Deprecated `active()` method, use `enabled()`
 - **BC:** `Module` class: Deprecated `notActive()` method, use `disabled()`
+- **BC:** `Repository` class: Deprecated `addPath()` method, use `addLocation()`
+- **BC:** `Repository` class: Deprecated `get()` method, use `find()`
+- **BC:** `Repository` class: Deprecated `getUsed()` method, use `getUsedNow()`
 
 
 ## 2.7.0 - 2018-01-13

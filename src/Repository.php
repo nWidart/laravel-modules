@@ -69,19 +69,6 @@ abstract class Repository implements RepositoryInterface, Countable
     }
 
     /**
-     * Alternative method for "addPath".
-     *
-     * @param string $path
-     *
-     * @return $this
-     * @deprecated
-     */
-    public function addPath($path)
-    {
-        return $this->addLocation($path);
-    }
-
-    /**
      * Get all additional paths.
      *
      * @return array
@@ -376,17 +363,6 @@ abstract class Repository implements RepositoryInterface, Countable
     }
 
     /**
-     * Alternative for "find" method.
-     * @param $name
-     * @return mixed|void
-     * @deprecated
-     */
-    public function get($name)
-    {
-        return $this->find($name);
-    }
-
-    /**
      * Find a specific module, if there return that, otherwise throw exception.
      *
      * @param $name
@@ -511,17 +487,6 @@ abstract class Repository implements RepositoryInterface, Countable
     public function getUsedNow() : string
     {
         return $this->findOrFail($this->app['files']->get($this->getUsedStoragePath()));
-    }
-
-    /**
-     * Get used now.
-     *
-     * @return string
-     * @deprecated
-     */
-    public function getUsed()
-    {
-        return $this->getUsedNow();
     }
 
     /**

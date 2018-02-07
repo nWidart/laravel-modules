@@ -26,12 +26,10 @@ class RepositoryTest extends BaseTestCase
     public function it_adds_location_to_paths()
     {
         $this->repository->addLocation('some/path');
-        $this->repository->addPath('some/other/path');
 
         $paths = $this->repository->getPaths();
-        $this->assertCount(2, $paths);
+        $this->assertCount(1, $paths);
         $this->assertEquals('some/path', $paths[0]);
-        $this->assertEquals('some/other/path', $paths[1]);
     }
 
     /** @test */
@@ -75,7 +73,6 @@ class RepositoryTest extends BaseTestCase
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
         $this->assertInstanceOf(Module::class, $this->repository->find('recipe'));
-        $this->assertInstanceOf(Module::class, $this->repository->get('recipe'));
     }
 
     /** @test */
@@ -119,7 +116,6 @@ class RepositoryTest extends BaseTestCase
 
         $this->repository->setUsed('Recipe');
 
-        $this->assertEquals('Recipe', $this->repository->getUsed());
         $this->assertEquals('Recipe', $this->repository->getUsedNow());
     }
 
