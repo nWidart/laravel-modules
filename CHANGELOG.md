@@ -2,7 +2,7 @@
 
 All Notable changes to `laravel-modules` will be documented in this file.
 
-## Next
+## 3.0.0 - 2018-02-14
 
 ## Added
 
