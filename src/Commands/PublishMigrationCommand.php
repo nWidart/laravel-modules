@@ -36,7 +36,7 @@ class PublishMigrationCommand extends Command
             return;
         }
 
-        foreach ($this->laravel['modules']->enabled() as $module) {
+        foreach ($this->laravel['modules']->allEnabled() as $module) {
             $this->publish($module);
         }
     }

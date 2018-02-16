@@ -42,7 +42,7 @@ class PublishTranslationCommand extends Command
      */
     public function publishAll()
     {
-        foreach ($this->laravel['modules']->enabled() as $module) {
+        foreach ($this->laravel['modules']->allEnabled() as $module) {
             $this->publish($module);
         }
     }
