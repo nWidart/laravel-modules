@@ -85,7 +85,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
      */
     protected function getRoutesPath()
     {
-        return '/' . $this->laravel['config']->get('stubs.files.routes', 'Rotues/web.php');
+        return '/' . $this->laravel['config']->get('stubs.files.routes', 'Routes/web.php');
     }
 
     public function getDefaultNamespace() : string
