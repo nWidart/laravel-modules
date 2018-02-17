@@ -491,9 +491,4 @@ class ModuleGenerator extends Generator
     {
         return $this->module->config('composer.author.email');
     }
-
-    protected function getRoutesLocationReplacement()
-    {
-        return '/' . $this->module->config('stubs.files.routes');
-    }
 }
