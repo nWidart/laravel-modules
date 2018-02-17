@@ -2,18 +2,11 @@
 
 namespace Modules\\Blog\\Providers;
 
-use Illuminate\\Routing\\Router;
+use Illuminate\\Support\\Facades\\Route;
 use Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    /**
-     * The root namespace to assume when generating URLs to actions.
-     *
-     * @var string
-     */
-    protected $rootUrlNamespace = \'Modules\\Blog\\Http\\Controllers\';
-
     /**
      * Called before routes are registered.
      *
@@ -23,19 +16,22 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->mapWebRoutes();
     }
 
     /**
-     * Define the routes for the application.
+     * Define the "web" routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
      *
      * @return void
      */
-    public function map(Router $router)
+    protected function mapWebRoutes()
     {
-        // if (!app()->routesAreCached()) {
-        //    require __DIR__ . \'/Http/routes.php\';
-        // }
+        Route::prefix(\'blog\')
+            ->middleware(\'web\')
+            ->namespace(\'Modules\\Blog\\Http\\Controllers\')
+            ->group(__DIR__ . \'/../Routes/web.php\');
     }
 }
 ';
