@@ -53,7 +53,14 @@ By default the module classes are not loaded automatically. You can autoload you
 }
 ```
 
-**Tip: don't forget to run `composer dump-autoload` afterwards.**
+**Tip: don't forget to run `composer dump-autoload` afterwards.**https://github.com/nWidart/laravel-modules.git
+
+### Dependencies
+##### How do I add a dependency on my custom module?
+If you don't plan on re-using that module only add your dependency in the global composer.json file.
+
+##### If you plan on re-using that module in other project(s)
+In that case you need to add the dependency in both the composer.json file from the module, as well as the global composer.json file.
 
 ## Documentation
 
