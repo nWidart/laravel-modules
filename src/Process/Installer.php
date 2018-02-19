@@ -50,6 +50,14 @@ class Installer
      * @var int
      */
     protected $timeout = 3360;
+    /**
+     * @var null|string
+     */
+    private $type;
+    /**
+     * @var bool
+     */
+    private $tree;
 
     /**
      * The constructor.

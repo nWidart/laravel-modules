@@ -14,7 +14,7 @@ abstract class Module extends ServiceProvider
     /**
      * The laravel|lumen application instance.
      *
-     * @var \Illuminate\Contracts\Foundation\Application|Laravel\Lumen\Application
+     * @var \Illuminate\Contracts\Foundation\Application|\Laravel\Lumen\Application
      */
     protected $app;
 
@@ -54,7 +54,7 @@ abstract class Module extends ServiceProvider
     /**
      * Get laravel instance.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|Laravel\Lumen\Application
+     * @return \Illuminate\Contracts\Foundation\Application|\Laravel\Lumen\Application
      */
     public function getLaravel()
     {

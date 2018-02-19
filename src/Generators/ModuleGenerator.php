@@ -43,7 +43,7 @@ class ModuleGenerator extends Generator
     /**
      * The pingpong module instance.
      *
-     * @var Module
+     * @var \Nwidart\Modules\Module
      */
     protected $module;
 
@@ -181,9 +181,9 @@ class ModuleGenerator extends Generator
     }
 
     /**
-     * Get the pingpong module instance.
+     * Get the module instance.
      *
-     * @return Module
+     * @return \Nwidart\Modules\Module
      */
     public function getModule()
     {

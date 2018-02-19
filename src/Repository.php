@@ -19,7 +19,7 @@ abstract class Repository implements RepositoryInterface, Countable
     /**
      * Application instance.
      *
-     * @var Illuminate\Contracts\Foundation\Application|Laravel\Lumen\Application
+     * @var \Illuminate\Contracts\Foundation\Application|\Laravel\Lumen\Application
      */
     protected $app;
 
