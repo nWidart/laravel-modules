@@ -48,7 +48,7 @@ abstract class Module extends ServiceProvider
     {
         parent::__construct($app);
         $this->name = $name;
-        $this->path = realpath($path);
+        $this->path = $path;
     }
 
     /**
