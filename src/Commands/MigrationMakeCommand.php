@@ -158,6 +158,5 @@ class MigrationMakeCommand extends GeneratorCommand
         if (app()->environment() === 'testing') {
             return;
         }
-        $this->call('optimize');
     }
 }
