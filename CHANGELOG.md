@@ -4,6 +4,16 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Changed
+
+- Allow symlinks in module path
+- Returns the parameter `--class` to the `SeedCommand`.
+- Generate folders recursively
+
+### Removed
+
+- Removed the optimize command on the `module:make-migration` command
+
 ## 3.0.1 - 2018-02-16
 
 ### Changed
