@@ -9,6 +9,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Allow symlinks in module path
 - Returns the parameter `--class` to the `SeedCommand`.
 - Generate folders recursively
+- Removing link that has become a 404
 
 ### Removed
 
