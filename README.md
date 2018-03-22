@@ -14,23 +14,21 @@
 | 5.5  | ^2.0  |
 | 5.6  | ^3.0  |
 
-`nwidart/laravel-modules` is a Laravel package which created to manage your large Laravel app using modules. Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 5.
+`nwidart/laravel-modules` is a Laravel package allowing you to manage your large Laravel app by creating and maintaining modules. A module is very much like a Laravel package; it has some views, controllers, routes, providers and models. This package is supported and tested in Laravel 5.
 
-This package is a re-published, re-organised and maintained version of [pingpong/modules](https://github.com/pingpong-labs/modules), which isn't maintained anymore. This package is used in [AsgardCMS](https://asgardcms.com/).
-
-With one big added bonus that the original package didn't have: **tests**.
+This package is a re-published, re-organised, and maintained version of [pingpong/modules](https://github.com/pingpong-labs/modules), which is no longer being maintained. This package is used in [AsgardCMS](https://asgardcms.com/). In addition to several improvements, this package gets something else that the original did not have: **tests**.
 
 Find out why you should use this package in the article: [Writing modular applications with laravel-modules](https://nicolaswidart.com/blog/writing-modular-applications-with-laravel-modules).
 
-## Install
+## Installation
 
-To install through Composer, by run the following command:
+To install `laravel-modules` using Composer, run the following command:
 
 ``` bash
 composer require nwidart/laravel-modules
 ```
 
-The package will automatically register a service provider and alias.
+The package will automatically register a service provider and alias if you are running Laravel 5.5 or later.
 
 Optionally, publish the package's configuration file by running:
 
@@ -40,7 +38,7 @@ php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProv
 
 ### Autoloading
 
-By default the module classes are not loaded automatically. You can autoload your modules using `psr-4`. For example:
+By default, the module classes you create using `laravel-modules` are not loaded automatically. You can autoload your modules using `psr-4`. For example:
 
 ``` json
 {
@@ -53,7 +51,7 @@ By default the module classes are not loaded automatically. You can autoload you
 }
 ```
 
-**Tip: don't forget to run `composer dump-autoload` afterwards.**
+**Tip: don't forget to run `composer dump-autoload` updating `composer.json`.**
 
 ## Documentation
 
