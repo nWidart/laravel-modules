@@ -66,7 +66,7 @@ class SeedMakeCommand extends GeneratorCommand
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
-
+ 
         return (new Stub('/seeder.stub', [
             'NAME' => $this->getSeederName(),
             'MODULE' => $this->getModuleName(),
@@ -99,5 +99,15 @@ class SeedMakeCommand extends GeneratorCommand
         $end = $this->option('master') ? 'DatabaseSeeder' : 'TableSeeder';
 
         return Str::studly($this->argument('name')) . $end;
+    }
+
+    /**
+     * Get default namespace.
+     *
+     * @return string
+     */
+    public function getDefaultNamespace() : string
+    {
+        return $this->laravel['modules']->config('paths.generator.seeder.path', 'Database/Seeders');
     }
 }
