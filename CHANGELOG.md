@@ -4,12 +4,17 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Added
+
+- Laravel mix configuration (https://nwidart.com/laravel-modules/v3/basic-usage/compiling-assets)
+
 ### Changed
 
 - Allow symlinks in module path
 - Returns the parameter `--class` to the `SeedCommand`.
 - Generate folders recursively
 - Removing link that has become a 404
+- Fixed seed command exception typehint
 
 ### Removed
 
