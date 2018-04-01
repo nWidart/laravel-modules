@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 3.1.0 - 2018-04-01
+
 ### Added
 
 - Laravel mix configuration (https://nwidart.com/laravel-modules/v3/basic-usage/compiling-assets)
