@@ -11,6 +11,7 @@
     },
     "devDependencies": {
         "cross-env": "^5.1.4",
-        "laravel-mix": "^2.0"
+        "laravel-mix": "^2.1",
+        "laravel-mix-merge-manifest": "^0.1.1"
     }
 }
