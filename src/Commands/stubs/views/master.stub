@@ -7,13 +7,13 @@
         <title>Module $STUDLY_NAME$</title>
 
        <!-- Laravel Mix - CSS File -->
-       <!-- <link rel="stylesheet" href="{{ mix('css/app.css','modules/$LOWER_NAME$') }}"> -->
+       <!-- <link rel="stylesheet" href="{{ mix('css/$LOWER_NAME$.css') }}"> -->
 
     </head>
     <body>
         @yield('content')
 
         <!-- Laravel Mix - JS File -->
-        <!-- <script src="{{ mix('js/app.js', 'modules/$LOWER_NAME$') }}"></script> -->
+        <!-- <script src="{{ mix('js/$LOWER_NAME$.js') }}"></script> -->
     </body>
 </html>
