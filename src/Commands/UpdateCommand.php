@@ -27,12 +27,29 @@ class UpdateCommand extends Command
     /**
      * Execute the console command.
      */
-    public function fire()
-    {
-        $this->laravel['modules']->update($name = $this->getModuleName());
+	public function fire()
+	{
+		$name = $this->argument('module');
 
-        $this->info("Module [{$name}] updated successfully.");
-    }
+		if ($name) {
+			$this->updateModule($name);
+			return;
+		}
+
+		/** @var \Nwidart\Modules\Module $module */
+		foreach ($this->laravel['modules']->getOrdered() as $module) {
+			$this->updateModule($module->getName());
+		}
+	}
+
+	protected function updateModule($name)
+	{
+		$this->line('Running for module: <info>' . $name . '</info>');
+
+		$this->laravel['modules']->update($name);
+
+		$this->info("Module [{$name}] updated successfully.");
+	}
 
     /**
      * Get the console command arguments.
