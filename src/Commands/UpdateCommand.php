@@ -27,29 +27,30 @@ class UpdateCommand extends Command
     /**
      * Execute the console command.
      */
-	public function fire()
-	{
-		$name = $this->argument('module');
+    public function fire()
+    {
+        $name = $this->argument('module');
 
-		if ($name) {
-			$this->updateModule($name);
-			return;
-		}
+        if ($name) {
+            $this->updateModule($name);
 
-		/** @var \Nwidart\Modules\Module $module */
-		foreach ($this->laravel['modules']->getOrdered() as $module) {
-			$this->updateModule($module->getName());
-		}
-	}
+            return;
+        }
 
-	protected function updateModule($name)
-	{
-		$this->line('Running for module: <info>' . $name . '</info>');
+        /** @var \Nwidart\Modules\Module $module */
+        foreach ($this->laravel['modules']->getOrdered() as $module) {
+            $this->updateModule($module->getName());
+        }
+    }
 
-		$this->laravel['modules']->update($name);
+    protected function updateModule($name)
+    {
+        $this->line('Running for module: <info>'.$name.'</info>');
 
-		$this->info("Module [{$name}] updated successfully.");
-	}
+        $this->laravel['modules']->update($name);
+
+        $this->info("Module [{$name}] updated successfully.");
+    }
 
     /**
      * Get the console command arguments.
@@ -58,8 +59,8 @@ class UpdateCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('module', InputArgument::OPTIONAL, 'The name of module will be updated.'),
-        );
+        return [
+            ['module', InputArgument::OPTIONAL, 'The name of module will be updated.'],
+        ];
     }
 }
