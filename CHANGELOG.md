@@ -4,6 +4,17 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 3.2.0 - 2018-04-16
+
+### Added
+
+- Added possibility to update all modules at once if any not specified (PR #523)
+
+### Changed
+
+- Mix: Fix css relative urls by changing the route folder (PR #521)
+- Mix: Prevents every build from deleting previous Mix config file (PR #521)
+
 ## 3.1.0 - 2018-04-01
 
 ### Added
