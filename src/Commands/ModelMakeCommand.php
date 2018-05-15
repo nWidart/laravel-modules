@@ -86,6 +86,7 @@ class ModelMakeCommand extends GeneratorCommand
         return [
             ['fillable', null, InputOption::VALUE_OPTIONAL, 'The fillable attributes.', null],
             ['migration', 'm', InputOption::VALUE_NONE, 'Flag to create associated migrations', null],
+            ['prefix', 'p', InputOption::VALUE_NONE, 'Flag to create associated migrations and prefix with module name', null],
         ];
     }
 
@@ -107,13 +108,20 @@ class ModelMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/model.stub', [
+        if ($this->option('prefix') === true) {
+            $stub_file = '/model-prefix.stub';
+        } else {
+            $stub_file = '/model.stub';
+        }
+
+        return (new Stub($stub_file, [
             'NAME'              => $this->getModelName(),
             'FILLABLE'          => $this->getFillable(),
             'NAMESPACE'         => $this->getClassNamespace($module),
             'CLASS'             => $this->getClass(),
             'LOWER_NAME'        => $module->getLowerName(),
             'MODULE'            => $this->getModuleName(),
+            'TABLE'             => strtolower($this->argument('module')) . '_' . $this->createMigrationName(),            
             'STUDLY_NAME'       => $module->getStudlyName(),
             'MODULE_NAMESPACE'  => $this->laravel['modules']->config('namespace'),
         ]))->render();

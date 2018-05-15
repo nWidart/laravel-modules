@@ -13,5 +13,12 @@ class $CLASS$ extends Model
      */
     protected $fillable = $FILLABLE$;
 
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = "$TABLE$";
+
     // 
 }
