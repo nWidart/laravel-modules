@@ -96,7 +96,11 @@ class ModelMakeCommand extends GeneratorCommand
     private function handleOptionalMigrationOption()
     {
         if ($this->option('migration') === true) {
-            $migrationName = 'create_' . $this->createMigrationName() . '_table';
+            if ($this->option('prefix') === true) {
+                $migrationName = 'create_' . strtolower($this->argument('module')) . '_' . $this->createMigrationName() . '_table';
+            } else {
+                $migrationName = 'create_' . $this->createMigrationName() . '_table';
+            }
             $this->call('module:make-migration', ['name' => $migrationName, 'module' => $this->argument('module')]);
         }
     }
