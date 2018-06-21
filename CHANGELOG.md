@@ -4,6 +4,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 3.3.0 - 2018-06-21
+
+### Changed
+
+- `module:update` command has now the possibility to update all modules at once
+- Fixing commented code for Laravel Mix
+
 ## 3.2.0 - 2018-04-16
 
 ### Added
