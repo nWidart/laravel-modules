@@ -12,6 +12,7 @@ class ModuleEntityTest extends BaseTestCase
     {
         $moduleEntity = new ModuleEntity();
         $moduleEntity->name = 'Test DB Module';
+        $moduleEntity->module_path = __DIR__ . '/../stubs/valid';
         $moduleEntity->save();
 
         $this->assertCount(1, ModuleEntity::all());
