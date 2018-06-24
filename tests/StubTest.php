@@ -23,7 +23,7 @@ class StubTest extends BaseTestCase
         $this->finder->delete([
             base_path('my-command.php'),
             base_path('stub-override-exists.php'),
-            base_path('stub-override-not-exists.php')
+            base_path('stub-override-not-exists.php'),
         ]);
     }
 

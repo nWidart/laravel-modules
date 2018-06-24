@@ -4,7 +4,7 @@ namespace Nwidart\Modules\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Laravel\Repository;
+use Nwidart\Modules\Laravel\LaravelFileRepository;
 
 class ContractsServiceProvider extends ServiceProvider
 {
@@ -13,6 +13,6 @@ class ContractsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(RepositoryInterface::class, Repository::class);
+        $this->app->bind(RepositoryInterface::class, LaravelFileRepository::class);
     }
 }

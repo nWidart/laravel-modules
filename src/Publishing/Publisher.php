@@ -4,8 +4,8 @@ namespace Nwidart\Modules\Publishing;
 
 use Illuminate\Console\Command;
 use Nwidart\Modules\Contracts\PublisherInterface;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Module;
-use Nwidart\Modules\Repository;
 
 abstract class Publisher implements PublisherInterface
 {
@@ -18,8 +18,7 @@ abstract class Publisher implements PublisherInterface
 
     /**
      * The modules repository instance.
-     *
-     * @var \Nwidart\Modules\Repository
+     * @var RepositoryInterface
      */
     protected $repository;
 
@@ -97,12 +96,10 @@ abstract class Publisher implements PublisherInterface
 
     /**
      * Set modules repository instance.
-     *
-     * @param \Nwidart\Modules\Repository $repository
-     *
+     * @param RepositoryInterface $repository
      * @return $this
      */
-    public function setRepository(Repository $repository)
+    public function setRepository(RepositoryInterface $repository)
     {
         $this->repository = $repository;
 
@@ -112,7 +109,7 @@ abstract class Publisher implements PublisherInterface
     /**
      * Get modules repository instance.
      *
-     * @return \Nwidart\Modules\Repository
+     * @return RepositoryInterface
      */
     public function getRepository()
     {

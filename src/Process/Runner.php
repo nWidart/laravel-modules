@@ -2,24 +2,18 @@
 
 namespace Nwidart\Modules\Process;
 
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Contracts\RunableInterface;
-use Nwidart\Modules\Repository;
 
 class Runner implements RunableInterface
 {
     /**
      * The module instance.
-     *
-     * @var \Nwidart\Modules\Repository
+     * @var RepositoryInterface
      */
     protected $module;
 
-    /**
-     * The constructor.
-     *
-     * @param \Nwidart\Modules\Repository $module
-     */
-    public function __construct(Repository $module)
+    public function __construct(RepositoryInterface $module)
     {
         $this->module = $module;
     }

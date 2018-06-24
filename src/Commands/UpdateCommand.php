@@ -45,7 +45,7 @@ class UpdateCommand extends Command
 
     protected function updateModule($name)
     {
-        $this->line('Running for module: <info>'.$name.'</info>');
+        $this->line('Running for module: <info>' . $name . '</info>');
 
         $this->laravel['modules']->update($name);
 

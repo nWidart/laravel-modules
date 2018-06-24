@@ -6,20 +6,20 @@ use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Collection;
 use Nwidart\Modules\Exceptions\InvalidAssetPath;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
+use Nwidart\Modules\Laravel\LaravelFileRepository;
 use Nwidart\Modules\Module;
-use Nwidart\Modules\Repository;
 
-class RepositoryTest extends BaseTestCase
+class LaravelFileRepositoryTest extends BaseTestCase
 {
     /**
-     * @var Repository
+     * @var LaravelFileRepository
      */
     private $repository;
 
     public function setUp()
     {
         parent::setUp();
-        $this->repository = new \Nwidart\Modules\Laravel\Repository($this->app);
+        $this->repository = new LaravelFileRepository($this->app);
     }
 
     /** @test */

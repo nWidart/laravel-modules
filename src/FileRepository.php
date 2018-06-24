@@ -12,7 +12,7 @@ use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Process\Installer;
 use Nwidart\Modules\Process\Updater;
 
-abstract class Repository implements RepositoryInterface, Countable
+abstract class FileRepository implements RepositoryInterface, Countable
 {
     use Macroable;
 
