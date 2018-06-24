@@ -13,6 +13,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     {
         $this->registerNamespaces();
         $this->registerModules();
+        $this->registerMigrations();
     }
 
     /**
