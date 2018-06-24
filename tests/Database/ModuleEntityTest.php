@@ -1,6 +1,6 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Entities;
+namespace Nwidart\Modules\Tests\Database;
 
 use Nwidart\Modules\Entities\ModuleEntity;
 use Nwidart\Modules\Tests\BaseTestCase;
