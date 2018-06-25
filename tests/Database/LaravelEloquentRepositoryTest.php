@@ -22,16 +22,16 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
     /** @test */
     public function it_returns_all_modules(): void
     {
-        $this->createModule();
+        $this->createModule('Test DB Module');
 
         $this->assertCount(1, $this->repository->all());
     }
 
-    private function createModule(): ModuleEntity
+    private function createModule($moduleName): ModuleEntity
     {
         $moduleEntity = new ModuleEntity();
-        $moduleEntity->name = 'Test DB Module';
-        $moduleEntity->module_path = __DIR__ . '/../stubs/valid';
+        $moduleEntity->name = $moduleName;
+        $moduleEntity->module_path = __DIR__ . "/../stubs/valid/{$moduleName}";
         $moduleEntity->save();
 
         return $moduleEntity;
