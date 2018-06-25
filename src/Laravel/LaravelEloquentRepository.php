@@ -2,6 +2,8 @@
 
 namespace Nwidart\Modules\Laravel;
 
+use Nwidart\Modules\Collection;
+use Illuminate\Container\Container;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Entities\ModuleEntity;
 
@@ -11,15 +13,20 @@ class LaravelEloquentRepository implements RepositoryInterface
      * @var ModuleEntity
      */
     private $moduleEntity;
+    /**
+     * @var Container
+     */
+    private $app;
 
-    public function __construct(ModuleEntity $moduleEntity)
+    public function __construct(Container $app, ModuleEntity $moduleEntity)
     {
+        $this->app = $app;
         $this->moduleEntity = $moduleEntity;
     }
 
     /**
      * Get all modules.
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function all()
     {
@@ -32,7 +39,9 @@ class LaravelEloquentRepository implements RepositoryInterface
      */
     public function getCached()
     {
-        // TODO: Implement getCached() method.
+        return $this->app['cache']->remember($this->config('cache.key'), $this->config('cache.lifetime'), function () {
+            return $this->toCollection()->toArray();
+        });
     }
 
     /**
@@ -50,7 +59,17 @@ class LaravelEloquentRepository implements RepositoryInterface
      */
     public function toCollection()
     {
-        // TODO: Implement toCollection() method.
+        $collection = new Collection();
+        $this->all()
+            ->map(function ($module) use ($collection) {
+                $collection->push($this->createModule($this->app, $module->name, $module->path));
+            });
+        return $collection;
+    }
+
+    protected function createModule(...$args)
+    {
+        return new Module(...$args);
     }
 
     /**
@@ -140,5 +159,10 @@ class LaravelEloquentRepository implements RepositoryInterface
     public function getFiles()
     {
         // TODO: Implement getFiles() method.
+    }
+
+    public function config($key, $default = null)
+    {
+        return $this->app['config']->get('modules.' . $key, $default);
     }
 }
