@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Tests\Database;
 
 use Nwidart\Modules\Collection;
 use Nwidart\Modules\Entities\ModuleEntity;
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Laravel\LaravelEloquentRepository;
 use Nwidart\Modules\Tests\BaseTestCase;
 
@@ -133,6 +134,14 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
     public function it_returns_null_if_module_was_not_found()
     {
         $this->assertNull($this->repository->find('Unknown'));
+    }
+
+    /** @test */
+    public function it_throws_exception_if_module_was_not_found()
+    {
+        $this->expectException(ModuleNotFoundException::class);
+
+        $this->repository->findOrFail('Unknown');
     }
 
     private function createModule($moduleName): ModuleEntity

@@ -7,6 +7,7 @@ use Nwidart\Modules\Collection;
 use Illuminate\Container\Container;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Entities\ModuleEntity;
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 
 class LaravelEloquentRepository implements RepositoryInterface
 {
@@ -139,7 +140,7 @@ class LaravelEloquentRepository implements RepositoryInterface
     /**
      * Find a specific module.
      * @param $name
-     * @return mixed
+     * @return \Nwidart\Modules\Module
      */
     public function find($name): ?\Nwidart\Modules\Module
     {
@@ -158,11 +159,18 @@ class LaravelEloquentRepository implements RepositoryInterface
     /**
      * Find a specific module. If there return that, otherwise throw exception.
      * @param $name
-     * @return mixed
+     * @return \Nwidart\Modules\Module
+     * @throws ModuleNotFoundException
      */
-    public function findOrFail($name)
+    public function findOrFail($name): \Nwidart\Modules\Module
     {
-        // TODO: Implement findOrFail() method.
+        $module = $this->find($name);
+
+        if ($module === null) {
+            throw new ModuleNotFoundException();
+        }
+
+        return $module;
     }
 
     public function getModulePath($moduleName)
