@@ -42,9 +42,9 @@ interface RepositoryInterface
     /**
      * Get list of enabled modules.
      *
-     * @return mixed
+     * @return array
      */
-    public function allEnabled();
+    public function allEnabled(): array;
 
     /**
      * Get list of disabled modules.
@@ -72,9 +72,9 @@ interface RepositoryInterface
      *
      * @param int $status
      *
-     * @return mixed
+     * @return array
      */
-    public function getByStatus($status);
+    public function getByStatus($status): array;
 
     /**
      * Find a specific module.
