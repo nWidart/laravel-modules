@@ -115,7 +115,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      *
      * @return array
      */
-    public function scan()
+    public function scan(): array
     {
         $paths = $this->getScanPaths();
 
@@ -172,10 +172,8 @@ abstract class FileRepository implements RepositoryInterface, Countable
 
     /**
      * Get cached modules.
-     *
-     * @return array
      */
-    public function getCached()
+    public function getCached(): array
     {
         return $this->app['cache']->remember($this->config('cache.key'), $this->config('cache.lifetime'), function () {
             return $this->toCollection()->toArray();

@@ -30,16 +30,15 @@ class LaravelEloquentRepository implements RepositoryInterface
      * Get all modules.
      * @return EloquentCollection
      */
-    public function all()
+    public function all(): array
     {
-        return $this->moduleEntity->get();
+        return $this->convertToCollection($this->moduleEntity->get())->toArray();
     }
 
     /**
      * Get cached modules.
-     * @return array
      */
-    public function getCached()
+    public function getCached(): array
     {
         return $this->app['cache']->remember($this->config('cache.key'), $this->config('cache.lifetime'), function () {
             return $this->toCollection()->toArray();
@@ -48,20 +47,18 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     /**
      * Scan & get all available modules.
-     * @return array
      */
-    public function scan()
+    public function scan(): array
     {
         return $this->toCollection()->toArray();
     }
 
     /**
      * Get modules as modules collection instance.
-     * @return \Nwidart\Modules\Collection
      */
-    public function toCollection()
+    public function toCollection(): Collection
     {
-        return $this->convertToCollection($this->all());
+        return $this->convertToCollection($this->moduleEntity->get());
     }
 
     protected function createModule(...$args)

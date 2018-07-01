@@ -2,44 +2,35 @@
 
 namespace Nwidart\Modules\Contracts;
 
+use Nwidart\Modules\Collection;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 
 interface RepositoryInterface
 {
     /**
-     * Get all modules.
-     *
-     * @return mixed
+     * Get all modules
      */
-    public function all();
+    public function all(): array;
 
     /**
-     * Get cached modules.
-     *
-     * @return array
+     * Get cached modules
      */
-    public function getCached();
+    public function getCached(): array;
 
     /**
      * Scan & get all available modules.
-     *
-     * @return array
      */
-    public function scan();
+    public function scan(): array;
 
     /**
      * Get modules as modules collection instance.
-     *
-     * @return \Nwidart\Modules\Collection
      */
-    public function toCollection();
+    public function toCollection(): Collection;
 
     /**
      * Get scanned paths.
-     *
-     * @return array
      */
-    public function getScanPaths();
+    public function getScanPaths(): array;
 
     /**
      * Get list of enabled modules.
@@ -57,10 +48,8 @@ interface RepositoryInterface
 
     /**
      * Get count from all modules.
-     *
-     * @return int
      */
-    public function count();
+    public function count(): int;
 
     /**
      * Get all ordered modules.
