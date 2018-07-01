@@ -261,7 +261,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      *
      * @return array
      */
-    public function getOrdered($direction = 'asc') : array
+    public function getOrdered(string $direction = 'asc') : array
     {
         $modules = $this->allEnabled();
 
