@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Laravel;
 
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Nwidart\Modules\Collection;
 use Illuminate\Container\Container;
 use Nwidart\Modules\Contracts\RepositoryInterface;
@@ -26,7 +27,7 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     /**
      * Get all modules.
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return EloquentCollection
      */
     public function all()
     {
@@ -59,12 +60,7 @@ class LaravelEloquentRepository implements RepositoryInterface
      */
     public function toCollection()
     {
-        $collection = new Collection();
-        $this->all()
-            ->map(function ($module) use ($collection) {
-                $collection->push($this->createModule($this->app, $module->name, $module->path));
-            });
-        return $collection;
+        return $this->convertToCollection($this->all());
     }
 
     protected function createModule(...$args)
@@ -86,12 +82,9 @@ class LaravelEloquentRepository implements RepositoryInterface
      */
     public function allEnabled(): array
     {
-        $collection = new Collection();
         $results = $this->moduleEntity->newQuery()->where('is_active', 1)->get();
-        $results->map(function ($module) use ($collection) {
-            $collection->push($this->createModule($this->app, $module->name, $module->path));
-        });
-        return $collection->toArray();
+
+        return $this->convertToCollection($results)->toArray();
     }
 
     /**
@@ -168,5 +161,14 @@ class LaravelEloquentRepository implements RepositoryInterface
     public function config($key, $default = null)
     {
         return $this->app['config']->get('modules.' . $key, $default);
+    }
+
+    private function convertToCollection(EloquentCollection $eloquentCollection): Collection
+    {
+        $collection = new Collection();
+        $eloquentCollection->map(function ($module) use ($collection) {
+            $collection->push($this->createModule($this->app, $module->name, $module->path));
+        });
+        return $collection;
     }
 }
