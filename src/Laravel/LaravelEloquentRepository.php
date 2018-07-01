@@ -141,9 +141,18 @@ class LaravelEloquentRepository implements RepositoryInterface
      * @param $name
      * @return mixed
      */
-    public function find($name)
+    public function find($name): ?\Nwidart\Modules\Module
     {
-        // TODO: Implement find() method.
+        $module = $this->moduleEntity
+            ->newQuery()
+            ->where('name', $name)
+            ->first();
+
+        if ($module === null) {
+            return null;
+        }
+
+        return $this->createModule($this->app, $module->name, $module->path);
     }
 
     /**

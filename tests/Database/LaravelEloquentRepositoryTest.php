@@ -120,6 +120,21 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $this->assertCount(0,  $this->repository->getByStatus(1));
     }
 
+    /** @test */
+    public function it_can_find_module_by_name()
+    {
+        $this->createModule('Recipe');
+        $this->createModule('Requirement');
+
+        $this->assertEquals('Recipe', $this->repository->find('Recipe')->name);
+    }
+
+    /** @test */
+    public function it_returns_null_if_module_was_not_found()
+    {
+        $this->assertNull($this->repository->find('Unknown'));
+    }
+
     private function createModule($moduleName): ModuleEntity
     {
         $moduleEntity = new ModuleEntity();
