@@ -23,9 +23,10 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
     /** @test */
     public function it_returns_all_modules(): void
     {
-        $this->createModule('Test DB Module');
+        $this->createModule('Recipe');
 
         $this->assertCount(1, $this->repository->all());
+        $this->assertCount(1, $this->repository->scan());
     }
 
     /** @test */

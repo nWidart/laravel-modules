@@ -50,7 +50,7 @@ class LaravelEloquentRepository implements RepositoryInterface
      */
     public function scan()
     {
-        // TODO: Implement scan() method.
+        return $this->toCollection()->toArray();
     }
 
     /**
