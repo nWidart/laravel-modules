@@ -103,9 +103,9 @@ class LaravelEloquentRepository implements RepositoryInterface
      * Get count from all modules.
      * @return int
      */
-    public function count()
+    public function count(): int
     {
-        // TODO: Implement count() method.
+        return $this->moduleEntity->count();
     }
 
     /**
