@@ -109,6 +109,17 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $this->assertEquals('Recipe', $modules[2]['name']);
     }
 
+    /** @test */
+    public function it_gets_module_by_given_status()
+    {
+        $module = $this->createModule('Requirement');
+        $module->is_active = 0;
+        $module->save();
+
+        $this->assertCount(1,  $this->repository->getByStatus(0));
+        $this->assertCount(0,  $this->repository->getByStatus(1));
+    }
+
     private function createModule($moduleName): ModuleEntity
     {
         $moduleEntity = new ModuleEntity();

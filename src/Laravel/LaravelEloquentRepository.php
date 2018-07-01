@@ -129,7 +129,11 @@ class LaravelEloquentRepository implements RepositoryInterface
      */
     public function getByStatus($status): array
     {
-        // TODO: Implement getByStatus() method.
+        $results = $this->moduleEntity
+            ->newQuery()
+            ->where('is_active', $status)
+            ->get();
+        return $this->convertToCollection($results)->toArray();
     }
 
     /**
