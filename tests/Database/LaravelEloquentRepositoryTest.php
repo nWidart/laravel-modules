@@ -144,6 +144,17 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $this->repository->findOrFail('Unknown');
     }
 
+    /** @test */
+    public function it_returns_the_module_path()
+    {
+        $this->createModule('Recipe');
+
+        $this->assertEquals(
+            '/Users/nicolaswidart/Sites/Packages/laravel-modules-55/tests/Database/../stubs/valid/Recipe',
+            $this->repository->getModulePath('Recipe')
+        );
+    }
+
     private function createModule($moduleName): ModuleEntity
     {
         $moduleEntity = new ModuleEntity();

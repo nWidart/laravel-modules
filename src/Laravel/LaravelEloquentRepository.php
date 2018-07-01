@@ -175,7 +175,9 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     public function getModulePath($moduleName)
     {
-        // TODO: Implement getModulePath() method.
+        $module = $this->findOrFail($moduleName);
+
+        return $module->getPath();
     }
 
     /**
