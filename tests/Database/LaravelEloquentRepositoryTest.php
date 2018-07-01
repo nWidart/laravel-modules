@@ -28,14 +28,12 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $this->assertCount(1, $this->repository->all());
     }
 
-
-
     /** @test */
     public function it_returns_a_collection_of_module_instances()
     {
-        $this->createModule('module 1');
-        $this->createModule('module 2');
-        $this->createModule('module 3');
+        $this->createModule('Recipe');
+        $this->createModule('Requirement');
+        $this->createModule('DisabledModule');
 
         $this->assertInstanceOf(Collection::class, $this->repository->toCollection());
         $this->assertCount(3,  $this->repository->toCollection());
