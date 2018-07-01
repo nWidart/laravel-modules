@@ -62,10 +62,8 @@ interface RepositoryInterface
 
     /**
      * Get all ordered modules.
-     * @param string $direction
-     * @return mixed
      */
-    public function getOrdered($direction = 'asc'): array;
+    public function getOrdered(string $direction = 'asc'): array;
 
     /**
      * Get modules by the given status.
