@@ -110,12 +110,16 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     /**
      * Get all ordered modules.
-     * @param string $direction
-     * @return mixed
      */
-    public function getOrdered($direction = 'asc')
+    public function getOrdered(string $direction = 'asc'): array
     {
-        // TODO: Implement getOrdered() method.
+        $results = $this->moduleEntity
+            ->newQuery()
+            ->where('is_active', 1)
+            ->orderBy('order', $direction)
+            ->get();
+
+        return $this->convertToCollection($results)->toArray();
     }
 
     /**

@@ -71,6 +71,44 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $this->assertEquals(2, $this->repository->count());
     }
 
+    /** @test */
+    public function it_returns_ordered_collection_of_enabled_modules_in_ascending_order()
+    {
+        $moduleOne = $this->createModule('Recipe');
+        $moduleOne->order = 1;
+        $moduleOne->save();
+        $moduleTwo = $this->createModule('Requirement');
+        $moduleTwo->order = 10;
+        $moduleTwo->save();
+        $moduleThree = $this->createModule('DisabledModule');
+        $moduleThree->order = 5;
+        $moduleThree->save();
+
+        $modules = $this->repository->getOrdered('asc');
+        $this->assertEquals('Recipe', $modules[0]['name']);
+        $this->assertEquals('DisabledModule', $modules[1]['name']);
+        $this->assertEquals('Requirement', $modules[2]['name']);
+    }
+
+    /** @test */
+    public function it_returns_ordered_collection_of_enabled_modules_in_descending_order()
+    {
+        $moduleOne = $this->createModule('Recipe');
+        $moduleOne->order = 1;
+        $moduleOne->save();
+        $moduleTwo = $this->createModule('Requirement');
+        $moduleTwo->order = 10;
+        $moduleTwo->save();
+        $moduleThree = $this->createModule('DisabledModule');
+        $moduleThree->order = 5;
+        $moduleThree->save();
+
+        $modules = $this->repository->getOrdered('desc');
+        $this->assertEquals('Requirement', $modules[0]['name']);
+        $this->assertEquals('DisabledModule', $modules[1]['name']);
+        $this->assertEquals('Recipe', $modules[2]['name']);
+    }
+
     private function createModule($moduleName): ModuleEntity
     {
         $moduleEntity = new ModuleEntity();
