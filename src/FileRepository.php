@@ -323,7 +323,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
             }
         }
 
-        return;
+        return null;
     }
 
     /**
