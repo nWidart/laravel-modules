@@ -78,16 +78,20 @@ class LaravelEloquentRepository implements RepositoryInterface
      */
     public function getScanPaths()
     {
-        // TODO: Implement getScanPaths() method.
     }
 
     /**
      * Get list of enabled modules.
      * @return mixed
      */
-    public function allEnabled()
+    public function allEnabled(): array
     {
-        // TODO: Implement allEnabled() method.
+        $collection = new Collection();
+        $results = $this->moduleEntity->newQuery()->where('is_active', 1)->get();
+        $results->map(function ($module) use ($collection) {
+            $collection->push($this->createModule($this->app, $module->name, $module->path));
+        });
+        return $collection->toArray();
     }
 
     /**
@@ -121,9 +125,9 @@ class LaravelEloquentRepository implements RepositoryInterface
     /**
      * Get modules by the given status.
      * @param int $status
-     * @return mixed
+     * @return array
      */
-    public function getByStatus($status)
+    public function getByStatus($status): array
     {
         // TODO: Implement getByStatus() method.
     }
