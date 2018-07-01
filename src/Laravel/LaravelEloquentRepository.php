@@ -72,8 +72,9 @@ class LaravelEloquentRepository implements RepositoryInterface
      * Get scanned paths.
      * @return array
      */
-    public function getScanPaths()
+    public function getScanPaths(): array
     {
+        return [];
     }
 
     /**
