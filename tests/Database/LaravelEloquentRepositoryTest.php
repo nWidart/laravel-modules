@@ -51,6 +51,17 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $this->assertCount(1,  $this->repository->allEnabled());
     }
 
+    /** @test */
+    public function it_returns_all_disabled_modules()
+    {
+        $this->createModule('Recipe');
+        $moduleTwo = $this->createModule('Requirement');
+        $moduleTwo->is_active = 0;
+        $moduleTwo->save();
+
+        $this->assertCount(1,  $this->repository->allDisabled());
+    }
+
     private function createModule($moduleName): ModuleEntity
     {
         $moduleEntity = new ModuleEntity();

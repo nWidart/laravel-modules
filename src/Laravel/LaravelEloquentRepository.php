@@ -94,7 +94,9 @@ class LaravelEloquentRepository implements RepositoryInterface
      */
     public function allDisabled()
     {
-        // TODO: Implement allDisabled() method.
+        $results = $this->moduleEntity->newQuery()->where('is_active', 0)->get();
+
+        return $this->convertToCollection($results)->toArray();
     }
 
     /**
