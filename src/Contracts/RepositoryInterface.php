@@ -2,6 +2,8 @@
 
 namespace Nwidart\Modules\Contracts;
 
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
+
 interface RepositoryInterface
 {
     /**
@@ -84,11 +86,10 @@ interface RepositoryInterface
     public function find($name);
 
     /**
-     * Find a specific module. If there return that, otherwise throw exception.
-     *
+     * Find a specific module.
      * @param $name
-     *
      * @return mixed
+     * @throws ModuleNotFoundException
      */
     public function findOrFail($name);
 
