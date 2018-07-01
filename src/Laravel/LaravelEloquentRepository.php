@@ -185,7 +185,7 @@ class LaravelEloquentRepository implements RepositoryInterface
      */
     public function getFiles()
     {
-        // TODO: Implement getFiles() method.
+        return $this->app['files'];
     }
 
     public function config($key, $default = null)
