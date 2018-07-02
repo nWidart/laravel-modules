@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Nwidart\Modules;
 
@@ -6,8 +7,9 @@ use Illuminate\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
+use Nwidart\Modules\Contracts\ModuleInterface;
 
-abstract class Module extends ServiceProvider
+abstract class Module extends ServiceProvider implements ModuleInterface
 {
     use Macroable;
 
@@ -66,7 +68,7 @@ abstract class Module extends ServiceProvider
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -76,7 +78,7 @@ abstract class Module extends ServiceProvider
      *
      * @return string
      */
-    public function getLowerName()
+    public function getLowerName(): string
     {
         return strtolower($this->name);
     }
@@ -86,7 +88,7 @@ abstract class Module extends ServiceProvider
      *
      * @return string
      */
-    public function getStudlyName()
+    public function getStudlyName(): string
     {
         return Str::studly($this->name);
     }
@@ -96,7 +98,7 @@ abstract class Module extends ServiceProvider
      *
      * @return string
      */
-    public function getSnakeName()
+    public function getSnakeName(): string
     {
         return Str::snake($this->name);
     }
@@ -106,7 +108,7 @@ abstract class Module extends ServiceProvider
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->get('description');
     }
@@ -116,7 +118,7 @@ abstract class Module extends ServiceProvider
      *
      * @return string
      */
-    public function getAlias()
+    public function getAlias(): string
     {
         return $this->get('alias');
     }
@@ -126,7 +128,7 @@ abstract class Module extends ServiceProvider
      *
      * @return string
      */
-    public function getPriority()
+    public function getPriority(): string
     {
         return $this->get('priority');
     }
@@ -136,7 +138,7 @@ abstract class Module extends ServiceProvider
      *
      * @return array
      */
-    public function getRequires()
+    public function getRequires(): array
     {
         return $this->get('requires');
     }
@@ -146,7 +148,7 @@ abstract class Module extends ServiceProvider
      *
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -158,7 +160,7 @@ abstract class Module extends ServiceProvider
      *
      * @return $this
      */
-    public function setPath($path)
+    public function setPath($path): self
     {
         $this->path = $path;
 
@@ -168,7 +170,7 @@ abstract class Module extends ServiceProvider
     /**
      * Bootstrap the application events.
      */
-    public function boot()
+    public function boot(): void
     {
         if (config('modules.register.translations', true) === true) {
             $this->registerTranslation();
@@ -186,7 +188,7 @@ abstract class Module extends ServiceProvider
      *
      * @return void
      */
-    protected function registerTranslation()
+    protected function registerTranslation(): void
     {
         $lowerName = $this->getLowerName();
 
@@ -244,7 +246,7 @@ abstract class Module extends ServiceProvider
     /**
      * Register the module.
      */
-    public function register()
+    public function register(): void
     {
         $this->registerAliases();
 
@@ -269,19 +271,19 @@ abstract class Module extends ServiceProvider
     /**
      * Register the aliases from this module.
      */
-    abstract public function registerAliases();
+    abstract public function registerAliases(): void;
 
     /**
      * Register the service providers from this module.
      */
-    abstract public function registerProviders();
+    abstract public function registerProviders(): void;
 
     /**
      * Get the path to the cached *_module.php file.
      *
      * @return string
      */
-    abstract public function getCachedServicesPath();
+    abstract public function getCachedServicesPath(): string;
 
     /**
      * Register the files from this module.
@@ -310,7 +312,7 @@ abstract class Module extends ServiceProvider
      *
      * @return bool
      */
-    public function isStatus($status) : bool
+    public function isStatus(int $status) : bool
     {
         return $this->get('active', 0) === $status;
     }
@@ -342,15 +344,15 @@ abstract class Module extends ServiceProvider
      *
      * @return bool
      */
-    public function setActive($active)
+    public function setActive(int $active): bool
     {
-        return $this->json()->set('active', $active)->save();
+        return (bool) $this->json()->set('active', $active)->save();
     }
 
     /**
      * Disable the current module.
      */
-    public function disable()
+    public function disable(): void
     {
         $this->fireEvent('disabling');
 
@@ -362,7 +364,7 @@ abstract class Module extends ServiceProvider
     /**
      * Enable the current module.
      */
-    public function enable()
+    public function enable(): void
     {
         $this->fireEvent('enabling');
 
@@ -376,7 +378,7 @@ abstract class Module extends ServiceProvider
      *
      * @return bool
      */
-    public function delete()
+    public function delete(): bool
     {
         return $this->json()->getFilesystem()->deleteDirectory($this->getPath());
     }

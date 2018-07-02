@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Nwidart\Modules\Laravel;
 
@@ -13,7 +14,7 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
-    public function getCachedServicesPath()
+    public function getCachedServicesPath(): string
     {
         return Str::replaceLast('services.php', $this->getSnakeName() . '_module.php', $this->app->getCachedServicesPath());
     }
@@ -21,7 +22,7 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
-    public function registerProviders()
+    public function registerProviders(): void
     {
         (new ProviderRepository($this->app, new Filesystem(), $this->getCachedServicesPath()))
             ->load($this->get('providers', []));
@@ -30,7 +31,7 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
-    public function registerAliases()
+    public function registerAliases(): void
     {
         $loader = AliasLoader::getInstance();
         foreach ($this->get('aliases', []) as $aliasName => $aliasClass) {

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Nwidart\Modules\Lumen;
 
@@ -10,7 +11,7 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
-    public function getCachedServicesPath()
+    public function getCachedServicesPath(): string
     {
         return Str::replaceLast('services.php', $this->getSnakeName() . '_module.php', $this->app->basePath('storage/app/') . 'services.php');
     }
@@ -18,7 +19,7 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
-    public function registerProviders()
+    public function registerProviders(): void
     {
         foreach ($this->get('providers', []) as $provider) {
             $this->app->register($provider);
@@ -28,7 +29,7 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
-    public function registerAliases()
+    public function registerAliases(): void
     {
     }
 }
