@@ -37,7 +37,7 @@ class UpdateCommand extends Command
             return;
         }
 
-        /** @var \Nwidart\Modules\Module $module */
+        /** @var \Nwidart\Modules\Contracts\ModuleInterface $module */
         foreach ($this->laravel['modules']->getOrdered() as $module) {
             $this->updateModule($module->getName());
         }

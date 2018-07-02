@@ -3,8 +3,8 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Contracts\ModuleInterface;
 use Nwidart\Modules\Migrations\Migrator;
-use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -55,9 +55,9 @@ class MigrateStatusCommand extends Command
     /**
      * Run the migration from the specified module.
      *
-     * @param Module $module
+     * @param ModuleInterface $module
      */
-    protected function migrateStatus(Module $module)
+    protected function migrateStatus(ModuleInterface $module)
     {
         $path = str_replace(base_path(), '', (new Migrator($module))->getPath());
 

@@ -3,7 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
-use Nwidart\Modules\Module;
+use Nwidart\Modules\Contracts\ModuleInterface;
 use Nwidart\Modules\Publishing\LangPublisher;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -54,7 +54,7 @@ class PublishTranslationCommand extends Command
      */
     public function publish($name)
     {
-        if ($name instanceof Module) {
+        if ($name instanceof ModuleInterface) {
             $module = $name;
         } else {
             $module = $this->laravel['modules']->findOrFail($name);

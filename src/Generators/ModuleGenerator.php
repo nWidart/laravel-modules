@@ -6,7 +6,7 @@ use Illuminate\Config\Repository as Config;
 use Illuminate\Console\Command as Console;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
-use Nwidart\Modules\FileRepository;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 
@@ -41,9 +41,9 @@ class ModuleGenerator extends Generator
     protected $console;
 
     /**
-     * The pingpong module instance.
+     * The module repository instance.
      *
-     * @var \Nwidart\Modules\Module
+     * @var RepositoryInterface
      */
     protected $module;
 
@@ -64,14 +64,14 @@ class ModuleGenerator extends Generator
     /**
      * The constructor.
      * @param $name
-     * @param FileRepository $module
+     * @param RepositoryInterface $module
      * @param Config     $config
      * @param Filesystem $filesystem
      * @param Console    $console
      */
     public function __construct(
         $name,
-        FileRepository $module = null,
+        RepositoryInterface $module = null,
         Config $config = null,
         Filesystem $filesystem = null,
         Console $console = null
@@ -182,21 +182,21 @@ class ModuleGenerator extends Generator
     /**
      * Get the module instance.
      *
-     * @return \Nwidart\Modules\Module
+     * @return \Nwidart\Modules\Contracts\RepositoryInterface
      */
-    public function getModule()
+    public function getModule(): RepositoryInterface
     {
         return $this->module;
     }
 
     /**
-     * Set the pingpong module instance.
+     * Set the module repository instance.
      *
-     * @param mixed $module
+     * @param \Nwidart\Modules\Contracts\RepositoryInterface $module
      *
      * @return $this
      */
-    public function setModule($module)
+    public function setModule(RepositoryInterface $module)
     {
         $this->module = $module;
 
@@ -244,7 +244,7 @@ class ModuleGenerator extends Generator
     {
         $name = $this->getName();
 
-        if ($this->module->has($name)) {
+        if ($this->module->exists($name)) {
             if ($this->force) {
                 $this->module->delete($name);
             } else {

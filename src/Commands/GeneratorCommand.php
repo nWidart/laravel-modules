@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Contracts\ModuleInterface;
 use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 use Nwidart\Modules\Generators\FileGenerator;
 
@@ -74,11 +75,11 @@ abstract class GeneratorCommand extends Command
     /**
      * Get class namespace.
      *
-     * @param \Nwidart\Modules\Module $module
+     * @param \Nwidart\Modules\Contracts\ModuleInterface $module
      *
      * @return string
      */
-    public function getClassNamespace($module)
+    public function getClassNamespace(ModuleInterface $module): string
     {
         $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
 

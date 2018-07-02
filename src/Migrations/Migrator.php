@@ -4,15 +4,15 @@ namespace Nwidart\Modules\Migrations;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
-use Nwidart\Modules\Module;
+use Nwidart\Modules\Contracts\ModuleInterface;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 
 class Migrator
 {
     /**
-     * Pingpong Module instance.
+     * Module instance.
      *
-     * @var \Nwidart\Modules\Module
+     * @var \Nwidart\Modules\Contracts\ModuleInterface
      */
     protected $module;
 
@@ -33,9 +33,9 @@ class Migrator
     /**
      * Create new instance.
      *
-     * @param \Nwidart\Modules\Module $module
+     * @param \Nwidart\Modules\Contracts\ModuleInterface $module
      */
-    public function __construct(Module $module)
+    public function __construct(ModuleInterface $module)
     {
         $this->module = $module;
         $this->laravel = $module->getLaravel();
@@ -58,7 +58,7 @@ class Migrator
     }
 
     /**
-     * @return Module
+     * @return ModuleInterface
      */
     public function getModule()
     {

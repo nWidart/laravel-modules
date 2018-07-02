@@ -4,6 +4,7 @@ namespace Nwidart\Modules;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection as BaseCollection;
+use Nwidart\Modules\Contracts\ModuleInterface;
 
 class Collection extends BaseCollection
 {
@@ -25,7 +26,7 @@ class Collection extends BaseCollection
     public function toArray()
     {
         return array_map(function ($value) {
-            if ($value instanceof Module) {
+            if ($value instanceof ModuleInterface) {
                 $attributes = $value->json()->getAttributes();
                 $attributes["path"] = $value->getPath();
 

@@ -3,9 +3,9 @@
 namespace Nwidart\Modules\Publishing;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Contracts\ModuleInterface;
 use Nwidart\Modules\Contracts\PublisherInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Module;
 
 abstract class Publisher implements PublisherInterface
 {
@@ -53,9 +53,9 @@ abstract class Publisher implements PublisherInterface
     /**
      * The constructor.
      *
-     * @param Module $module
+     * @param ModuleInterface $module
      */
-    public function __construct(Module $module)
+    public function __construct(ModuleInterface $module)
     {
         $this->module = $module;
     }
@@ -87,9 +87,9 @@ abstract class Publisher implements PublisherInterface
     /**
      * Get module instance.
      *
-     * @return \Nwidart\Modules\Module
+     * @return ModuleInterface
      */
-    public function getModule()
+    public function getModule(): ModuleInterface
     {
         return $this->module;
     }

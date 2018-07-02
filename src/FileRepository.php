@@ -102,17 +102,15 @@ abstract class FileRepository implements RepositoryInterface, Countable
 
     /**
      * Creates a new Module instance
-     *
      * @param Container $app
      * @param $name
      * @param $path
-     * @return \Nwidart\Modules\Module
+     * @return Contracts\ModuleInterface
      */
-    abstract protected function createModule(...$args);
+    abstract protected function createModule(...$args): Contracts\ModuleInterface;
 
     /**
      * Get & scan all modules.
-     *
      * @return array
      */
     public function scan(): array
@@ -217,7 +215,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      *
      * @return bool
      */
-    public function has($name) : bool
+    public function exists(string $name) : bool
     {
         return array_key_exists($name, $this->all());
     }

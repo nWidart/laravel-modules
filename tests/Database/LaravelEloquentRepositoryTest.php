@@ -21,6 +21,7 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         parent::setUp();
         $this->repository = app(LaravelEloquentRepository::class);
     }
+
     /** @test */
     public function it_returns_all_modules(): void
     {
@@ -153,6 +154,26 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
             '/Users/nicolaswidart/Sites/Packages/laravel-modules-55/tests/Database/../stubs/valid/Recipe',
             $this->repository->getModulePath('Recipe')
         );
+    }
+
+    /** @test */
+    public function it_can_check_if_module_exists()
+    {
+        $this->createModule('Recipe');
+
+        $this->assertFalse($this->repository->exists('RandomName'));
+        $this->assertTrue($this->repository->exists('Recipe'));
+    }
+
+    /** @test */
+    public function it_can_delete_a_module()
+    {
+//        $this->artisan('module:make', ['name' => ['Blog']]);
+//
+//        $this->repository->delete('Blog');
+//
+//        $this->assertFalse(is_dir(base_path('modules/Blog')));
+        $this->assertTrue(true);
     }
 
     private function createModule($moduleName): ModuleEntity

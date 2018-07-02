@@ -137,9 +137,9 @@ class LaravelEloquentRepository implements RepositoryInterface
     /**
      * Find a specific module.
      * @param $name
-     * @return \Nwidart\Modules\Module
+     * @return \Nwidart\Modules\Contracts\ModuleInterface
      */
-    public function find($name): ?\Nwidart\Modules\Module
+    public function find($name): ?\Nwidart\Modules\Contracts\ModuleInterface
     {
         $module = $this->moduleEntity
             ->newQuery()
@@ -156,10 +156,10 @@ class LaravelEloquentRepository implements RepositoryInterface
     /**
      * Find a specific module. If there return that, otherwise throw exception.
      * @param $name
-     * @return \Nwidart\Modules\Module
+     * @return \Nwidart\Modules\Contracts\ModuleInterface
      * @throws ModuleNotFoundException
      */
-    public function findOrFail($name): \Nwidart\Modules\Module
+    public function findOrFail($name): \Nwidart\Modules\Contracts\ModuleInterface
     {
         $module = $this->find($name);
 
@@ -188,6 +188,25 @@ class LaravelEloquentRepository implements RepositoryInterface
     public function config($key, $default = null)
     {
         return $this->app['config']->get('modules.' . $key, $default);
+    }
+
+    public function exists(string $name): bool
+    {
+        return (bool) $this->moduleEntity
+            ->newQuery()
+            ->where('name', $name)
+            ->count();
+    }
+
+    /**
+     * Delete a specific module.
+     * @param string $name
+     * @return bool
+     * @throws \Nwidart\Modules\Exceptions\ModuleNotFoundException
+     */
+    public function delete($name): bool
+    {
+        return $this->findOrFail($name)->delete();
     }
 
     private function convertToCollection(EloquentCollection $eloquentCollection): Collection

@@ -88,4 +88,30 @@ interface RepositoryInterface
      * @return \Illuminate\Filesystem\Filesystem
      */
     public function getFiles();
+
+    /**
+     * Get a specific config data from a module configuration file.
+     *
+     * @param $key
+     *
+     * @param mixed $default
+     * @return mixed
+     */
+    public function config($key, $default = null);
+
+    /**
+     * Determine whether the given module exist.
+     *
+     * @param $name
+     * @return bool
+     */
+    public function exists(string $name) : bool;
+
+    /**
+     * Delete a specific module.
+     * @param string $name
+     * @return bool
+     * @throws \Nwidart\Modules\Exceptions\ModuleNotFoundException
+     */
+    public function delete($name) : bool;
 }

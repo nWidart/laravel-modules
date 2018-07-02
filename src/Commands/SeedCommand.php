@@ -5,8 +5,8 @@ namespace Nwidart\Modules\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Contracts\ModuleInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use RuntimeException;
@@ -74,12 +74,12 @@ class SeedCommand extends Command
      *
      * @throws RuntimeException
      *
-     * @return Module
+     * @return ModuleInterface
      */
     public function getModuleByName($name)
     {
         $modules = $this->getModuleRepository();
-        if ($modules->has($name) === false) {
+        if ($modules->exists($name) === false) {
             throw new RuntimeException("Module [$name] does not exists.");
         }
 
