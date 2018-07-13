@@ -106,26 +106,11 @@ class ControllerMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @param string|array $controllerName
-     *
-     * @return array|string
-     */
-    protected function sanitizeControllerName($controllerName)
-    {
-        if (!\is_string($controllerName) || strpos($controllerName, '\\') === false) {
-            return $controllerName;
-        }
-        $start = strrpos($controllerName, '\\') + 1;
-
-        return substr($controllerName, $start);
-    }
-
-    /**
      * @return array|string
      */
     private function getControllerNameWithoutNamespace()
     {
-        return $this->sanitizeControllerName($this->getControllerName());
+        return class_basename($this->getControllerName());
     }
 
     public function getDefaultNamespace() : string
