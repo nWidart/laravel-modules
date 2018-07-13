@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 3.3.1 - 2018-07-13
+
 ### Changed
 
 - Added the ability to set a sub-namespace to controllers `module:make-controller Api\\TestController`
