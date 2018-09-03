@@ -63,7 +63,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return ['modules'];
+        return [FileRepository::class, 'modules'];
     }
 
     /**
