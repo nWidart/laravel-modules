@@ -44,10 +44,11 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
      */
     protected function registerServices()
     {
-        $this->app->singleton('modules', function ($app) {
+        $this->app->singleton(Repository::class, function ($app) {
             $path = $app['config']->get('modules.paths.modules');
 
             return new \Nwidart\Modules\Laravel\Repository($app, $path);
         });
+        $this->app->alias(Repository::class, 'modules');
     }
 }
