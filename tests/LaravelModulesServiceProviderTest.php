@@ -2,7 +2,7 @@
 
 namespace Nwidart\Modules\Tests;
 
-use Nwidart\Modules\Laravel\Contracts\RepositoryInterface;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 
 class LaravelModulesServiceProviderTest extends BaseTestCase
 {
