@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Changed
+
+- `module:seed` accepts a `--class` option
+
 ## 3.3.1 - 2018-07-13
 
 ### Changed
