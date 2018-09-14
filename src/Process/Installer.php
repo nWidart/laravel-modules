@@ -4,7 +4,7 @@ namespace Nwidart\Modules\Process;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use Nwidart\Modules\Repository;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Symfony\Component\Process\Process;
 
 class Installer
@@ -25,8 +25,7 @@ class Installer
 
     /**
      * The module repository instance.
-     *
-     * @var \Nwidart\Modules\Repository
+     * @var \Nwidart\Modules\Contracts\RepositoryInterface
      */
     protected $repository;
 
@@ -50,6 +49,14 @@ class Installer
      * @var int
      */
     protected $timeout = 3360;
+    /**
+     * @var null|string
+     */
+    private $type;
+    /**
+     * @var bool
+     */
+    private $tree;
 
     /**
      * The constructor.
@@ -83,12 +90,10 @@ class Installer
 
     /**
      * Set the module repository instance.
-     *
-     * @param \Nwidart\Modules\Repository $repository
-     *
+     * @param \Nwidart\Modules\Contracts\RepositoryInterface $repository
      * @return $this
      */
-    public function setRepository(Repository $repository)
+    public function setRepository(RepositoryInterface $repository)
     {
         $this->repository = $repository;
 

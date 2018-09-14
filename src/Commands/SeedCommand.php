@@ -5,8 +5,8 @@ namespace Nwidart\Modules\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Module;
-use Nwidart\Modules\Repository;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use RuntimeException;
@@ -57,14 +57,13 @@ class SeedCommand extends Command
 
     /**
      * @throws RuntimeException
-     *
-     * @return Repository
+     * @return RepositoryInterface
      */
-    public function getModuleRepository()
+    public function getModuleRepository(): RepositoryInterface
     {
         $modules = $this->laravel['modules'];
-        if (!$modules instanceof Repository) {
-            throw new RuntimeException("Module repository not found!");
+        if (!$modules instanceof RepositoryInterface) {
+            throw new RuntimeException('Module repository not found!');
         }
 
         return $modules;
@@ -123,9 +122,11 @@ class SeedCommand extends Command
      */
     protected function dbSeed($className)
     {
-        $params = [
-            '--class' => $className,
-        ];
+        if ($option = $this->option('class')) {
+            $params['--class'] = Str::finish(substr($className, 0, strrpos($className, '\\')), '\\') . $option;
+        } else {
+            $params = ['--class' => $className];
+        }
 
         if ($option = $this->option('database')) {
             $params['--database'] = $option;
@@ -160,10 +161,10 @@ class SeedCommand extends Command
      * Report the exception to the exception handler.
      *
      * @param  \Symfony\Component\Console\Output\OutputInterface  $output
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return void
      */
-    protected function renderException($output, \Exception $e)
+    protected function renderException($output, \Throwable $e)
     {
         $this->laravel[ExceptionHandler::class]->renderForConsole($output, $e);
     }
@@ -171,10 +172,10 @@ class SeedCommand extends Command
     /**
      * Report the exception to the exception handler.
      *
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return void
      */
-    protected function reportException(\Exception $e)
+    protected function reportException(\Throwable $e)
     {
         $this->laravel[ExceptionHandler::class]->report($e);
     }
@@ -199,6 +200,7 @@ class SeedCommand extends Command
     protected function getOptions()
     {
         return [
+            ['class', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder.'],
             ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to seed.'],
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
         ];

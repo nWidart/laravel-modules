@@ -47,7 +47,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->app->singleton('modules', function ($app) {
             $path = $app['config']->get('modules.paths.modules');
 
-            return new \Nwidart\Modules\Laravel\Repository($app, $path);
+            return new Laravel\LaravelFileRepository($app, $path);
         });
     }
 }

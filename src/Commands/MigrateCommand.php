@@ -25,7 +25,7 @@ class MigrateCommand extends Command
     protected $description = 'Migrate the migrations from the specified module or from all modules.';
 
     /**
-     * @var \Nwidart\Modules\Repository
+     * @var \Nwidart\Modules\Contracts\RepositoryInterface
      */
     protected $module;
 

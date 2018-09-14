@@ -25,7 +25,7 @@ class MigrateStatusCommand extends Command
     protected $description = 'Status for all module migrations';
 
     /**
-     * @var \Nwidart\Modules\Repository
+     * @var \Nwidart\Modules\Contracts\RepositoryInterface
      */
     protected $module;
 

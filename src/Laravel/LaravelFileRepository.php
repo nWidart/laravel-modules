@@ -2,10 +2,9 @@
 
 namespace Nwidart\Modules\Laravel;
 
-use Nwidart\Modules\Json;
-use Nwidart\Modules\Repository as BaseRepository;
+use Nwidart\Modules\FileRepository;
 
-class Repository extends BaseRepository
+class LaravelFileRepository extends FileRepository
 {
     /**
      * {@inheritdoc}

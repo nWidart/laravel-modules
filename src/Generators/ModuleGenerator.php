@@ -6,7 +6,7 @@ use Illuminate\Config\Repository as Config;
 use Illuminate\Console\Command as Console;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
-use Nwidart\Modules\Repository;
+use Nwidart\Modules\FileRepository;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 
@@ -43,7 +43,7 @@ class ModuleGenerator extends Generator
     /**
      * The pingpong module instance.
      *
-     * @var Module
+     * @var \Nwidart\Modules\Module
      */
     protected $module;
 
@@ -63,16 +63,15 @@ class ModuleGenerator extends Generator
 
     /**
      * The constructor.
-     *
      * @param $name
-     * @param Repository $module
+     * @param FileRepository $module
      * @param Config     $config
      * @param Filesystem $filesystem
      * @param Console    $console
      */
     public function __construct(
         $name,
-        Repository $module = null,
+        FileRepository $module = null,
         Config $config = null,
         Filesystem $filesystem = null,
         Console $console = null
@@ -181,9 +180,9 @@ class ModuleGenerator extends Generator
     }
 
     /**
-     * Get the pingpong module instance.
+     * Get the module instance.
      *
-     * @return Module
+     * @return \Nwidart\Modules\Module
      */
     public function getModule()
     {

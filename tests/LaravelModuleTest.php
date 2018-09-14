@@ -20,6 +20,18 @@ class ModuleTest extends BaseTestCase
         $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');
     }
 
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
+        symlink(__DIR__ . '/stubs/valid', __DIR__ . '/stubs/valid_symlink');
+    }
+
+    public static function tearDownAfterClass()
+    {
+        parent::tearDownAfterClass();
+        unlink(__DIR__ . '/stubs/valid_symlink');
+    }
+
     /** @test */
     public function it_gets_module_name()
     {
@@ -60,6 +72,18 @@ class ModuleTest extends BaseTestCase
     public function it_gets_module_path()
     {
         $this->assertEquals(__DIR__ . '/stubs/valid/Recipe', $this->module->getPath());
+    }
+
+    /** @test */
+    public function it_gets_module_path_with_symlink()
+    {
+        // symlink created in setUpBeforeClass
+
+        $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid_symlink/Recipe');
+
+        $this->assertEquals(__DIR__ . '/stubs/valid_symlink/Recipe', $this->module->getPath());
+
+        // symlink deleted in tearDownAfterClass
     }
 
     /** @test */

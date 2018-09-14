@@ -78,6 +78,16 @@ class ModuleMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_generates_webpack_file()
+    {
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $path = $this->modulePath . '/' . $this->app['modules']->config('stubs.files.webpack');
+
+        $this->assertMatchesSnapshot($this->finder->get($path));
+    }
+
+    /** @test */
     public function it_generates_module_resources()
     {
         $this->artisan('module:make', ['name' => ['Blog']]);

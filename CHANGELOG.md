@@ -4,6 +4,48 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 3.3.1 - 2018-07-13
+
+### Changed
+
+- Added the ability to set a sub-namespace to controllers `module:make-controller Api\\TestController`
+
+## 3.3.0 - 2018-06-21
+
+### Changed
+
+- `module:update` command has now the possibility to update all modules at once
+- Fixing commented code for Laravel Mix
+
+## 3.2.0 - 2018-04-16
+
+### Added
+
+- Added possibility to update all modules at once if any not specified (PR #523)
+
+### Changed
+
+- Mix: Fix css relative urls by changing the route folder (PR #521)
+- Mix: Prevents every build from deleting previous Mix config file (PR #521)
+
+## 3.1.0 - 2018-04-01
+
+### Added
+
+- Laravel mix configuration (https://nwidart.com/laravel-modules/v3/basic-usage/compiling-assets)
+
+### Changed
+
+- Allow symlinks in module path
+- Returns the parameter `--class` to the `SeedCommand`.
+- Generate folders recursively
+- Removing link that has become a 404
+- Fixed seed command exception typehint
+
+### Removed
+
+- Removed the optimize command on the `module:make-migration` command
+
 ## 3.0.1 - 2018-02-16
 
 ### Changed

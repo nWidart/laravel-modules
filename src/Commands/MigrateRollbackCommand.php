@@ -27,7 +27,7 @@ class MigrateRollbackCommand extends Command
     protected $description = 'Rollback the modules migrations.';
 
     /**
-     * @var \Nwidart\Modules\Repository
+     * @var \Nwidart\Modules\Contracts\RepositoryInterface
      */
     protected $module;
 
