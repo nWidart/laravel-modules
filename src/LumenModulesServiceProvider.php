@@ -42,10 +42,11 @@ class LumenModulesServiceProvider extends ModulesServiceProvider
      */
     protected function registerServices()
     {
-        $this->app->singleton('modules', function ($app) {
+        $this->app->singleton(Contracts\RepositoryInterface::class, function ($app) {
             $path = $app['config']->get('modules.paths.modules');
 
             return new Lumen\LumenFileRepository($app, $path);
         });
+        $this->app->alias(Contracts\RepositoryInterface::class, 'modules');
     }
 }
