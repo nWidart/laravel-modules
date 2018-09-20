@@ -4,6 +4,15 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Added
+
+- New way of handling routes by default using a RouteServiceProvider (instead of start.php)
+- Laravel 5.7 support
+
+### Changed
+
+### Removed
+
 ### Changed
 
 - `module:seed` accepts a `--class` option
