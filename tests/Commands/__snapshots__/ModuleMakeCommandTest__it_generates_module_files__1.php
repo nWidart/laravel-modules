@@ -9,9 +9,7 @@
         "Modules\\\\Blog\\\\Providers\\\\BlogServiceProvider"
     ],
     "aliases": {},
-    "files": [
-        "start.php"
-    ],
+    "files": [],
     "requires": []
 }
 ';

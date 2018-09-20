@@ -2,18 +2,11 @@
 
 namespace $NAMESPACE$;
 
-use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class $CLASS$ extends ServiceProvider
 {
-    /**
-     * The root namespace to assume when generating URLs to actions.
-     *
-     * @var string
-     */
-    protected $rootUrlNamespace = '$MODULE_NAMESPACE$\$MODULE$\Http\Controllers';
-
     /**
      * Called before routes are registered.
      *
@@ -23,18 +16,21 @@ class $CLASS$ extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->mapWebRoutes();
     }
 
     /**
-     * Define the routes for the application.
+     * Define the "web" routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
      *
      * @return void
      */
-    public function map(Router $router)
+    protected function mapWebRoutes()
     {
-        // if (!app()->routesAreCached()) {
-        //    require __DIR__ . '$ROUTES_PATH$';
-        // }
+        Route::prefix('$LOWER_NAME$')
+            ->middleware('web')
+            ->namespace('$MODULE_NAMESPACE$\$MODULE$\Http\Controllers')
+            ->group(__DIR__ . '/../Routes/web.php');
     }
 }

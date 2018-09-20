@@ -78,16 +78,6 @@ class ModuleMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_generates_start_php_file()
-    {
-        $this->artisan('module:make', ['name' => ['Blog']]);
-
-        $path = $this->modulePath . '/' . $this->app['modules']->config('stubs.files.start');
-
-        $this->assertMatchesSnapshot($this->finder->get($path));
-    }
-
-    /** @test */
     public function it_generates_webpack_file()
     {
         $this->artisan('module:make', ['name' => ['Blog']]);
@@ -111,6 +101,10 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($this->finder->get($path));
 
         $path = base_path('modules/Blog') . '/Database/Seeders/BlogDatabaseSeeder.php';
+        $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
+
+        $path = base_path('modules/Blog') . '/Providers/RouteServiceProvider.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
     }
