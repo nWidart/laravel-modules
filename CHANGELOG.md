@@ -11,6 +11,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ### Changed
 
+- Allow class resolution on short name and abstract
+
 ### Removed
 
 ### Changed
