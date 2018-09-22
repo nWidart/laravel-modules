@@ -68,11 +68,23 @@ class ModuleMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_generates_route_file()
+    public function it_generates_web_route_file()
     {
+        $files = $this->app['modules']->config('stubs.files');
         $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $path = $this->modulePath . '/' . $this->app['modules']->config('stubs.files.routes');
+        $path = $this->modulePath . '/' . $files['routes/web'];
+
+        $this->assertMatchesSnapshot($this->finder->get($path));
+    }
+
+    /** @test */
+    public function it_generates_api_route_file()
+    {
+        $files = $this->app['modules']->config('stubs.files');
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $path = $this->modulePath . '/' . $files['routes/api'];
 
         $this->assertMatchesSnapshot($this->finder->get($path));
     }
