@@ -1,3 +1,0 @@
-<?php
-
-Route::get('/', '$STUDLY_NAME$Controller@index');
