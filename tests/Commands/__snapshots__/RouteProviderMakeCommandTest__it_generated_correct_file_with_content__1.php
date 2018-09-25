@@ -8,6 +8,13 @@ use Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider as ServiceP
 class RouteServiceProvider extends ServiceProvider
 {
     /**
+     * The root namespace to assume when generating URLs to actions.
+     *
+     * @var string
+     */
+    protected $namespace = \'Modules\\Blog\\Http\\Controllers\';
+
+    /**
      * Called before routes are registered.
      *
      * Register any model bindings or pattern based filters.
@@ -16,6 +23,18 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        parent::boot();
+    }
+
+    /**
+     * Define the routes for the application.
+     *
+     * @return void
+     */
+    public function map()
+    {
+        $this->mapApiRoutes();
+
         $this->mapWebRoutes();
     }
 
@@ -28,10 +47,24 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::prefix(\'blog\')
-            ->middleware(\'web\')
-            ->namespace(\'Modules\\Blog\\Http\\Controllers\')
+        Route::middleware(\'web\')
+            ->namespace($this->namespace)
             ->group(__DIR__ . \'/../Routes/web.php\');
+    }
+
+    /**
+     * Define the "api" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function mapApiRoutes()
+    {
+        Route::prefix(\'api\')
+            ->middleware(\'api\')
+            ->namespace($this->namespace)
+            ->group(__DIR__ . \'/../Routes/api.php\');
     }
 }
 ';
