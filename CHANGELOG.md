@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 4.0.0 - 2018-09-30
+
 ### Added
 
 - New way of handling routes by default using a RouteServiceProvider (instead of start.php)
@@ -12,11 +14,6 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ### Changed
 
 - Allow class resolution on short name and abstract
-
-### Removed
-
-### Changed
-
 - `module:seed` accepts a `--class` option
 
 ## 3.3.1 - 2018-07-13
