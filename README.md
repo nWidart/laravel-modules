@@ -68,7 +68,7 @@ You'll find installation instructions and full documentation on [https://nwidart
 
 ## About Nicolas Widart
 
-Nicolas Widart is a freelance web developer specialising on the Laravel framework. View all my packages [on my website](https://nicolaswidart.com/projects).
+Nicolas Widart is a freelance web developer specialising on the Laravel framework. View all my packages [on my website](https://nwidart.com/), or visit [my website](https://nicolaswidart.com).
 
 
 ## License
