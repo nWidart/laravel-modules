@@ -26,6 +26,7 @@ return [
         'enabled' => false,
         'path' => base_path() . '/vendor/nwidart/laravel-modules/src/Commands/stubs',
         'files' => [
+            'controller-base' => 'Http/Controllers/Controller.php',
             'routes/web' => 'Routes/web.php',
             'routes/api' => 'Routes/api.php',
             'views/index' => 'Resources/views/index.blade.php',
@@ -38,6 +39,7 @@ return [
             'package' => 'package.json',
         ],
         'replacements' => [
+            'controller-base' => ['STUDLY_NAME'],
             'routes/web' => ['LOWER_NAME', 'STUDLY_NAME'],
             'routes/api' => ['LOWER_NAME'],
             'webpack' => ['LOWER_NAME'],

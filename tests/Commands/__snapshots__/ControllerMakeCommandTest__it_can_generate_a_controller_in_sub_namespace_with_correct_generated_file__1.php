@@ -4,7 +4,6 @@ namespace Modules\\Blog\\Http\\Controllers\\Api;
 
 use Illuminate\\Http\\Request;
 use Illuminate\\Http\\Response;
-use Illuminate\\Routing\\Controller;
 
 class MyController extends Controller
 {
