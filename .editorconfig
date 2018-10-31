@@ -1,0 +1,14 @@
+; This file is for unithyng the coding style for different editors and IDEs.
+
+root = true;
+
+[*]
+charset = utf_8
+indent_size = 4
+indent_style = space
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]
+trim_trailing_whitespace = false
