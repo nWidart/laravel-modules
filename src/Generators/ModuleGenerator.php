@@ -297,6 +297,11 @@ class ModuleGenerator extends Generator
     public function generateFolders()
     {
         foreach ($this->getFolders() as $key => $folder) {
+            if ($this->api === true) {
+                if (in_array($key, ['assets', 'views'])) {
+                    continue;
+                }
+            }
             $folder = GenerateConfigReader::read($key);
 
             if ($folder->generate() === false) {
