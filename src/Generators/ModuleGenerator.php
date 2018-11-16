@@ -62,6 +62,13 @@ class ModuleGenerator extends Generator
     protected $plain = false;
 
     /**
+     * Generate a api module.
+     *
+     * @var bool
+     */
+    protected $api = false;
+
+    /**
      * The constructor.
      * @param $name
      * @param FileRepository $module
@@ -238,6 +245,20 @@ class ModuleGenerator extends Generator
     }
 
     /**
+     * Set Api Flog.
+     *
+     * @param bool $api
+     *
+     * @return $this
+     */
+    public function setApi($api)
+    {
+        $this->api = $api;
+
+        return $this;
+    }
+
+    /**
      * Generate the module.
      */
     public function generate()
@@ -307,6 +328,12 @@ class ModuleGenerator extends Generator
     public function generateFiles()
     {
         foreach ($this->getFiles() as $stub => $file) {
+            if ($this->api === true) {
+                if (in_array($stub, ['routes/web', 'views/index', 'views/master', 'assets/js/app', 'assets/sass/app', 'webpack'])) {
+                    continue;
+                }
+            }
+
             $path = $this->module->getModulePath($this->getName()) . $file;
 
             if (!$this->filesystem->isDirectory($dir = dirname($path))) {
@@ -324,26 +351,85 @@ class ModuleGenerator extends Generator
      */
     public function generateResources()
     {
-        $this->console->call('module:make-seed', [
-            'name' => $this->getName(),
-            'module' => $this->getName(),
-            '--master' => true,
-        ]);
+        $this->console->call('module:make-seed', $this->getMakeSeedArguments());
 
-        $this->console->call('module:make-provider', [
+        $this->console->call('module:make-provider', $this->getMakeProviderArguments());
+
+        $this->console->call('module:route-provider', $this->getMakeRouteProviderArguments());
+
+        $this->console->call('module:make-controller', $this->getMakeControllerArguments());
+    }
+
+    /**
+     * get Make Route Provider Arguments
+     *
+     * @since 2018/11/16
+     * @return array
+     */
+    protected function getMakeRouteProviderArguments()
+    {
+        $arguments = [
+            'module' => $this->getName(),
+        ];
+        if ($this->api === true) {
+            $arguments['--api'] = true;
+        }
+
+        return $arguments;
+    }
+
+    /**
+     * get Make Provider Arguments
+     *
+     * @since 2018/11/16
+     * @return array
+     */
+    protected function getMakeProviderArguments()
+    {
+        $arguments = [
             'name' => $this->getName() . 'ServiceProvider',
             'module' => $this->getName(),
             '--master' => true,
-        ]);
+        ];
+        if ($this->api === true) {
+            $arguments['--api'] = true;
+        }
 
-        $this->console->call('module:route-provider', [
-            'module' => $this->getName(),
-        ]);
+        return $arguments;
+    }
 
-        $this->console->call('module:make-controller', [
+    /**
+     * get Make Controller Arguments
+     *
+     * @since 2018/11/16
+     * @return array
+     */
+    protected function getMakeControllerArguments()
+    {
+        $arguments = [
             'controller' => $this->getName() . 'Controller',
             'module' => $this->getName(),
-        ]);
+        ];
+        if ($this->api === true) {
+            $arguments['--plain'] = true;
+        }
+
+        return $arguments;
+    }
+
+    /**
+     * get Make Seed Arguments
+     *
+     * @since 2018/11/16
+     * @return array
+     */
+    protected function getMakeSeedArguments()
+    {
+        return  [
+           'name' => $this->getName(),
+           'module' => $this->getName(),
+           '--master' => true,
+       ];
     }
 
     /**

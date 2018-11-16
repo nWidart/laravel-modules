@@ -62,6 +62,7 @@ class ProviderMakeCommand extends GeneratorCommand
     {
         return [
             ['master', null, InputOption::VALUE_NONE, 'Indicates the master service provider', null],
+            ['api', null, InputOption::VALUE_NONE, 'Indicates the api service provider', null],
         ];
     }
 
@@ -70,7 +71,10 @@ class ProviderMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        $stub = $this->option('master') ? 'scaffold/provider' : 'provider';
+        $stub = 'provider';
+        if ($this->option('master')) {
+            $stub = $this->option('api') ? 'scaffold/api-provider' : 'scaffold/provider';
+        }
 
         /** @var Module $module */
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());

@@ -3,7 +3,6 @@
 namespace Nwidart\Modules\Tests;
 
 use Nwidart\Modules\Json;
-use Nwidart\Modules\Module;
 
 class LumenModuleTest extends BaseTestCase
 {

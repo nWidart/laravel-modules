@@ -38,6 +38,7 @@ class ModuleMakeCommand extends Command
                 ->setConsole($this)
                 ->setForce($this->option('force'))
                 ->setPlain($this->option('plain'))
+                ->setApi($this->option('api'))
                 ->generate();
         }
     }
@@ -59,6 +60,7 @@ class ModuleMakeCommand extends Command
         return [
             ['plain', 'p', InputOption::VALUE_NONE, 'Generate a plain module (without some resources).'],
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when the module already exists.'],
+            ['api', null, InputOption::VALUE_NONE, 'Generate a api module (without views/resources)'],
         ];
     }
 }

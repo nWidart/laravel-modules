@@ -4,3 +4,5 @@ composer.lock
 /fixture/vendor
 build
 .php_cs.cache
+.idea
+.DS_Store
