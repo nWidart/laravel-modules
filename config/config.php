@@ -106,6 +106,7 @@ return [
             'controller' => ['path' => 'Http/Controllers', 'generate' => true],
             'filter' => ['path' => 'Http/Middleware', 'generate' => true],
             'request' => ['path' => 'Http/Requests', 'generate' => true],
+            'transformer' => ['path' => 'Http/Transformers', 'generate' => true],
             'provider' => ['path' => 'Providers', 'generate' => true],
             'assets' => ['path' => 'Resources/assets', 'generate' => true],
             'lang' => ['path' => 'Resources/lang', 'generate' => true],
@@ -121,7 +122,6 @@ return [
             'notifications' => ['path' => 'Notifications', 'generate' => false],
             'resource' => ['path' => 'Resources', 'generate' => false],
             'service' => ['path' => 'Services', 'generate' => true],
-            'transformer' => ['path' => 'Transformers', 'generate' => true],
         ],
     ],
     /*
