@@ -38,6 +38,7 @@ use Nwidart\Modules\Commands\RuleMakeCommand;
 use Nwidart\Modules\Commands\SeedCommand;
 use Nwidart\Modules\Commands\SeedMakeCommand;
 use Nwidart\Modules\Commands\SetupCommand;
+use Nwidart\Modules\Commands\TestCommand;
 use Nwidart\Modules\Commands\TestMakeCommand;
 use Nwidart\Modules\Commands\UnUseCommand;
 use Nwidart\Modules\Commands\UpdateCommand;
@@ -92,6 +93,7 @@ class ConsoleServiceProvider extends ServiceProvider
         UseCommand::class,
         ResourceMakeCommand::class,
         TestMakeCommand::class,
+        TestCommand::class,
     ];
 
     /**
