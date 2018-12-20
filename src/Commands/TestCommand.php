@@ -77,9 +77,9 @@ class TestCommand extends Command
 
 	        $this->info("Running tests for module {$module}:");
 	        $process = proc_open("{$php} {$phpunit} -c {$phpunitxml} {$directory}", $descriptorspec, $pipes);
-        }
-        if (is_resource($process)) {
-	        proc_close($process);
+            if (is_resource($process)) {
+                proc_close($process);
+            }
         }
     }
 
