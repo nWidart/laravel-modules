@@ -2,6 +2,8 @@
 
 namespace Nwidart\Modules\Traits;
 
+use Nwidart\Modules\Module;
+
 trait ModuleCommandTrait
 {
     /**
@@ -11,10 +13,20 @@ trait ModuleCommandTrait
      */
     public function getModuleName()
     {
-        $module = $this->argument('module') ?: app('modules')->getUsedNow();
-
-        $module = app('modules')->findOrFail($module);
+        $module = $this->getModule();
 
         return $module->getStudlyName();
+    }
+
+    /**
+     * Get the module by argument or used now
+     *
+     * @return mixed|Module
+     */
+    public function getModule()
+    {
+        $moduleName = $this->argument('module') ?: app('modules')->getUsedNow();
+
+        return app('modules')->findOrFail($moduleName);
     }
 }

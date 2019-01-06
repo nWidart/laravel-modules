@@ -242,6 +242,20 @@ abstract class Module extends ServiceProvider
     }
 
     /**
+     * Set a specific data from composer.json file by given the key.
+     *
+     * @param $key
+     * @param $value
+     *
+     * @return int|bool
+     */
+    public function setComposerAttr($key, $value)
+    {
+        $this->json('composer.json')->set($key, $value)->save();
+        return true;
+    }
+
+    /**
      * Register the module.
      */
     public function register()
