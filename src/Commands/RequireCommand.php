@@ -3,8 +3,12 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Json;
+use Nwidart\Modules\Process\Installer;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Process\Process;
 
 class RequireCommand extends Command
 {
@@ -23,13 +27,26 @@ class RequireCommand extends Command
      * @var string
      */
     protected $description = 'add dependencies for the specified module.';
+    /**
+     * @var array
+     */
+    protected $oldScripts = null;
+
+    /**
+     * @var Process
+     */
+    protected $process = null;
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $module = $this->getModule();
+        $this->oldScripts = json_decode(file_get_contents(base_path('composer.json')), true)['scripts'];
+        $this->runRequire();
+        if ($this->process->isSuccessful()) {
+            $this->updateModuleComposer();
+        }
     }
 
     /**
@@ -41,6 +58,74 @@ class RequireCommand extends Command
     {
         return [
             ['module', InputArgument::OPTIONAL, 'The name of module will be updated.'],
+            ['packageName', InputArgument::REQUIRED, 'The package name will be installed.'],
         ];
+    }
+
+    protected function getOptions()
+    {
+        return [
+            ['dev', 'd', InputOption::VALUE_OPTIONAL, 'If install package to require-dev'],
+        ];
+    }
+
+    private function runRequire()
+    {
+        $installer = new Installer($this->argument('packageName'));
+        if ($this->option('dev')) {
+            $installer->setRequireDev(true);
+        }
+        $this->process = $installer->run();
+    }
+
+    private function updateModuleComposer()
+    {
+        $composer = json_decode(file_get_contents(base_path('composer.json')), true);
+        $additionalScripts = $this->getAdditional($composer);
+        $require_key = $this->option('dev') ? 'require-dev' : 'require';
+        [$newPackage, $newPackageVersion] = $this->getNewPackageInfo($composer, $require_key);
+        $moduleComposer = $this->getModule()->json('composer.json');
+        $this->setComposer($moduleComposer, $require_key, $newPackage, $newPackageVersion, $additionalScripts);
+        $moduleComposer->save();
+    }
+
+    /**
+     * @param array $composer
+     * @return array
+     */
+    private function getAdditional($composer)
+    {
+        $newScripts = $composer['scripts'];
+        return array_diff($this->oldScripts, $newScripts);
+    }
+
+    /**
+     * @param array $composer
+     * @param string $require_key
+     * @return array
+     */
+    private function getNewPackageInfo($composer, $require_key)
+    {
+        $newPackage = $this->argument('packageName');
+        $newPackageVersion = $composer[$require_key][$this->argument('packageName')];
+
+        return [$newPackage, $newPackageVersion];
+    }
+
+    /**
+     * @param Json $moduleComposer
+     * @param string $require_key
+     * @param string $newPackage
+     * @param string $newPackageVersion
+     * @param array $additionalScripts
+     */
+    private function setComposer($moduleComposer, $require_key, $newPackage, $newPackageVersion, $additionalScripts)
+    {
+        $packageRequire = $moduleComposer->get($require_key);
+        $packageRequire = array_merge($packageRequire, [$newPackage => $newPackageVersion]);
+        $moduleComposer->set($require_key, $packageRequire);
+        $packageScripts = $moduleComposer->get('scripts');
+        $packageScripts = array_merge($packageScripts, $additionalScripts);
+        $moduleComposer->set('scripts', $packageScripts);
     }
 }

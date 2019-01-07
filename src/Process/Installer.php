@@ -58,6 +58,8 @@ class Installer
      */
     private $tree;
 
+    protected $requireDev = false;
+
     /**
      * The constructor.
      *
@@ -131,6 +133,7 @@ class Installer
     /**
      * Run the installation process.
      *
+     * @param bool $dev
      * @return \Symfony\Component\Process\Process
      */
     public function run()
@@ -149,8 +152,19 @@ class Installer
     }
 
     /**
+     * @param bool $dev
+     * @return Installer
+     */
+    public function setRequireDev($dev)
+    {
+        $this->requireDev = $dev;
+        return $this;
+    }
+
+    /**
      * Get process instance.
      *
+     * @param bool $dev
      * @return \Symfony\Component\Process\Process
      */
     public function getProcess()
@@ -163,7 +177,7 @@ class Installer
             return $this->installViaGit();
         }
 
-        return $this->installViaComposer();
+        return $this->installViaComposer($this->requireDev);
     }
 
     /**
@@ -292,14 +306,20 @@ class Installer
     /**
      * Install the module via composer.
      *
+     * @param bool $dev
      * @return \Symfony\Component\Process\Process
      */
-    public function installViaComposer()
+    public function installViaComposer($dev = false)
     {
-        return new Process(sprintf(
+        $params = [
             'cd %s && composer require %s',
             base_path(),
-            $this->getPackageName()
-        ));
+            $this->getPackageName(),
+        ];
+        if ($dev) {
+            $params[0] = 'cd %s && composer require %s %s';
+            array_splice($params, 2, 0, '--dev');
+        }
+        return new Process(sprintf(...$params));
     }
 }
