@@ -24,6 +24,13 @@ class RequireCommandTest extends BaseTestCase
      */
     protected $json = null;
 
+    public function __construct(?string $name = null, array $data = [], string $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+        $this->runTestInSeparateProcess = true;
+        $this->setPreserveGlobalState(false);
+    }
+
     public function testRequire()
     {
         $command = $this->mockCommand(false);
@@ -91,7 +98,7 @@ class RequireCommandTest extends BaseTestCase
         $process->shouldReceive('isSuccessful')->andReturn(true);
         $installer->shouldReceive('isRequireDev')->andReturn($requireDev);
         if ($requireDev) {
-            $installer->shouldHaveReceived('setRequireDev');
+            $installer->shouldReceive('setRequireDev');
         }
         $installer->shouldReceive('run')->andReturn($process);
     }
