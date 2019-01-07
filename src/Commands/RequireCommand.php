@@ -42,11 +42,22 @@ class RequireCommand extends Command
      */
     public function handle()
     {
-        $this->oldScripts = json_decode(file_get_contents(base_path('composer.json')), true)['scripts'];
+        $this->oldScripts = $this->getRootComposer()['scripts'];
+        $this->info('installing package...');
         $this->runRequire();
         if ($this->process->isSuccessful()) {
+            $this->info('package install success');
+            $this->info('updating module composer....');
             $this->updateModuleComposer();
+            $this->info('updated module composer');
+        } else {
+            $this->warn('package install failed');
         }
+    }
+
+    protected function getRootComposer()
+    {
+        return json_decode(file_get_contents(base_path('composer.json')), true);
     }
 
     /**
@@ -57,8 +68,8 @@ class RequireCommand extends Command
     protected function getArguments()
     {
         return [
-            ['module', InputArgument::OPTIONAL, 'The name of module will be updated.'],
             ['packageName', InputArgument::REQUIRED, 'The package name will be installed.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module will be updated.'],
         ];
     }
 
@@ -80,7 +91,7 @@ class RequireCommand extends Command
 
     private function updateModuleComposer()
     {
-        $composer = json_decode(file_get_contents(base_path('composer.json')), true);
+        $composer = $this->getRootComposer();
         $additionalScripts = $this->getAdditional($composer);
         $require_key = $this->option('dev') ? 'require-dev' : 'require';
         [$newPackage, $newPackageVersion] = $this->getNewPackageInfo($composer, $require_key);
@@ -96,7 +107,7 @@ class RequireCommand extends Command
     private function getAdditional($composer)
     {
         $newScripts = $composer['scripts'];
-        return array_diff($this->oldScripts, $newScripts);
+        return array_diff($newScripts, $this->oldScripts);
     }
 
     /**
@@ -121,10 +132,10 @@ class RequireCommand extends Command
      */
     private function setComposer($moduleComposer, $require_key, $newPackage, $newPackageVersion, $additionalScripts)
     {
-        $packageRequire = $moduleComposer->get($require_key);
+        $packageRequire = $moduleComposer->get($require_key) ?? [];
         $packageRequire = array_merge($packageRequire, [$newPackage => $newPackageVersion]);
         $moduleComposer->set($require_key, $packageRequire);
-        $packageScripts = $moduleComposer->get('scripts');
+        $packageScripts = $moduleComposer->get('scripts') ?? [];
         $packageScripts = array_merge($packageScripts, $additionalScripts);
         $moduleComposer->set('scripts', $packageScripts);
     }

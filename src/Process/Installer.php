@@ -161,6 +161,10 @@ class Installer
         return $this;
     }
 
+    protected function isRequireDev()
+    {
+        return $this->requireDev;
+    }
     /**
      * Get process instance.
      *
@@ -177,7 +181,7 @@ class Installer
             return $this->installViaGit();
         }
 
-        return $this->installViaComposer($this->requireDev);
+        return $this->installViaComposer($this->isRequireDev());
     }
 
     /**
