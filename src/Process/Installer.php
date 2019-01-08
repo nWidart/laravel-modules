@@ -267,9 +267,11 @@ class Installer
     {
         if (is_null($this->version)) {
             return $this->name . ':dev-master';
+        } elseif (!$this->version) {
+            return $this->name;
+        } else {
+            return $this->name . ':' . $this->version;
         }
-
-        return $this->name . ':' . $this->version;
     }
 
     /**
