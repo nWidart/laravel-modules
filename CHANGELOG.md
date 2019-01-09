@@ -7,6 +7,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ### Changed
 
 - Updated to laravel mix 4
+- Add `--api` argument to `module:make-controller` command
 
 ## 4.0.0 - 2018-09-30
 
