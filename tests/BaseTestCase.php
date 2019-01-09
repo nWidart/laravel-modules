@@ -11,7 +11,8 @@ abstract class BaseTestCase extends OrchestraTestCase
     {
         parent::setUp();
 
-        $this->withoutMockingConsoleOutput();
+        if (method_exists($this, 'withoutMockingConsoleOutput'))
+            $this->withoutMockingConsoleOutput();
         // $this->setUpDatabase();
     }
 

@@ -1,4 +1,4 @@
-<?php return 'const { mix } = require(\'laravel-mix\');
+<?php return 'const mix = require(\'laravel-mix\');
 require(\'laravel-mix-merge-manifest\');
 
 mix.setPublicPath(\'../../public\').mergeManifest();
