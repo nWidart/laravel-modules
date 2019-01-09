@@ -1,6 +1,6 @@
 <?php return '<?php
 
-namespace Modules\\Blog\\Http\\Controllers\\Api;
+namespace Modules\\Blog\\Http\\Controllers;
 
 use Illuminate\\Http\\Request;
 use Illuminate\\Http\\Response;
@@ -14,16 +14,7 @@ class MyController extends Controller
      */
     public function index()
     {
-        return view(\'blog::index\');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     * @return Response
-     */
-    public function create()
-    {
-        return view(\'blog::create\');
+        //
     }
 
     /**
@@ -43,17 +34,7 @@ class MyController extends Controller
      */
     public function show($id)
     {
-        return view(\'blog::show\');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Response
-     */
-    public function edit($id)
-    {
-        return view(\'blog::edit\');
+        //
     }
 
     /**

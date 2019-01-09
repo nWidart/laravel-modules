@@ -82,6 +82,20 @@ class ControllerMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_generates_an_api_controller()
+    {
+        $this->artisan('module:make-controller', [
+            'controller' => 'MyController',
+            'module' => 'Blog',
+            '--api' => true,
+        ]);
+
+        $file = $this->finder->get($this->modulePath . '/Http/Controllers/MyController.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
+
+    /** @test */
     public function it_can_change_the_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.controller.path', 'Controllers');

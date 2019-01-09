@@ -88,6 +88,7 @@ class ControllerMakeCommand extends GeneratorCommand
     {
         return [
             ['plain', 'p', InputOption::VALUE_NONE, 'Generate a plain controller', null],
+            ['api', null, InputOption::VALUE_NONE, 'Exclude the create and edit methods from the controller.'],
         ];
     }
 
@@ -119,15 +120,19 @@ class ControllerMakeCommand extends GeneratorCommand
     }
 
     /**
-     * Get the stub file name based on the plain option
+     * Get the stub file name based on the options
      * @return string
      */
     private function getStubName()
     {
         if ($this->option('plain') === true) {
-            return '/controller-plain.stub';
+            $stub = '/controller-plain.stub';
+        } elseif ($this->option('api') === true) {
+            $stub = '/controller-api.stub';
+        } else {
+            $stub = '/controller.stub';
         }
 
-        return '/controller.stub';
+        return $stub;
     }
 }
