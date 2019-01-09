@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Changed
+
+- Updated to laravel mix 4
+
 ## 4.0.0 - 2018-09-30
 
 ### Added
