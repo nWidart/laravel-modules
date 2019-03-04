@@ -170,7 +170,7 @@ class SchemaParser implements Arrayable
      */
     protected function addRelationColumn($key, $field, $column)
     {
-        $relatedColumn = snake_case(class_basename($field)) . '_id';
+        $relatedColumn = Str::snake(class_basename($field)) . '_id';
 
         $method = 'integer';
 
