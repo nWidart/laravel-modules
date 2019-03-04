@@ -4,6 +4,18 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Added
+
+- Laravel 5.8 support
+
+### Changed
+
+- Deprecated string and array methods have been replaced
+
+### Removed
+
+- **PHP 7.1 support** 
+
 ## 4.1.0 - 2019-03-04
 
 ### Changed
