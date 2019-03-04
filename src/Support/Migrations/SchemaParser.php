@@ -3,6 +3,8 @@
 namespace Nwidart\Modules\Support\Migrations;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class SchemaParser implements Arrayable
 {
@@ -168,7 +170,7 @@ class SchemaParser implements Arrayable
      */
     protected function addRelationColumn($key, $field, $column)
     {
-        $relatedColumn = snake_case(class_basename($field)) . '_id';
+        $relatedColumn = Str::snake(class_basename($field)) . '_id';
 
         $method = 'integer';
 
@@ -194,7 +196,7 @@ class SchemaParser implements Arrayable
             return '->' . $field . "('" . $column . "')";
         }
 
-        if (str_contains($field, '(')) {
+        if (Str::contains($field, '(')) {
             return '->' . $field;
         }
 
@@ -228,7 +230,7 @@ class SchemaParser implements Arrayable
      */
     public function getColumn($schema)
     {
-        return array_get(explode(':', $schema), 0);
+        return Arr::get(explode(':', $schema), 0);
     }
 
     /**

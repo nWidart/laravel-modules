@@ -94,7 +94,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
         }
 
         $paths = array_map(function ($path) {
-            return ends_with($path, '/*') ? $path : str_finish($path, '/*');
+            return Str::endsWith($path, '/*') ? $path : Str::finish($path, '/*');
         }, $paths);
 
         return $paths;
@@ -114,6 +114,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      * Get & scan all modules.
      *
      * @return array
+     * @throws \Exception
      */
     public function scan()
     {
@@ -517,7 +518,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function asset($asset) : string
     {
-        if (str_contains($asset, ':') === false) {
+        if (Str::contains($asset, ':') === false) {
             throw InvalidAssetPath::missingModuleName($asset);
         }
         list($name, $url) = explode(':', $asset);

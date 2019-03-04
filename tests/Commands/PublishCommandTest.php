@@ -15,7 +15,7 @@ class PublishCommandTest extends BaseTestCase
      */
     private $modulePath;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
@@ -24,7 +24,7 @@ class PublishCommandTest extends BaseTestCase
         $this->finder->put($this->modulePath . '/Assets/script.js', 'assetfile');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->finder->deleteDirectory($this->modulePath);
         parent::tearDown();

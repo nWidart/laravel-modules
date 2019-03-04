@@ -3,6 +3,7 @@
 namespace Nwidart\Modules;
 
 use Illuminate\Container\Container;
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
@@ -210,7 +211,7 @@ abstract class Module extends ServiceProvider
             $file = 'module.json';
         }
 
-        return array_get($this->moduleJson, $file, function () use ($file) {
+        return Arr::get($this->moduleJson, $file, function () use ($file) {
             return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->app['files']);
         });
     }

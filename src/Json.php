@@ -31,8 +31,10 @@ class Json
     /**
      * The constructor.
      *
-     * @param mixed                             $path
+     * @param mixed $path
      * @param \Illuminate\Filesystem\Filesystem $filesystem
+     *
+     * @throws \Exception
      */
     public function __construct($path, Filesystem $filesystem = null)
     {
@@ -92,10 +94,11 @@ class Json
     /**
      * Make new instance.
      *
-     * @param string                            $path
+     * @param string $path
      * @param \Illuminate\Filesystem\Filesystem $filesystem
      *
      * @return static
+     * @throws \Exception
      */
     public static function make($path, Filesystem $filesystem = null)
     {
@@ -106,6 +109,7 @@ class Json
      * Get file content.
      *
      * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function getContents()
     {
@@ -232,6 +236,7 @@ class Json
      * Handle call to __toString method.
      *
      * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function __toString()
     {

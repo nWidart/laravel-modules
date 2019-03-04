@@ -18,7 +18,7 @@ abstract class MigrateCommandTest extends BaseTestCase
      */
     private $finder;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->repository = new LaravelFileRepository($this->app);

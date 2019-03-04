@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -45,7 +46,7 @@ class PublishConfigurationCommand extends Command
     private function getServiceProviderForModule($module)
     {
         $namespace = $this->laravel['config']->get('modules.namespace');
-        $studlyName = studly_case($module);
+        $studlyName = Str::studly($module);
 
         return "$namespace\\$studlyName\\Providers\\{$studlyName}ServiceProvider";
     }

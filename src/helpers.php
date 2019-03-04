@@ -26,8 +26,10 @@ if (! function_exists('public_path')) {
     /**
      * Get the path to the public folder.
      *
-     * @param  string  $path
+     * @param  string $path
+     *
      * @return string
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     function public_path($path = '')
     {
