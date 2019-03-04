@@ -4,3 +4,4 @@ composer.lock
 /fixture/vendor
 build
 .php_cs.cache
+.phpunit.result.cache
