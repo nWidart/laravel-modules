@@ -18,14 +18,14 @@ class ModuleMakeCommandTest extends BaseTestCase
      */
     private $modulePath;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->finder->deleteDirectory($this->modulePath);
         if ($this->finder->isDirectory(base_path('modules/ModuleName'))) {

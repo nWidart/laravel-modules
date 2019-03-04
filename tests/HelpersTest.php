@@ -13,7 +13,7 @@ class HelpersTest extends BaseTestCase
      */
     private $modulePath;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
@@ -21,7 +21,7 @@ class HelpersTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['Blog']]);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->finder->deleteDirectory($this->modulePath);
         parent::tearDown();

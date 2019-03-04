@@ -16,7 +16,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
      */
     private $repository;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->repository = new LaravelFileRepository($this->app);

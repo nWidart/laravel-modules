@@ -12,7 +12,7 @@ class LumenModuleTest extends BaseTestCase
      */
     private $module;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->module = new LumenTestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');
