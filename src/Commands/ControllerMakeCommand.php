@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Illuminate\Support\Str;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -97,7 +98,7 @@ class ControllerMakeCommand extends GeneratorCommand
      */
     protected function getControllerName()
     {
-        $controller = studly_case($this->argument('controller'));
+        $controller = Str::studly($this->argument('controller'));
 
         if (str_contains(strtolower($controller), 'controller') === false) {
             $controller .= 'Controller';
