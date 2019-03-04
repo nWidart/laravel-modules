@@ -4,10 +4,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 4.1.0 - 2019-03-04
+
 ### Changed
 
 - Updated to laravel mix 4
 - Add `--api` argument to `module:make-controller` command
+- Seeding modules outside out `Modules` namespace
 
 ## 4.0.0 - 2018-09-30
 
