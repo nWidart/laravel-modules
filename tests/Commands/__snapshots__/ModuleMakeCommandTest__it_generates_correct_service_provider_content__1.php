@@ -7,12 +7,6 @@ use Illuminate\\Database\\Eloquent\\Factory;
 
 class BlogServiceProvider extends ServiceProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
 
     /**
      * Boot the application events.
