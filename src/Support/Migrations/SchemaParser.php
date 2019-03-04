@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Support\Migrations;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Str;
 
 class SchemaParser implements Arrayable
 {
@@ -194,7 +195,7 @@ class SchemaParser implements Arrayable
             return '->' . $field . "('" . $column . "')";
         }
 
-        if (str_contains($field, '(')) {
+        if (Str::contains($field, '(')) {
             return '->' . $field;
         }
 

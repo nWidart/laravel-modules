@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -210,7 +211,7 @@ class ModuleMakeCommandTest extends BaseTestCase
         $notExpected = 'Module [Blog] already exist!
 ';
         $this->assertNotEquals($notExpected, $output);
-        $this->assertTrue(str_contains($output, 'Module [Blog] created successfully.'));
+        $this->assertTrue(Str::contains($output, 'Module [Blog] created successfully.'));
     }
 
     /** @test */

@@ -517,7 +517,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function asset($asset) : string
     {
-        if (str_contains($asset, ':') === false) {
+        if (Str::contains($asset, ':') === false) {
             throw InvalidAssetPath::missingModuleName($asset);
         }
         list($name, $url) = explode(':', $asset);

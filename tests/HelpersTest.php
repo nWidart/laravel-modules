@@ -2,6 +2,8 @@
 
 namespace Nwidart\Modules\Tests;
 
+use Illuminate\Support\Str;
+
 class HelpersTest extends BaseTestCase
 {
     /**
@@ -30,6 +32,6 @@ class HelpersTest extends BaseTestCase
     /** @test */
     public function it_finds_the_module_path()
     {
-        $this->assertTrue(str_contains(module_path('Blog'), 'modules/Blog'));
+        $this->assertTrue(Str::contains(module_path('Blog'), 'modules/Blog'));
     }
 }
