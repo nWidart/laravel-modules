@@ -45,7 +45,6 @@ use Nwidart\Modules\Commands\UseCommand;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
-    protected $defer = false;
 
     /**
      * The available commands
