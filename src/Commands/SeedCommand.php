@@ -109,10 +109,10 @@ class SeedCommand extends Command
             } else {
                 //look at other namespaces
                 $classes = $this->getSeederNames($name);
-                foreach($classes as $class) {
+                foreach ($classes as $class) {
                     if (class_exists($class)) {
                         $seeders[] = $class;
-                    } 
+                    }
                 }
             }
         }
@@ -164,7 +164,7 @@ class SeedCommand extends Command
 
         return $namespace . '\\' . $name . '\\' . $seederPath . '\\' . $name . 'DatabaseSeeder';
     }
-    
+
     /**
      * Get master database seeder name for the specified module under a different namespace than Modules.
      *
@@ -180,9 +180,9 @@ class SeedCommand extends Command
         $seederPath = str_replace('/', '\\', $seederPath->getPath());
 
         $foundModules = [];
-        foreach($this->laravel['modules']->config('scan.paths') as $path) {
+        foreach ($this->laravel['modules']->config('scan.paths') as $path) {
             $namespace = array_slice(explode('/', $path), -1)[0];
-            $foundModules[] = $namespace. '\\' . $name . '\\' . $seederPath . '\\' . $name . 'DatabaseSeeder';
+            $foundModules[] = $namespace . '\\' . $name . '\\' . $seederPath . '\\' . $name . 'DatabaseSeeder';
         }
 
         return $foundModules;

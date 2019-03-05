@@ -5,7 +5,6 @@ namespace Nwidart\Modules\Tests;
 use Modules\Recipe\Providers\DeferredServiceProvider;
 use Modules\Recipe\Providers\RecipeServiceProvider;
 use Nwidart\Modules\Json;
-use Nwidart\Modules\Module;
 
 class ModuleTest extends BaseTestCase
 {
