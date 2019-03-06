@@ -356,6 +356,7 @@ abstract class Module extends ServiceProvider
         $this->fireEvent('disabling');
 
         $this->setActive(0);
+        $this->flushCache();
 
         $this->fireEvent('disabled');
     }
@@ -368,6 +369,7 @@ abstract class Module extends ServiceProvider
         $this->fireEvent('enabling');
 
         $this->setActive(1);
+        $this->flushCache();
 
         $this->fireEvent('enabled');
     }
@@ -416,5 +418,12 @@ abstract class Module extends ServiceProvider
         return config('modules.register.files', 'register') === 'boot' &&
             // force register method if option == boot && app is AsgardCms
             !class_exists('\Modules\Core\Foundation\AsgardCms');
+    }
+
+    private function flushCache(): void
+    {
+        if (config('modules.cache.enabled')) {
+            $this->app['cache']->store()->flush();
+        }
     }
 }
