@@ -11,6 +11,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ### Changed
 
 - Deprecated string and array methods have been replaced
+- Fixed caching not being cleared after disabling and enabling modules
 
 ### Removed
 
