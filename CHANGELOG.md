@@ -12,6 +12,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 - Deprecated string and array methods have been replaced
 - Fixed caching not being cleared after disabling and enabling modules
+- Update Route Provider stub to not affect the root namespace of the URL generator (#727)
 
 ### Removed
 
