@@ -47,9 +47,10 @@ abstract class GeneratorCommand extends Command
 
             $this->info("Created : {$path}");
         } catch (FileAlreadyExistException $e) {
-            $this->confirm("File : {$path} already exists. \n Would you like to overwrite it?");
-            unlink($path);
-            $this->handle();
+            if($this->confirm("File : {$path} already exists. \n Would you like to overwrite it?")){
+                unlink($path);
+                $this->handle();
+            }
         }
     }
 
