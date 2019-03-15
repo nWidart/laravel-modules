@@ -46,7 +46,7 @@ class SeedCommand extends Command
                 array_walk($modules, [$this, 'moduleSeed']);
                 $this->info('All modules seeded.');
             }
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             $this->reportException($e);
 
             $this->renderException($this->getOutput(), $e);
@@ -203,10 +203,10 @@ class SeedCommand extends Command
     /**
      * Report the exception to the exception handler.
      *
-     * @param  \Throwable  $e
+     * @param  \Exception  $e
      * @return void
      */
-    protected function reportException(\Throwable $e)
+    protected function reportException(\Exception $e)
     {
         $this->laravel[ExceptionHandler::class]->report($e);
     }
