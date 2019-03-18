@@ -24,7 +24,7 @@ class DropPostsTable extends Migration
     public function down()
     {
         Schema::create(\'posts\', function (Blueprint $table) {
-            $table->increments(\'id\');
+            $table->bigIncrements(\'id\');
 
             $table->timestamps();
         });
