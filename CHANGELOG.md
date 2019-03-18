@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 5.0.0 - 2019-03-18
+
 ### Added
 
 - Laravel 5.8 support
