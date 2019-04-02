@@ -46,7 +46,14 @@ class SeedCommand extends Command
                 array_walk($modules, [$this, 'moduleSeed']);
                 $this->info('All modules seeded.');
             }
-        } catch (\Throwable $e) {
+        } catch (\Error $e) {
+            $e = new \ErrorException($e->getMessage(), $e->getCode(), 1,  $e->getFile(), $e->getLine(), $e);
+            $this->reportException($e);
+
+            $this->renderException($this->getOutput(), $e);
+
+            return 1;
+        } catch (\Exception $e) {
             $this->reportException($e);
 
             $this->renderException($this->getOutput(), $e);
@@ -192,10 +199,10 @@ class SeedCommand extends Command
      * Report the exception to the exception handler.
      *
      * @param  \Symfony\Component\Console\Output\OutputInterface  $output
-     * @param  \Throwable  $e
+     * @param  \Exception  $e
      * @return void
      */
-    protected function renderException($output, \Throwable $e)
+    protected function renderException($output, \Exception $e)
     {
         $this->laravel[ExceptionHandler::class]->renderForConsole($output, $e);
     }
@@ -203,10 +210,10 @@ class SeedCommand extends Command
     /**
      * Report the exception to the exception handler.
      *
-     * @param  \Throwable  $e
+     * @param  \Exception  $e
      * @return void
      */
-    protected function reportException(\Throwable $e)
+    protected function reportException(\Exception $e)
     {
         $this->laravel[ExceptionHandler::class]->report($e);
     }
