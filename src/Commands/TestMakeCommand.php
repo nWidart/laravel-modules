@@ -19,10 +19,10 @@ class TestMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace() : string
     {
-        if ($this->option('unit')) {
-            return $this->laravel['modules']->config('paths.generator.test-unit.path', 'Tests/Unit');
+        if ($this->option('feature')) {
+            return $this->laravel['modules']->config('paths.generator.test-feature.path', 'Tests/Feature');
         }
-        return $this->laravel['modules']->config('paths.generator.test.path', 'Tests/Feature');
+        return $this->laravel['modules']->config('paths.generator.test-unit.path', 'Tests/Unit');
     }
 
     /**
@@ -46,7 +46,7 @@ class TestMakeCommand extends GeneratorCommand
     protected function getOptions()
     {
         return [
-            ['unit', false, InputOption::VALUE_NONE, 'Create a unit test.'],
+            ['feature', false, InputOption::VALUE_NONE, 'Create a feature test.'],
         ];
     }
 
@@ -56,10 +56,10 @@ class TestMakeCommand extends GeneratorCommand
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
-        $stub = '/feature-test.stub';
+        $stub = '/unit-test.stub';
 
-        if ($this->option('unit')) {
-            $stub = '/unit-test.stub';
+        if ($this->option('feature')) {
+            $stub = '/feature-test.stub';
         }
         return (new Stub($stub, [
             'NAMESPACE' => $this->getClassNamespace($module),
@@ -74,10 +74,10 @@ class TestMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        if ($this->option('unit')) {
-            $testPath = GenerateConfigReader::read('test-unit');
+        if ($this->option('feature')) {
+            $testPath = GenerateConfigReader::read('test-feature');
         } else {
-            $testPath = GenerateConfigReader::read('test');
+            $testPath = GenerateConfigReader::read('test-unit');
         }
 
         return $path . $testPath->getPath() . '/' . $this->getFileName() . '.php';
