@@ -1,20 +1,23 @@
 <?php return '<?php
 
-namespace Modules\\Blog\\SuperTests;
+namespace Modules\\Blog\\SuperTests\\Feature;
 
 use Tests\\TestCase;
+use Illuminate\\Foundation\\Testing\\WithFaker;
 use Illuminate\\Foundation\\Testing\\RefreshDatabase;
 
 class EloquentPostRepositoryTest extends TestCase
 {
     /**
-     * A basic test example.
+     * A basic feature test example.
      *
      * @return void
      */
     public function testExample()
     {
-        $this->assertTrue(true);
+        $response = $this->get(\'/\');
+
+        $response->assertStatus(200);
     }
 }
 ';

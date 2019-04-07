@@ -7,6 +7,7 @@ use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class TestMakeCommand extends GeneratorCommand
 {
@@ -18,7 +19,10 @@ class TestMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace() : string
     {
-        return $this->laravel['modules']->config('paths.generator.test.path', 'Tests');
+        if ($this->option('unit')) {
+            return $this->laravel['modules']->config('paths.generator.test-unit.path', 'Tests/Unit');
+        }
+        return $this->laravel['modules']->config('paths.generator.test.path', 'Tests/Feature');
     }
 
     /**
@@ -35,13 +39,29 @@ class TestMakeCommand extends GeneratorCommand
     }
 
     /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            ['unit', false, InputOption::VALUE_NONE, 'Create a unit test.'],
+        ];
+    }
+
+    /**
      * @return mixed
      */
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $stub = '/feature-test.stub';
 
-        return (new Stub('/unit-test.stub', [
+        if ($this->option('unit')) {
+            $stub = '/unit-test.stub';
+        }
+        return (new Stub($stub, [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS'     => $this->getClass(),
         ]))->render();
@@ -54,7 +74,11 @@ class TestMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $testPath = GenerateConfigReader::read('test');
+        if ($this->option('unit')) {
+            $testPath = GenerateConfigReader::read('test-unit');
+        } else {
+            $testPath = GenerateConfigReader::read('test');
+        }
 
         return $path . $testPath->getPath() . '/' . $this->getFileName() . '.php';
     }
