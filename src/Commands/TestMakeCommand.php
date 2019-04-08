@@ -22,7 +22,7 @@ class TestMakeCommand extends GeneratorCommand
         if ($this->option('feature')) {
             return $this->laravel['modules']->config('paths.generator.test-feature.path', 'Tests/Feature');
         }
-        return $this->laravel['modules']->config('paths.generator.test-unit.path', 'Tests/Unit');
+        return $this->laravel['modules']->config('paths.generator.test.path', 'Tests/Unit');
     }
 
     /**
@@ -77,7 +77,7 @@ class TestMakeCommand extends GeneratorCommand
         if ($this->option('feature')) {
             $testPath = GenerateConfigReader::read('test-feature');
         } else {
-            $testPath = GenerateConfigReader::read('test-unit');
+            $testPath = GenerateConfigReader::read('test');
         }
 
         return $path . $testPath->getPath() . '/' . $this->getFileName() . '.php';

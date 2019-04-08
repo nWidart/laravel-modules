@@ -64,7 +64,7 @@ class TestMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_can_change_the_default_unit_namespace()
     {
-        $this->app['config']->set('modules.paths.generator.test-unit.path', 'SuperTests/Unit');
+        $this->app['config']->set('modules.paths.generator.test.path', 'SuperTests/Unit');
 
         $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
 

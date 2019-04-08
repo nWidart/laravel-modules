@@ -69,7 +69,7 @@ abstract class BaseTestCase extends OrchestraTestCase
                 'policies' => ['path' => 'Policies', 'generate' => true],
                 'rules' => ['path' => 'Rules', 'generate' => true],
                 'test-feature' => ['path' => 'Tests/Feature', 'generate' => true],
-                'test-unit' => ['path' => 'Tests/Unit', 'generate' => true],
+                'test' => ['path' => 'Tests/Unit', 'generate' => true],
                 'jobs' => ['path' => 'Jobs', 'generate' => true],
                 'emails' => ['path' => 'Emails', 'generate' => true],
                 'notifications' => ['path' => 'Notifications', 'generate' => true],
