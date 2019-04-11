@@ -1,14 +1,15 @@
 <?php return '<?php
 
-namespace Modules\\Blog\\Tests;
+namespace Modules\\Blog\\Tests\\Unit;
 
 use Tests\\TestCase;
+use Illuminate\\Foundation\\Testing\\WithFaker;
 use Illuminate\\Foundation\\Testing\\RefreshDatabase;
 
 class EloquentPostRepositoryTest extends TestCase
 {
     /**
-     * A basic test example.
+     * A basic unit test example.
      *
      * @return void
      */
