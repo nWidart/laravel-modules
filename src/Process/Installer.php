@@ -261,7 +261,7 @@ class Installer
      */
     public function installViaGit()
     {
-        return new Process(sprintf(
+        return Process::fromShellCommandline(sprintf(
             'cd %s && git clone %s %s && cd %s && git checkout %s',
             base_path(),
             $this->getRepoUrl(),
@@ -278,7 +278,7 @@ class Installer
      */
     public function installViaSubtree()
     {
-        return new Process(sprintf(
+        return Process::fromShellCommandline(sprintf(
             'cd %s && git remote add %s %s && git subtree add --prefix=%s --squash %s %s',
             base_path(),
             $this->getModuleName(),
@@ -296,7 +296,7 @@ class Installer
      */
     public function installViaComposer()
     {
-        return new Process(sprintf(
+        return Process::fromShellCommandline(sprintf(
             'cd %s && composer require %s',
             base_path(),
             $this->getPackageName()
