@@ -1,18 +1,18 @@
-<?php
+<?php return '<?php
 
-namespace $NAMESPACE$;
+namespace Modules\\Blog\\Providers;
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\\Support\\Facades\\Route;
+use Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider as ServiceProvider;
 
-class $CLASS$ extends ServiceProvider
+class RouteServiceProvider extends ServiceProvider
 {
     /**
      * The module namespace to assume when generating URLs to actions.
      *
      * @var string
      */
-    protected $moduleNamespace = '$MODULE_NAMESPACE$\$MODULE$\Http\Controllers';
+    protected $moduleNamespace = \'Modules\\Blog\\Http\\Controllers\';
 
     /**
      * Called before routes are registered.
@@ -47,9 +47,9 @@ class $CLASS$ extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::middleware('web')
+        Route::middleware(\'web\')
             ->namespace($this->moduleNamespace)
-            ->group(__DIR__ . '/..$WEB_ROUTES_PATH$');
+            ->group(__DIR__ . \'/../SuperRoutes/web.php\');
     }
 
     /**
@@ -61,9 +61,10 @@ class $CLASS$ extends ServiceProvider
      */
     protected function mapApiRoutes()
     {
-        Route::prefix('api')
-            ->middleware('api')
+        Route::prefix(\'api\')
+            ->middleware(\'api\')
             ->namespace($this->moduleNamespace)
-            ->group(__DIR__ . '/..$API_ROUTES_PATH$');
+            ->group(__DIR__ . \'/../SuperRoutes/api.php\');
     }
 }
+';
