@@ -6,6 +6,7 @@ use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class RouteProviderMakeCommand extends GeneratorCommand
 {
@@ -36,6 +37,13 @@ class RouteProviderMakeCommand extends GeneratorCommand
     {
         return [
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
+    }
+
+    protected function getOptions()
+    {
+        return [
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when the file already exists.'],
         ];
     }
 
