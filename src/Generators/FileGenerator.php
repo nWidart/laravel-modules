@@ -27,6 +27,10 @@ class FileGenerator extends Generator
      * @var \Illuminate\Filesystem\Filesystem|null
      */
     protected $filesystem;
+    /**
+     * @var bool
+     */
+    private $overwriteFile;
 
     /**
      * The constructor.
@@ -114,12 +118,23 @@ class FileGenerator extends Generator
         return $this;
     }
 
+    public function withFileOverwrite(bool $overwrite): FileGenerator
+    {
+        $this->overwriteFile = $overwrite;
+
+        return $this;
+    }
+
     /**
      * Generate the file.
      */
     public function generate()
     {
-        if (!$this->filesystem->exists($path = $this->getPath())) {
+        $path = $this->getPath();
+        if (!$this->filesystem->exists($path)) {
+            return $this->filesystem->put($path, $this->getContents());
+        }
+        if ($this->overwriteFile === true) {
             return $this->filesystem->put($path, $this->getContents());
         }
 

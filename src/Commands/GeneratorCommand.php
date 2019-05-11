@@ -43,7 +43,8 @@ abstract class GeneratorCommand extends Command
         $contents = $this->getTemplateContents();
 
         try {
-            with(new FileGenerator($path, $contents))->generate();
+            $overwriteFile = $this->hasOption('force') ? $this->option('force') : false;
+            (new FileGenerator($path, $contents))->withFileOverwrite($overwriteFile)->generate();
 
             $this->info("Created : {$path}");
         } catch (FileAlreadyExistException $e) {
