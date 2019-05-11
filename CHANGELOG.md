@@ -4,6 +4,14 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Added
+
+- `artisan module:route-provider` has a `--force` option to overwrite existing file
+
+### Changed
+
+- Fixing the `RouteServiceProvider` generation to properly use the `routes/web` and `routes/api` stubs
+
 ## 5.0.0 - 2019-03-18
 
 ### Added
