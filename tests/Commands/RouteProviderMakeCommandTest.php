@@ -74,4 +74,15 @@ class RouteProviderMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
     }
 
+    /** @test */
+    public function it_can_overwrite_file(): void
+    {
+        $this->artisan('module:route-provider', ['module' => 'Blog']);
+        $this->app['config']->set('modules.stubs.files.routes/web', 'SuperRoutes/web.php');
+
+        $this->artisan('module:route-provider', ['module' => 'Blog', '--force' => true]);
+        $file = $this->finder->get($this->modulePath . '/Providers/RouteServiceProvider.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }
