@@ -24,4 +24,19 @@ class CollectionTest extends BaseTestCase
         $this->assertArrayHasKey('path', $collectionArray[1]);
         $this->assertEquals($moduleTwoPath, $collectionArray[1]['path']);
     }
+
+    /** @test */
+    public function getItemsReturnsTheCollectionItems()
+    {
+        $modules = [
+            new Module($this->app, 'module-one', __DIR__ . '/stubs/valid/Recipe'),
+            new Module($this->app, 'module-two', __DIR__ . '/stubs/valid/Requirement'),
+        ];
+        $collection = new Collection($modules);
+        $items = $collection->getItems();
+
+        $this->assertCount(2, $items);
+        $this->assertInstanceOf(Module::class, $items[0]);
+    }
+
 }
