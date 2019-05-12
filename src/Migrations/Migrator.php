@@ -115,34 +115,6 @@ class Migrator
     }
 
     /**
-     * Rollback migration.
-     *
-     * @return array
-     */
-    public function rollback()
-    {
-        $migrations = $this->getLast($this->getMigrations(true));
-
-        $this->requireFiles($migrations->toArray());
-
-        $migrated = [];
-
-        foreach ($migrations as $migration) {
-            $data = $this->find($migration);
-
-            if ($data->count()) {
-                $migrated[] = $migration;
-
-                $this->down($migration);
-
-                $data->delete();
-            }
-        }
-
-        return $migrated;
-    }
-
-    /**
      * Run down schema from the given migration name.
      *
      * @param string $migration
