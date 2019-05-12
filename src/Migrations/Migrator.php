@@ -143,34 +143,6 @@ class Migrator
     }
 
     /**
-     * Reset migration.
-     *
-     * @return array
-     */
-    public function reset()
-    {
-        $migrations = $this->getMigrations(true);
-
-        $this->requireFiles($migrations);
-
-        $migrated = [];
-
-        foreach ($migrations as $migration) {
-            $data = $this->find($migration);
-
-            if ($data->count()) {
-                $migrated[] = $migration;
-
-                $this->down($migration);
-
-                $data->delete();
-            }
-        }
-
-        return $migrated;
-    }
-
-    /**
      * Run down schema from the given migration name.
      *
      * @param string $migration

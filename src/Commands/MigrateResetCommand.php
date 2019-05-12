@@ -64,25 +64,14 @@ class MigrateResetCommand extends Command
             $module = $this->module->findOrFail($module);
         }
 
-        $migrator = new Migrator($module);
+        $path = str_replace(base_path(), '', (new Migrator($module))->getPath());
 
-        $database = $this->option('database');
-
-        if (!empty($database)) {
-            $migrator->setDatabase($database);
-        }
-
-        $migrated = $migrator->reset();
-
-        if (count($migrated)) {
-            foreach ($migrated as $migration) {
-                $this->line("Rollback: <info>{$migration}</info>");
-            }
-
-            return;
-        }
-
-        $this->comment('Nothing to rollback.');
+        $this->call('migrate:reset', [
+            '--path' => $path,
+            '--database' => $this->option('database'),
+            '--pretend' => $this->option('pretend'),
+            '--force' => $this->option('force'),
+        ]);
     }
 
     /**
