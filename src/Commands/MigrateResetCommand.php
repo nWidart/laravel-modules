@@ -34,23 +34,19 @@ class MigrateResetCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $this->module = $this->laravel['modules'];
 
         $name = $this->argument('module');
 
         if (!empty($name)) {
-            $this->reset($name);
+            $this->resetOne($name);
 
             return;
         }
 
-        foreach ($this->module->getOrdered($this->option('direction')) as $module) {
-            $this->line('Running for module: <info>' . $module->getName() . '</info>');
-
-            $this->reset($module);
-        }
+        $this->resetMany($this->module->getOrdered($this->option('direction')));
     }
 
     /**
@@ -58,7 +54,7 @@ class MigrateResetCommand extends Command
      *
      * @param $module
      */
-    public function reset($module)
+    public function resetOne($module): void
     {
         if (is_string($module)) {
             $module = $this->module->findOrFail($module);
@@ -68,6 +64,27 @@ class MigrateResetCommand extends Command
 
         $this->call('migrate:reset', [
             '--path' => $path,
+            '--database' => $this->option('database'),
+            '--pretend' => $this->option('pretend'),
+            '--force' => $this->option('force'),
+        ]);
+    }
+
+    /**
+     * Rollback migration from the all the specified modules.
+     *
+     * @param array $modules
+     */
+    private function resetMany(array $modules): void
+    {
+        $paths = [];
+        foreach ($modules as $module) {
+            $path = str_replace(base_path(), '', (new Migrator($module))->getPath());
+            $paths[] = $path;
+        }
+
+        $this->call('migrate:reset', [
+            '--path' => $paths,
             '--database' => $this->option('database'),
             '--pretend' => $this->option('pretend'),
             '--force' => $this->option('force'),
