@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Changed
+
+- Replacing `@stop` with `@endsection` in the view stub file
+
 ### Added
 
 - `artisan module:route-provider` has a `--force` option to overwrite existing file
