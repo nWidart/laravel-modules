@@ -89,7 +89,7 @@ class $CLASS$ extends ServiceProvider
      */
     public function registerFactories()
     {
-        if (! app()->environment('production')) {
+        if (! app()->environment('production') && $this->runningInConsole()) {
             app(Factory::class)->load(__DIR__ . '/../$FACTORIES_PATH$');
         }
     }
