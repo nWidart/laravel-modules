@@ -89,7 +89,7 @@ class $CLASS$ extends ServiceProvider
      */
     public function registerFactories()
     {
-        if (! app()->environment('production') && $this->runningInConsole()) {
+        if (! app()->environment('production') && $this->app->runningInConsole()) {
             app(Factory::class)->load(__DIR__ . '/../$FACTORIES_PATH$');
         }
     }
@@ -102,15 +102,5 @@ class $CLASS$ extends ServiceProvider
     public function provides()
     {
         return [];
-    }
-
-    /**
-     * Determine if we are running in the console.
-     *
-     * @return bool
-     */
-    protected function runningInConsole()
-    {
-        return php_sapi_name() == 'cli' || php_sapi_name() == 'phpdbg';
     }
 }
