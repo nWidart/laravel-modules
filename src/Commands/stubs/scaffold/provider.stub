@@ -103,4 +103,14 @@ class $CLASS$ extends ServiceProvider
     {
         return [];
     }
+
+    /**
+     * Determine if we are running in the console.
+     *
+     * @return bool
+     */
+    protected function runningInConsole()
+    {
+        return php_sapi_name() == 'cli' || php_sapi_name() == 'phpdbg';
+    }
 }
