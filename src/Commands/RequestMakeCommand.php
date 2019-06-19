@@ -35,7 +35,11 @@ class RequestMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace() : string
     {
-        return $this->laravel['modules']->config('paths.generator.request.path', 'Http/Requests');
+        $module = $this->laravel['modules'];
+
+        return ($namespace = $module->config('paths.generator.request.namespace'))
+            ? $namespace
+            : $module->config('paths.generator.request.path', 'Http/Requests');
     }
 
     /**

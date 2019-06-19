@@ -107,6 +107,10 @@ class RouteProviderMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace() : string
     {
-        return $this->laravel['modules']->config('paths.generator.provider.path', 'Providers');
+        $module = $this->laravel['modules'];
+
+        return ($namespace = $module->config('paths.generator.provider.namespace'))
+            ? $namespace
+            : $module->config('paths.generator.provider.path', 'Providers');
     }
 }

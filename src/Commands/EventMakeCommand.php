@@ -57,7 +57,11 @@ class EventMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace() : string
     {
-        return $this->laravel['modules']->config('paths.generator.event.path', 'Events');
+        $module = $this->laravel['modules'];
+
+        return ($namespace = $module->config('paths.generator.event.namespace'))
+            ? $namespace
+            : $module->config('paths.generator.event.path', 'Events');
     }
 
     /**

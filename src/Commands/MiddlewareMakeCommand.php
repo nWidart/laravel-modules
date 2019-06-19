@@ -35,7 +35,11 @@ class MiddlewareMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace() : string
     {
-        return $this->laravel['modules']->config('paths.generator.filter.path', 'Http/Middleware');
+        $module = $this->laravel['modules'];
+
+        return ($namespace = $module->config('paths.generator.filter.namespace'))
+            ? $namespace
+            : $module->config('paths.generator.filter.path', 'Http/Middleware');
     }
 
     /**

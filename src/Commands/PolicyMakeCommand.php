@@ -35,7 +35,11 @@ class PolicyMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace() : string
     {
-        return $this->laravel['modules']->config('paths.generator.policies.path', 'Policies');
+        $module = $this->laravel['modules'];
+
+        return ($namespace = $module->config('paths.generator.policies.namespace'))
+            ? $namespace
+            : $module->config('paths.generator.policies.path', 'Policies');
     }
 
     /**
