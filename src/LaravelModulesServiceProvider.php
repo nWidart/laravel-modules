@@ -47,7 +47,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->app->singleton(Contracts\RepositoryInterface::class, function ($app) {
             $path = $app['config']->get('modules.paths.modules');
 
-            return new Laravel\LaravelFileRepository($app, $app['url'], $app['config'], $app['files'], $app['cache'], $app['translator'], $path);
+            return new Laravel\LaravelFileRepository($app, $path);
         });
         $this->app->alias(Contracts\RepositoryInterface::class, 'modules');
     }

@@ -7,7 +7,6 @@ use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Routing\UrlGenerator;
-use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
@@ -62,30 +61,20 @@ abstract class FileRepository implements RepositoryInterface, Countable
      * @var CacheManager
      */
     private $cache;
-    /**
-     * @var Translator
-     */
-    private $translator;
 
     /**
      * The constructor.
      * @param Container $app
-     * @param UrlGenerator $urlGenerator
-     * @param ConfigRepository $config
-     * @param Filesystem $files
-     * @param CacheManager $cache
-     * @param Translator $translator
      * @param string|null $path
      */
-    public function __construct(Container $app, UrlGenerator $urlGenerator, ConfigRepository $config, Filesystem $files, CacheManager $cache, Translator $translator, $path = null)
+    public function __construct(Container $app, $path = null)
     {
         $this->app = $app;
         $this->path = $path;
-        $this->url = $urlGenerator;
-        $this->config = $config;
-        $this->files = $files;
-        $this->cache = $cache;
-        $this->translator = $translator;
+        $this->url = $app['url'];
+        $this->config = $app['config'];
+        $this->files = $app['files'];
+        $this->cache = $app['cache'];
     }
 
     /**
@@ -138,8 +127,8 @@ abstract class FileRepository implements RepositoryInterface, Countable
      * Creates a new Module instance
      *
      * @param Container $app
-     * @param $name
-     * @param $path
+     * @param string $args
+     * @param string $path
      * @return \Nwidart\Modules\Module
      */
     abstract protected function createModule(...$args);
@@ -196,7 +185,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
         $modules = [];
 
         foreach ($cached as $name => $module) {
-            $path = $module["path"];
+            $path = $module['path'];
 
             $modules[$name] = $this->createModule($this->app, $name, $path);
         }

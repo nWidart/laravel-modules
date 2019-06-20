@@ -2,10 +2,13 @@
 
 namespace Nwidart\Modules;
 
+use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
+use Illuminate\Translation\Translator;
 
 abstract class Module
 {
@@ -36,29 +39,33 @@ abstract class Module
      * @var array of cached Json objects, keyed by filename
      */
     protected $moduleJson = [];
+    /**
+     * @var CacheManager
+     */
+    private $cache;
+    /**
+     * @var Filesystem
+     */
+    private $files;
+    /**
+     * @var Translator
+     */
+    private $translator;
 
     /**
      * The constructor.
-     *
      * @param Container $app
      * @param $name
      * @param $path
      */
-    public function __construct(Container $app, $name, $path)
+    public function __construct(Container $app, string $name, $path)
     {
         $this->name = $name;
         $this->path = $path;
+        $this->cache = $app['cache'];
+        $this->files = $app['files'];
+        $this->translator = $app['translator'];
         $this->app = $app;
-    }
-
-    /**
-     * Get laravel instance.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Laravel\Lumen\Application
-     */
-    public function getLaravel()
-    {
-        return $this->app;
     }
 
     /**
@@ -211,7 +218,7 @@ abstract class Module
         }
 
         return Arr::get($this->moduleJson, $file, function () use ($file) {
-            return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->app['files']);
+            return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->files);
         });
     }
 
@@ -422,7 +429,7 @@ abstract class Module
     private function flushCache(): void
     {
         if (config('modules.cache.enabled')) {
-            $this->app['cache']->store()->flush();
+            $this->cache->store()->flush();
         }
     }
 
@@ -435,6 +442,6 @@ abstract class Module
      */
     private function loadTranslationsFrom(string $path, string $namespace): void
     {
-        $this->app['translator']->addNamespace($namespace, $path);
+        $this->translator->addNamespace($namespace, $path);
     }
 }

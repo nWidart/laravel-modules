@@ -48,7 +48,7 @@ class PublishMigrationCommand extends Command
      */
     public function publish($module)
     {
-        with(new MigrationPublisher(new Migrator($module)))
+        with(new MigrationPublisher(new Migrator($module, $this->getLaravel())))
             ->setRepository($this->laravel['modules'])
             ->setConsole($this)
             ->publish();
