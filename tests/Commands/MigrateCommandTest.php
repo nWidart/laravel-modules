@@ -21,7 +21,6 @@ abstract class MigrateCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $cachedServicePath = $this->app->getCachedServicesPath();
         $this->repository = new LaravelFileRepository($this->app);
         $this->finder = $this->app['files'];
     }
