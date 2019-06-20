@@ -22,6 +22,7 @@ class TestMakeCommand extends GeneratorCommand
         if ($this->option('feature')) {
             return $this->laravel['modules']->config('paths.generator.test-feature.path', 'Tests/Feature');
         }
+
         return $this->laravel['modules']->config('paths.generator.test.path', 'Tests/Unit');
     }
 
@@ -61,6 +62,7 @@ class TestMakeCommand extends GeneratorCommand
         if ($this->option('feature')) {
             $stub = '/feature-test.stub';
         }
+
         return (new Stub($stub, [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS'     => $this->getClass(),

@@ -38,5 +38,4 @@ class CollectionTest extends BaseTestCase
         $this->assertCount(2, $items);
         $this->assertInstanceOf(Module::class, $items[0]);
     }
-
 }
