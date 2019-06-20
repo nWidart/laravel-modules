@@ -4,6 +4,7 @@ namespace Nwidart\Modules;
 
 use Countable;
 use Illuminate\Container\Container;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Nwidart\Modules\Contracts\RepositoryInterface;
@@ -122,7 +123,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
         $modules = [];
 
         foreach ($paths as $key => $path) {
-            $manifests = $this->app['files']->glob("{$path}/module.json");
+            $manifests = $this->getFiles()->glob("{$path}/module.json");
 
             is_array($manifests) || $manifests = [];
 
@@ -443,13 +444,13 @@ abstract class FileRepository implements RepositoryInterface, Countable
     public function getUsedStoragePath() : string
     {
         $directory = storage_path('app/modules');
-        if ($this->app['files']->exists($directory) === false) {
-            $this->app['files']->makeDirectory($directory, 0777, true);
+        if ($this->getFiles()->exists($directory) === false) {
+            $this->getFiles()->makeDirectory($directory, 0777, true);
         }
 
         $path = storage_path('app/modules/modules.used');
-        if (!$this->app['files']->exists($path)) {
-            $this->app['files']->put($path, '');
+        if (!$this->getFiles()->exists($path)) {
+            $this->getFiles()->put($path, '');
         }
 
         return $path;
@@ -466,7 +467,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
     {
         $module = $this->findOrFail($name);
 
-        $this->app['files']->put($this->getUsedStoragePath(), $module);
+        $this->getFiles()->put($this->getUsedStoragePath(), $module);
     }
 
     /**
@@ -474,8 +475,8 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function forgetUsed()
     {
-        if ($this->app['files']->exists($this->getUsedStoragePath())) {
-            $this->app['files']->delete($this->getUsedStoragePath());
+        if ($this->getFiles()->exists($this->getUsedStoragePath())) {
+            $this->getFiles()->delete($this->getUsedStoragePath());
         }
     }
 
@@ -486,15 +487,15 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function getUsedNow() : string
     {
-        return $this->findOrFail($this->app['files']->get($this->getUsedStoragePath()));
+        return $this->findOrFail($this->getFiles()->get($this->getUsedStoragePath()));
     }
 
     /**
      * Get laravel filesystem instance.
      *
-     * @return \Illuminate\Filesystem\Filesystem
+     * @return Filesystem
      */
-    public function getFiles()
+    public function getFiles(): Filesystem
     {
         return $this->app['files'];
     }
