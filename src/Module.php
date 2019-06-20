@@ -4,11 +4,10 @@ namespace Nwidart\Modules;
 
 use Illuminate\Container\Container;
 use Illuminate\Support\Arr;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 
-abstract class Module extends ServiceProvider
+abstract class Module
 {
     use Macroable;
 
@@ -47,9 +46,9 @@ abstract class Module extends ServiceProvider
      */
     public function __construct(Container $app, $name, $path)
     {
-        parent::__construct($app);
         $this->name = $name;
         $this->path = $path;
+        $this->app = $app;
     }
 
     /**
@@ -425,5 +424,17 @@ abstract class Module extends ServiceProvider
         if (config('modules.cache.enabled')) {
             $this->app['cache']->store()->flush();
         }
+    }
+
+    /**
+     * Register a translation file namespace.
+     *
+     * @param  string  $path
+     * @param  string  $namespace
+     * @return void
+     */
+    private function loadTranslationsFrom(string $path, string $namespace): void
+    {
+        $this->app['translator']->addNamespace($namespace, $path);
     }
 }
