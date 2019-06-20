@@ -3,7 +3,11 @@
 namespace Nwidart\Modules;
 
 use Countable;
+use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Routing\UrlGenerator;
+use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
@@ -42,17 +46,46 @@ abstract class FileRepository implements RepositoryInterface, Countable
      * @var string
      */
     protected $stubPath;
+    /**
+     * @var UrlGenerator
+     */
+    private $url;
+    /**
+     * @var ConfigRepository
+     */
+    private $config;
+    /**
+     * @var Filesystem
+     */
+    private $files;
+    /**
+     * @var CacheManager
+     */
+    private $cache;
+    /**
+     * @var Translator
+     */
+    private $translator;
 
     /**
      * The constructor.
-     *
      * @param Container $app
+     * @param UrlGenerator $urlGenerator
+     * @param ConfigRepository $config
+     * @param Filesystem $files
+     * @param CacheManager $cache
+     * @param Translator $translator
      * @param string|null $path
      */
-    public function __construct(Container $app, $path = null)
+    public function __construct(Container $app, UrlGenerator $urlGenerator, ConfigRepository $config, Filesystem $files, CacheManager $cache, Translator $translator, $path = null)
     {
         $this->app = $app;
         $this->path = $path;
+        $this->url = $urlGenerator;
+        $this->config = $config;
+        $this->files = $files;
+        $this->cache = $cache;
+        $this->translator = $translator;
     }
 
     /**
@@ -178,7 +211,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function getCached()
     {
-        return $this->app['cache']->remember($this->config('cache.key'), $this->config('cache.lifetime'), function () {
+        return $this->cache->remember($this->config('cache.key'), $this->config('cache.lifetime'), function () {
             return $this->toCollection()->toArray();
         });
     }
@@ -433,7 +466,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function config($key, $default = null)
     {
-        return $this->app['config']->get('modules.' . $key, $default);
+        return $this->config->get('modules.' . $key, $default);
     }
 
     /**
@@ -497,7 +530,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function getFiles(): Filesystem
     {
-        return $this->app['files'];
+        return $this->files;
     }
 
     /**
@@ -525,7 +558,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
 
         $baseUrl = str_replace(public_path() . DIRECTORY_SEPARATOR, '', $this->getAssetsPath());
 
-        $url = $this->app['url']->asset($baseUrl . "/{$name}/" . $url);
+        $url = $this->url->asset($baseUrl . "/{$name}/" . $url);
 
         return str_replace(['http://', 'https://'], '//', $url);
     }
