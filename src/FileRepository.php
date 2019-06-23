@@ -446,14 +446,9 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
-     * Get a specific config data from a configuration file.
-     *
-     * @param $key
-     *
-     * @param null $default
-     * @return mixed
+     * @inheritDoc
      */
-    public function config($key, $default = null)
+    public function config(string $key, $default = null)
     {
         return $this->config->get('modules.' . $key, $default);
     }

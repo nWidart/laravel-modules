@@ -100,4 +100,13 @@ interface RepositoryInterface
      * @return \Illuminate\Filesystem\Filesystem
      */
     public function getFiles();
+
+    /**
+     * Get a specific config data from a configuration file.
+     * @param string $key
+     *
+     * @param string|null $default
+     * @return mixed
+     */
+    public function config(string $key, $default = null);
 }
