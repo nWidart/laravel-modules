@@ -7,6 +7,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ### Changed
 
 - Replacing `@stop` with `@endsection` in the view stub file
+- `Module` class does not extend Laravel's Service Provider class anymore
 
 ### Added
 
