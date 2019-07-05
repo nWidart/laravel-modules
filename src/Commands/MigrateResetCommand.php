@@ -64,7 +64,7 @@ class MigrateResetCommand extends Command
             $module = $this->module->findOrFail($module);
         }
 
-        $migrator = new Migrator($module);
+        $migrator = new Migrator($module, $this->getLaravel());
 
         $database = $this->option('database');
 

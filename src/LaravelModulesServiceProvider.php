@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules;
 
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Support\Stub;
 
 class LaravelModulesServiceProvider extends ModulesServiceProvider
@@ -33,8 +34,10 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         Stub::setBasePath(__DIR__ . '/Commands/stubs');
 
         $this->app->booted(function ($app) {
-            if ($app['modules']->config('stubs.enabled') === true) {
-                Stub::setBasePath($app['modules']->config('stubs.path'));
+            /** @var RepositoryInterface $moduleRepository */
+            $moduleRepository = $app[RepositoryInterface::class];
+            if ($moduleRepository->config('stubs.enabled') === true) {
+                Stub::setBasePath($moduleRepository->config('stubs.path'));
             }
         });
     }

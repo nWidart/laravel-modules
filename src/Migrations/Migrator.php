@@ -11,9 +11,8 @@ use Nwidart\Modules\Support\Config\GenerateConfigReader;
 class Migrator
 {
     /**
-     * Pingpong Module instance.
-     *
-     * @var \Nwidart\Modules\Module
+     * Module instance.
+     * @var Module
      */
     protected $module;
 
@@ -33,13 +32,13 @@ class Migrator
 
     /**
      * Create new instance.
-     *
-     * @param \Nwidart\Modules\Module $module
+     * @param Module $module
+     * @param Application $application
      */
-    public function __construct(Module $module)
+    public function __construct(Module $module, Application $application)
     {
         $this->module = $module;
-        $this->laravel = $module->getLaravel();
+        $this->laravel = $application;
     }
 
     /**

@@ -60,7 +60,7 @@ class MigrateCommand extends Command
      */
     protected function migrate(Module $module)
     {
-        $path = str_replace(base_path(), '', (new Migrator($module))->getPath());
+        $path = str_replace(base_path(), '', (new Migrator($module, $this->getLaravel()))->getPath());
 
         if ($this->option('subpath')) {
             $path = $path . "/" . $this->option("subpath");
