@@ -53,4 +53,16 @@ class PolicyMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.policies.namespace', 'SuperPolicies');
+
+        $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Policies/PostPolicy.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

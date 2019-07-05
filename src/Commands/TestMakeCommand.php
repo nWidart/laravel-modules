@@ -22,14 +22,10 @@ class TestMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules'];
 
         if ($this->option('feature')) {
-            return ($namespace = $module->config('paths.generator.test-feature.namespace'))
-                ? $namespace
-                : $module->config('paths.generator.test-feature.path', 'Tests/Feature');
+            return $module->config('paths.generator.test-feature.namespace') ?: $module->config('paths.generator.test-feature.path', 'Tests/Feature');
         }
 
-        return ($namespace = $module->config('paths.generator.test.namespace'))
-            ? $namespace
-            : $module->config('paths.generator.test.path', 'Tests/Unit');
+        return $module->config('paths.generator.test.namespace') ?: $module->config('paths.generator.test.path', 'Tests/Unit');
     }
 
     /**

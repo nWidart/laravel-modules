@@ -37,9 +37,7 @@ class RequestMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules'];
 
-        return ($namespace = $module->config('paths.generator.request.namespace'))
-            ? $namespace
-            : $module->config('paths.generator.request.path', 'Http/Requests');
+        return $module->config('paths.generator.request.namespace') ?: $module->config('paths.generator.request.path', 'Http/Requests');
     }
 
     /**

@@ -61,4 +61,16 @@ class EventMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.event.namespace', 'SuperEvents');
+
+        $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Events/PostWasCreated.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

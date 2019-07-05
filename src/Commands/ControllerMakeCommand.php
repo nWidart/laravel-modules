@@ -119,9 +119,7 @@ class ControllerMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules'];
 
-        return ($namespace = $module->config('paths.generator.controller.namespace'))
-            ? $namespace
-            : $module->config('paths.generator.controller.path', 'Http/Controllers');
+        return $module->config('paths.generator.controller.namespace') ?: $module->config('paths.generator.controller.path', 'Http/Controllers');
     }
 
     /**

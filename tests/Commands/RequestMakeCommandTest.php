@@ -60,4 +60,16 @@ class RequestMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.request.namespace', 'SuperRequests');
+
+        $this->artisan('module:make-request', ['name' => 'CreateBlogPostRequest', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Http/Requests/CreateBlogPostRequest.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

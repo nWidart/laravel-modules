@@ -32,9 +32,7 @@ final class NotificationMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules'];
 
-        return ($namespace = $module->config('paths.generator.notifications.namespace'))
-            ? $namespace
-            : $module->config('paths.generator.notifications.path', 'Notifications');
+        return $module->config('paths.generator.notifications.namespace') ?: $module->config('paths.generator.notifications.path', 'Notifications');
     }
 
     /**

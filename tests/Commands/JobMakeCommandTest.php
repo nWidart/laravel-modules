@@ -70,4 +70,16 @@ class JobMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.jobs.namespace', 'SuperJobs');
+
+        $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

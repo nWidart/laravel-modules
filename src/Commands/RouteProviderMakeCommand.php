@@ -109,8 +109,6 @@ class RouteProviderMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules'];
 
-        return ($namespace = $module->config('paths.generator.provider.namespace'))
-            ? $namespace
-            : $module->config('paths.generator.provider.path', 'Providers');
+        return $module->config('paths.generator.provider.namespace') ?: $module->config('paths.generator.provider.path', 'Providers');
     }
 }

@@ -74,6 +74,18 @@ class TestMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_can_change_the_default_unit_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.test.namespace', 'SuperTests\\Unit');
+
+        $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Tests/Unit/EloquentPostRepositoryTest.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
+
+    /** @test */
     public function it_can_change_the_default_feature_namespace()
     {
         $this->app['config']->set('modules.paths.generator.test-feature.path', 'SuperTests/Feature');
@@ -81,6 +93,18 @@ class TestMakeCommandTest extends BaseTestCase
         $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
 
         $file = $this->finder->get($this->modulePath . '/SuperTests/Feature/EloquentPostRepositoryTest.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
+
+    /** @test */
+    public function it_can_change_the_default_feature_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.test-feature.namespace', 'SuperTests\\Feature');
+
+        $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
+
+        $file = $this->finder->get($this->modulePath . '/Tests/Feature/EloquentPostRepositoryTest.php');
 
         $this->assertMatchesSnapshot($file);
     }

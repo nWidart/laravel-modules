@@ -117,4 +117,16 @@ class ModelMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.model.namespace', 'Models');
+
+        $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Entities/Post.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }
