@@ -168,7 +168,7 @@ return [
     'cache' => [
         'enabled' => false,
         'key' => 'laravel-modules',
-        'lifetime' => 60
+        'lifetime' => 60,
     ],
     /*
     |--------------------------------------------------------------------------
@@ -203,7 +203,7 @@ return [
             'class' => FileActivator::class,
             'file' => storage_path('installed_modules'),
             'cache-key' => 'activator.installed',
-            'cache-lifetime' => 604800
+            'cache-lifetime' => 604800,
         ]
     ],
 
