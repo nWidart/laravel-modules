@@ -42,6 +42,13 @@ class ModuleGenerator extends Generator
     protected $console;
 
     /**
+     * The activator instance
+     * 
+     * @var ActivatorInterface
+     */
+    protected $activator;
+
+    /**
      * The pingpong module instance.
      *
      * @var \Nwidart\Modules\Module
