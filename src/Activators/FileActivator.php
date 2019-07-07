@@ -1,6 +1,6 @@
 <?php
 
-namespace Nwidart\Modules;
+namespace Nwidart\Modules\Activators;
 
 use Illuminate\Container\Container;
 use Nwidart\Modules\Contracts\ActivatorInterface;
@@ -8,15 +8,38 @@ use Nwidart\Modules\Module;
 
 class FileActivator implements ActivatorInterface
 {
-	protected $cacheKey = 'modules.activator.installed';
-	protected $installed, $fileInstalled;
+	/**
+	 * @var string
+	 */
+	protected $cacheKey;
+
+	/**
+	 * @var string
+	 */
+	protected $cacheLifetime;
+
+	/**
+	 * Array of modules activation statuses
+	 * 
+	 * @var array
+	 */
+	protected $installed;
+
+	/**
+	 * File used to store activation statuses
+	 * 
+	 * @var string
+	 */
+	protected $fileInstalled;
 
 	public function __construct(Container $app)
 	{
-		$this->fileInstalled = storage_path('installed_modules');
 		$this->cache = $app['cache'];
 		$this->files = $app['files'];
 		$this->config = $app['config'];
+		$this->fileInstalled = $this->config('file');
+		$this->cacheKey = $this->config('cache-key');
+		$this->cacheLifetime = $this->config('cache-lifetime');
 		$this->installed = $this->getCached();
 	}
 
@@ -27,9 +50,9 @@ class FileActivator implements ActivatorInterface
 	 */
 	protected function getCached()
 	{
-		if(!$this->config('cache.enabled')) return $this->readJson();
+		if(!$this->config->get('modules.cache.enabled')) return $this->readJson();
 		
-		return $this->cache->remember($this->cacheKey, $this->config('cache.lifetime'), function () {
+		return $this->cache->remember($this->cacheKey, $this->cacheLifetime, function () {
             return $this->readJson();
         });
 	}
@@ -51,7 +74,7 @@ class FileActivator implements ActivatorInterface
 	 */
 	protected function config(string $key, $default = null)
     {
-        return $this->config->get('modules.' . $key, $default);
+        return $this->config->get('modules.activators.file.' . $key, $default);
     }
 
 	/**

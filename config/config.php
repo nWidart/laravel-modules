@@ -1,6 +1,6 @@
 <?php
 
-use Nwidart\Modules\FileActivator;
+use Nwidart\Modules\Activators\FileActivator;
 
 return [
 
@@ -189,9 +189,23 @@ return [
         'files' => 'register',
     ],
 
-    /**
-    | Activator interface.
-    | You can define a new type of activator here, file, database etc
+    /*
+    |--------------------------------------------------------------------------
+    | Activators
+    |--------------------------------------------------------------------------
+    |
+    | You can define new types of activators here, file, database etc. The only
+    | required parameter is 'class'.
+    | The file activator will store the activation status in storage/installed_modules
     */
-    'activator' => FileActivator::class
+    'activators' => [
+        'file' => [
+            'class' => FileActivator::class,
+            'file' => storage_path('installed_modules'),
+            'cache-key' => 'activator.installed',
+            'cache-lifetime' => 604800
+        ]
+    ],
+
+    'activator' => 'file'
 ];
