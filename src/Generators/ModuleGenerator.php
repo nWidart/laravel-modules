@@ -6,6 +6,7 @@ use Illuminate\Config\Repository as Config;
 use Illuminate\Console\Command as Console;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\FileRepository;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
@@ -62,6 +63,13 @@ class ModuleGenerator extends Generator
     protected $plain = false;
 
     /**
+     * Enables the module.
+     *
+     * @var bool
+     */
+    protected $active = false;
+
+    /**
      * The constructor.
      * @param $name
      * @param FileRepository $module
@@ -74,13 +82,15 @@ class ModuleGenerator extends Generator
         FileRepository $module = null,
         Config $config = null,
         Filesystem $filesystem = null,
-        Console $console = null
+        Console $console = null,
+        ActivatorInterface $activator = null
     ) {
         $this->name = $name;
         $this->config = $config;
         $this->filesystem = $filesystem;
         $this->console = $console;
         $this->module = $module;
+        $this->activator = $activator;
     }
 
     /**
@@ -93,6 +103,20 @@ class ModuleGenerator extends Generator
     public function setPlain($plain)
     {
         $this->plain = $plain;
+
+        return $this;
+    }
+
+    /**
+     * Set active flag.
+     *
+     * @param bool $active
+     *
+     * @return $this
+     */
+    public function setActive($active)
+    {
+        $this->active = $active;
 
         return $this;
     }
@@ -127,6 +151,20 @@ class ModuleGenerator extends Generator
     public function setConfig($config)
     {
         $this->config = $config;
+
+        return $this;
+    }
+
+    /**
+     * Set the modules activator
+     *
+     * @param ActivatorInterface $activator
+     *
+     * @return $this
+     */
+    public function setActivator($activator)
+    {
+        $this->activator = $activator;
 
         return $this;
     }
@@ -266,6 +304,8 @@ class ModuleGenerator extends Generator
         if ($this->plain === true) {
             $this->cleanModuleJsonFile();
         }
+
+        $this->activator->setActiveByName($name, $this->active);
 
         $this->console->info("Module [{$name}] created successfully.");
     }

@@ -52,6 +52,12 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
             return new Laravel\LaravelFileRepository($app, $path);
         });
+        $this->app->singleton(Contracts\ActivatorInterface::class, function ($app) {
+            $class = $app['config']->get('modules.activator');
+
+            return new $class($app);
+        });
         $this->app->alias(Contracts\RepositoryInterface::class, 'modules');
+        $this->app->alias(Contracts\ActivatorInterface::class, 'modules.activator');
     }
 }

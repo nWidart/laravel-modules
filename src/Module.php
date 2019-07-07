@@ -65,6 +65,7 @@ abstract class Module
         $this->cache = $app['cache'];
         $this->files = $app['files'];
         $this->translator = $app['translator'];
+        $this->activator = $app['modules.activator'];
         $this->app = $app;
     }
 
@@ -319,7 +320,7 @@ abstract class Module
      */
     public function isStatus($status) : bool
     {
-        return $this->get('active', 0) === $status;
+        return $this->activator->isStatus($this, $status);
     }
 
     /**
@@ -329,7 +330,7 @@ abstract class Module
      */
     public function enabled() : bool
     {
-        return $this->isStatus(1);
+        return $this->activator->isStatus($this, 1);
     }
 
     /**
@@ -351,7 +352,7 @@ abstract class Module
      */
     public function setActive($active)
     {
-        return $this->json()->set('active', $active)->save();
+        return $this->activator->setActive($this, $active);
     }
 
     /**
@@ -361,7 +362,7 @@ abstract class Module
     {
         $this->fireEvent('disabling');
 
-        $this->setActive(0);
+        $this->activator->disable($this);
         $this->flushCache();
 
         $this->fireEvent('disabled');
@@ -374,7 +375,7 @@ abstract class Module
     {
         $this->fireEvent('enabling');
 
-        $this->setActive(1);
+        $this->activator->enable($this);
         $this->flushCache();
 
         $this->fireEvent('enabled');
@@ -387,6 +388,7 @@ abstract class Module
      */
     public function delete()
     {
+        $this->activator->delete($this);
         return $this->json()->getFilesystem()->deleteDirectory($this->getPath());
     }
 

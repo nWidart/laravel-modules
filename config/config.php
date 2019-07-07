@@ -1,5 +1,7 @@
 <?php
 
+use Nwidart\Modules\FileActivator;
+
 return [
 
     /*
@@ -166,7 +168,7 @@ return [
     'cache' => [
         'enabled' => false,
         'key' => 'laravel-modules',
-        'lifetime' => 60,
+        'lifetime' => 60
     ],
     /*
     |--------------------------------------------------------------------------
@@ -186,4 +188,10 @@ return [
          */
         'files' => 'register',
     ],
+
+    /**
+    | Activator interface.
+    | You can define a new type of activator here, file, database etc
+    */
+    'activator' => FileActivator::class
 ];
