@@ -2,12 +2,35 @@
 
 namespace Nwidart\Modules\Activators;
 
+use Illuminate\Cache\CacheManager;
+use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
+use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Module;
 
 class FileActivator implements ActivatorInterface
 {
+	/**
+	 * Laravel cache instance
+	 * 
+	 * @var CacheManager
+	 */
+	protected $cache;
+
+	/**
+	 * Laravel Filesystem instance
+	 * 
+	 * @var Filesystem
+	 */
+	protected $files;
+
+	/**
+	 * Laravel config instance
+	 * @var Config
+	 */
+	protected $config;
+
 	/**
 	 * @var string
 	 */
