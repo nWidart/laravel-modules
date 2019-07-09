@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Tests;
 
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Collection;
+use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Exceptions\InvalidAssetPath;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Laravel\LaravelFileRepository;
@@ -16,10 +17,22 @@ class LaravelFileRepositoryTest extends BaseTestCase
      */
     private $repository;
 
+    /**
+     * @var ActivatorInterface
+     */
+    private $activator;
+
     public function setUp(): void
     {
         parent::setUp();
         $this->repository = new LaravelFileRepository($this->app);
+        $this->activator = $this->app[ActivatorInterface::class];
+    }
+
+    public function tearDown(): void
+    {
+        $this->activator->reset();
+        parent::tearDown();
     }
 
     /** @test */
@@ -46,8 +59,8 @@ class LaravelFileRepositoryTest extends BaseTestCase
     {
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-        $this->assertCount(2, $this->repository->getByStatus(1));
-        $this->assertCount(2, $this->repository->allEnabled());
+        $this->assertCount(0, $this->repository->getByStatus(true));
+        $this->assertCount(0, $this->repository->allEnabled());
     }
 
     /** @test */
@@ -55,8 +68,8 @@ class LaravelFileRepositoryTest extends BaseTestCase
     {
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-        $this->assertCount(1, $this->repository->getByStatus(0));
-        $this->assertCount(1, $this->repository->allDisabled());
+        $this->assertCount(2, $this->repository->getByStatus(false));
+        $this->assertCount(2, $this->repository->allDisabled());
     }
 
     /** @test */
@@ -64,7 +77,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     {
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-        $this->assertEquals(3, $this->repository->count());
+        $this->assertEquals(2, $this->repository->count());
     }
 
     /** @test */
@@ -153,6 +166,8 @@ class LaravelFileRepositoryTest extends BaseTestCase
     {
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
+        $this->repository->enable('Recipe');
+
         $this->assertTrue($this->repository->enabled('Recipe'));
     }
 
@@ -161,7 +176,9 @@ class LaravelFileRepositoryTest extends BaseTestCase
     {
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-        $this->assertFalse($this->repository->disabled('Recipe'));
+        $this->repository->disable('Recipe');
+
+        $this->assertTrue($this->repository->disabled('Recipe'));
     }
 
     /** @test */

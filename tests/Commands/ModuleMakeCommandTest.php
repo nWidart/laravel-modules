@@ -4,6 +4,8 @@ namespace Nwidart\Modules\Tests\Commands;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -19,11 +21,18 @@ class ModuleMakeCommandTest extends BaseTestCase
      */
     private $modulePath;
 
+    /**
+     * @var ActivatorInterface
+     */
+    private $activator;
+
     public function setUp(): void
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
+        $this->repository = $this->app[RepositoryInterface::class];
+        $this->activator = $this->app[ActivatorInterface::class];
     }
 
     public function tearDown(): void
@@ -32,6 +41,7 @@ class ModuleMakeCommandTest extends BaseTestCase
         if ($this->finder->isDirectory(base_path('modules/ModuleName'))) {
             $this->finder->deleteDirectory(base_path('modules/ModuleName'));
         }
+        $this->activator->reset();
         parent::tearDown();
     }
 
@@ -273,5 +283,21 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->assertFalse(is_dir($this->modulePath . '/Assets'));
         $this->assertFalse(is_dir($this->modulePath . '/Emails'));
+    }
+
+    /** @test */
+    public function it_generates_enabled_module()
+    {
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertTrue($this->repository->enabled('Blog'));
+    }
+
+    /** @test */
+    public function it_generates_disabled_module_with_disabled_flag()
+    {
+        $this->artisan('module:make', ['name' => ['Blog'], '--disabled' => true]);
+
+        $this->assertTrue($this->repository->disabled('Blog'));
     }
 }

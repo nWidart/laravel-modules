@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests;
 
+use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 
 class LaravelModulesServiceProviderTest extends BaseTestCase
@@ -11,5 +12,11 @@ class LaravelModulesServiceProviderTest extends BaseTestCase
     {
         $this->assertInstanceOf(RepositoryInterface::class, app(RepositoryInterface::class));
         $this->assertInstanceOf(RepositoryInterface::class, app('modules'));
+    }
+
+    /** @test */
+    public function it_binds_activator_to_activator_class()
+    {
+        $this->assertInstanceOf(ActivatorInterface::class, app(ActivatorInterface::class));
     }
 }
