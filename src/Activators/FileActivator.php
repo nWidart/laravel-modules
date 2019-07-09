@@ -27,6 +27,7 @@ class FileActivator implements ActivatorInterface
 
 	/**
 	 * Laravel config instance
+	 * 
 	 * @var Config
 	 */
 	protected $config;
@@ -46,32 +47,33 @@ class FileActivator implements ActivatorInterface
 	 * 
 	 * @var array
 	 */
-	protected $installed;
+	protected $modulesStatuses;
 
 	/**
 	 * File used to store activation statuses
 	 * 
 	 * @var string
 	 */
-	protected $fileInstalled;
+	protected $statusesFile;
 
 	public function __construct(Container $app)
 	{
 		$this->cache = $app['cache'];
 		$this->files = $app['files'];
 		$this->config = $app['config'];
-		$this->fileInstalled = $this->config('file');
+		$this->statusesFile = $this->config('statuses-file');
 		$this->cacheKey = $this->config('cache-key');
 		$this->cacheLifetime = $this->config('cache-lifetime');
-		$this->installed = $this->getCached();
+		$this->modulesStatuses = $this->getModulesStatuses();
 	}
 
 	/**
-	 * Get installed cache
+	 * Get modules statuses, either from the cache or 
+	 * from the json statuses file if the cache is disabled.
 	 * 
 	 * @return array
 	 */
-	protected function getCached()
+	private function getModulesStatuses()
 	{
 		if(!$this->config->get('modules.cache.enabled')) return $this->readJson();
 		
@@ -81,9 +83,9 @@ class FileActivator implements ActivatorInterface
 	}
 
 	/**
-	 * Forgets the installed cache
+	 * Flushes the modules activation statuses cache
 	 */
-	protected function forgetCache()
+	private function flushCache()
 	{
 		$this->cache->forget($this->cacheKey);
 	}
@@ -95,28 +97,50 @@ class FileActivator implements ActivatorInterface
 	 * @param  $default
 	 * @return mixed
 	 */
-	protected function config(string $key, $default = null)
+	private function config(string $key, $default = null)
     {
         return $this->config->get('modules.activators.file.' . $key, $default);
     }
 
 	/**
-	 * Reads the installed json file
+	 * Reads the json file that contains the activation statuses.
 	 * 
 	 * @return array
 	 */
-	protected function readJson()
+	private function readJson()
 	{
-		if(!$this->files->exists($this->fileInstalled)) return [];
-		return json_decode($this->files->get($this->fileInstalled), true);
+		if(!$this->files->exists($this->statusesFile)) return [];
+		return json_decode($this->files->get($this->statusesFile), true);
 	}
 
 	/**
-	 * Writes the installed json file
+	 * Writes the activation statuses in a file, as json
 	 */
-	protected function writeJson()
+	private function writeJson()
 	{
-		$this->files->put($this->fileInstalled, json_encode($this->installed, JSON_PRETTY_PRINT));
+		$this->files->put($this->statusesFile, json_encode($this->modulesStatuses, JSON_PRETTY_PRINT));
+	}
+
+	/**
+	 * Get the path of the file where statuses are stored
+	 * 
+	 * @return string
+	 */
+	public function getStatusesFilePath()
+	{
+		return $this->statusesFile;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function reset()
+	{
+		if($this->files->exists($this->statusesFile)){
+			$this->files->delete($this->statusesFile);
+		}
+		$this->modulesStatuses = [];
+		$this->flushCache();
 	}
 
 	/**
@@ -124,7 +148,7 @@ class FileActivator implements ActivatorInterface
      */
     public function enable(Module $module)
     {
-    	$this->setActiveByName($module->getName(), 1);
+    	$this->setActiveByName($module->getName(), true);
     }
 
     /**
@@ -132,22 +156,24 @@ class FileActivator implements ActivatorInterface
      */
     public function disable(Module $module)
     {
-		$this->setActiveByName($module->getName(), 0);
+		$this->setActiveByName($module->getName(), false);
     }
 
     /**
      * @inheritDoc
      */
-    public function isStatus(Module $module, $status)
+    public function isStatus(Module $module, bool $status): bool
     {
-    	if(!isset($this->installed[$module->getName()])) return false;
-    	return $this->installed[$module->getName()] == $status;
+    	if(!isset($this->modulesStatuses[$module->getName()])){
+    		return $status === false;
+    	}
+    	return $this->modulesStatuses[$module->getName()] === $status;
     }
 
     /**
      * @inheritDoc
      */
-    public function setActive(Module $module, $active)
+    public function setActive(Module $module, bool $active)
     {
     	$this->setActiveByName($module->getName(), $active);
     }
@@ -155,11 +181,11 @@ class FileActivator implements ActivatorInterface
     /**
      * @inheritDoc
      */
-    public function setActiveByName(string $name, $status)
+    public function setActiveByName(string $name, bool $status)
     {
-    	$this->installed[$name] = (int)$status;
+    	$this->modulesStatuses[$name] = $status;
     	$this->writeJson();
-    	$this->forgetCache();
+    	$this->flushCache();
     }
 
     /**
@@ -167,9 +193,9 @@ class FileActivator implements ActivatorInterface
      */
     public function delete(Module $module)
     {
-    	if(!isset($this->installed[$module->getName()])) return;
-    	unset($this->installed[$module->getName()]);
+    	if(!isset($this->modulesStatuses[$module->getName()])) return;
+    	unset($this->modulesStatuses[$module->getName()]);
     	$this->writeJson();
-    	$this->forgetCache();
+    	$this->flushCache();
     }
 }

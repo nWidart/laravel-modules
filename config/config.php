@@ -201,7 +201,7 @@ return [
     'activators' => [
         'file' => [
             'class' => FileActivator::class,
-            'file' => storage_path('installed_modules'),
+            'statuses-file' => storage_path('modules_statuses'),
             'cache-key' => 'activator.installed',
             'cache-lifetime' => 604800,
         ]

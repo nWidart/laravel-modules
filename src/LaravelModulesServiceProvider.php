@@ -59,6 +59,5 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
             return new $class($app);
         });
         $this->app->alias(Contracts\RepositoryInterface::class, 'modules');
-        $this->app->alias(Contracts\ActivatorInterface::class, 'modules.activator');
     }
 }

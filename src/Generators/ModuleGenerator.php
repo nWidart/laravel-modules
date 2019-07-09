@@ -74,7 +74,7 @@ class ModuleGenerator extends Generator
      *
      * @var bool
      */
-    protected $active = false;
+    protected $isActive = false;
 
     /**
      * The constructor.
@@ -121,9 +121,9 @@ class ModuleGenerator extends Generator
      *
      * @return $this
      */
-    public function setActive($active)
+    public function setActive(bool $active)
     {
-        $this->active = $active;
+        $this->isActive = $active;
 
         return $this;
     }
@@ -169,7 +169,7 @@ class ModuleGenerator extends Generator
      *
      * @return $this
      */
-    public function setActivator($activator)
+    public function setActivator(ActivatorInterface $activator)
     {
         $this->activator = $activator;
 
@@ -312,7 +312,7 @@ class ModuleGenerator extends Generator
             $this->cleanModuleJsonFile();
         }
 
-        $this->activator->setActiveByName($name, $this->active);
+        $this->activator->setActiveByName($name, $this->isActive);
 
         $this->console->info("Module [{$name}] created successfully.");
     }

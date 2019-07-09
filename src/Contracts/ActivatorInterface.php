@@ -24,27 +24,27 @@ interface ActivatorInterface
      * Determine whether the given status same with a module status.
      *
      * @param Module $module
-     * @param $status
+     * @param bool $status
      *
      * @return bool
      */
-    public function isStatus(Module $module, $status);
+    public function isStatus(Module $module, bool $status): bool;
 
     /**
      * Set active state for a module.
      *
      * @param Module $module
-     * @param $active
+     * @param bool $active
      */
-    public function setActive(Module $module, $active);
+    public function setActive(Module $module, bool $active);
 
     /**
      * Sets a module status by its name
      * 
      * @param  string $name
-     * @param  $active
+     * @param  bool $active
      */
-    public function setActiveByName(string $name, $active);
+    public function setActiveByName(string $name, bool $active);
 
     /**
      * Deletes a module activation status
@@ -52,4 +52,9 @@ interface ActivatorInterface
      * @param  Module $module
      */
     public function delete(Module $module);
+
+    /**
+     * Deletes any module activation statuses created by this class.
+     */
+    public function reset();
 }
