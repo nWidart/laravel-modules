@@ -79,7 +79,7 @@ abstract class Module
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -89,7 +89,7 @@ abstract class Module
      *
      * @return string
      */
-    public function getLowerName()
+    public function getLowerName(): string
     {
         return strtolower($this->name);
     }
@@ -99,7 +99,7 @@ abstract class Module
      *
      * @return string
      */
-    public function getStudlyName()
+    public function getStudlyName(): string
     {
         return Str::studly($this->name);
     }
@@ -109,7 +109,7 @@ abstract class Module
      *
      * @return string
      */
-    public function getSnakeName()
+    public function getSnakeName(): string
     {
         return Str::snake($this->name);
     }
@@ -119,7 +119,7 @@ abstract class Module
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->get('description');
     }
@@ -129,7 +129,7 @@ abstract class Module
      *
      * @return string
      */
-    public function getAlias()
+    public function getAlias(): string
     {
         return $this->get('alias');
     }
@@ -139,7 +139,7 @@ abstract class Module
      *
      * @return string
      */
-    public function getPriority()
+    public function getPriority(): string
     {
         return $this->get('priority');
     }
@@ -149,7 +149,7 @@ abstract class Module
      *
      * @return array
      */
-    public function getRequires()
+    public function getRequires(): array
     {
         return $this->get('requires');
     }
@@ -159,7 +159,7 @@ abstract class Module
      *
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -171,7 +171,7 @@ abstract class Module
      *
      * @return $this
      */
-    public function setPath($path)
+    public function setPath($path): Module
     {
         $this->path = $path;
 
@@ -181,7 +181,7 @@ abstract class Module
     /**
      * Bootstrap the application events.
      */
-    public function boot()
+    public function boot(): void
     {
         if (config('modules.register.translations', true) === true) {
             $this->registerTranslation();
@@ -199,7 +199,7 @@ abstract class Module
      *
      * @return void
      */
-    protected function registerTranslation()
+    protected function registerTranslation(): void
     {
         $lowerName = $this->getLowerName();
 
@@ -257,7 +257,7 @@ abstract class Module
     /**
      * Register the module.
      */
-    public function register()
+    public function register(): void
     {
         $this->registerAliases();
 
@@ -275,31 +275,31 @@ abstract class Module
      *
      * @param string $event
      */
-    protected function fireEvent($event)
+    protected function fireEvent($event): void
     {
         $this->app['events']->dispatch(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
     }
     /**
      * Register the aliases from this module.
      */
-    abstract public function registerAliases();
+    abstract public function registerAliases(): void;
 
     /**
      * Register the service providers from this module.
      */
-    abstract public function registerProviders();
+    abstract public function registerProviders(): void;
 
     /**
      * Get the path to the cached *_module.php file.
      *
      * @return string
      */
-    abstract public function getCachedServicesPath();
+    abstract public function getCachedServicesPath(): string;
 
     /**
      * Register the files from this module.
      */
-    protected function registerFiles()
+    protected function registerFiles(): void
     {
         foreach ($this->get('files', []) as $file) {
             include $this->path . '/' . $file;
@@ -355,7 +355,7 @@ abstract class Module
      *
      * @return bool
      */
-    public function setActive(bool $active)
+    public function setActive(bool $active): bool
     {
         return $this->activator->setActive($this, $active);
     }
@@ -363,7 +363,7 @@ abstract class Module
     /**
      * Disable the current module.
      */
-    public function disable()
+    public function disable(): void
     {
         $this->fireEvent('disabling');
 
@@ -376,7 +376,7 @@ abstract class Module
     /**
      * Enable the current module.
      */
-    public function enable()
+    public function enable(): void
     {
         $this->fireEvent('enabling');
 
@@ -391,7 +391,7 @@ abstract class Module
      *
      * @return bool
      */
-    public function delete()
+    public function delete(): bool
     {
         $this->activator->delete($this);
 
@@ -415,7 +415,7 @@ abstract class Module
      *
      * @return bool
      */
-    protected function isLoadFilesOnBoot()
+    protected function isLoadFilesOnBoot(): bool
     {
         return config('modules.register.files', 'register') === 'boot' &&
             // force register method if option == boot && app is AsgardCms

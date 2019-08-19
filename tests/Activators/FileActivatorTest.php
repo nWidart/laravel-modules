@@ -88,7 +88,7 @@ class FileActivatorTest extends BaseTestCase
 
 class TestModule extends \Nwidart\Modules\Laravel\Module
 {
-    public function registerProviders()
+    public function registerProviders(): void
     {
         parent::registerProviders();
     }

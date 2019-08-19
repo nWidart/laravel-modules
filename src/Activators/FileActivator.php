@@ -203,7 +203,7 @@ class FileActivator implements ActivatorInterface
     /**
      * Flushes the modules activation statuses cache
      */
-    private function flushCache()
+    private function flushCache(): void
     {
         $this->cache->forget($this->cacheKey);
     }
