@@ -62,6 +62,18 @@ class RouteProviderMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.provider.namespace', 'SuperProviders');
+
+        $this->artisan('module:route-provider', ['module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Providers/RouteServiceProvider.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
+
+    /** @test */
     public function it_can_overwrite_route_file_names()
     {
         $this->app['config']->set('modules.stubs.files.routes/web', 'SuperRoutes/web.php');

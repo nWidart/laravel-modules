@@ -12,11 +12,13 @@ class GeneratorPath
         if (is_array($config)) {
             $this->path = $config['path'];
             $this->generate = $config['generate'];
+            $this->namespace = $config['namespace'] ?? $config['path'];
 
             return;
         }
         $this->path = $config;
         $this->generate = (bool) $config;
+        $this->namespace = $config;
     }
 
     public function getPath()
@@ -27,5 +29,10 @@ class GeneratorPath
     public function generate() : bool
     {
         return $this->generate;
+    }
+
+    public function getNamespace()
+    {
+        return $this->namespace;
     }
 }

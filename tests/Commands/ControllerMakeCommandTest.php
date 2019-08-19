@@ -108,6 +108,18 @@ class ControllerMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.controller.namespace', 'Controllers');
+
+        $this->artisan('module:make-controller', ['controller' => 'MyController', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Http/Controllers/MyController.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
+
+    /** @test */
     public function it_can_generate_a_controller_in_sub_namespace_in_correct_folder()
     {
         $this->artisan('module:make-controller', ['controller' => 'Api\\MyController', 'module' => 'Blog']);

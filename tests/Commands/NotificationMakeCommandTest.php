@@ -60,4 +60,16 @@ class NotificationMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.notifications.namespace', 'SuperNotifications');
+
+        $this->artisan('module:make-notification', ['name' => 'WelcomeNotification', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/Notifications/WelcomeNotification.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

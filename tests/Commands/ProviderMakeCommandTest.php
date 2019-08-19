@@ -80,4 +80,16 @@ class ProviderMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.provider.namespace', 'SuperProviders');
+
+        $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
+
+        $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }

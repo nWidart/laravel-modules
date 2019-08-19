@@ -159,10 +159,10 @@ class SeedCommand extends Command
         $name = Str::studly($name);
 
         $namespace = $this->laravel['modules']->config('namespace');
-        $seederPath = GenerateConfigReader::read('seeder');
-        $seederPath = str_replace('/', '\\', $seederPath->getPath());
+        $config = GenerateConfigReader::read('seeder');
+        $seederPath = str_replace('/', '\\', $config->getPath());
 
-        return $namespace . '\\' . $name . '\\' . $seederPath . '\\' . $name . 'DatabaseSeeder';
+        return $namespace . '\\' . $name . '\\' . $config->getNamespace() . '\\' . $name . 'DatabaseSeeder';
     }
 
     /**

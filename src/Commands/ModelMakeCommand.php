@@ -162,6 +162,8 @@ class ModelMakeCommand extends GeneratorCommand
      */
     public function getDefaultNamespace() : string
     {
-        return $this->laravel['modules']->config('paths.generator.model.path', 'Entities');
+        $module = $this->laravel['modules'];
+
+        return $module->config('paths.generator.model.namespace') ?: $module->config('paths.generator.model.path', 'Entities');
     }
 }

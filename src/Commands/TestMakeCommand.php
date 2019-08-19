@@ -19,11 +19,13 @@ class TestMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace() : string
     {
+        $module = $this->laravel['modules'];
+
         if ($this->option('feature')) {
-            return $this->laravel['modules']->config('paths.generator.test-feature.path', 'Tests/Feature');
+            return $module->config('paths.generator.test-feature.namespace') ?: $module->config('paths.generator.test-feature.path', 'Tests/Feature');
         }
 
-        return $this->laravel['modules']->config('paths.generator.test.path', 'Tests/Unit');
+        return $module->config('paths.generator.test.namespace') ?: $module->config('paths.generator.test.path', 'Tests/Unit');
     }
 
     /**
