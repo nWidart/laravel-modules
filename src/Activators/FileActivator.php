@@ -13,48 +13,48 @@ class FileActivator implements ActivatorInterface
 {
 	/**
 	 * Laravel cache instance
-	 * 
+	 *
 	 * @var CacheManager
 	 */
-	protected $cache;
+	private $cache;
 
 	/**
 	 * Laravel Filesystem instance
-	 * 
+	 *
 	 * @var Filesystem
 	 */
-	protected $files;
+	private $files;
 
 	/**
 	 * Laravel config instance
-	 * 
+	 *
 	 * @var Config
 	 */
-	protected $config;
+	private $config;
 
 	/**
 	 * @var string
 	 */
-	protected $cacheKey;
+	private $cacheKey;
 
 	/**
 	 * @var string
 	 */
-	protected $cacheLifetime;
+	private $cacheLifetime;
 
 	/**
 	 * Array of modules activation statuses
-	 * 
+	 *
 	 * @var array
 	 */
-	protected $modulesStatuses;
+	private $modulesStatuses;
 
 	/**
 	 * File used to store activation statuses
-	 * 
+	 *
 	 * @var string
 	 */
-	protected $statusesFile;
+	private $statusesFile;
 
 	public function __construct(Container $app)
 	{
@@ -68,15 +68,15 @@ class FileActivator implements ActivatorInterface
 	}
 
 	/**
-	 * Get modules statuses, either from the cache or 
+	 * Get modules statuses, either from the cache or
 	 * from the json statuses file if the cache is disabled.
-	 * 
+	 *
 	 * @return array
 	 */
 	private function getModulesStatuses()
 	{
 		if(!$this->config->get('modules.cache.enabled')) return $this->readJson();
-		
+
 		return $this->cache->remember($this->cacheKey, $this->cacheLifetime, function () {
             return $this->readJson();
         });
@@ -92,7 +92,7 @@ class FileActivator implements ActivatorInterface
 
 	/**
 	 * Reads a config parameter
-	 * 
+	 *
 	 * @param  string $key     [description]
 	 * @param  $default
 	 * @return mixed
@@ -104,7 +104,7 @@ class FileActivator implements ActivatorInterface
 
 	/**
 	 * Reads the json file that contains the activation statuses.
-	 * 
+	 *
 	 * @return array
 	 */
 	private function readJson()
@@ -123,7 +123,7 @@ class FileActivator implements ActivatorInterface
 
 	/**
 	 * Get the path of the file where statuses are stored
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getStatusesFilePath()
