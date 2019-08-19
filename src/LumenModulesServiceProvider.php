@@ -2,7 +2,6 @@
 
 namespace Nwidart\Modules;
 
-use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Support\Stub;
 
 class LumenModulesServiceProvider extends ModulesServiceProvider

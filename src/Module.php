@@ -394,6 +394,7 @@ abstract class Module
     public function delete()
     {
         $this->activator->delete($this);
+
         return $this->json()->getFilesystem()->deleteDirectory($this->getPath());
     }
 

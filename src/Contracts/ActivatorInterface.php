@@ -40,7 +40,7 @@ interface ActivatorInterface
 
     /**
      * Sets a module status by its name
-     * 
+     *
      * @param  string $name
      * @param  bool $active
      */
@@ -48,7 +48,7 @@ interface ActivatorInterface
 
     /**
      * Deletes a module activation status
-     * 
+     *
      * @param  Module $module
      */
     public function delete(Module $module);

@@ -43,7 +43,7 @@ class ModuleGenerator extends Generator
 
     /**
      * The activator instance
-     * 
+     *
      * @var ActivatorInterface
      */
     protected $activator;

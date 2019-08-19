@@ -204,8 +204,8 @@ return [
             'statuses-file' => storage_path('modules_statuses'),
             'cache-key' => 'activator.installed',
             'cache-lifetime' => 604800,
-        ]
+        ],
     ],
 
-    'activator' => 'file'
+    'activator' => 'file',
 ];
