@@ -17,6 +17,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Alternate way to define the namespace of modules in [PR #776](https://github.com/nWidart/laravel-modules/pull/776) by @daison12006013
 
     This allows to have the content of the module under an `src/` folder for example.
+- **BREAKING** Renamed method `enabled` to `isEnabled` in `\Nwidart\Modules\Module`.
+- **BREAKING** Renamed method `disabled` to `isDisabled` in `\Nwidart\Modules\Module`.
 
 
 ## 5.0.1 - 2019-05-11

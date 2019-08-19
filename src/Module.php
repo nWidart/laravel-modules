@@ -333,7 +333,7 @@ abstract class Module
      *
      * @return bool
      */
-    public function enabled() : bool
+    public function isEnabled() : bool
     {
         return $this->activator->hasStatus($this, true);
     }
@@ -343,9 +343,9 @@ abstract class Module
      *
      * @return bool
      */
-    public function disabled() : bool
+    public function isDisabled() : bool
     {
-        return !$this->enabled();
+        return !$this->isEnabled();
     }
 
     /**

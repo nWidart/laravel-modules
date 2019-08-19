@@ -128,8 +128,8 @@ class LumenModuleTest extends BaseTestCase
     /** @test */
     public function it_checks_module_enabled_status()
     {
-        $this->assertFalse($this->module->enabled());
-        $this->assertTrue($this->module->disabled());
+        $this->assertFalse($this->module->isEnabled());
+        $this->assertTrue($this->module->isDisabled());
     }
 
     /** @test */

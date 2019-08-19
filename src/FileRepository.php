@@ -556,7 +556,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function enabled($name) : bool
     {
-        return $this->findOrFail($name)->enabled();
+        return $this->findOrFail($name)->isEnabled();
     }
 
     /**
