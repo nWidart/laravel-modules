@@ -4,6 +4,21 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Added
+
+- New File Activator feature. [PR #790](https://github.com/nWidart/laravel-modules/pull/790) from @ryssbowh
+    
+    This feature changes how modules are activated and de-activated. Currently module statuses are stored on disk, this features adds the possibility of storing this status information in a database.
+    
+### Changed
+
+- Alternate way to define the namespace of modules in [PR #776](https://github.com/nWidart/laravel-modules/pull/776) by @daison12006013
+
+    This allows to have the content of the module under an `src/` folder for example.
+
+
+## 5.0.1 - 2019-05-11
+
 ### Changed
 
 - Replacing `@stop` with `@endsection` in the view stub file
