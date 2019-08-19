@@ -12,6 +12,7 @@ use Nwidart\Modules\Commands\EventMakeCommand;
 use Nwidart\Modules\Commands\FactoryMakeCommand;
 use Nwidart\Modules\Commands\InstallCommand;
 use Nwidart\Modules\Commands\JobMakeCommand;
+use Nwidart\Modules\Commands\LaravelModulesV6Migrator;
 use Nwidart\Modules\Commands\ListCommand;
 use Nwidart\Modules\Commands\ListenerMakeCommand;
 use Nwidart\Modules\Commands\MailMakeCommand;
@@ -90,6 +91,7 @@ class ConsoleServiceProvider extends ServiceProvider
         UseCommand::class,
         ResourceMakeCommand::class,
         TestMakeCommand::class,
+        LaravelModulesV6Migrator::class,
     ];
 
     /**

@@ -9,6 +9,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - New File Activator feature. [PR #790](https://github.com/nWidart/laravel-modules/pull/790) from @ryssbowh
     
     This feature changes how modules are activated and de-activated. Currently module statuses are stored on disk, this features adds the possibility of storing this status information in a database.
+    **Use the command `php artisan module:v6:migrate` to have old modules active status migrated to the new system.**
     
 ### Changed
 
