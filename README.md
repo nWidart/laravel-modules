@@ -15,6 +15,7 @@
 | 5.6  | ^3.0  |
 | 5.7  | ^4.0  |
 | 5.8  | ^5.0  |
+| 6.0  | 6.0-dev  |
 
 `nwidart/laravel-modules` is a Laravel package which created to manage your large Laravel app using modules. Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 5.
 
