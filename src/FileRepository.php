@@ -288,7 +288,6 @@ abstract class FileRepository implements RepositoryInterface, Countable
     public function getOrdered($direction = 'asc') : array
     {
         $modules = $this->allEnabled();
-        dd($modules);
 
         uasort($modules, function (Module $a, Module $b) use ($direction) {
             if ($a->order == $b->order) {
