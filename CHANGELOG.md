@@ -9,6 +9,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - New File Activator feature. [PR #790](https://github.com/nWidart/laravel-modules/pull/790) from @ryssbowh
     
     This feature changes how modules are activated and de-activated. Currently module statuses are stored on disk, this features adds the possibility of storing this status information in a database.
+    
     **Use the command `php artisan module:v6:migrate` to have old modules active status migrated to the new system.**
     
 ### Changed
@@ -20,11 +21,6 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## 5.0.1 - 2019-05-11
 
-### Changed
-
-- Replacing `@stop` with `@endsection` in the view stub file
-- `Module` class does not extend Laravel's Service Provider class anymore
-
 ### Added
 
 - `artisan module:route-provider` has a `--force` option to overwrite existing file
@@ -32,6 +28,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ### Changed
 
 - Fixing the `RouteServiceProvider` generation to properly use the `routes/web` and `routes/api` stubs
+- Replacing `@stop` with `@endsection` in the view stub file
+- `Module` class does not extend Laravel's Service Provider class anymore
 
 ## 5.0.0 - 2019-03-18
 
