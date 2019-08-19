@@ -226,6 +226,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
     {
         $modules = [];
 
+        /** @var Module $module */
         foreach ($this->all() as $name => $module) {
             if ($module->isStatus($status)) {
                 $modules[$name] = $module;
@@ -287,6 +288,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
     public function getOrdered($direction = 'asc') : array
     {
         $modules = $this->allEnabled();
+        dd($modules);
 
         uasort($modules, function (Module $a, Module $b) use ($direction) {
             if ($a->order == $b->order) {
