@@ -411,18 +411,6 @@ abstract class Module
     }
 
     /**
-     * Handle call to __get method.
-     *
-     * @param $key
-     *
-     * @return mixed
-     */
-    public function __get($key)
-    {
-        return $this->get($key);
-    }
-
-    /**
      * Check if can load files of module on boot method.
      *
      * @return bool
