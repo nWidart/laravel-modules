@@ -28,7 +28,7 @@ interface ActivatorInterface
      *
      * @return bool
      */
-    public function isStatus(Module $module, bool $status): bool;
+    public function hasStatus(Module $module, bool $status): bool;
 
     /**
      * Set active state for a module.

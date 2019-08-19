@@ -325,7 +325,7 @@ abstract class Module
      */
     public function isStatus(bool $status) : bool
     {
-        return $this->activator->isStatus($this, $status);
+        return $this->activator->hasStatus($this, $status);
     }
 
     /**
@@ -335,7 +335,7 @@ abstract class Module
      */
     public function enabled() : bool
     {
-        return $this->activator->isStatus($this, true);
+        return $this->activator->hasStatus($this, true);
     }
 
     /**

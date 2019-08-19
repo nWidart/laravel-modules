@@ -63,26 +63,26 @@ class FileActivatorTest extends BaseTestCase
     public function it_can_check_module_enabled_status()
     {
         $this->activator->enable($this->module);
-        $this->assertTrue($this->activator->isStatus($this->module, true));
+        $this->assertTrue($this->activator->hasStatus($this->module, true));
 
         $this->activator->setActive($this->module, true);
-        $this->assertTrue($this->activator->isStatus($this->module, true));
+        $this->assertTrue($this->activator->hasStatus($this->module, true));
     }
 
     /** @test */
     public function it_can_check_module_disabled_status()
     {
         $this->activator->disable($this->module);
-        $this->assertTrue($this->activator->isStatus($this->module, false));
+        $this->assertTrue($this->activator->hasStatus($this->module, false));
 
         $this->activator->setActive($this->module, false);
-        $this->assertTrue($this->activator->isStatus($this->module, false));
+        $this->assertTrue($this->activator->hasStatus($this->module, false));
     }
 
     /** @test */
     public function it_can_check_status_of_module_that_hasnt_been_enabled_or_disabled()
     {
-        $this->assertTrue($this->activator->isStatus($this->module, false));
+        $this->assertTrue($this->activator->hasStatus($this->module, false));
     }
 }
 

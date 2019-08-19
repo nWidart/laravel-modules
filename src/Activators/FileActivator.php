@@ -109,7 +109,7 @@ class FileActivator implements ActivatorInterface
     /**
      * @inheritDoc
      */
-    public function isStatus(Module $module, bool $status): bool
+    public function hasStatus(Module $module, bool $status): bool
     {
         if (!isset($this->modulesStatuses[$module->getName()])) {
             return $status === false;
