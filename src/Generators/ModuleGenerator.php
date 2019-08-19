@@ -49,7 +49,7 @@ class ModuleGenerator extends Generator
     protected $activator;
 
     /**
-     * The pingpong module instance.
+     * The module instance.
      *
      * @var \Nwidart\Modules\Module
      */
@@ -235,7 +235,7 @@ class ModuleGenerator extends Generator
     }
 
     /**
-     * Set the pingpong module instance.
+     * Set the module instance.
      *
      * @param mixed $module
      *
