@@ -52,6 +52,10 @@ abstract class Module
      * @var Translator
      */
     private $translator;
+    /**
+     * @var ActivatorInterface
+     */
+    private $activator;
 
     /**
      * The constructor.
