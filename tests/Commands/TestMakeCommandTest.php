@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests\Commands;
 
+use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -17,17 +18,24 @@ class TestMakeCommandTest extends BaseTestCase
      */
     private $modulePath;
 
+    /**
+     * @var ActivatorInterface
+     */
+    private $activator;
+
     public function setUp(): void
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
         $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->activator = $this->app[ActivatorInterface::class];
     }
 
     public function tearDown(): void
     {
         $this->finder->deleteDirectory($this->modulePath);
+        $this->activator->reset();
         parent::tearDown();
     }
 

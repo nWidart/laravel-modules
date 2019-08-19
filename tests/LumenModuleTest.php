@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests;
 
+use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Json;
 
 class LumenModuleTest extends BaseTestCase
@@ -11,10 +12,22 @@ class LumenModuleTest extends BaseTestCase
      */
     private $module;
 
+    /**
+     * @var ActivatorInterface
+     */
+    private $activator;
+
     public function setUp(): void
     {
         parent::setUp();
         $this->module = new LumenTestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');
+        $this->activator = $this->app[ActivatorInterface::class];
+    }
+
+    public function tearDown(): void
+    {
+        $this->activator->reset();
+        parent::tearDown();
     }
 
     /** @test */
@@ -108,26 +121,15 @@ class LumenModuleTest extends BaseTestCase
     /** @test */
     public function it_module_status_check()
     {
-        $this->assertTrue($this->module->isStatus(1));
-        $this->assertFalse($this->module->isStatus(0));
+        $this->assertFalse($this->module->isStatus(true));
+        $this->assertTrue($this->module->isStatus(false));
     }
 
     /** @test */
     public function it_checks_module_enabled_status()
     {
-        $this->assertTrue($this->module->enabled());
-        $this->assertFalse($this->module->disabled());
-    }
-
-    /** @test */
-    public function it_fires_events_when_module_is_disabled()
-    {
-        $this->expectsEvents([
-            sprintf('modules.%s.disabling', $this->module->getLowerName()),
-            sprintf('modules.%s.disabled', $this->module->getLowerName()),
-        ]);
-
-        $this->module->disable();
+        $this->assertFalse($this->module->enabled());
+        $this->assertTrue($this->module->disabled());
     }
 
     /** @test */
@@ -139,6 +141,17 @@ class LumenModuleTest extends BaseTestCase
         ]);
 
         $this->module->enable();
+    }
+
+    /** @test */
+    public function it_fires_events_when_module_is_disabled()
+    {
+        $this->expectsEvents([
+            sprintf('modules.%s.disabling', $this->module->getLowerName()),
+            sprintf('modules.%s.disabled', $this->module->getLowerName()),
+        ]);
+
+        $this->module->disable();
     }
 
     /** @test */

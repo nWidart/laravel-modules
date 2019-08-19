@@ -254,7 +254,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function allEnabled() : array
     {
-        return $this->getByStatus(1);
+        return $this->getByStatus(true);
     }
 
     /**
@@ -264,7 +264,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function allDisabled() : array
     {
-        return $this->getByStatus(0);
+        return $this->getByStatus(false);
     }
 
     /**

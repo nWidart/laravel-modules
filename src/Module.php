@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Translation\Translator;
+use Nwidart\Modules\Contracts\ActivatorInterface;
 
 abstract class Module
 {
@@ -65,6 +66,7 @@ abstract class Module
         $this->cache = $app['cache'];
         $this->files = $app['files'];
         $this->translator = $app['translator'];
+        $this->activator = $app[ActivatorInterface::class];
         $this->app = $app;
     }
 
@@ -313,13 +315,13 @@ abstract class Module
     /**
      * Determine whether the given status same with the current module status.
      *
-     * @param $status
+     * @param bool $status
      *
      * @return bool
      */
-    public function isStatus($status) : bool
+    public function isStatus(bool $status) : bool
     {
-        return $this->get('active', 0) === $status;
+        return $this->activator->isStatus($this, $status);
     }
 
     /**
@@ -329,7 +331,7 @@ abstract class Module
      */
     public function enabled() : bool
     {
-        return $this->isStatus(1);
+        return $this->activator->isStatus($this, true);
     }
 
     /**
@@ -345,13 +347,13 @@ abstract class Module
     /**
      * Set active state for current module.
      *
-     * @param $active
+     * @param bool $active
      *
      * @return bool
      */
-    public function setActive($active)
+    public function setActive(bool $active)
     {
-        return $this->json()->set('active', $active)->save();
+        return $this->activator->setActive($this, $active);
     }
 
     /**
@@ -361,7 +363,7 @@ abstract class Module
     {
         $this->fireEvent('disabling');
 
-        $this->setActive(0);
+        $this->activator->disable($this);
         $this->flushCache();
 
         $this->fireEvent('disabled');
@@ -374,7 +376,7 @@ abstract class Module
     {
         $this->fireEvent('enabling');
 
-        $this->setActive(1);
+        $this->activator->enable($this);
         $this->flushCache();
 
         $this->fireEvent('enabled');
@@ -387,6 +389,7 @@ abstract class Module
      */
     public function delete()
     {
+        $this->activator->delete($this);
         return $this->json()->getFilesystem()->deleteDirectory($this->getPath());
     }
 
