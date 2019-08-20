@@ -1,6 +1,6 @@
 <?php return '<?php
 
-namespace Modules\\Blog\\Listeners;
+namespace Modules\\Blog\\Events\\Handlers;
 
 use Illuminate\\Queue\\InteractsWithQueue;
 use Illuminate\\Contracts\\Queue\\ShouldQueue;
