@@ -20,6 +20,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - **BREAKING** Renamed method `enabled` to `isEnabled` in `\Nwidart\Modules\Module`.
 - **BREAKING** Renamed method `disabled` to `isDisabled` in `\Nwidart\Modules\Module`.
 - **BREAKING** Removed the `__get` magic method on the `\Nwidart\Modules\Module` class. Use `get()` or `json()->get()` instead.
+- The `module:make-listener` command now correctly uses the namespace configuration
 
 ## 5.0.1 - 2019-05-11
 
