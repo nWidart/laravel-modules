@@ -70,7 +70,9 @@ class ListenerMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace() : string
     {
-        return $this->laravel['modules']->config('paths.generator.listener.path', 'Listeners');
+        $module = $this->laravel['modules'];
+
+        return $module->config('paths.generator.listener.namespace') ?: $module->config('paths.generator.listener.path', 'Listeners');
     }
 
     protected function getEventName(Module $module)
