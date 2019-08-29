@@ -101,4 +101,17 @@ class MigrationMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+    
+    
+    /** @test */
+    public function it_generates_foreign_key_constraints()
+    {
+        $this->artisan('module:make-migration', ['name' => 'create_posts_table', 'module' => 'Blog', '--fields' => 'belongsTo:user:id:users']);
+
+        $migrations = $this->finder->allFiles($this->modulePath . '/Database/Migrations');
+        $fileName = $migrations[0]->getRelativePathname();
+        $file = $this->finder->get($this->modulePath . '/Database/Migrations/' . $fileName);
+
+        $this->assertMatchesSnapshot($file);
+    }
 }
