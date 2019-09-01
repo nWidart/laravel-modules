@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputOption;
 
 class ListCommand extends Command
@@ -38,10 +39,11 @@ class ListCommand extends Command
     {
         $rows = [];
 
+        /** @var Module $module */
         foreach ($this->getModules() as $module) {
             $rows[] = [
                 $module->getName(),
-                $module->enabled() ? 'Enabled' : 'Disabled',
+                $module->isEnabled() ? 'Enabled' : 'Disabled',
                 $module->get('order'),
                 $module->getPath(),
             ];
