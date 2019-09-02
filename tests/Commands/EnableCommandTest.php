@@ -43,5 +43,4 @@ class EnableCommandTest extends BaseTestCase
 
         $this->assertTrue($blogModule->isEnabled());
     }
-
 }

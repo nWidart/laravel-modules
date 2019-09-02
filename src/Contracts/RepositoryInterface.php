@@ -2,6 +2,9 @@
 
 namespace Nwidart\Modules\Contracts;
 
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
+use Nwidart\Modules\Module;
+
 interface RepositoryInterface
 {
     /**
@@ -80,10 +83,18 @@ interface RepositoryInterface
      * Find a specific module.
      *
      * @param $name
-     *
-     * @return mixed
+     * @return Module|null
      */
-    public function find($name);
+    public function find(string $name);
+
+    /**
+     * Find all modules that are required by a module. If the module cannot be found, throw an exception.
+     *
+     * @param $name
+     * @return array
+     * @throws ModuleNotFoundException
+     */
+    public function findRequirements($name): array;
 
     /**
      * Find a specific module. If there return that, otherwise throw exception.
@@ -92,7 +103,7 @@ interface RepositoryInterface
      *
      * @return mixed
      */
-    public function findOrFail($name);
+    public function findOrFail(string $name);
 
     public function getModulePath($moduleName);
 
@@ -109,4 +120,36 @@ interface RepositoryInterface
      * @return mixed
      */
     public function config(string $key, $default = null);
+
+    /**
+     * Get a module path.
+     *
+     * @return string
+     */
+    public function getPath() : string;
+
+    /**
+     * Find a specific module by its alias.
+     * @param string $alias
+     * @return Module|void
+     */
+    public function findByAlias(string $alias);
+
+    /**
+     * Boot the modules.
+     */
+    public function boot(): void;
+
+    /**
+     * Register the modules.
+     */
+    public function register(): void;
+
+    /**
+     * Get asset path for a specific module.
+     *
+     * @param string $module
+     * @return string
+     */
+    public function assetPath(string $module) : string;
 }

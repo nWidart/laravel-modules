@@ -10,7 +10,7 @@ class BootstrapServiceProvider extends ServiceProvider
     /**
      * Booting the package.
      */
-    public function boot()
+    public function boot(): void
     {
         $this->app[RepositoryInterface::class]->boot();
     }
@@ -18,7 +18,7 @@ class BootstrapServiceProvider extends ServiceProvider
     /**
      * Register the provider.
      */
-    public function register()
+    public function register(): void
     {
         $this->app[RepositoryInterface::class]->register();
     }

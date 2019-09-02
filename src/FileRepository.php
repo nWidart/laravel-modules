@@ -305,9 +305,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
-     * Get a module path.
-     *
-     * @return string
+     * @inheritDoc
      */
     public function getPath() : string
     {
@@ -315,9 +313,9 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
-     * Register the modules.
+     * @inheritDoc
      */
-    public function register()
+    public function register(): void
     {
         foreach ($this->getOrdered() as $module) {
             $module->register();
@@ -325,9 +323,9 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
-     * Boot the modules.
+     * @inheritDoc
      */
-    public function boot()
+    public function boot(): void
     {
         foreach ($this->getOrdered() as $module) {
             $module->boot();
@@ -335,11 +333,9 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
-     * Find a specific module.
-     * @param $name
-     * @return mixed|void
+     * @inheritDoc
      */
-    public function find($name)
+    public function find(string $name)
     {
         foreach ($this->all() as $module) {
             if ($module->getLowerName() === strtolower($name)) {
@@ -351,11 +347,9 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
-     * Find a specific module by its alias.
-     * @param $alias
-     * @return mixed|void
+     * @inheritDoc
      */
-    public function findByAlias($alias)
+    public function findByAlias(string $alias)
     {
         foreach ($this->all() as $module) {
             if ($module->getAlias() === $alias) {
@@ -367,13 +361,9 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
-     * Find all modules that are required by a module. If the module cannot be found, throw an exception.
-     *
-     * @param $name
-     * @return array
-     * @throws ModuleNotFoundException
+     * @inheritDoc
      */
-    public function findRequirements($name)
+    public function findRequirements($name): array
     {
         $requirements = [];
 
@@ -395,7 +385,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      *
      * @throws ModuleNotFoundException
      */
-    public function findOrFail($name)
+    public function findOrFail(string $name)
     {
         $module = $this->find($name);
 
@@ -435,13 +425,9 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
-     * Get asset path for a specific module.
-     *
-     * @param $module
-     *
-     * @return string
+     * @inheritDoc
      */
-    public function assetPath($module) : string
+    public function assetPath(string $module) : string
     {
         return $this->config('paths.assets') . '/' . $module;
     }
