@@ -3,7 +3,6 @@
 namespace Nwidart\Modules\Tests\Commands;
 
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Foundation\Testing\Concerns\InteractsWithConsole;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Tests\BaseTestCase;
