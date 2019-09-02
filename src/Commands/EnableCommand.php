@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputArgument;
 
 class EnableCommand extends Command
@@ -26,9 +27,10 @@ class EnableCommand extends Command
      */
     public function handle()
     {
+        /** @var Module $module */
         $module = $this->laravel['modules']->findOrFail($this->argument('module'));
 
-        if ($module->disabled()) {
+        if ($module->isDisabled()) {
             $module->enable();
 
             $this->info("Module [{$module}] enabled successful.");
