@@ -25,6 +25,10 @@ class ModuleMakeCommandTest extends BaseTestCase
      * @var ActivatorInterface
      */
     private $activator;
+    /**
+     * @var RepositoryInterface
+     */
+    private $repository;
 
     public function setUp(): void
     {
@@ -50,7 +54,7 @@ class ModuleMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertTrue(is_dir($this->modulePath));
+        $this->assertDirectoryExists($this->modulePath);
         $this->assertSame(0, $code);
     }
 
@@ -60,7 +64,7 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['Blog']]);
 
         foreach (config('modules.paths.generator') as $directory) {
-            $this->assertTrue(is_dir($this->modulePath . '/' . $directory['path']));
+            $this->assertDirectoryExists($this->modulePath . '/' . $directory['path']);
         }
     }
 
@@ -255,10 +259,10 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertTrue(is_dir($this->modulePath . '/Assets'));
-        $this->assertTrue(is_dir($this->modulePath . '/Emails'));
-        $this->assertFalse(is_dir($this->modulePath . '/Rules'));
-        $this->assertFalse(is_dir($this->modulePath . '/Policies'));
+        $this->assertDirectoryExists($this->modulePath . '/Assets');
+        $this->assertDirectoryExists($this->modulePath . '/Emails');
+        $this->assertDirectoryNotExists($this->modulePath . '/Rules');
+        $this->assertDirectoryNotExists($this->modulePath . '/Policies');
     }
 
     /** @test */
@@ -269,8 +273,8 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertFalse(is_dir($this->modulePath . '/Assets'));
-        $this->assertFalse(is_dir($this->modulePath . '/Emails'));
+        $this->assertDirectoryNotExists($this->modulePath . '/Assets');
+        $this->assertDirectoryNotExists($this->modulePath . '/Emails');
     }
 
     /** @test */
@@ -281,8 +285,8 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertFalse(is_dir($this->modulePath . '/Assets'));
-        $this->assertFalse(is_dir($this->modulePath . '/Emails'));
+        $this->assertDirectoryNotExists($this->modulePath . '/Assets');
+        $this->assertDirectoryNotExists($this->modulePath . '/Emails');
     }
 
     /** @test */
