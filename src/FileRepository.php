@@ -579,10 +579,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
-     * Delete a specific module.
-     * @param string $name
-     * @return bool
-     * @throws \Nwidart\Modules\Exceptions\ModuleNotFoundException
+     * @inheritDoc
      */
     public function delete($name) : bool
     {

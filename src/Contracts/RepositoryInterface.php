@@ -151,5 +151,13 @@ interface RepositoryInterface
      * @param string $module
      * @return string
      */
-    public function assetPath(string $module) : string;
+    public function assetPath(string $module): string;
+
+    /**
+     * Delete a specific module.
+     * @param string $module
+     * @return bool
+     * @throws \Nwidart\Modules\Exceptions\ModuleNotFoundException
+     */
+    public function delete(string $module): bool;
 }
