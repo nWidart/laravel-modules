@@ -160,4 +160,20 @@ interface RepositoryInterface
      * @throws \Nwidart\Modules\Exceptions\ModuleNotFoundException
      */
     public function delete(string $module): bool;
+
+    /**
+     * Determine whether the given module is activated.
+     * @param string $name
+     * @return bool
+     * @throws ModuleNotFoundException
+     */
+    public function isEnabled(string $name) : bool;
+
+    /**
+     * Determine whether the given module is not activated.
+     * @param string $name
+     * @return bool
+     * @throws ModuleNotFoundException
+     */
+    public function isDisabled(string $name) : bool;
 }

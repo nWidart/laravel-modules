@@ -168,7 +168,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
 
         $this->repository->enable('Recipe');
 
-        $this->assertTrue($this->repository->enabled('Recipe'));
+        $this->assertTrue($this->repository->isEnabled('Recipe'));
     }
 
     /** @test */
@@ -176,9 +176,9 @@ class LaravelFileRepositoryTest extends BaseTestCase
     {
         $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-        $this->repository->disable('Recipe');
+        $this->repository->isDisabled('Recipe');
 
-        $this->assertTrue($this->repository->disabled('Recipe'));
+        $this->assertTrue($this->repository->isDisabled('Recipe'));
     }
 
     /** @test */
@@ -210,7 +210,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
 
         $this->repository->disable('Recipe');
 
-        $this->assertTrue($this->repository->disabled('Recipe'));
+        $this->assertTrue($this->repository->isDisabled('Recipe'));
     }
 
     /** @test */
@@ -220,7 +220,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
 
         $this->repository->enable('Recipe');
 
-        $this->assertTrue($this->repository->enabled('Recipe'));
+        $this->assertTrue($this->repository->isEnabled('Recipe'));
     }
 
     /** @test */

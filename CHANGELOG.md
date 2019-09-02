@@ -19,6 +19,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
     This allows to have the content of the module under an `src/` folder for example.
 - **BREAKING** Renamed method `enabled` to `isEnabled` in `\Nwidart\Modules\Module`.
 - **BREAKING** Renamed method `disabled` to `isDisabled` in `\Nwidart\Modules\Module`.
+- **BREAKING** Renamed method `enabled` to `isEnabled` in `\Nwidart\Modules\FileRepository`.
+- **BREAKING** Renamed method `disabled` to `isDisabled` in `\Nwidart\Modules\FileRepository`.
 - **BREAKING** Removed the `__get` magic method on the `\Nwidart\Modules\Module` class. Use `get()` or `json()->get()` instead.
 - The `module:make-listener` command now correctly uses the namespace configuration
 - The generated Factories now has type hints for the `\Illuminate\Database\Eloquent\Factory` class

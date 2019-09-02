@@ -535,25 +535,19 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
-     * Determine whether the given module is activated.
-     * @param string $name
-     * @return bool
-     * @throws ModuleNotFoundException
+     * @inheritDoc
      */
-    public function enabled($name) : bool
+    public function isEnabled(string $name) : bool
     {
         return $this->findOrFail($name)->isEnabled();
     }
 
     /**
-     * Determine whether the given module is not activated.
-     * @param string $name
-     * @return bool
-     * @throws ModuleNotFoundException
+     * @inheritDoc
      */
-    public function disabled($name) : bool
+    public function isDisabled(string $name) : bool
     {
-        return !$this->enabled($name);
+        return !$this->isEnabled($name);
     }
 
     /**

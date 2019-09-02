@@ -294,7 +294,7 @@ class ModuleMakeCommandTest extends BaseTestCase
     {
         $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertTrue($this->repository->enabled('Blog'));
+        $this->assertTrue($this->repository->isEnabled('Blog'));
     }
 
     /** @test */
@@ -302,6 +302,6 @@ class ModuleMakeCommandTest extends BaseTestCase
     {
         $this->artisan('module:make', ['name' => ['Blog'], '--disabled' => true]);
 
-        $this->assertTrue($this->repository->disabled('Blog'));
+        $this->assertTrue($this->repository->isDisabled('Blog'));
     }
 }
