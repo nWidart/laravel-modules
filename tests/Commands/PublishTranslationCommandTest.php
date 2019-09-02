@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests\Commands;
 
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class PublishTranslationCommandTest extends BaseTestCase
@@ -25,7 +26,7 @@ class PublishTranslationCommandTest extends BaseTestCase
 
     public function tearDown(): void
     {
-        $this->finder->deleteDirectory($this->modulePath);
+        $this->app[RepositoryInterface::class]->delete('Blog');
         parent::tearDown();
     }
 
@@ -34,6 +35,6 @@ class PublishTranslationCommandTest extends BaseTestCase
     {
         $this->artisan('module:publish-translation', ['module' => 'Blog']);
 
-        $this->assertTrue(is_dir(base_path('resources/lang/blog')));
+        $this->assertDirectoryExists(base_path('resources/lang/blog'));
     }
 }

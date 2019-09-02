@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Filesystem\Filesystem;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class ListCommandTest extends BaseTestCase
@@ -26,7 +27,7 @@ class ListCommandTest extends BaseTestCase
 
     public function tearDown(): void
     {
-        $this->finder->deleteDirectory($this->modulePath);
+        $this->app[RepositoryInterface::class]->delete('Blog');
         parent::tearDown();
     }
 

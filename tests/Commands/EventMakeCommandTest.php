@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests\Commands;
 
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -28,7 +29,7 @@ class EventMakeCommandTest extends BaseTestCase
 
     public function tearDown(): void
     {
-        $this->finder->deleteDirectory($this->modulePath);
+        $this->app[RepositoryInterface::class]->delete('Blog');
         parent::tearDown();
     }
 

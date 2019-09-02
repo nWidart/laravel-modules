@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests\Commands;
 
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class PublishMigrationCommandTest extends BaseTestCase
@@ -26,7 +27,7 @@ class PublishMigrationCommandTest extends BaseTestCase
 
     public function tearDown(): void
     {
-        $this->finder->deleteDirectory($this->modulePath);
+        $this->app[RepositoryInterface::class]->delete('Blog');
         $this->finder->delete($this->finder->allFiles(base_path('database/migrations')));
         parent::tearDown();
     }

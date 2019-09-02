@@ -2,33 +2,21 @@
 
 namespace Nwidart\Modules\Tests\Commands;
 
-use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class EnableCommandTest extends BaseTestCase
 {
-    /**
-     * @var Filesystem
-     */
-    private $finder;
-    /**
-     * @var string
-     */
-    private $modulePath;
-
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
         $this->artisan('module:make', ['name' => ['Blog']]);
     }
 
     public function tearDown(): void
     {
-        $this->finder->deleteDirectory($this->modulePath);
+        $this->app[RepositoryInterface::class]->delete('Blog');
         parent::tearDown();
     }
 
