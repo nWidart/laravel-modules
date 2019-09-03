@@ -225,7 +225,7 @@ class ModuleTest extends BaseTestCase
             app('foo');
             $this->assertTrue(false, "app('foo') should throw an exception.");
         } catch (\Exception $e) {
-            $this->assertEquals("Class foo does not exist", $e->getMessage());
+            $this->assertEquals('Target class [foo] does not exist.', $e->getMessage());
         }
 
         app('deferred');
