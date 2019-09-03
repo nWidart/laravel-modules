@@ -53,8 +53,10 @@ class CommandMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_uses_set_command_name_in_class()
     {
-        $this->artisan('module:make-command',
-            ['name' => 'MyAwesomeCommand', 'module' => 'Blog', '--command' => 'my:awesome']);
+        $this->artisan(
+            'module:make-command',
+            ['name' => 'MyAwesomeCommand', 'module' => 'Blog', '--command' => 'my:awesome']
+        );
 
         $file = $this->finder->get($this->modulePath . '/Console/MyAwesomeCommand.php');
 
