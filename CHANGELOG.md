@@ -17,6 +17,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Alternate way to define the namespace of modules in [PR #776](https://github.com/nWidart/laravel-modules/pull/776) by @daison12006013
 
     This allows to have the content of the module under an `src/` folder for example.
+- **BREAKING** New way to handle active and inactive modules.
+
+    Modules don't store their active status in their module.json file anymore, but in a file under the storage folder.
+    Run `php artisan module:v6:migrate` to use the new system.
 - **BREAKING** Renamed method `enabled` to `isEnabled` in `\Nwidart\Modules\Module`.
 - **BREAKING** Renamed method `disabled` to `isDisabled` in `\Nwidart\Modules\Module`.
 - **BREAKING** Renamed method `enabled` to `isEnabled` in `\Nwidart\Modules\FileRepository`.
