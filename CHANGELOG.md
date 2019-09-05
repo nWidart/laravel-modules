@@ -28,6 +28,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - **BREAKING** Removed the `__get` magic method on the `\Nwidart\Modules\Module` class. Use `get()` or `json()->get()` instead.
 - The `module:make-listener` command now correctly uses the namespace configuration
 - The generated Factories now has type hints for the `\Illuminate\Database\Eloquent\Factory` class
+- Improved foreign key constraint generation
 
 ## 5.0.1 - 2019-05-11
 
