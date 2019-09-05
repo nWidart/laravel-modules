@@ -4,16 +4,24 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+
+## 5.1.0 - 2019-09-05
+
 ### Changed
 
 - Replacing `@stop` with `@endsection` in the view stub file
 - `Module` class does not extend Laravel's Service Provider class anymore
-- Fixing the `RouteServiceProvider` generation to properly use the `routes/web` and `routes/api` stubs
 - Improve foreign key constraint generation
+
+## 5.0.1 - 2019-05-11
 
 ### Added
 
 - `artisan module:route-provider` has a `--force` option to overwrite existing file
+
+### Changed
+
+- Fixing the `RouteServiceProvider` generation to properly use the `routes/web` and `routes/api` stubs
 
 ## 5.0.0 - 2019-03-18
 
