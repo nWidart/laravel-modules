@@ -101,8 +101,7 @@ class MigrationMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
-    
-    
+
     /** @test */
     public function it_generates_foreign_key_constraints()
     {

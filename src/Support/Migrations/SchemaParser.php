@@ -184,6 +184,7 @@ class SchemaParser implements Arrayable
         if (Str::contains($field, '(')) {
             return '->' . $field;
         }
+
         return '->' . $field . '()';
     }
 
