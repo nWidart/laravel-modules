@@ -34,7 +34,6 @@ class SeedCommand extends Command
 
     /**
      * Execute the console command.
-     * @throws FatalThrowableError
      */
     public function handle()
     {
