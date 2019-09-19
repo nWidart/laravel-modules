@@ -575,7 +575,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
     /**
      * @inheritDoc
      */
-    public function delete($name) : bool
+    public function delete(string $name) : bool
     {
         return $this->findOrFail($name)->delete();
     }
