@@ -75,9 +75,9 @@ class DatabaseActivator implements ActivatorInterface
      */
     public function hasStatus(Module $module, bool $status): bool
     {
-        $entity = ModuleEntity::findByNameOrFail($module->getName());
+        $entity = ModuleEntity::findByName($module->getName());
 
-        return $entity->hasStatus($status);
+        return $entity ? $entity->hasStatus($status) : false;
     }
 
     /**

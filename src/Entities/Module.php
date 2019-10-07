@@ -19,6 +19,15 @@ class Module extends Model
      * @param string $name
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|void|null
      */
+    public static function findByName(string $name)
+    {
+        return static::query()->where('name', $name)->first();
+    }
+
+    /**
+     * @param string $name
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|void|null
+     */
     public static function findByNameOrFail(string $name)
     {
         return static::query()->where('name', $name)->firstOrFail();
