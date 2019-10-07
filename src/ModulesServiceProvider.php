@@ -67,4 +67,12 @@ abstract class ModulesServiceProvider extends ServiceProvider
         $this->app->register(ConsoleServiceProvider::class);
         $this->app->register(ContractsServiceProvider::class);
     }
+
+    /**
+     * Register migrations.
+     */
+    protected function registerMigrations()
+    {
+        $this->loadMigrationsFrom(__DIR__ . '../database/migrations');
+    }
 }
