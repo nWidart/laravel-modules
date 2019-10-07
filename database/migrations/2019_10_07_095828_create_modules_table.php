@@ -16,9 +16,12 @@ class CreateModulesTable extends Migration
         Schema::create('modules', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('alias')->nullable();
+            $table->string('path');
             $table->text('description')->nullable();
             $table->text('keywords')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->integer('sequence')->default(0);
             $table->timestamps();
         });
     }

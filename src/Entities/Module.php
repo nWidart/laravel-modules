@@ -13,6 +13,7 @@ class Module extends Model
      */
     protected $fillable = [
         'name',
+        'path',
     ];
 
     /**
@@ -35,11 +36,12 @@ class Module extends Model
 
     /**
      * @param string $name
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|void|null
+     * @param string $path
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
      */
-    public static function findByNameOrCreate(string $name)
+    public static function findByNameOrCreate(string $name, string $path)
     {
-        return static::query()->firstOrCreate(['name' => $name]);
+        return static::query()->firstOrCreate(['name' => $name, 'path' => $path]);
     }
 
     /**
@@ -49,6 +51,17 @@ class Module extends Model
     {
         return static::query()
             ->delete();
+    }
+
+    /**
+     * @param $column
+     * @param $direction
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function orderBy($column, $direction)
+    {
+        return static::query()
+            ->orderBy($column, $direction);
     }
 
     /**

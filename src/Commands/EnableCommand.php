@@ -28,7 +28,7 @@ class EnableCommand extends Command
     public function handle()
     {
         /** @var Module $module */
-        $module = $this->laravel['modules']->findOrFail($this->argument('module'));
+        $module = $this->laravel['modules']->findByNameOrCreate($this->argument('module'));
 
         if ($module->isDisabled()) {
             $module->enable();

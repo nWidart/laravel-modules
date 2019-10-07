@@ -1,5 +1,6 @@
 <?php
 
+use Nwidart\Modules\Activators\DatabaseActivator;
 use Nwidart\Modules\Activators\FileActivator;
 
 return [
@@ -204,6 +205,9 @@ return [
             'statuses-file' => storage_path('app/modules_statuses.json'),
             'cache-key' => 'activator.installed',
             'cache-lifetime' => 604800,
+        ],
+        'database' => [
+            'class' => DatabaseActivator::class,
         ],
     ],
 

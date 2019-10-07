@@ -51,6 +51,10 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->app->singleton(Contracts\RepositoryInterface::class, function ($app) {
             $path = $app['config']->get('modules.paths.modules');
 
+            if ($app['config']->get('modules.activator') === 'database') {
+                return new Laravel\LaravelDatabaseRepository($app, $path);
+            }
+
             return new Laravel\LaravelFileRepository($app, $path);
         });
         $this->app->singleton(Contracts\ActivatorInterface::class, function ($app) {

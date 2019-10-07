@@ -88,7 +88,8 @@ class DatabaseActivator implements ActivatorInterface
      */
     public function setActive(Module $module, bool $active): void
     {
-        $entity = ModuleEntity::findByNameOrCreate($module->getName());
+        /** @var ModuleEntity $entity */
+        $entity = ModuleEntity::findByNameOrCreate($module->getName(), $module->getPath());
 
         $entity->setActive($active);
     }
