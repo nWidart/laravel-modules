@@ -208,6 +208,7 @@ return [
         ],
         'database' => [
             'class' => DatabaseActivator::class,
+            'table' => 'modules',
         ],
     ],
 

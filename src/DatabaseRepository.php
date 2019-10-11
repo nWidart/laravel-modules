@@ -61,7 +61,8 @@ abstract class DatabaseRepository implements RepositoryInterface, Countable
 
     /**
      * The constructor.
-     * @param Container $app
+     *
+     * @param Container   $app
      * @param string|null $path
      */
     public function __construct(Container $app, $path = null)
