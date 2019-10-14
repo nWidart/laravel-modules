@@ -4,7 +4,6 @@ namespace Nwidart\Modules;
 
 use Illuminate\Support\Facades\Schema;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Exceptions\ModulesTableNotFoundException;
 use Nwidart\Modules\Support\Stub;
 
 class LaravelModulesServiceProvider extends ModulesServiceProvider
@@ -14,7 +13,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
      */
     public function boot()
     {
-        if (!Schema::hasTable(config()->get('modules.activator.database.table'))) {
+        if (!Schema::hasTable(config('modules.activators.database.table'))) {
             return;
         }
 
