@@ -134,6 +134,18 @@ abstract class DatabaseRepository implements RepositoryInterface, Countable
     }
 
     /**
+     * Determine whether the given module exist.
+     *
+     * @param $name
+     *
+     * @return bool
+     */
+    public function has($name) : bool
+    {
+        return array_key_exists($name, $this->all());
+    }
+
+    /**
      * Get list of enabled modules.
      *
      * @return mixed
