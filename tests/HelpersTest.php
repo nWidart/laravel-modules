@@ -34,4 +34,10 @@ class HelpersTest extends BaseTestCase
     {
         $this->assertTrue(Str::contains(module_path('Blog'), 'modules/Blog'));
     }
+
+    /** @test */
+    public function it_can_bind_a_relative_path_to_module_path()
+    {
+        $this->assertTrue(Str::contains(module_path('Blog', 'config/config.php'), 'modules/Blog/config/config.php'));
+    }
 }
