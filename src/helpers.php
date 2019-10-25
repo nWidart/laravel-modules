@@ -18,7 +18,7 @@ if (! function_exists('config_path')) {
      */
     function config_path($path = '')
     {
-        return app()->basePath() . '/config' . ($path ? '/' . $path : $path);
+        return app()->basePath().'/config'.($path ? DIRECTORY_SEPARATOR.$path : $path);
     }
 }
 
@@ -31,6 +31,6 @@ if (! function_exists('public_path')) {
      */
     function public_path($path = '')
     {
-        return app()->make('path.public') . ($path ? DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR) : $path);
+        return app()->make('path.public').($path ? DIRECTORY_SEPARATOR.ltrim($path, DIRECTORY_SEPARATOR) : $path);
     }
 }
