@@ -3,6 +3,7 @@
 namespace Nwidart\Modules;
 
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 use Nwidart\Modules\Support\Stub;
 
 class LaravelModulesServiceProvider extends ModulesServiceProvider
@@ -55,6 +56,10 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->app->singleton(Contracts\ActivatorInterface::class, function ($app) {
             $activator = $app['config']->get('modules.activator');
             $class = $app['config']->get('modules.activators.' . $activator)['class'];
+
+            if ($class === null) {
+                throw InvalidActivatorClass::missingConfig();
+            }
 
             return new $class($app);
         });
