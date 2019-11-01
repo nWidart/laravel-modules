@@ -24,6 +24,7 @@ use Nwidart\Modules\Commands\MigrateRollbackCommand;
 use Nwidart\Modules\Commands\MigrateStatusCommand;
 use Nwidart\Modules\Commands\MigrationMakeCommand;
 use Nwidart\Modules\Commands\ModelMakeCommand;
+use Nwidart\Modules\Commands\ModuleDeleteCommand;
 use Nwidart\Modules\Commands\ModuleMakeCommand;
 use Nwidart\Modules\Commands\NotificationMakeCommand;
 use Nwidart\Modules\Commands\PolicyMakeCommand;
@@ -67,6 +68,7 @@ class ConsoleServiceProvider extends ServiceProvider
         RouteProviderMakeCommand::class,
         InstallCommand::class,
         ListCommand::class,
+        ModuleDeleteCommand::class,
         ModuleMakeCommand::class,
         FactoryMakeCommand::class,
         PolicyMakeCommand::class,

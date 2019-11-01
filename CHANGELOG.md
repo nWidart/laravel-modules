@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Added
+
+- Added new `module:delete` command
+
 ### Changed
 
 - Add optional path parameter to `module_path` helper (PR#861)
