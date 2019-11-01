@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 6.1.0 - 2019-11-01
+
 ### Added
 
 - Added new `module:delete` command
