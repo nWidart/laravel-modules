@@ -7,6 +7,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ### Changed
 
 - Add optional path parameter to `module_path` helper (PR#861)
+- The default path of the `module_statuses.json` file has been moved to the Application's base path. This is to improve its visibility and the fact that it can be committed by default.
 
 ## 6.0.0 - 2019-09-19
 
