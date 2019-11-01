@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Changed
+
+- Add optional path parameter to `module_path` helper (PR#861)
+
 ## 6.0.0 - 2019-09-19
 
 ### Added
