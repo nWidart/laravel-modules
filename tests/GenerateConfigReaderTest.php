@@ -63,5 +63,4 @@ final class GenerateConfigReaderTest extends BaseTestCase
         $this->assertEquals('Base/Providers', $config->getPath());
         $this->assertEquals('Base\Providers', $config->getNamespace());
     }
-
 }

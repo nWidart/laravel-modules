@@ -332,5 +332,4 @@ class ModuleMakeCommandTest extends BaseTestCase
         $file = $this->finder->get($this->modulePath . '/composer.json');
         $this->assertMatchesSnapshot($file);
     }
-
 }
