@@ -49,7 +49,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::middleware(\'web\')
             ->namespace($this->moduleNamespace)
-            ->group(__DIR__ . \'/../SuperRoutes/web.php\');
+            ->group(module_path(\'Blog\', \'/SuperRoutes/web.php\'));
     }
 
     /**
@@ -64,7 +64,7 @@ class RouteServiceProvider extends ServiceProvider
         Route::prefix(\'api\')
             ->middleware(\'api\')
             ->namespace($this->moduleNamespace)
-            ->group(__DIR__ . \'/../Routes/api.php\');
+            ->group(module_path(\'Blog\', \'/Routes/api.php\'));
     }
 }
 ';

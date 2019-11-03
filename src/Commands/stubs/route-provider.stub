@@ -49,7 +49,7 @@ class $CLASS$ extends ServiceProvider
     {
         Route::middleware('web')
             ->namespace($this->moduleNamespace)
-            ->group(__DIR__ . '/..$WEB_ROUTES_PATH$');
+            ->group(module_path('$MODULE$', '$WEB_ROUTES_PATH$'));
     }
 
     /**
@@ -64,6 +64,6 @@ class $CLASS$ extends ServiceProvider
         Route::prefix('api')
             ->middleware('api')
             ->namespace($this->moduleNamespace)
-            ->group(__DIR__ . '/..$API_ROUTES_PATH$');
+            ->group(module_path('$MODULE$', '$API_ROUTES_PATH$'));
     }
 }

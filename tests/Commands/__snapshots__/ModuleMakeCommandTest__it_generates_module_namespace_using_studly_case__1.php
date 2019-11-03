@@ -18,7 +18,7 @@ class ModuleNameServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
-        $this->loadMigrationsFrom(__DIR__ . \'/../Database/Migrations\');
+        $this->loadMigrationsFrom(module_path(\'ModuleName\', \'Database/Migrations\'));
     }
 
     /**
@@ -39,10 +39,10 @@ class ModuleNameServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__.\'/../Config/config.php\' => config_path(\'modulename.php\'),
+            module_path(\'ModuleName\', \'Config/config.php\') => config_path(\'modulename.php\'),
         ], \'config\');
         $this->mergeConfigFrom(
-            __DIR__.\'/../Config/config.php\', \'modulename\'
+            module_path(\'ModuleName\', \'Config/config.php\'), \'modulename\'
         );
     }
 
@@ -55,7 +55,7 @@ class ModuleNameServiceProvider extends ServiceProvider
     {
         $viewPath = resource_path(\'views/modules/modulename\');
 
-        $sourcePath = __DIR__.\'/../Resources/views\';
+        $sourcePath = module_path(\'ModuleName\', \'Resources/views\');
 
         $this->publishes([
             $sourcePath => $viewPath
@@ -78,7 +78,7 @@ class ModuleNameServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, \'modulename\');
         } else {
-            $this->loadTranslationsFrom(__DIR__ .\'/../Resources/lang\', \'modulename\');
+            $this->loadTranslationsFrom(module_path(\'ModuleName\', \'Resources/lang\'), \'modulename\');
         }
     }
 
@@ -90,7 +90,7 @@ class ModuleNameServiceProvider extends ServiceProvider
     public function registerFactories()
     {
         if (! app()->environment(\'production\') && $this->app->runningInConsole()) {
-            app(Factory::class)->load(__DIR__ . \'/../Database/factories\');
+            app(Factory::class)->load(module_path(\'ModuleName\', \'Database/factories\'));
         }
     }
 

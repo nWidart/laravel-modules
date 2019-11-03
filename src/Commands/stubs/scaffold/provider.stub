@@ -18,7 +18,7 @@ class $CLASS$ extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
-        $this->loadMigrationsFrom(__DIR__ . '/../$MIGRATIONS_PATH$');
+        $this->loadMigrationsFrom(module_path('$MODULE$', '$MIGRATIONS_PATH$'));
     }
 
     /**
@@ -39,10 +39,10 @@ class $CLASS$ extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__.'/../$PATH_CONFIG$/config.php' => config_path('$LOWER_NAME$.php'),
+            module_path('$MODULE$', '$PATH_CONFIG$/config.php') => config_path('$LOWER_NAME$.php'),
         ], 'config');
         $this->mergeConfigFrom(
-            __DIR__.'/../$PATH_CONFIG$/config.php', '$LOWER_NAME$'
+            module_path('$MODULE$', '$PATH_CONFIG$/config.php'), '$LOWER_NAME$'
         );
     }
 
@@ -55,7 +55,7 @@ class $CLASS$ extends ServiceProvider
     {
         $viewPath = resource_path('views/modules/$LOWER_NAME$');
 
-        $sourcePath = __DIR__.'/../$PATH_VIEWS$';
+        $sourcePath = module_path('$MODULE$', '$PATH_VIEWS$');
 
         $this->publishes([
             $sourcePath => $viewPath
@@ -78,7 +78,7 @@ class $CLASS$ extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, '$LOWER_NAME$');
         } else {
-            $this->loadTranslationsFrom(__DIR__ .'/../$PATH_LANG$', '$LOWER_NAME$');
+            $this->loadTranslationsFrom(module_path('$MODULE$', '$PATH_LANG$'), '$LOWER_NAME$');
         }
     }
 
@@ -90,7 +90,7 @@ class $CLASS$ extends ServiceProvider
     public function registerFactories()
     {
         if (! app()->environment('production') && $this->app->runningInConsole()) {
-            app(Factory::class)->load(__DIR__ . '/../$FACTORIES_PATH$');
+            app(Factory::class)->load(module_path('$MODULE$', '$FACTORIES_PATH$'));
         }
     }
 

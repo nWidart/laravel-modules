@@ -18,7 +18,7 @@ class BlogServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
-        $this->loadMigrationsFrom(__DIR__ . \'/../migrations\');
+        $this->loadMigrationsFrom(module_path(\'Blog\', \'migrations\'));
     }
 
     /**
@@ -39,10 +39,10 @@ class BlogServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            __DIR__.\'/../Config/config.php\' => config_path(\'blog.php\'),
+            module_path(\'Blog\', \'Config/config.php\') => config_path(\'blog.php\'),
         ], \'config\');
         $this->mergeConfigFrom(
-            __DIR__.\'/../Config/config.php\', \'blog\'
+            module_path(\'Blog\', \'Config/config.php\'), \'blog\'
         );
     }
 
@@ -55,7 +55,7 @@ class BlogServiceProvider extends ServiceProvider
     {
         $viewPath = resource_path(\'views/modules/blog\');
 
-        $sourcePath = __DIR__.\'/../Resources/views\';
+        $sourcePath = module_path(\'Blog\', \'Resources/views\');
 
         $this->publishes([
             $sourcePath => $viewPath
@@ -78,7 +78,7 @@ class BlogServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, \'blog\');
         } else {
-            $this->loadTranslationsFrom(__DIR__ .\'/../Resources/lang\', \'blog\');
+            $this->loadTranslationsFrom(module_path(\'Blog\', \'Resources/lang\'), \'blog\');
         }
     }
 
@@ -90,7 +90,7 @@ class BlogServiceProvider extends ServiceProvider
     public function registerFactories()
     {
         if (! app()->environment(\'production\') && $this->app->runningInConsole()) {
-            app(Factory::class)->load(__DIR__ . \'/../Database/factories\');
+            app(Factory::class)->load(module_path(\'Blog\', \'Database/factories\'));
         }
     }
 
