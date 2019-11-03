@@ -4,6 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Changed
+
+- Properly guessing the namespace from the path (in `GeneratorPath` class)
+- Fixing generation of resource file if the resource has been disabled to generate
+
 ## 6.1.0 - 2019-11-01
 
 ### Added
