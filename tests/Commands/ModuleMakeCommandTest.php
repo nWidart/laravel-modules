@@ -318,4 +318,19 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->assertTrue($this->repository->isDisabled('Blog'));
     }
+
+    /** @test */
+    public function it_generes_module_with_new_provider_location()
+    {
+        $this->app['config']->set('modules.paths.generator.provider', ['path' => 'Base/Providers', 'generate' => true]);
+
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertDirectoryExists($this->modulePath . '/Base/Providers');
+        $file = $this->finder->get($this->modulePath . '/module.json');
+        $this->assertMatchesSnapshot($file);
+        $file = $this->finder->get($this->modulePath . '/composer.json');
+        $this->assertMatchesSnapshot($file);
+    }
+
 }

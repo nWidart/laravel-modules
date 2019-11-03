@@ -441,6 +441,11 @@ class ModuleGenerator extends Generator
 
         $replaces = [];
 
+        if ($stub === 'json' || $stub === 'composer') {
+            if (in_array('PROVIDER_NAMESPACE', $keys, true) === false) {
+                $keys[] = 'PROVIDER_NAMESPACE';
+            }
+        }
         foreach ($keys as $key) {
             if (method_exists($this, $method = 'get' . ucfirst(Str::studly(strtolower($key))) . 'Replacement')) {
                 $replaces[$key] = $this->$method();
@@ -545,5 +550,10 @@ class ModuleGenerator extends Generator
     protected function getAuthorEmailReplacement()
     {
         return $this->module->config('composer.author.email');
+    }
+
+    protected function getProviderNamespaceReplacement(): string
+    {
+        return str_replace('\\', '\\\\', GenerateConfigReader::read('provider')->getNamespace());
     }
 }
