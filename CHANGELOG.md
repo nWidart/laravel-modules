@@ -8,6 +8,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 - Properly guessing the namespace from the path (in `GeneratorPath` class)
 - Fixing generation of resource file if the resource has been disabled to generate
+- Fix When using a custom service provider namespace, namespace is correctly referenced in module.json and compose.json
 
 ## 6.1.0 - 2019-11-01
 
