@@ -52,4 +52,16 @@ final class GenerateConfigReaderTest extends BaseTestCase
         $this->assertFalse($seedConfig->getPath());
         $this->assertFalse($seedConfig->generate());
     }
+
+    /** @test */
+    public function it_can_guess_namespace_from_path()
+    {
+        $this->app['config']->set('modules.paths.generator.provider', ['path' => 'Base/Providers', 'generate' => true]);
+
+        $config = GenerateConfigReader::read('provider');
+
+        $this->assertEquals('Base/Providers', $config->getPath());
+        $this->assertEquals('Base\Providers', $config->getNamespace());
+    }
+
 }
