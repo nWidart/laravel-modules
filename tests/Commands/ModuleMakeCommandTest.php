@@ -290,6 +290,20 @@ class ModuleMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_can_ignore_resource_folders_to_generate()
+    {
+        $this->app['config']->set('modules.paths.generator.seeder', ['path' => 'Database/Seeders', 'generate' => false]);
+        $this->app['config']->set('modules.paths.generator.provider', ['path' => 'Providers', 'generate' => false]);
+        $this->app['config']->set('modules.paths.generator.controller', ['path' => 'Http/Controllers', 'generate' => false]);
+
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertDirectoryNotExists($this->modulePath . '/Database/Seeders');
+        $this->assertDirectoryNotExists($this->modulePath . '/Providers');
+        $this->assertDirectoryNotExists($this->modulePath . '/Http/Controllers');
+    }
+
+    /** @test */
     public function it_generates_enabled_module()
     {
         $this->artisan('module:make', ['name' => ['Blog']]);

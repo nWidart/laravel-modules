@@ -371,26 +371,31 @@ class ModuleGenerator extends Generator
      */
     public function generateResources()
     {
-        $this->console->call('module:make-seed', [
-            'name' => $this->getName(),
-            'module' => $this->getName(),
-            '--master' => true,
-        ]);
+        if (GenerateConfigReader::read('seeder')->generate() === true) {
+            $this->console->call('module:make-seed', [
+                'name' => $this->getName(),
+                'module' => $this->getName(),
+                '--master' => true,
+            ]);
+        }
 
-        $this->console->call('module:make-provider', [
-            'name' => $this->getName() . 'ServiceProvider',
-            'module' => $this->getName(),
-            '--master' => true,
-        ]);
+        if (GenerateConfigReader::read('provider')->generate() === true) {
+            $this->console->call('module:make-provider', [
+                'name' => $this->getName() . 'ServiceProvider',
+                'module' => $this->getName(),
+                '--master' => true,
+            ]);
+            $this->console->call('module:route-provider', [
+                'module' => $this->getName(),
+            ]);
+        }
 
-        $this->console->call('module:route-provider', [
-            'module' => $this->getName(),
-        ]);
-
-        $this->console->call('module:make-controller', [
-            'controller' => $this->getName() . 'Controller',
-            'module' => $this->getName(),
-        ]);
+        if (GenerateConfigReader::read('controller')->generate() === true) {
+            $this->console->call('module:make-controller', [
+                'controller' => $this->getName() . 'Controller',
+                'module' => $this->getName(),
+            ]);
+        }
     }
 
     /**
