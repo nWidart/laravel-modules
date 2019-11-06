@@ -10,6 +10,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Fixing generation of resource file if the resource has been disabled to generate
 - Fix when using a custom service provider namespace, namespace is correctly referenced in module.json and compose.json
 - Fix when using custom service provider namespace, module path is correctly referenced in the `RouteServiceProvider` and `ModuleServiceProvider`
+- Fix when using a custom path for controllers in the controller stub
 
 ## 6.1.0 - 2019-11-01
 
