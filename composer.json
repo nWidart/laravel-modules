@@ -57,6 +57,9 @@
       "dev-master": "6.0-dev"
     }
   },
+  "scripts": {
+    "update-snapshots": "./vendor/bin/phpunit --no-coverage -d --update-snapshots"
+  },
   "minimum-stability": "dev",
   "prefer-stable": true
 }
