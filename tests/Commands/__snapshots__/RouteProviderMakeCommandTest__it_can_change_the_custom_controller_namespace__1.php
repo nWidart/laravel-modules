@@ -1,6 +1,6 @@
 <?php return '<?php
 
-namespace Modules\\Blog\\Providers;
+namespace Modules\\Blog\\Base\\Providers;
 
 use Illuminate\\Support\\Facades\\Route;
 use Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider as ServiceProvider;
@@ -12,7 +12,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $moduleNamespace = \'Modules\\Blog\\App\\Http\\Controllers\';
+    protected $moduleNamespace = \'Modules\\Blog\\Base\\Http\\Controllers\';
 
     /**
      * Called before routes are registered.
