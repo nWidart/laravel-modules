@@ -98,4 +98,18 @@ class RouteProviderMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
     }
+
+    /** @test */
+    public function it_can_change_the_custom_controller_namespace(): void
+    {
+        $this->app['config']->set('modules.paths.generator.controller.path', 'app/Http/Controllers');
+        $this->app['config']->set('modules.paths.generator.controller.namespace', 'App\Http\Controllers');
+        $this->app['config']->set('modules.paths.generator.provider.path', 'app/Providers');
+        $this->app['config']->set('modules.paths.generator.provider.namespace', 'Providers');
+        $this->artisan('module:route-provider', ['module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath . '/app/Providers/RouteServiceProvider.php');
+
+        $this->assertMatchesSnapshot($file);
+    }
 }
