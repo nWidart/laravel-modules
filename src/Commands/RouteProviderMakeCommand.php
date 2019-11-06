@@ -57,13 +57,14 @@ class RouteProviderMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/route-provider.stub', [
-            'NAMESPACE'        => $this->getClassNamespace($module),
-            'CLASS'            => $this->getFileName(),
-            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
-            'MODULE'           => $this->getModuleName(),
-            'WEB_ROUTES_PATH'  => $this->getWebRoutesPath(),
-            'API_ROUTES_PATH'  => $this->getApiRoutesPath(),
-            'LOWER_NAME'       => $module->getLowerName(),
+            'NAMESPACE'            => $this->getClassNamespace($module),
+            'CLASS'                => $this->getFileName(),
+            'MODULE_NAMESPACE'     => $this->laravel['modules']->config('namespace'),
+            'MODULE'               => $this->getModuleName(),
+            'CONTROLLER_NAMESPACE' => $this->getControllerNameSpace(),
+            'WEB_ROUTES_PATH'      => $this->getWebRoutesPath(),
+            'API_ROUTES_PATH'      => $this->getApiRoutesPath(),
+            'LOWER_NAME'           => $module->getLowerName(),
         ]))->render();
     }
 
@@ -110,5 +111,14 @@ class RouteProviderMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules'];
 
         return $module->config('paths.generator.provider.namespace') ?: $module->config('paths.generator.provider.path', 'Providers');
+    }
+
+    /**
+     * @return string
+     */
+    private function getControllerNameSpace(): string
+    {
+        $module = $this->laravel['modules'];
+        return str_replace('/', '\\', $module->config('paths.generator.controller.namespace') ?: $module->config('paths.generator.controller.path', 'Controller'));
     }
 }
