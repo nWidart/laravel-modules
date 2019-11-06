@@ -119,6 +119,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
     private function getControllerNameSpace(): string
     {
         $module = $this->laravel['modules'];
+
         return str_replace('/', '\\', $module->config('paths.generator.controller.namespace') ?: $module->config('paths.generator.controller.path', 'Controller'));
     }
 }
