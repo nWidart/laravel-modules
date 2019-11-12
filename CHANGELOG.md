@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 6.2.0 - 2019-11-12
+
 ### Changed
 
 - Properly guessing the namespace from the path (in `GeneratorPath` class)
