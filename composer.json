@@ -58,7 +58,9 @@
     }
   },
   "scripts": {
-    "update-snapshots": "./vendor/bin/phpunit --no-coverage -d --update-snapshots"
+    "update-snapshots": "./vendor/bin/phpunit --no-coverage -d --update-snapshots",
+    "test": "vendor/bin/phpunit",
+    "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
   },
   "minimum-stability": "dev",
   "prefer-stable": true
