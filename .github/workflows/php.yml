@@ -31,3 +31,9 @@ jobs:
 
     - name: Run test suite
       run: composer run-script test-coverage
+
+    - name: Push coverage to Scrutinizer-ci
+      if: matrix.php-versions == '7.3'
+      run: |
+        wget https://scrutinizer-ci.com/ocular.phar
+        php ocular.phar code-coverage:upload --format=php-clover coverage.clover
