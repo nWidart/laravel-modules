@@ -59,11 +59,14 @@ class $CLASS$ extends ServiceProvider
 
         $this->publishes([
             $sourcePath => $viewPath
-        ],'views');
+        ],'modules-$LOWER_NAME$-views');
 
-        $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . '/modules/$LOWER_NAME$';
-        }, \Config::get('view.paths')), [$sourcePath]), '$LOWER_NAME$');
+        // Load the view from the module path or from the published path
+        if (file_exists($viewPath)) {
+            $this->loadViewsFrom($viewPath, '$LOWER_NAME$');
+        } else {
+             $this->loadViewsFrom($sourcePath, '$LOWER_NAME$');
+        }
     }
 
     /**
