@@ -60,8 +60,11 @@
   "scripts": {
     "update-snapshots": "./vendor/bin/phpunit --no-coverage -d --update-snapshots",
     "test": "vendor/bin/phpunit",
-    "test-coverage": "vendor/bin/phpunit -vvv --coverage-html coverage",
-    "pcf" : "vendor/bin/php-cs-fixer fix --verbose"
+    "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+    "pcf": "vendor/bin/php-cs-fixer fix --verbose"
+  },
+  "config": {
+    "process-timeout": 0
   },
   "minimum-stability": "dev",
   "prefer-stable": true
