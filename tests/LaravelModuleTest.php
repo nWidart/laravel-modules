@@ -159,6 +159,15 @@ class ModuleTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_sets_active_status(): void
+    {
+        $this->module->setActive(true);
+        $this->assertTrue($this->module->isEnabled());
+        $this->module->setActive(false);
+        $this->assertFalse($this->module->isEnabled());
+    }
+
+    /** @test */
     public function it_fires_events_when_module_is_enabled()
     {
         $this->expectsEvents([

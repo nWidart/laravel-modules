@@ -353,11 +353,11 @@ abstract class Module
      *
      * @param bool $active
      *
-     * @return bool
+     * @return void
      */
-    public function setActive(bool $active): bool
+    public function setActive(bool $active): void
     {
-        return $this->activator->setActive($this, $active);
+        $this->activator->setActive($this, $active);
     }
 
     /**
