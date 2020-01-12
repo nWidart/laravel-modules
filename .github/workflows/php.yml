@@ -30,7 +30,9 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Upgrade Xdebug
-      run: sudo DEBIAN_FRONTEND=noninteractive apt install php-xdebug
+      run: |
+        find /etc/apt/sources.list.d -type f -name 'ondrej-ubuntu-php*.list' -exec sudo DEBIAN_FRONTEND=noninteractive apt-get update -o Dir::Etc::sourcelist="{}" ';'
+        sudo DEBIAN_FRONTEND=noninteractive apt install php-xdebug
 
     - name: Run test suite
       run: composer run-script test-coverage
