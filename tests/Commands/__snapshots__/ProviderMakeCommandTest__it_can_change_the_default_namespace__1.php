@@ -59,11 +59,9 @@ class BlogServiceProvider extends ServiceProvider
 
         $this->publishes([
             $sourcePath => $viewPath
-        ],\'views\');
+        ], [\'views\', \'blog-module-views\']);
 
-        $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . \'/modules/blog\';
-        }, \\Config::get(\'view.paths\')), [$sourcePath]), \'blog\');
+        $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), \'blog\');
     }
 
     /**
@@ -102,6 +100,17 @@ class BlogServiceProvider extends ServiceProvider
     public function provides()
     {
         return [];
+    }
+
+    private function getPublishableViewPaths(): array
+    {
+        $paths = [];
+        foreach (\\Config::get(\'view.paths\') as $path) {
+            if (is_dir($path . \'/modules/blog\')) {
+                $paths[] = $path . \'/modules/blog\';
+            }
+        }
+        return $paths;
     }
 }
 ';

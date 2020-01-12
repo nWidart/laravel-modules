@@ -59,11 +59,9 @@ class ModuleNameServiceProvider extends ServiceProvider
 
         $this->publishes([
             $sourcePath => $viewPath
-        ],\'views\');
+        ], [\'views\', \'modulename-module-views\']);
 
-        $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path . \'/modules/modulename\';
-        }, \\Config::get(\'view.paths\')), [$sourcePath]), \'modulename\');
+        $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), \'modulename\');
     }
 
     /**
@@ -102,6 +100,17 @@ class ModuleNameServiceProvider extends ServiceProvider
     public function provides()
     {
         return [];
+    }
+
+    private function getPublishableViewPaths(): array
+    {
+        $paths = [];
+        foreach (\\Config::get(\'view.paths\') as $path) {
+            if (is_dir($path . \'/modules/modulename\')) {
+                $paths[] = $path . \'/modules/modulename\';
+            }
+        }
+        return $paths;
     }
 }
 ';
