@@ -63,9 +63,6 @@
     "test-coverage": "vendor/bin/phpunit --debug --coverage-html coverage",
     "pcf": "vendor/bin/php-cs-fixer fix --verbose"
   },
-  "config": {
-    "process-timeout": 0
-  },
   "minimum-stability": "dev",
   "prefer-stable": true
 }
