@@ -15,6 +15,7 @@ use Nwidart\Modules\Commands\JobMakeCommand;
 use Nwidart\Modules\Commands\LaravelModulesV6Migrator;
 use Nwidart\Modules\Commands\ListCommand;
 use Nwidart\Modules\Commands\ListenerMakeCommand;
+use Nwidart\Modules\Commands\LumenMigrateCommand;
 use Nwidart\Modules\Commands\MailMakeCommand;
 use Nwidart\Modules\Commands\MiddlewareMakeCommand;
 use Nwidart\Modules\Commands\MigrateCommand;
@@ -75,6 +76,7 @@ class ConsoleServiceProvider extends ServiceProvider
         RequestMakeCommand::class,
         RuleMakeCommand::class,
         MigrateCommand::class,
+        LumenMigrateCommand::class,
         MigrateRefreshCommand::class,
         MigrateResetCommand::class,
         MigrateRollbackCommand::class,
