@@ -27,6 +27,7 @@ use Nwidart\Modules\Commands\ModelMakeCommand;
 use Nwidart\Modules\Commands\ModuleDeleteCommand;
 use Nwidart\Modules\Commands\ModuleMakeCommand;
 use Nwidart\Modules\Commands\NotificationMakeCommand;
+use Nwidart\Modules\Commands\ObserverMakeCommand;
 use Nwidart\Modules\Commands\PolicyMakeCommand;
 use Nwidart\Modules\Commands\ProviderMakeCommand;
 use Nwidart\Modules\Commands\PublishCommand;
@@ -94,6 +95,7 @@ class ConsoleServiceProvider extends ServiceProvider
         ResourceMakeCommand::class,
         TestMakeCommand::class,
         LaravelModulesV6Migrator::class,
+        ObserverMakeCommand::class,
     ];
 
     /**

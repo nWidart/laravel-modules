@@ -76,10 +76,11 @@ abstract class GeneratorCommand extends Command
      * Get class namespace.
      *
      * @param \Nwidart\Modules\Module $module
+     * @param string $concrete
      *
      * @return string
      */
-    public function getClassNamespace($module)
+    public function getClassNamespace($module, string $concrete = null)
     {
         $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
 
@@ -89,7 +90,7 @@ abstract class GeneratorCommand extends Command
 
         $namespace .= '\\' . $module->getStudlyName();
 
-        $namespace .= '\\' . $this->getDefaultNamespace();
+        $namespace .= '\\' . ($concrete ?? $this->getDefaultNamespace());
 
         $namespace .= '\\' . $extra;
 

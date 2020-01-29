@@ -1,0 +1,53 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use $NAMESPACEDMODEL$;
+
+class $CLASS$
+{
+    /**
+     * @param  $DUMMYMODEL$  $MODEL$
+     * @return void
+     */
+    public function created($DUMMYMODEL$ $MODEL$)
+    {
+        //
+    }
+
+    /**
+     * @param  $DUMMYMODEL$  $MODEL$
+     * @return void
+     */
+    public function updated($DUMMYMODEL$ $MODEL$)
+    {
+        //
+    }
+
+    /**
+     * @param  $DUMMYMODEL$  $MODEL$
+     * @return void
+     */
+    public function deleted($DUMMYMODEL$ $MODEL$)
+    {
+        //
+    }
+
+    /**
+     * @param  $DUMMYMODEL$  $MODEL$
+     * @return void
+     */
+    public function restored($DUMMYMODEL$ $MODEL$)
+    {
+        //
+    }
+
+    /**
+     * @param  $DUMMYMODEL$  $MODEL$
+     * @return void
+     */
+    public function forceDeleted($DUMMYMODEL$ $MODEL$)
+    {
+        //
+    }
+}
