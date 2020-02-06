@@ -18,6 +18,7 @@ class BlogServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
+        $this->registerObservers();
         $this->loadMigrationsFrom(module_path(\'Blog\', \'Database/Migrations\'));
     }
 
@@ -111,6 +112,11 @@ class BlogServiceProvider extends ServiceProvider
             }
         }
         return $paths;
+    }
+
+    public function registerObservers()
+    {
+        // Model::observe(ModelObserver::class);
     }
 }
 ';

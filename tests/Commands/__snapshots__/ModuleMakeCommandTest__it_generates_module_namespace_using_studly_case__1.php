@@ -18,6 +18,7 @@ class ModuleNameServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
+        $this->registerObservers();
         $this->loadMigrationsFrom(module_path(\'ModuleName\', \'Database/Migrations\'));
     }
 
@@ -111,6 +112,11 @@ class ModuleNameServiceProvider extends ServiceProvider
             }
         }
         return $paths;
+    }
+
+    public function registerObservers()
+    {
+        // Model::observe(ModelObserver::class);
     }
 }
 ';
