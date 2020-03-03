@@ -3,5 +3,6 @@ composer.phar
 composer.lock
 /fixture/vendor
 build
+coverage
 .php_cs.cache
 .phpunit.result.cache
