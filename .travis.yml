@@ -3,6 +3,7 @@ language: php
 php:
   - 7.2
   - 7.3
+  - 7.4
 
 cache:
   directories:
@@ -12,12 +13,8 @@ before_script:
   - travis_retry composer update --no-interaction --prefer-dist
 
 script:
-  - if [ $(phpenv version-name) == "7.3" ]; then vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover; else vendor/bin/phpunit --no-coverage; fi
+  - if [ $(phpenv version-name) == "7.4" ]; then vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover; else vendor/bin/phpunit --no-coverage; fi
 
 after_script:
-  - if [ $(phpenv version-name) == "7.3" ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
-  - if [ $(phpenv version-name) == "7.3" ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
-
-matrix:
-  allow_failures:
-  - php: 7.2
+  - if [ $(phpenv version-name) == "7.4" ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
+  - if [ $(phpenv version-name) == "7.4" ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
