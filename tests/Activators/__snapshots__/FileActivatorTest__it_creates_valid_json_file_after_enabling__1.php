@@ -1,5 +1,3 @@
-<?php
-
-return '{
+<?php return '{
     "Recipe": true
 }';
