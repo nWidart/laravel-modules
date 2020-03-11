@@ -20,10 +20,8 @@ use Nwidart\Modules\Commands\MailMakeCommand;
 use Nwidart\Modules\Commands\RuleMakeCommand;
 use Nwidart\Modules\Commands\SeedMakeCommand;
 use Nwidart\Modules\Commands\TestMakeCommand;
-use Nwidart\Modules\Commands\EnableAllCommand;
 use Nwidart\Modules\Commands\EventMakeCommand;
 use Nwidart\Modules\Commands\ModelMakeCommand;
-use Nwidart\Modules\Commands\DisableAllCommand;
 use Nwidart\Modules\Commands\ModuleMakeCommand;
 use Nwidart\Modules\Commands\PolicyMakeCommand;
 use Nwidart\Modules\Commands\CommandMakeCommand;
@@ -96,8 +94,6 @@ class ConsoleServiceProvider extends ServiceProvider
         ResourceMakeCommand::class,
         TestMakeCommand::class,
         LaravelModulesV6Migrator::class,
-        EnableAllCommand::class,
-        DisableAllCommand::class,
     ];
 
     /**
