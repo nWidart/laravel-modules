@@ -4,6 +4,12 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 7.0.0 - 2020-03-26
+
+### Added
+
+- Laravel 7.0 support 
+
 ## 6.2.0 - 2019-11-12
 
 ### Changed
