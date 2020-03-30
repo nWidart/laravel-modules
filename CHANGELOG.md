@@ -4,6 +4,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## next
+
+### Changed
+
+- `php artsian module:enable` will enable all modules
+- `php artsian module:disable` will disable
+
 ## 7.0.0 - 2020-03-26
 
 ### Added
