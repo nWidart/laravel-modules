@@ -30,8 +30,7 @@ class EnableCommand extends Command
         /**
          * check if user entred an argument
          */
-        if( $this->argument('module') == null )
-        {
+        if ($this->argument('module') === null) {
             $this->enableAll();
         }
 
@@ -46,7 +45,7 @@ class EnableCommand extends Command
             $this->comment("Module [{$module}] has already enabled.");
         }
     }
-    
+
     /**
      * enableAll
      *
@@ -57,11 +56,10 @@ class EnableCommand extends Command
         /** @var Modules $modules */
         $modules = $this->laravel['modules']->all();
 
-        foreach( $modules as $module )
-        {
+        foreach ($modules as $module) {
             if ($module->isDisabled()) {
                 $module->enable();
-    
+
                 $this->info("Module [{$module}] enabled successful.");
             } else {
                 $this->comment("Module [{$module}] has already enabled.");
