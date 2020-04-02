@@ -4,8 +4,6 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
-## next
-
 ### Changed
 
 - `php artsian module:enable` will enable all modules
