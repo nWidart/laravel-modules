@@ -8,8 +8,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ### Changed
 
-- `php artsian module:enable` will enable all modules
-- `php artsian module:disable` will disable
+- `php artsian module:enable` (without any arguments) will enable all modules
+- `php artsian module:disable` (without any arguments) will disable all modules
 - Updating Laravel Mix version as well as cross-env. 
 
 ## 7.0.0 - 2020-03-26
