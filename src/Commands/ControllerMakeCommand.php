@@ -126,7 +126,7 @@ class ControllerMakeCommand extends GeneratorCommand
      * Get the stub file name based on the options
      * @return string
      */
-    private function getStubName()
+    protected function getStubName()
     {
         if ($this->option('plain') === true) {
             $stub = '/controller-plain.stub';
