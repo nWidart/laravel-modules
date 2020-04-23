@@ -66,9 +66,7 @@ class MigrationMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @throws \InvalidArgumentException
-     *
-     * @return mixed
+     * @return Stub
      */
     protected function getTemplateContents()
     {
@@ -108,7 +106,7 @@ class MigrationMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     protected function getDestinationFilePath()
     {
@@ -143,6 +141,9 @@ class MigrationMakeCommand extends GeneratorCommand
         return Str::studly($this->argument('name'));
     }
 
+    /**
+     * @return string
+     */
     public function getClass()
     {
         return $this->getClassName();

@@ -67,7 +67,7 @@ class CommandMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     protected function getTemplateContents()
     {
@@ -89,7 +89,7 @@ class CommandMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     protected function getDestinationFilePath()
     {

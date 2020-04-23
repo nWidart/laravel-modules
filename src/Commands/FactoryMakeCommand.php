@@ -47,7 +47,7 @@ class FactoryMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     protected function getTemplateContents()
     {
@@ -55,7 +55,7 @@ class FactoryMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     protected function getDestinationFilePath()
     {

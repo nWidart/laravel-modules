@@ -53,7 +53,7 @@ class EnableCommand extends Command
      */
     public function enableAll()
     {
-        /** @var Modules $modules */
+        /** @var Module[] $modules */
         $modules = $this->laravel['modules']->all();
 
         foreach ($modules as $module) {

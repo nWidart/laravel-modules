@@ -7,7 +7,13 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class ModuleDeleteCommand extends Command
 {
+    /**
+     * @var string
+     */
     protected $name = 'module:delete';
+    /**
+     * @var string
+     */
     protected $description = 'Delete a module from the application';
 
     public function handle()
@@ -17,6 +23,9 @@ class ModuleDeleteCommand extends Command
         $this->info("Module {$this->argument('module')} has been deleted.");
     }
 
+    /**
+     * @return array
+     */
     protected function getArguments()
     {
         return [

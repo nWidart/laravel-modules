@@ -101,7 +101,7 @@ class ModelMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     protected function getTemplateContents()
     {
@@ -120,7 +120,7 @@ class ModelMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     protected function getDestinationFilePath()
     {
@@ -132,7 +132,7 @@ class ModelMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
     private function getModelName()
     {

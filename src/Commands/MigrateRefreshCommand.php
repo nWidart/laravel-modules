@@ -75,16 +75,15 @@ class MigrateRefreshCommand extends Command
         ];
     }
 
+    /**
+     * @return string|null
+     */
     public function getModuleName()
     {
         $module = $this->argument('module');
 
         $module = app('modules')->find($module);
 
-        if ($module === null) {
-            return $module;
-        }
-
-        return $module->getStudlyName();
+        return $module ?: $module->getStudlyName();
     }
 }

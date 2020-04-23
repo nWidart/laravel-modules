@@ -26,7 +26,7 @@ class Stub
     protected $replaces = [];
 
     /**
-     * The contructor.
+     * The constructor.
      *
      * @param string $path
      * @param array  $replaces
@@ -99,7 +99,7 @@ class Stub
     /**
      * Get stub contents.
      *
-     * @return mixed|string
+     * @return string
      */
     public function getContents()
     {
@@ -132,7 +132,7 @@ class Stub
      */
     public function saveTo($path, $filename)
     {
-        return file_put_contents($path . '/' . $filename, $this->getContents());
+        return (bool) file_put_contents($path . '/' . $filename, $this->getContents());
     }
 
     /**

@@ -53,7 +53,7 @@ class DisableCommand extends Command
      */
     public function disableAll()
     {
-        /** @var Modules $modules */
+        /** @var Module[] $modules */
         $modules = $this->laravel['modules']->all();
 
         foreach ($modules as $module) {

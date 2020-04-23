@@ -29,6 +29,9 @@ class JobMakeCommand extends GeneratorCommand
 
     protected $argumentName = 'name';
 
+    /**
+     * @return string
+     */
     public function getDefaultNamespace() : string
     {
         $module = $this->laravel['modules'];

@@ -32,7 +32,6 @@ class MigrateStatusCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
      */
     public function handle()
     {
@@ -43,7 +42,7 @@ class MigrateStatusCommand extends Command
         if ($name) {
             $module = $this->module->findOrFail($name);
 
-            return $this->migrateStatus($module);
+            $this->migrateStatus($module);
         }
 
         foreach ($this->module->getOrdered($this->option('direction')) as $module) {

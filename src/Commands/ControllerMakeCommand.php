@@ -94,7 +94,7 @@ class ControllerMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return array|string
+     * @return string
      */
     protected function getControllerName()
     {
@@ -108,13 +108,16 @@ class ControllerMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return array|string
+     * @return string
      */
     private function getControllerNameWithoutNamespace()
     {
         return class_basename($this->getControllerName());
     }
 
+    /**
+     * @return string
+     */
     public function getDefaultNamespace() : string
     {
         $module = $this->laravel['modules'];

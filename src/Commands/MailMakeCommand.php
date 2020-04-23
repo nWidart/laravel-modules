@@ -26,8 +26,14 @@ class MailMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new email class for the specified module';
 
+    /**
+     * @var string
+     */
     protected $argumentName = 'name';
 
+    /**
+     * @return string
+     */
     public function getDefaultNamespace() : string
     {
         $module = $this->laravel['modules'];

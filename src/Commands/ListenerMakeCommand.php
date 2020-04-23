@@ -14,6 +14,9 @@ class ListenerMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
+    /**
+     * @var string
+     */
     protected $argumentName = 'name';
 
     /**
@@ -56,6 +59,9 @@ class ListenerMakeCommand extends GeneratorCommand
         ];
     }
 
+    /**
+     * @return string
+     */
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
@@ -68,6 +74,9 @@ class ListenerMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
+    /**
+     * @return string
+     */
     public function getDefaultNamespace() : string
     {
         $module = $this->laravel['modules'];
@@ -75,6 +84,10 @@ class ListenerMakeCommand extends GeneratorCommand
         return $module->config('paths.generator.listener.namespace') ?: $module->config('paths.generator.listener.path', 'Listeners');
     }
 
+    /**
+     * @param Module $module
+     * @return string
+     */
     protected function getEventName(Module $module)
     {
         $eventPath = GenerateConfigReader::read('event');
@@ -82,6 +95,9 @@ class ListenerMakeCommand extends GeneratorCommand
         return $this->getClassNamespace($module) . "\\" . $eventPath->getPath() . "\\" . $this->option('event');
     }
 
+    /**
+     * @return string
+     */
     protected function getDestinationFilePath()
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());

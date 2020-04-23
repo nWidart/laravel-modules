@@ -25,14 +25,6 @@ class InstallCommand extends Command
     protected $description = 'Install the specified module by given package name (vendor/name).';
 
     /**
-     * Create a new command instance.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      */
     public function handle()
