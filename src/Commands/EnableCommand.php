@@ -31,7 +31,7 @@ class EnableCommand extends Command
          * check if user entred an argument
          */
         if ($this->argument('module') === null) {
-            $this->enableAll();
+            return $this->enableAll();
         }
 
         /** @var Module $module */
