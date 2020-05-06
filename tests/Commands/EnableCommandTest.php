@@ -12,11 +12,13 @@ class EnableCommandTest extends BaseTestCase
     {
         parent::setUp();
         $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->artisan('module:make', ['name' => ['Taxonomy']]);
     }
 
     public function tearDown(): void
     {
         $this->app[RepositoryInterface::class]->delete('Blog');
+        $this->app[RepositoryInterface::class]->delete('Taxonomy');
         parent::tearDown();
     }
 
@@ -30,5 +32,21 @@ class EnableCommandTest extends BaseTestCase
         $this->artisan('module:enable', ['module' => 'Blog']);
 
         $this->assertTrue($blogModule->isEnabled());
+    }
+
+    /** @test */
+    public function it_enables_all_modules()
+    {
+        /** @var Module $blogModule */
+        $blogModule = $this->app[RepositoryInterface::class]->find('Blog');
+        $blogModule->disable();
+
+        /** @var Module $taxonomyModule */
+        $taxonomyModule = $this->app[RepositoryInterface::class]->find('Taxonomy');
+        $taxonomyModule->disable();
+
+        $this->artisan('module:enable');
+
+        $this->assertTrue($blogModule->isEnabled() && $taxonomyModule->isEnabled());
     }
 }
