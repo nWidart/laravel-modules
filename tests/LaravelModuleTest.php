@@ -204,7 +204,7 @@ class ModuleTest extends BaseTestCase
         $cachedServicesPath = $this->module->getCachedServicesPath();
 
         @unlink($cachedServicesPath);
-        $this->assertFileNotExists($cachedServicesPath);
+        $this->assertFileDoesNotExist($cachedServicesPath);
 
         $this->module->registerProviders();
 
