@@ -261,8 +261,8 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->assertDirectoryExists($this->modulePath . '/Assets');
         $this->assertDirectoryExists($this->modulePath . '/Emails');
-        $this->assertDirectoryNotExists($this->modulePath . '/Rules');
-        $this->assertDirectoryNotExists($this->modulePath . '/Policies');
+        $this->assertDirectoryDoesNotExist($this->modulePath . '/Rules');
+        $this->assertDirectoryDoesNotExist($this->modulePath . '/Policies');
     }
 
     /** @test */
@@ -273,8 +273,8 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertDirectoryNotExists($this->modulePath . '/Assets');
-        $this->assertDirectoryNotExists($this->modulePath . '/Emails');
+        $this->assertDirectoryDoesNotExist($this->modulePath . '/Assets');
+        $this->assertDirectoryDoesNotExist($this->modulePath . '/Emails');
     }
 
     /** @test */
@@ -285,8 +285,8 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertDirectoryNotExists($this->modulePath . '/Assets');
-        $this->assertDirectoryNotExists($this->modulePath . '/Emails');
+        $this->assertDirectoryDoesNotExist($this->modulePath . '/Assets');
+        $this->assertDirectoryDoesNotExist($this->modulePath . '/Emails');
     }
 
     /** @test */
@@ -298,9 +298,9 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertDirectoryNotExists($this->modulePath . '/Database/Seeders');
-        $this->assertDirectoryNotExists($this->modulePath . '/Providers');
-        $this->assertDirectoryNotExists($this->modulePath . '/Http/Controllers');
+        $this->assertDirectoryDoesNotExist($this->modulePath . '/Database/Seeders');
+        $this->assertDirectoryDoesNotExist($this->modulePath . '/Providers');
+        $this->assertDirectoryDoesNotExist($this->modulePath . '/Http/Controllers');
     }
 
     /** @test */

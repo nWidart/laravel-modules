@@ -33,7 +33,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->assertDirectoryExists(base_path('modules/WrongModule'));
 
         $this->artisan('module:delete', ['module' => 'WrongModule']);
-        $this->assertDirectoryNotExists(base_path('modules/WrongModule'));
+        $this->assertDirectoryDoesNotExist(base_path('modules/WrongModule'));
     }
 
     /** @test */
