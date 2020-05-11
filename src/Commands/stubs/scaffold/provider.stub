@@ -29,6 +29,7 @@ class $CLASS$ extends ServiceProvider
         $this->registerViews();
         $this->registerFactories();
         $this->loadMigrationsFrom(module_path($this->moduleName, '$MIGRATIONS_PATH$'));
+        $this->app->register(RouteServiceProvider::class);
     }
 
     /**
@@ -38,7 +39,7 @@ class $CLASS$ extends ServiceProvider
      */
     public function register()
     {
-        $this->app->register(RouteServiceProvider::class);
+
     }
 
     /**
