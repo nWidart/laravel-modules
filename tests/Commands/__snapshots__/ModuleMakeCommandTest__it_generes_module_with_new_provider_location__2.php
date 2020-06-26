@@ -9,9 +9,7 @@
     ],
     "extra": {
         "laravel": {
-            "providers": [
-                "Modules\\\\Blog\\\\Base\\\\Providers\\\\BlogServiceProvider"
-            ],
+            "providers": [],
             "aliases": {
 
             }
