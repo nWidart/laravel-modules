@@ -4,6 +4,7 @@ namespace Modules\\Blog\\Providers;
 
 use Illuminate\\Support\\ServiceProvider;
 use Illuminate\\Database\\Eloquent\\Factory;
+use Illuminate\\Support\\Facades\\File;
 
 class BlogServiceProvider extends ServiceProvider
 {
@@ -47,13 +48,38 @@ class BlogServiceProvider extends ServiceProvider
      * @return void
      */
     protected function registerConfig()
-    {
+    {      
+        $files = $this->getConfigFiles();
+        foreach($files as $file){
+            if($file->isFile() && $file->getExtension() == "php"){
+                $this->registerConfigFile($file->getPathname(), $file->getFilename());
+            }
+        }
+    }   
+
+    /**
+     * Register config.
+     * 
+     * @return void 
+     */
+    protected function registerConfigFile($path, $fileName){
+         
         $this->publishes([
-            module_path($this->moduleName, \'Config/config.php\') => config_path($this->moduleNameLower . \'.php\'),
+            $path => config_path($this->moduleNameLower."::".$fileName),
         ], \'config\');
+         
         $this->mergeConfigFrom(
-            module_path($this->moduleName, \'Config/config.php\'), $this->moduleNameLower
+            $path, $this->moduleNameLower."::".head(explode(".",$fileName))
         );
+    }
+
+    /**
+     * Get all the files of module Config folder
+     * 
+     * @return array 
+     */
+    protected function getConfigFiles(){ 
+        return File::files(module_path($this->moduleName, \'Config\'));
     }
 
     /**
