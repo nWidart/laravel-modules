@@ -151,12 +151,16 @@ class MigrationMakeCommand extends GeneratorCommand
     /**
      * Run the command.
      */
-    public function handle()
+    public function handle() : bool
     {
-        parent::handle();
+        if (parent::handle() === false) {
+            return false;
+        }
 
         if (app()->environment() === 'testing') {
-            return;
+            return true;
         }
+
+        return true;
     }
 }
