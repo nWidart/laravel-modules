@@ -31,10 +31,8 @@ abstract class GeneratorCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return bool
      */
-    public function handle()
+    public function handle() : bool
     {
         $path = str_replace('\\', '/', $this->getDestinationFilePath());
 
