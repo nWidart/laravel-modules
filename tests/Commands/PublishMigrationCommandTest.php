@@ -35,10 +35,11 @@ class PublishMigrationCommandTest extends BaseTestCase
     /** @test */
     public function it_publishes_module_migrations()
     {
-        $this->artisan('module:publish-migration', ['module' => 'Blog']);
+        $code = $this->artisan('module:publish-migration', ['module' => 'Blog']);
 
         $files = $this->finder->allFiles(base_path('database/migrations'));
 
         $this->assertCount(1, $files);
+        $this->assertSame(0, $code);
     }
 }

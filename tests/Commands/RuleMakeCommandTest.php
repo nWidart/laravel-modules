@@ -35,12 +35,13 @@ class RuleMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_makes_rule()
     {
-        $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
 
         $ruleFile = $this->modulePath . '/Rules/UniqueRule.php';
 
         $this->assertTrue(is_file($ruleFile), 'Rule file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($ruleFile));
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -48,11 +49,12 @@ class RuleMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.rules.path', 'SuperRules');
 
-        $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/SuperRules/UniqueRule.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -60,10 +62,11 @@ class RuleMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.rules.namespace', 'SuperRules');
 
-        $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/Rules/UniqueRule.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 }

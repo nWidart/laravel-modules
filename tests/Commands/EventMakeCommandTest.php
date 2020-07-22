@@ -36,19 +36,21 @@ class EventMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_a_new_event_class()
     {
-        $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
         $this->assertTrue(is_file($this->modulePath . '/Events/PostWasCreated.php'));
+        $this->assertSame(0, $code);
     }
 
     /** @test */
     public function it_generated_correct_file_with_content()
     {
-        $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/Events/PostWasCreated.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -56,11 +58,12 @@ class EventMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.event.path', 'SuperEvents');
 
-        $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/SuperEvents/PostWasCreated.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -68,10 +71,11 @@ class EventMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.event.namespace', 'SuperEvents');
 
-        $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/Events/PostWasCreated.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 }
