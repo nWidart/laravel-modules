@@ -13,7 +13,7 @@ class LaravelModulesV6Migrator extends Command
     protected $name = 'module:v6:migrate';
     protected $description = 'Migrate laravel-modules v5 modules statuses to v6.';
 
-    public function handle()
+    public function handle() : int
     {
         $moduleStatuses = [];
         /** @var RepositoryInterface $modules */
@@ -33,5 +33,7 @@ class LaravelModulesV6Migrator extends Command
         }
         $this->info('All modules have been migrated.');
         $this->table(['Module name', 'Status'], $moduleStatuses);
+
+        return 0;
     }
 }

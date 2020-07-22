@@ -33,8 +33,9 @@ class PublishTranslationCommandTest extends BaseTestCase
     /** @test */
     public function it_published_module_translations()
     {
-        $this->artisan('module:publish-translation', ['module' => 'Blog']);
+        $code = $this->artisan('module:publish-translation', ['module' => 'Blog']);
 
         $this->assertDirectoryExists(base_path('resources/lang/blog'));
+        $this->assertSame(0, $code);
     }
 }

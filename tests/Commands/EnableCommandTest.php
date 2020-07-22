@@ -29,9 +29,10 @@ class EnableCommandTest extends BaseTestCase
         $blogModule = $this->app[RepositoryInterface::class]->find('Blog');
         $blogModule->disable();
 
-        $this->artisan('module:enable', ['module' => 'Blog']);
+        $code = $this->artisan('module:enable', ['module' => 'Blog']);
 
         $this->assertTrue($blogModule->isEnabled());
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -45,8 +46,9 @@ class EnableCommandTest extends BaseTestCase
         $taxonomyModule = $this->app[RepositoryInterface::class]->find('Taxonomy');
         $taxonomyModule->disable();
 
-        $this->artisan('module:enable');
+        $code = $this->artisan('module:enable');
 
         $this->assertTrue($blogModule->isEnabled() && $taxonomyModule->isEnabled());
+        $this->assertSame(0, $code);
     }
 }

@@ -32,8 +32,9 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['WrongModule']]);
         $this->assertDirectoryExists(base_path('modules/WrongModule'));
 
-        $this->artisan('module:delete', ['module' => 'WrongModule']);
+        $code = $this->artisan('module:delete', ['module' => 'WrongModule']);
         $this->assertDirectoryNotExists(base_path('modules/WrongModule'));
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -42,7 +43,8 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['WrongModule']]);
         $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));
 
-        $this->artisan('module:delete', ['module' => 'WrongModule']);
+        $code = $this->artisan('module:delete', ['module' => 'WrongModule']);
         $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));
+        $this->assertSame(0, $code);
     }
 }

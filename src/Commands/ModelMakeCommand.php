@@ -34,11 +34,15 @@ class ModelMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new model for the specified module.';
 
-    public function handle()
+    public function handle() : int
     {
-        parent::handle();
+        if (parent::handle() === E_ERROR) {
+            return E_ERROR;
+        }
 
         $this->handleOptionalMigrationOption();
+
+        return 0;
     }
 
     /**

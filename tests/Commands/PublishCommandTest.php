@@ -34,8 +34,9 @@ class PublishCommandTest extends BaseTestCase
     /** @test */
     public function it_published_module_assets()
     {
-        $this->artisan('module:publish', ['module' => 'Blog']);
+        $code = $this->artisan('module:publish', ['module' => 'Blog']);
 
         $this->assertTrue(is_file(public_path('modules/blog/script.js')));
+        $this->assertSame(0, $code);
     }
 }

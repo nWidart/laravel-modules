@@ -285,7 +285,7 @@ class ModuleGenerator extends Generator
     /**
      * Generate the module.
      */
-    public function generate()
+    public function generate() : int
     {
         $name = $this->getName();
 
@@ -295,7 +295,7 @@ class ModuleGenerator extends Generator
             } else {
                 $this->console->error("Module [{$name}] already exist!");
 
-                return;
+                return E_ERROR;
             }
         }
 
@@ -315,6 +315,8 @@ class ModuleGenerator extends Generator
         $this->activator->setActiveByName($name, $this->isActive);
 
         $this->console->info("Module [{$name}] created successfully.");
+
+        return 0;
     }
 
     /**

@@ -35,29 +35,32 @@ class JobMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_the_job_class()
     {
-        $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
         $this->assertTrue(is_file($this->modulePath . '/Jobs/SomeJob.php'));
+        $this->assertSame(0, $code);
     }
 
     /** @test */
     public function it_generated_correct_file_with_content()
     {
-        $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 
     /** @test */
     public function it_generated_correct_sync_job_file_with_content()
     {
-        $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog', '--sync' => true]);
+        $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog', '--sync' => true]);
 
         $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -65,11 +68,12 @@ class JobMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.jobs.path', 'SuperJobs');
 
-        $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/SuperJobs/SomeJob.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -77,10 +81,11 @@ class JobMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.jobs.namespace', 'SuperJobs');
 
-        $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 }

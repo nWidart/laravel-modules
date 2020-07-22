@@ -35,19 +35,21 @@ class MiddlewareMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_a_new_middleware_class()
     {
-        $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
 
         $this->assertTrue(is_file($this->modulePath . '/Http/Middleware/SomeMiddleware.php'));
+        $this->assertSame(0, $code);
     }
 
     /** @test */
     public function it_generated_correct_file_with_content()
     {
-        $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/Http/Middleware/SomeMiddleware.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -55,11 +57,12 @@ class MiddlewareMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.filter.path', 'Middleware');
 
-        $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/Middleware/SomeMiddleware.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -67,10 +70,11 @@ class MiddlewareMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.filter.namespace', 'Middleware');
 
-        $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/Http/Middleware/SomeMiddleware.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 }

@@ -27,12 +27,13 @@ class ModuleMakeCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle() : int
     {
         $names = $this->argument('name');
+        $success = true;
 
         foreach ($names as $name) {
-            with(new ModuleGenerator($name))
+            $code = with(new ModuleGenerator($name))
                 ->setFilesystem($this->laravel['files'])
                 ->setModule($this->laravel['modules'])
                 ->setConfig($this->laravel['config'])
@@ -42,7 +43,13 @@ class ModuleMakeCommand extends Command
                 ->setPlain($this->option('plain'))
                 ->setActive(!$this->option('disabled'))
                 ->generate();
+
+            if ($code === E_ERROR) {
+                $success = false;
+            }
         }
+
+        return $success ? 0 : E_ERROR;
     }
 
     /**
