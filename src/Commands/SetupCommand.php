@@ -23,11 +23,11 @@ class SetupCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle() : int
     {
-        $this->generateModulesFolder();
+        $code = $this->generateModulesFolder();
 
-        $this->generateAssetsFolder();
+        return $this->generateAssetsFolder() | $code;
     }
 
     /**
@@ -35,7 +35,7 @@ class SetupCommand extends Command
      */
     public function generateModulesFolder()
     {
-        $this->generateDirectory(
+        return $this->generateDirectory(
             $this->laravel['modules']->config('paths.modules'),
             'Modules directory created successfully',
             'Modules directory already exist'
@@ -47,7 +47,7 @@ class SetupCommand extends Command
      */
     public function generateAssetsFolder()
     {
-        $this->generateDirectory(
+        return $this->generateDirectory(
             $this->laravel['modules']->config('paths.assets'),
             'Assets directory created successfully',
             'Assets directory already exist'
@@ -60,17 +60,20 @@ class SetupCommand extends Command
      * @param $dir
      * @param $success
      * @param $error
+     * @return int
      */
-    protected function generateDirectory($dir, $success, $error)
+    protected function generateDirectory($dir, $success, $error) : int
     {
         if (!$this->laravel['files']->isDirectory($dir)) {
             $this->laravel['files']->makeDirectory($dir, 0755, true, true);
 
             $this->info($success);
 
-            return;
+            return 0;
         }
 
         $this->error($error);
+
+        return E_ERROR;
     }
 }

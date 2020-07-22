@@ -28,7 +28,7 @@ class MigrateRefreshCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle() : int
     {
         $this->call('module:migrate-reset', [
             'module' => $this->getModuleName(),
@@ -47,6 +47,8 @@ class MigrateRefreshCommand extends Command
                 'module' => $this->getModuleName(),
             ]);
         }
+
+        return 0;
     }
 
     /**

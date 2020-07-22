@@ -27,20 +27,22 @@ class UpdateCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle() : int
     {
         $name = $this->argument('module');
 
         if ($name) {
             $this->updateModule($name);
 
-            return;
+            return 0;
         }
 
         /** @var \Nwidart\Modules\Module $module */
         foreach ($this->laravel['modules']->getOrdered() as $module) {
             $this->updateModule($module->getName());
         }
+
+        return 0;
     }
 
     protected function updateModule($name)

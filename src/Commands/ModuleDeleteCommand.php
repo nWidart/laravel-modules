@@ -10,11 +10,13 @@ class ModuleDeleteCommand extends Command
     protected $name = 'module:delete';
     protected $description = 'Delete a module from the application';
 
-    public function handle()
+    public function handle() : int
     {
         $this->laravel['modules']->delete($this->argument('module'));
 
         $this->info("Module {$this->argument('module')} has been deleted.");
+
+        return 0;
     }
 
     protected function getArguments()

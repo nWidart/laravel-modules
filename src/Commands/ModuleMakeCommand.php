@@ -27,7 +27,7 @@ class ModuleMakeCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle() : int
     {
         $names = $this->argument('name');
 
@@ -43,6 +43,8 @@ class ModuleMakeCommand extends Command
                 ->setActive(!$this->option('disabled'))
                 ->generate();
         }
+
+        return 0;
     }
 
     /**

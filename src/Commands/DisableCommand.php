@@ -25,7 +25,7 @@ class DisableCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle() : int
     {
         /**
          * check if user entred an argument
@@ -44,6 +44,8 @@ class DisableCommand extends Command
         } else {
             $this->comment("Module [{$module}] has already disabled.");
         }
+
+        return 0;
     }
 
     /**

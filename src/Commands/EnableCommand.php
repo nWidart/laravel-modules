@@ -25,13 +25,14 @@ class EnableCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle() : int
     {
         /**
          * check if user entred an argument
          */
         if ($this->argument('module') === null) {
-            return $this->enableAll();
+            $this->enableAll();
+            return 0;
         }
 
         /** @var Module $module */
@@ -44,6 +45,8 @@ class EnableCommand extends Command
         } else {
             $this->comment("Module [{$module}] has already enabled.");
         }
+
+        return 0;
     }
 
     /**

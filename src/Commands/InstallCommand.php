@@ -35,12 +35,10 @@ class InstallCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle() : int
     {
         if (is_null($this->argument('name'))) {
-            $this->installFromFile();
-
-            return;
+            return $this->installFromFile();
         }
 
         $this->install(
@@ -49,17 +47,19 @@ class InstallCommand extends Command
             $this->option('type'),
             $this->option('tree')
         );
+
+        return 0;
     }
 
     /**
      * Install modules from modules.json file.
      */
-    protected function installFromFile()
+    protected function installFromFile() : int
     {
         if (!file_exists($path = base_path('modules.json'))) {
             $this->error("File 'modules.json' does not exist in your project root.");
 
-            return;
+            return E_ERROR;
         }
 
         $modules = Json::make($path);
@@ -75,6 +75,8 @@ class InstallCommand extends Command
                 $module->get('type')
             );
         }
+
+        return 0;
     }
 
     /**
