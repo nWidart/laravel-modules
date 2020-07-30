@@ -78,7 +78,7 @@ class MigrateCommand extends Command
         ]);
 
         if ($this->option('seed')) {
-            $this->call('module:seed', ['module' => $module->getName()]);
+            $this->call('module:seed', ['module' => $module->getName(), '--force' => $this->option('force')]);
         }
     }
 
