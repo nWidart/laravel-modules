@@ -49,6 +49,7 @@ abstract class GeneratorCommand extends Command
             $this->info("Created : {$path}");
         } catch (FileAlreadyExistException $e) {
             $this->error("File : {$path} already exists.");
+
             return E_ERROR;
         }
 

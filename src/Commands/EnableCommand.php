@@ -32,6 +32,7 @@ class EnableCommand extends Command
          */
         if ($this->argument('module') === null) {
             $this->enableAll();
+
             return 0;
         }
 
