@@ -34,6 +34,7 @@ class MigrateRefreshCommand extends Command
 
         if ($module && !$this->getModuleName()) {
             $this->error("Module [$module] does not exists.");
+
             return E_ERROR;
         }
 
@@ -94,10 +95,6 @@ class MigrateRefreshCommand extends Command
 
         $module = app('modules')->find($module);
 
-        if (!$module) {
-            return null;
-        }
-
-        return $module->getStudlyName();
+        return $module ? $module->getStudlyName() : null;
     }
 }
