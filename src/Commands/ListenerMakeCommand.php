@@ -63,7 +63,7 @@ class ListenerMakeCommand extends GeneratorCommand
         return (new Stub($this->getStubName(), [
             'NAMESPACE' => $this->getClassNamespace($module),
             'EVENTNAME' => $this->getEventName($module),
-            'SHORTEVENTNAME' => $this->option('event'),
+            'SHORTEVENTNAME' => class_basename($this->option('event')),
             'CLASS' => $this->getClass(),
         ]))->render();
     }
