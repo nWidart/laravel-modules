@@ -63,7 +63,7 @@ class ListenerMakeCommand extends GeneratorCommand
         return (new Stub($this->getStubName(), [
             'NAMESPACE' => $this->getClassNamespace($module),
             'EVENTNAME' => $this->getEventName($module),
-            'SHORTEVENTNAME' => class_basename($this->option('event')),
+            'SHORTEVENTNAME' => $this->getShortEventName(),
             'CLASS' => $this->getClass(),
         ]))->render();
     }
@@ -83,6 +83,11 @@ class ListenerMakeCommand extends GeneratorCommand
         $eventName = $namespace . "\\" . $eventPath->getPath() . "\\" . $this->option('event');
 
         return str_replace('/', '\\', $eventName);
+    }
+
+    protected function getShortEventName()
+    {
+        return class_basename($this->option('event'));
     }
 
     protected function getDestinationFilePath()
