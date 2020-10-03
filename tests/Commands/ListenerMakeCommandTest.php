@@ -60,6 +60,20 @@ class ListenerMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_generated_correct_sync_event_in_a_subdirectory_with_content()
+    {
+        $code = $this->artisan(
+            'module:make-listener',
+            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'User/WasCreated']
+        );
+
+        $file = $this->finder->get($this->modulePath . '/Listeners/NotifyUsersOfANewPost.php');
+
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    /** @test */
     public function it_generated_correct_sync_duck_event_with_content()
     {
         $code = $this->artisan(
@@ -79,6 +93,20 @@ class ListenerMakeCommandTest extends BaseTestCase
         $code = $this->artisan(
             'module:make-listener',
             ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated', '--queued' => true]
+        );
+
+        $file = $this->finder->get($this->modulePath . '/Listeners/NotifyUsersOfANewPost.php');
+
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    /** @test */
+    public function it_generated_correct_queued_event_in_a_subdirectory_with_content()
+    {
+        $code = $this->artisan(
+            'module:make-listener',
+            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'User/WasCreated', '--queued' => true]
         );
 
         $file = $this->finder->get($this->modulePath . '/Listeners/NotifyUsersOfANewPost.php');
