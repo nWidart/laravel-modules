@@ -2,7 +2,7 @@
 
 namespace Modules\\Blog\\Listeners;
 
-use Modules\\Blog\\Listeners\\Events\\UserWasCreated;
+use Modules\\Blog\\Events\\UserWasCreated;
 use Illuminate\\Queue\\InteractsWithQueue;
 use Illuminate\\Contracts\\Queue\\ShouldQueue;
 

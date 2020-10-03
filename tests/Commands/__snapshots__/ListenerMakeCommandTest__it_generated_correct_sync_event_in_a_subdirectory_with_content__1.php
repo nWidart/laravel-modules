@@ -2,7 +2,7 @@
 
 namespace Modules\\Blog\\Listeners;
 
-use Modules\\Blog\\Events\\UserWasCreated;
+use Modules\\Blog\\Events\\User\\WasCreated;
 use Illuminate\\Queue\\InteractsWithQueue;
 use Illuminate\\Contracts\\Queue\\ShouldQueue;
 
@@ -21,10 +21,10 @@ class NotifyUsersOfANewPost
     /**
      * Handle the event.
      *
-     * @param UserWasCreated $event
+     * @param WasCreated $event
      * @return void
      */
-    public function handle(UserWasCreated $event)
+    public function handle(WasCreated $event)
     {
         //
     }
