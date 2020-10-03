@@ -10,6 +10,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 - Laravel 8 support
 
+### Updated
+
+- Update `ListenerMakeCommand` to properly use the `--events` option
+
 ## 7.2.0 - 2020-07-30
 
 ### Added
