@@ -19,7 +19,7 @@
 | 7.0  | ^7.0 |
 | 8.0  | ^8.0 |
 
-`nwidart/laravel-modules` is a Laravel package which created to manage your large Laravel app using modules. Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 7.
+`nwidart/laravel-modules` is a Laravel package which created to manage your large Laravel app using modules. Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 8.
 
 This package is a re-published, re-organised and maintained version of [pingpong/modules](https://github.com/pingpong-labs/modules), which isn't maintained anymore. This package is used in [AsgardCMS](https://asgardcms.com/).
 
@@ -45,7 +45,7 @@ php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProv
 
 ### Autoloading
 
-By default the module classes are not loaded automatically. You can autoload your modules using `psr-4`. For example:
+By default, the module classes are not loaded automatically. You can autoload your modules using `psr-4`. For example:
 
 ``` json
 {
