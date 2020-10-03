@@ -18,7 +18,7 @@
     }
   ],
   "require": {
-    "php": ">=7.2.5",
+    "php": ">=7.3",
     "ext-json": "*"
   },
   "require-dev": {
@@ -54,7 +54,7 @@
       }
     },
     "branch-alias": {
-      "dev-master": "7.0-dev"
+      "dev-master": "8.0-dev"
     }
   },
   "scripts": {
