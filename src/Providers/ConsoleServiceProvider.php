@@ -20,7 +20,7 @@ class ConsoleServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        foreach (config('modules.commands') as $command) {
+        foreach (config('modules.commands', []) as $command) {
             $this->commands[] = trim($this->consoleNamespace . "\\" . $command);
         }
 
