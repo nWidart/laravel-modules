@@ -123,21 +123,12 @@ class ConsoleServiceProvider extends ServiceProvider
         $commands = [];
 
         foreach (config('modules.commands', $this->commands) as $command) {
-            $commands[] = $this->resolveCommandNamespace($command);
+            $commands[] = Str::contains($command, $this->consoleNamespace) ?
+                $command :
+                $this->consoleNamespace  . "\\";
         }
 
         return $commands;
-    }
-
-    /**
-     * Resolve command namespace
-     *
-     * @param string $command
-     * @return void
-     */
-    private function resolveCommandNamespace(string $command)
-    {
-        return Str::contains($command, $this->consoleNamespace) ? $command : $this->consoleNamespace  . "\\";
     }
 
     /**
