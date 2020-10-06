@@ -2,13 +2,14 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Nwidart\Modules\Json;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Module;
-use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
 
 class ProviderMakeCommand extends GeneratorCommand
 {
@@ -29,13 +30,44 @@ class ProviderMakeCommand extends GeneratorCommand
     protected $name = 'module:make-provider';
 
     /**
+     * Execute the console command.
+     */
+    public function handle(): int
+    {
+        if (parent::handle() != E_ERROR) {
+
+            /** Provider cannot be type of abstract or once registered will break the application */
+            if (!$this->option('master')) {
+
+                /** Confirmation */
+                if ($this->confirm('Do you want to register this provider?', false)) {
+
+                    $json = new Json(module_path($this->getModule()->getStudlyName(), 'module.json'));
+                    $providers = $json->get('providers', []);
+
+                    $provider = $this->getClassNamespace($this->getModule()) . "\\" . $this->getFileName();
+
+                    $json->set('providers', array_unique(array_merge($providers, [
+                        $provider
+                    ])))->save();
+
+                    $this->info("Provider [{$this->getFileName()}] for module [{$this->getModule()->getStudlyName()}] has been registered");
+                }
+            }
+        };
+
+        return 0;
+    }
+
+
+    /**
      * The console command description.
      *
      * @var string
      */
     protected $description = 'Create a new service provider class for the specified module.';
 
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace(): string
     {
         $module = $this->laravel['modules'];
 
