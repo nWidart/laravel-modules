@@ -127,6 +127,61 @@ return [
             'resource' => ['path' => 'Transformers', 'generate' => false],
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Package commands
+    |--------------------------------------------------------------------------
+    |
+    | Here you can define which commands will be visible and used in your
+    | application. If for example you don't use some of the commands provided
+    | you can simply comment them out.
+    |
+    */
+    'commands' => [
+        CommandMakeCommand::class,
+        ControllerMakeCommand::class,
+        DisableCommand::class,
+        DumpCommand::class,
+        EnableCommand::class,
+        EventMakeCommand::class,
+        FactoryMakeCommand::class,
+        InstallCommand::class,
+        JobMakeCommand::class,
+        LaravelModulesV6Migrator::class,
+        ListCommand::class,
+        ListenerMakeCommand::class,
+        MailMakeCommand::class,
+        MiddlewareMakeCommand::class,
+        MigrateCommand::class,
+        MigrateRefreshCommand::class,
+        MigrateResetCommand::class,
+        MigrateRollbackCommand::class,
+        MigrateStatusCommand::class,
+        MigrationMakeCommand::class,
+        ModelMakeCommand::class,
+        ModuleDeleteCommand::class,
+        ModuleMakeCommand::class,
+        NotificationMakeCommand::class,
+        PolicyMakeCommand::class,
+        ProviderMakeCommand::class,
+        PublishCommand::class,
+        PublishConfigurationCommand::class,
+        PublishMigrationCommand::class,
+        PublishTranslationCommand::class,
+        RequestMakeCommand::class,
+        ResourceMakeCommand::class,
+        RouteProviderMakeCommand::class,
+        RuleMakeCommand::class,
+        SeedCommand::class,
+        SeedMakeCommand::class,
+        SetupCommand::class,
+        TestMakeCommand::class,
+        UnUseCommand::class,
+        UpdateCommand::class,
+        UseCommand::class,
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Scan Path
