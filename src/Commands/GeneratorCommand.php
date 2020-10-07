@@ -30,23 +30,10 @@ abstract class GeneratorCommand extends Command
     abstract protected function getDestinationFilePath();
 
     /**
-     * Method to apply necessary functionality
-     * before console command gets executed
-     *
-     * @return void
-     */
-    public function beforeHandle()
-    {
-        // ...
-    }
-
-    /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        $this->beforeHandle();
-
         $path = str_replace('\\', '/', $this->getDestinationFilePath());
 
         if (!$this->laravel['files']->isDirectory($dir = dirname($path))) {
@@ -76,7 +63,7 @@ abstract class GeneratorCommand extends Command
      */
     public function getClass()
     {
-        return class_basename($this->argument($this->argumentName));
+        return class_basename($this->getFileName());
     }
 
     /**
