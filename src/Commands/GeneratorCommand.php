@@ -16,13 +16,6 @@ abstract class GeneratorCommand extends Command
     protected $argumentName = 'name';
 
     /**
-     * The name to be appended to the generated resources.
-     *
-     * @var null|string
-     */
-    protected $appendable;
-
-    /**
      * Get template contents.
      *
      * @return string
@@ -37,7 +30,7 @@ abstract class GeneratorCommand extends Command
     abstract protected function getDestinationFilePath();
 
     /**
-     * Before handle method to apply necessary functionality
+     * Method to apply necessary functionality
      * before console command gets executed
      *
      * @return void
