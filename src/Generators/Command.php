@@ -26,6 +26,50 @@ abstract class Command extends GeneratorCommand
      */
     protected $stubFile;
 
+
+    /**
+     * Specifies default path.
+     *
+     * @var null|string
+     */
+    protected $defaultPath;
+
+    /**
+     * Destination file extension
+     *
+     * @var string
+     */
+    protected $outputExtension = 'php';
+
+    /**
+     * Generator paths key
+     *
+     * @see config/modules.php
+     * @var string
+     */
+    protected $generatorPathsKey = 'generator.paths';
+
+    /**
+     * Generator config key
+     *
+     * @see config/modules.php
+     * @var string
+     */
+    protected $generatorConfigKey = '';
+
+    /**
+     * Generator config prefix for the $generatorConfigKey
+     *
+     * @var string
+     */
+    protected $generatorConfigPrefix;
+
+    /**
+     * @var string $configKeySeparator
+     */
+    protected $configKeySeparator = '-';
+
+
     /**
      * Getter for appendable
      *
@@ -77,7 +121,19 @@ abstract class Command extends GeneratorCommand
     {
         return  $this->getModulePath() . "/" .
             GenerateConfigReader::read($this->getGeneratorConfigKey())->getPath() . "/" .
-            $this->resolveFilename() . '.' . $this->outputExtension;
+            $this->resolveFilename() . '.' . $this->outputExtension ?: 'php';
+    }
+
+    /**
+     * Resolves the filename so that it always starts with capital letter
+     *
+     * @return string
+     */
+    private function resolveFilename()
+    {
+        $filename = str_replace('/', ' ', $this->getFileName());
+        $filename = ucwords(str_replace('\\', ' ', $filename));
+        return trim(str_replace(' ', '/', $filename));
     }
 
     /**
@@ -131,5 +187,31 @@ abstract class Command extends GeneratorCommand
         }
 
         return Str::singular(Str::studly($name));
+    }
+
+    /**
+     * Get default namespace.
+     *
+     * @return string
+     */
+    public function getDefaultNamespace(): string
+    {
+        return $this->getModules()->config(
+            $this->generatorPathsKey . '.' . $this->getGeneratorConfigKey() . '.namespace'
+        ) ?: $this->getModules()->config(
+            $this->generatorPathsKey . '.' . $this->getGeneratorConfigKey() . '.path',
+            $this->defaultPath ?: ''
+        );
+    }
+
+    /**
+     * Get configurator config key
+     *
+     * @return string
+     */
+    private function getGeneratorConfigKey()
+    {
+        return ($this->generatorConfigPrefix ? $this->generatorConfigPrefix . $this->configKeySeparator : '') .
+            $this->generatorConfigKey;
     }
 }
