@@ -2,9 +2,9 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Console\Command;
-use Nwidart\Modules\Exceptions\FileAlreadyExistException;
+use Nwidart\Modules\Console\Command;
 use Nwidart\Modules\Generators\FileGenerator;
+use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 
 abstract class GeneratorCommand extends Command
 {
@@ -13,7 +13,14 @@ abstract class GeneratorCommand extends Command
      *
      * @var string
      */
-    protected $argumentName = '';
+    protected $argumentName = 'name';
+
+    /**
+     * The name to be appended to the generated resources.
+     *
+     * @var null|string
+     */
+    protected $appendable;
 
     /**
      * Get template contents.
@@ -30,10 +37,23 @@ abstract class GeneratorCommand extends Command
     abstract protected function getDestinationFilePath();
 
     /**
+     * Before handle method to apply necessary functionality
+     * before console command gets executed
+     *
+     * @return void
+     */
+    public function beforeHandle()
+    {
+        // ...
+    }
+
+    /**
      * Execute the console command.
      */
-    public function handle() : int
+    public function handle(): int
     {
+        $this->beforeHandle();
+
         $path = str_replace('\\', '/', $this->getDestinationFilePath());
 
         if (!$this->laravel['files']->isDirectory($dir = dirname($path))) {
@@ -43,13 +63,13 @@ abstract class GeneratorCommand extends Command
         $contents = $this->getTemplateContents();
 
         try {
+
             $overwriteFile = $this->hasOption('force') ? $this->option('force') : false;
             (new FileGenerator($path, $contents))->withFileOverwrite($overwriteFile)->generate();
-
-            $this->info("Created : {$path}");
+            $this->info("Created " . basename($path) . " file");
         } catch (FileAlreadyExistException $e) {
-            $this->error("File : {$path} already exists.");
 
+            $this->critical("File [ {$path} ] already exists.");
             return E_ERROR;
         }
 
@@ -71,7 +91,7 @@ abstract class GeneratorCommand extends Command
      *
      * @return string
      */
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace(): string
     {
         return '';
     }

@@ -2,11 +2,11 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Console\Command;
-use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Console\Command;
 use Nwidart\Modules\Generators\ModuleGenerator;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Nwidart\Modules\Contracts\ActivatorInterface;
+use Symfony\Component\Console\Input\InputArgument;
 
 class ModuleMakeCommand extends Command
 {
@@ -27,7 +27,7 @@ class ModuleMakeCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle() : int
+    public function handle(): int
     {
         $names = $this->argument('name');
         $success = true;

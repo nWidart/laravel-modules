@@ -285,7 +285,7 @@ class ModuleGenerator extends Generator
     /**
      * Generate the module.
      */
-    public function generate() : int
+    public function generate(): int
     {
         $name = $this->getName();
 
@@ -293,7 +293,7 @@ class ModuleGenerator extends Generator
             if ($this->force) {
                 $this->module->delete($name);
             } else {
-                $this->console->error("Module [{$name}] already exist!");
+                $this->console->warning("{$name} module already exist!");
 
                 return E_ERROR;
             }
@@ -314,7 +314,7 @@ class ModuleGenerator extends Generator
 
         $this->activator->setActiveByName($name, $this->isActive);
 
-        $this->console->info("Module [{$name}] created successfully.");
+        $this->console->success("{$name} module has been created successfully.");
 
         return 0;
     }
@@ -364,7 +364,7 @@ class ModuleGenerator extends Generator
 
             $this->filesystem->put($path, $this->getStubContents($stub));
 
-            $this->console->info("Created : {$path}");
+            $this->console->info("Created " . basename($path));
         }
     }
 
@@ -412,8 +412,7 @@ class ModuleGenerator extends Generator
         return (new Stub(
             '/' . $stub . '.stub',
             $this->getReplacement($stub)
-        )
-        )->render();
+        ))->render();
     }
 
     /**
@@ -472,7 +471,7 @@ class ModuleGenerator extends Generator
 
         $this->filesystem->put($path, $this->getStubContents('json'));
 
-        $this->console->info("Created : {$path}");
+        $this->console->info("Created " . basename($path));
     }
 
     /**
