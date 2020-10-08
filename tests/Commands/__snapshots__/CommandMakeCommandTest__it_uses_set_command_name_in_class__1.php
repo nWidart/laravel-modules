@@ -9,11 +9,11 @@ use Symfony\\Component\\Console\\Input\\InputArgument;
 class MyAwesomeCommand extends Command
 {
     /**
-     * The console command name.
+     * The name and signature of the console command.
      *
      * @var string
      */
-    protected $name = \'my:awesome\';
+    protected $signature = \'my:awesome\';
 
     /**
      * The console command description.
