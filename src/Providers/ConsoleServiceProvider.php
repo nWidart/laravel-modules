@@ -23,6 +23,7 @@ use Nwidart\Modules\Commands\SeedMakeCommand;
 use Nwidart\Modules\Commands\TestMakeCommand;
 use Nwidart\Modules\Commands\EventMakeCommand;
 use Nwidart\Modules\Commands\ModelMakeCommand;
+use Nwidart\Modules\Commands\ComponentMakeCommand;
 use Nwidart\Modules\Commands\ModuleMakeCommand;
 use Nwidart\Modules\Commands\PolicyMakeCommand;
 use Nwidart\Modules\Commands\CommandMakeCommand;
@@ -64,6 +65,7 @@ class ConsoleServiceProvider extends ServiceProvider
     protected $commands = [
         CommandMakeCommand::class,
         ControllerMakeCommand::class,
+        ComponentMakeCommand::class,
         DisableCommand::class,
         DumpCommand::class,
         EnableCommand::class,

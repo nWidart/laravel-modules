@@ -126,6 +126,7 @@ return [
             'emails' => ['path' => 'Emails', 'generate' => false],
             'notifications' => ['path' => 'Notifications', 'generate' => false],
             'resource' => ['path' => 'Transformers', 'generate' => false],
+            'view-component' => ['path' => 'Resources/views/components', 'generate' => false],
         ],
     ],
 
