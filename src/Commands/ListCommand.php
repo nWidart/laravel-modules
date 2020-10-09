@@ -27,7 +27,7 @@ class ListCommand extends Command
      */
     public function handle() : int
     {
-        $this->table(['Name', 'Status', 'Order', 'Path'], $this->getRows());
+        $this->table(['Name', 'Status', 'Priority', 'Path'], $this->getRows());
 
         return 0;
     }
@@ -46,7 +46,7 @@ class ListCommand extends Command
             $rows[] = [
                 $module->getName(),
                 $module->isEnabled() ? 'Enabled' : 'Disabled',
-                $module->get('order'),
+                $module->get('priority'),
                 $module->getPath(),
             ];
         }
@@ -65,8 +65,8 @@ class ListCommand extends Command
                 return $this->laravel['modules']->getByStatus(0);
                 break;
 
-            case 'ordered':
-                return $this->laravel['modules']->getOrdered($this->option('direction'));
+            case 'priority':
+                return $this->laravel['modules']->getPriority($this->option('direction'));
                 break;
 
             default:
