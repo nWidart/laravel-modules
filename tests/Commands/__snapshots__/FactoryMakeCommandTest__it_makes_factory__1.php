@@ -1,12 +1,27 @@
 <?php return '<?php
 
-/** @var \\Illuminate\\Database\\Eloquent\\Factory $factory */
+namespace Modules\\Blog\\Database\\factories;
 
-use Faker\\Generator as Faker;
+use Illuminate\\Database\\Eloquent\\Model;
+use Illuminate\\Database\\Eloquent\\Factories\\Factory;
 
-$factory->define(Model::class, function (Faker $faker) {
-    return [
-        //
-    ];
-});
+class PostFactory extends Factory
+{
+    /**
+     * The name of the factory\'s corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Model::class;
+
+    /**
+     * Define the model\'s default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [];
+    }
+}
 ';
