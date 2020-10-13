@@ -41,7 +41,7 @@ class FactoryMakeCommand extends GeneratorCommand
     protected function getArguments()
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the factory.'],
+            ['name', InputArgument::REQUIRED, 'The name of the model.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
@@ -51,7 +51,13 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        return (new Stub('/factory.stub'))->render();
+        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+
+        return (new Stub('/factory.stub', [
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'NAME' => $this->getModelName(),
+            'MODEL_NAMESPACE' => $this->getModelNamespace(),
+        ]))->render();
     }
 
     /**
@@ -71,6 +77,36 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name')) . '.php';
+        return Str::studly($this->argument('name')) . 'Factory.php';
+    }
+
+    /**
+     * @return mixed|string
+     */
+    private function getModelName()
+    {
+        return Str::studly($this->argument('name'));
+    }
+
+    /**
+     * Get default namespace.
+     *
+     * @return string
+     */
+    public function getDefaultNamespace(): string
+    {
+        $module = $this->laravel['modules'];
+
+        return $module->config('paths.generator.factory.namespace') ?: $module->config('paths.generator.factory.path');
+    }
+
+    /**
+     * Get model namespace.
+     *
+     * @return string
+     */
+    public function getModelNamespace(): string
+    {
+        return $this->laravel['modules']->config('namespace') . '\\' . $this->laravel['modules']->findOrFail($this->getModuleName()) . '\\' . $this->laravel['modules']->config('paths.generator.model.path', 'Entities');
     }
 }
