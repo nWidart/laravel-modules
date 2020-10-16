@@ -9,11 +9,11 @@ class Post extends Model
 {
     use HasFactory;
 
+    protected $fillable = ["title","slug"];
+    
     protected static function newFactory()
     {
         return \\Modules\\Blog\\Database\\factories\\PostFactory::new();
     }
-
-    protected $fillable = ["title","slug"];
 }
 ';
