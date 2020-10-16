@@ -35,7 +35,7 @@ class FactoryMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_makes_factory()
     {
-        $code = $this->artisan('module:make-factory', ['name' => 'PostFactory', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-factory', ['name' => 'Post', 'module' => 'Blog']);
 
         $factoryFile = $this->modulePath . '/Database/factories/PostFactory.php';
 
