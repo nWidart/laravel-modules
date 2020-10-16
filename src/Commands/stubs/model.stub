@@ -9,10 +9,10 @@ class $CLASS$ extends Model
 {
     use HasFactory;
 
+    protected $fillable = $FILLABLE$;
+    
     protected static function newFactory()
     {
         return \$MODULE_NAMESPACE$\$MODULE$\Database\factories\$NAME$Factory::new();
     }
-
-    protected $fillable = $FILLABLE$;
 }
