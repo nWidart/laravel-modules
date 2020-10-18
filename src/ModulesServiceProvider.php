@@ -36,7 +36,8 @@ abstract class ModulesServiceProvider extends ServiceProvider
      */
     protected function registerNamespaces()
     {
-        $configPath = __DIR__ . '/../config/config.php';
+        $configPath = (app() instanceof \Illuminate\Foundation\Application) ? 'config.php' : 'lumen-config.php';
+        $configPath = __DIR__ . "/../config/" . $configPath;
 
         $this->mergeConfigFrom($configPath, 'modules');
         $this->publishes([

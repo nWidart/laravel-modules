@@ -128,14 +128,15 @@ class ControllerMakeCommand extends GeneratorCommand
      */
     protected function getStubName()
     {
-        if ($this->option('plain') === true) {
-            $stub = '/controller-plain.stub';
+        if (!$this->isLaravelApplication()) {
+            $stub = '/controller-lumen.stub';
         } elseif ($this->option('api') === true) {
             $stub = '/controller-api.stub';
+        } elseif ($this->option('plain') === true) {
+            $stub = '/controller-plain.stub';
         } else {
             $stub = '/controller.stub';
         }
-
         return $stub;
     }
 }

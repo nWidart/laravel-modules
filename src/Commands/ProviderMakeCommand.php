@@ -72,7 +72,13 @@ class ProviderMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        $stub = $this->option('master') ? 'scaffold/provider' : 'provider';
+        if (!$this->option('master')) {
+            $stub = 'provider';
+        } elseif (!$this->isLaravelApplication()) {
+            $stub = 'scaffold/lumen-provider';
+        } else {
+            $stub = 'scaffold/provider';
+        }
 
         /** @var Module $module */
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());

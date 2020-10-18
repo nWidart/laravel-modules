@@ -1,0 +1,26 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use Illuminate\Support\ServiceProvider;
+
+class $CLASS$ extends ServiceProvider
+{
+    /**
+     * The module namespace to assume when generating URLs to actions.
+     *
+     * @var string
+     */
+    protected $moduleNamespace = '$MODULE_NAMESPACE$\$MODULE$\$CONTROLLER_NAMESPACE$';
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        app()->router->group(['namespace' => $this->moduleNamespace], function ($router) {
+            require __DIR__ . "/../Routes/api.php";
+        });
+    }
+}

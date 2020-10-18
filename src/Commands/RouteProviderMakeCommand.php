@@ -56,7 +56,9 @@ class RouteProviderMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/route-provider.stub', [
+        $routeProviderStubPath = $this->isLaravelApplication() ? '/route-provider.stub' : '/lumen-route-provider.stub';
+
+        return (new Stub($routeProviderStubPath, [
             'NAMESPACE'            => $this->getClassNamespace($module),
             'CLASS'                => $this->getFileName(),
             'MODULE_NAMESPACE'     => $this->laravel['modules']->config('namespace'),
@@ -103,7 +105,8 @@ class RouteProviderMakeCommand extends GeneratorCommand
      */
     protected function getApiRoutesPath()
     {
-        return '/' . $this->laravel['modules']->config('stubs.files.routes/api', 'Routes/api.php');
+        $routeStubPath = $this->isLaravelApplication() ? 'api' : 'lumen-api';
+        return '/' . $this->laravel['modules']->config("stubs.files.routes/$routeStubPath", 'Routes/api.php');
     }
 
     public function getDefaultNamespace() : string

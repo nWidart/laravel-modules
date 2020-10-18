@@ -17,4 +17,11 @@ trait ModuleCommandTrait
 
         return $module->getStudlyName();
     }
+    /**
+     * @return bool
+     */
+    private function isLaravelApplication()
+    {
+        return app() instanceof \Illuminate\Foundation\Application;
+    }
 }
