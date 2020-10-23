@@ -76,6 +76,7 @@ abstract class BaseTestCase extends OrchestraTestCase
                 'resource' => ['path' => 'Transformers', 'generate' => true],
             ],
         ]);
+        $app['config']->set('modules.stubs.style', '$VARIABLE_NAME$');
 
         $app['config']->set('modules.commands', [
             CommandMakeCommand::class,

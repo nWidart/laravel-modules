@@ -26,6 +26,14 @@ class Stub
     protected $replaces = [];
 
     /**
+     * Defines the style of variables in a file
+     * that will be replaced.
+     *
+     * @var string
+     */
+    protected $style;
+
+    /**
      * The contructor.
      *
      * @param string $path
@@ -35,6 +43,37 @@ class Stub
     {
         $this->path = $path;
         $this->replaces = $replaces;
+    }
+
+    /**
+     * Set variable style.
+     *
+     * @param string $style
+     * @return self
+     */
+    public function setStyle($left, $right = null)
+    {
+        if (!$left) {
+            return $this;
+        }
+
+        if (!$right) {
+            $right = $left;
+        }
+
+        $this->style = trim($left . 'VARIABLE_NAME' . $right);
+
+        return $this;
+    }
+
+    /**
+     * Get variable style.
+     *
+     * @return string
+     */
+    public function getStyle()
+    {
+        return $this->style;
     }
 
     /**
@@ -105,8 +144,9 @@ class Stub
     {
         $contents = file_get_contents($this->getPath());
 
-        foreach ($this->replaces as $search => $replace) {
-            $contents = str_replace('$' . strtoupper($search) . '$', $replace, $contents);
+        foreach ($this->replaces as $search => $to) {
+            $replace = str_replace('VARIABLE_NAME', strtoupper($search), $this->style ?: config('modules.stubs.style'));
+            $contents = str_replace($replace, $to, $contents);
         }
 
         return $contents;
