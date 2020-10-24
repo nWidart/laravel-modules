@@ -1,10 +1,10 @@
 <?php return '{
-    "name": "nwidart/blog",
+    "name": "/blog",
     "description": "",
     "authors": [
         {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
+            "name": "",
+            "email": ""
         }
     ],
     "extra": {
