@@ -214,8 +214,10 @@ return [
             'name' => 'Nicolas Widart',
             'email' => 'n.widart@gmail.com',
         ],
-        'silent' => true
     ],
+
+    'composer-output' => false,
+
     /*
     |--------------------------------------------------------------------------
     | Caching
