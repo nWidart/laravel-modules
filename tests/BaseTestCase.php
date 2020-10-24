@@ -77,6 +77,8 @@ abstract class BaseTestCase extends OrchestraTestCase
             ],
         ]);
 
+        $app['config']->set('modules.composer.silent', false);
+
         $app['config']->set('modules.commands', [
             CommandMakeCommand::class,
             ControllerMakeCommand::class,
