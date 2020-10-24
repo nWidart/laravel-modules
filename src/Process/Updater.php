@@ -29,7 +29,7 @@ class Updater extends Runner
      */
     private function isComposerSilenced()
     {
-        return config('modules.composer.silent') === true ? ' --quiet' : '';
+        return config('modules.composer.composer-output') === false ? ' --quiet' : '';
     }
 
     /**
