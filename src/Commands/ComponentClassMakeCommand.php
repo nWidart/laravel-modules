@@ -35,6 +35,26 @@ class ComponentClassMakeCommand extends GeneratorCommand
 
 
 
+    public function handle() : int
+    {
+        if (parent::handle() === E_ERROR) {
+            return E_ERROR;
+        }
+        $this->writeComponentViewTemplate();
+        return 0;
+    }
+    /**
+     * Write the view template for the component.
+     *
+     * @return void
+     */
+    protected function writeComponentViewTemplate()
+    {
+        $this->call('module:make-component-view', ['name' => $this->argument('name') , 'module' => $this->argument('module')]);
+    }
+
+
+
     public function getDefaultNamespace() : string
     {
         $module = $this->laravel['modules'];
@@ -62,7 +82,9 @@ class ComponentClassMakeCommand extends GeneratorCommand
 
         return (new Stub('/component-class.stub', [
             'NAMESPACE'         => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClass()
+            'CLASS'             => $this->getClass(),
+            'LOWER_NAME'        => $module->getLowerName(),
+            'COMPONENT_NAME'    => 'components.'.Str::lower($this->argument('name'))
         ]))->render();
     }
 
