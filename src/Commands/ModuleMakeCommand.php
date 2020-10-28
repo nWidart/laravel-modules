@@ -33,6 +33,7 @@ class ModuleMakeCommand extends Command
         $success = true;
 
         foreach ($names as $name) {
+            $type = $this->getModuleType($this->option('plain'),$this->option('api'),$this->option('web'));
             $code = with(new ModuleGenerator($name))
                 ->setFilesystem($this->laravel['files'])
                 ->setModule($this->laravel['modules'])
@@ -40,7 +41,7 @@ class ModuleMakeCommand extends Command
                 ->setActivator($this->laravel[ActivatorInterface::class])
                 ->setConsole($this)
                 ->setForce($this->option('force'))
-                ->setPlain($this->option('plain'))
+                ->setType($this->option($type))
                 ->setActive(!$this->option('disabled'))
                 ->generate();
 
@@ -68,8 +69,14 @@ class ModuleMakeCommand extends Command
     {
         return [
             ['plain', 'p', InputOption::VALUE_NONE, 'Generate a plain module (without some resources).'],
+            ['api', null, InputOption::VALUE_NONE, 'Generate an api module.'],
+            ['web', null, InputOption::VALUE_NONE, 'Generate a web module.'],
             ['disabled', 'd', InputOption::VALUE_NONE, 'Do not enable the module at creation.'],
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when the module already exists.'],
         ];
+    }
+
+    private function getModuleType($isPlain,$isApi,$isWeb){
+        return ($isPlain && $isApi && $isWeb)||($isPlain && $isApi)||($isApi && $isWeb)||($isPlain && $isWeb)?'web':($isPlain&&(!$isApi&&!$isWeb)?'plain':($isApi&&(!$isPlain&&!$isWeb)?'api':'web'));
     }
 }
