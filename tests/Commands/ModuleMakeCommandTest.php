@@ -355,4 +355,75 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+
+    /** @test */
+    public function it_generates_web_module_with_resources()
+    {
+        $code = $this->artisan('module:make', ['name' => ['Blog'], '--web' => true]);
+
+        $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
+        $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
+
+        $path = base_path('modules/Blog') . '/Http/Controllers/BlogController.php';
+        $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
+
+        $path = base_path('modules/Blog') . '/Database/Seeders/BlogDatabaseSeeder.php';
+        $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
+
+        $path = base_path('modules/Blog') . '/Providers/RouteServiceProvider.php';
+        $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
+
+        $this->assertSame(0, $code);
+    }
+     /** @test */
+     public function it_generates_api_module_with_resources()
+     {
+         $code = $this->artisan('module:make', ['name' => ['Blog'], '--api' => true]);
+
+         $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
+         $this->assertTrue($this->finder->exists($path));
+         $this->assertMatchesSnapshot($this->finder->get($path));
+
+         $path = base_path('modules/Blog') . '/Http/Controllers/BlogController.php';
+         $this->assertTrue($this->finder->exists($path));
+         $this->assertMatchesSnapshot($this->finder->get($path));
+
+         $path = base_path('modules/Blog') . '/Database/Seeders/BlogDatabaseSeeder.php';
+         $this->assertTrue($this->finder->exists($path));
+         $this->assertMatchesSnapshot($this->finder->get($path));
+
+         $path = base_path('modules/Blog') . '/Providers/RouteServiceProvider.php';
+         $this->assertTrue($this->finder->exists($path));
+         $this->assertMatchesSnapshot($this->finder->get($path));
+
+         $this->assertSame(0, $code);
+     }
+     /** @test */
+    public function it_generates_web_module_with_resources_when_adding_more_than_one_option()
+    {
+        $code = $this->artisan('module:make', ['name' => ['Blog'], '--api' => true,'--plain'=>true]);
+
+        $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
+        $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
+
+        $path = base_path('modules/Blog') . '/Http/Controllers/BlogController.php';
+        $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
+
+        $path = base_path('modules/Blog') . '/Database/Seeders/BlogDatabaseSeeder.php';
+        $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
+
+        $path = base_path('modules/Blog') . '/Providers/RouteServiceProvider.php';
+        $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
+
+        $this->assertSame(0, $code);
+    }
 }
