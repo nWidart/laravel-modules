@@ -215,6 +215,9 @@ return [
             'email' => 'n.widart@gmail.com',
         ],
     ],
+
+    'composer-output' => false,
+
     /*
     |--------------------------------------------------------------------------
     | Caching

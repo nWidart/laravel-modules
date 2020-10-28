@@ -23,6 +23,16 @@ class Updater extends Runner
     }
 
     /**
+     * Check if composer should output anything.
+     *
+     * @return string
+     */
+    private function isComposerSilenced()
+    {
+        return config('modules.composer.composer-output') === false ? ' --quiet' : '';
+    }
+
+    /**
      * @param Module $module
      */
     private function installRequires(Module $module)
@@ -35,7 +45,7 @@ class Updater extends Runner
         }
 
         if (!empty($concatenatedPackages)) {
-            $this->run("composer require {$concatenatedPackages}");
+            $this->run("composer require {$concatenatedPackages}{$this->isComposerSilenced()}");
         }
     }
 
@@ -52,7 +62,7 @@ class Updater extends Runner
         }
 
         if (!empty($concatenatedPackages)) {
-            $this->run("composer require --dev {$concatenatedPackages}");
+            $this->run("composer require --dev {$concatenatedPackages}{$this->isComposerSilenced()}");
         }
     }
 
