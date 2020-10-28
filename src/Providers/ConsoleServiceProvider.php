@@ -45,6 +45,8 @@ use Nwidart\Modules\Commands\LaravelModulesV6Migrator;
 use Nwidart\Modules\Commands\RouteProviderMakeCommand;
 use Nwidart\Modules\Commands\PublishTranslationCommand;
 use Nwidart\Modules\Commands\PublishConfigurationCommand;
+use Nwidart\Modules\Commands\ComponentClassMakeCommand;
+use Nwidart\Modules\Commands\ComponentViewMakeCommand;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
@@ -103,6 +105,8 @@ class ConsoleServiceProvider extends ServiceProvider
         ResourceMakeCommand::class,
         TestMakeCommand::class,
         LaravelModulesV6Migrator::class,
+        ComponentClassMakeCommand::class,
+        ComponentViewMakeCommand::class
     ];
 
     /**

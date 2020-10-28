@@ -2,6 +2,8 @@
 
 namespace Nwidart\Modules\Tests;
 
+use Nwidart\Modules\Commands\ComponentClassMakeCommand;
+use Nwidart\Modules\Commands\ComponentViewMakeCommand;
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
@@ -74,6 +76,8 @@ abstract class BaseTestCase extends OrchestraTestCase
                 'emails' => ['path' => 'Emails', 'generate' => true],
                 'notifications' => ['path' => 'Notifications', 'generate' => true],
                 'resource' => ['path' => 'Transformers', 'generate' => true],
+                'component-view' => ['path' => 'Resources/views/components', 'generate' => true],
+                'component-class' => ['path' => 'View/Component', 'generate' => true]
             ],
         ]);
 
@@ -119,6 +123,8 @@ abstract class BaseTestCase extends OrchestraTestCase
             ResourceMakeCommand::class,
             TestMakeCommand::class,
             LaravelModulesV6Migrator::class,
+            ComponentClassMakeCommand::class,
+            ComponentViewMakeCommand::class
         ]);
     }
 
