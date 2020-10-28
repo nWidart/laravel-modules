@@ -41,7 +41,7 @@ class ModuleMakeCommand extends Command
                 ->setActivator($this->laravel[ActivatorInterface::class])
                 ->setConsole($this)
                 ->setForce($this->option('force'))
-                ->setType($this->option($type))
+                ->setType($type)
                 ->setActive(!$this->option('disabled'))
                 ->generate();
 
