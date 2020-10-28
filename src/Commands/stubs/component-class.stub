@@ -20,6 +20,6 @@ class $CLASS$ extends Component
      */
     public function render()
     {
-
+        return view('$LOWER_NAME$::$COMPONENT_NAME$');
     }
 }
