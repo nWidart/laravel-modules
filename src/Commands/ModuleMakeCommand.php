@@ -33,7 +33,7 @@ class ModuleMakeCommand extends Command
         $success = true;
 
         foreach ($names as $name) {
-            $type = $this->getModuleType($this->option('plain'),$this->option('api'),$this->option('web'));
+            $type = $this->getModuleType($this->option('plain'),$this->option('api'));
             $code = with(new ModuleGenerator($name))
                 ->setFilesystem($this->laravel['files'])
                 ->setModule($this->laravel['modules'])
@@ -76,7 +76,7 @@ class ModuleMakeCommand extends Command
         ];
     }
 
-    private function getModuleType($isPlain,$isApi,$isWeb){
-        return ($isPlain && $isApi && $isWeb)||($isPlain && $isApi)||($isApi && $isWeb)||($isPlain && $isWeb)?'web':($isPlain&&(!$isApi&&!$isWeb)?'plain':($isApi&&(!$isPlain&&!$isWeb)?'api':'web'));
+    private function getModuleType($isPlain,$isApi){
+        return ($isPlain && $isApi)?'web':($isPlain?'plain':($isApi?'api':'web'));
     }
 }
