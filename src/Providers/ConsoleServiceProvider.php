@@ -5,6 +5,8 @@ namespace Nwidart\Modules\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Commands\CommandMakeCommand;
+use Nwidart\Modules\Commands\ComponentClassMakeCommand;
+use Nwidart\Modules\Commands\ComponentViewMakeCommand;
 use Nwidart\Modules\Commands\ControllerMakeCommand;
 use Nwidart\Modules\Commands\DisableCommand;
 use Nwidart\Modules\Commands\DumpCommand;
@@ -45,8 +47,6 @@ use Nwidart\Modules\Commands\TestMakeCommand;
 use Nwidart\Modules\Commands\UnUseCommand;
 use Nwidart\Modules\Commands\UpdateCommand;
 use Nwidart\Modules\Commands\UseCommand;
-use Nwidart\Modules\Commands\ComponentClassMakeCommand;
-use Nwidart\Modules\Commands\ComponentViewMakeCommand;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
@@ -103,7 +103,7 @@ class ConsoleServiceProvider extends ServiceProvider
         TestMakeCommand::class,
         LaravelModulesV6Migrator::class,
         ComponentClassMakeCommand::class,
-        ComponentViewMakeCommand::class
+        ComponentViewMakeCommand::class,
     ];
 
     public function register(): void

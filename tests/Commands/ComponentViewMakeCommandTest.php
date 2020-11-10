@@ -2,9 +2,9 @@
 
 namespace Nwidart\Modules\Tests\Commands;
 
-use Spatie\Snapshots\MatchesSnapshots;
-use Nwidart\Modules\Tests\BaseTestCase;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Tests\BaseTestCase;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class ComponentViewCommandTest extends BaseTestCase
 {
@@ -43,21 +43,21 @@ class ComponentViewCommandTest extends BaseTestCase
     public function it_generated_correct_file_with_content()
     {
         $code = $this->artisan('module:make-component-view', ['name' => 'Blog', 'module' => 'Blog']);
-        $file = $this->finder->get($this->modulePath .  '/Resources/views/components/blog.blade.php');
-        $this->assertTrue(str_contains($file,'<div>'));
+        $file = $this->finder->get($this->modulePath . '/Resources/views/components/blog.blade.php');
+        $this->assertTrue(str_contains($file, '<div>'));
         $this->assertSame(0, $code);
     }
 
-     /** @test */
-     public function it_can_change_the_default_namespace()
-     {
-         $this->app['config']->set('modules.paths.generator.component-view.path', 'Resources/views/components/newDirectory');
+    /** @test */
+    public function it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.component-view.path', 'Resources/views/components/newDirectory');
 
-         $code = $this->artisan('module:make-component-view', ['name' => 'Blog', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-component-view', ['name' => 'Blog', 'module' => 'Blog']);
 
-         $file = $this->finder->get($this->modulePath .  '/Resources/views/components/newDirectory/blog.blade.php');
+        $file = $this->finder->get($this->modulePath . '/Resources/views/components/newDirectory/blog.blade.php');
 
-         $this->assertTrue(str_contains($file,'<div>'));
-         $this->assertSame(0, $code);
-     }
+        $this->assertTrue(str_contains($file, '<div>'));
+        $this->assertSame(0, $code);
+    }
 }
