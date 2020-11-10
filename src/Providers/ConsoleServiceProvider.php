@@ -52,14 +52,12 @@ class ConsoleServiceProvider extends ServiceProvider
 {
     /**
      * Namespace of the console commands
-     *
      * @var string
      */
     protected $consoleNamespace = "Nwidart\\Modules\\Commands";
 
     /**
      * The available commands
-     *
      * @var array
      */
     protected $commands = [
@@ -108,20 +106,12 @@ class ConsoleServiceProvider extends ServiceProvider
         ComponentViewMakeCommand::class
     ];
 
-    /**
-     * Register the commands.
-     */
-    public function register()
+    public function register(): void
     {
         $this->commands($this->resolveCommands());
     }
 
-    /**
-     * Resolve package commands
-     *
-     * @return array
-     */
-    private function resolveCommands()
+    private function resolveCommands(): array
     {
         $commands = [];
 
@@ -134,13 +124,8 @@ class ConsoleServiceProvider extends ServiceProvider
         return $commands;
     }
 
-    /**
-     * @return array
-     */
-    public function provides()
+    public function provides(): array
     {
-        $provides = $this->commands;
-
-        return $provides;
+        return $this->commands;
     }
 }
