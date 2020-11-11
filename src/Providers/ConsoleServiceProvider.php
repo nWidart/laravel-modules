@@ -118,7 +118,7 @@ class ConsoleServiceProvider extends ServiceProvider
         foreach (config('modules.commands', $this->commands) as $command) {
             $commands[] = Str::contains($command, $this->consoleNamespace) ?
                 $command :
-                $this->consoleNamespace  . "\\" . $command;
+                $this->consoleNamespace . "\\" . $command;
         }
 
         return $commands;
