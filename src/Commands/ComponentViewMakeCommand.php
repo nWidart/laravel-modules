@@ -2,12 +2,12 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Support\Str;
-use Nwidart\Modules\Support\Stub;
 use Illuminate\Foundation\Inspiring;
+use Illuminate\Support\Str;
+use Nwidart\Modules\Support\Config\GenerateConfigReader;
+use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
-use Nwidart\Modules\Support\Config\GenerateConfigReader;
 
 class ComponentViewMakeCommand extends GeneratorCommand
 {
@@ -52,7 +52,7 @@ class ComponentViewMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        return (new Stub('/component-view.stub',['QUOTE'=> Inspiring::quote()]))->render();
+        return (new Stub('/component-view.stub', ['QUOTE'=> Inspiring::quote()]))->render();
     }
 
     /**
@@ -62,6 +62,7 @@ class ComponentViewMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
         $factoryPath = GenerateConfigReader::read('component-view');
+
         return $path . $factoryPath->getPath() . '/' . $this->getFileName();
     }
 

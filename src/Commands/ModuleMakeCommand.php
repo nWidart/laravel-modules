@@ -75,26 +75,24 @@ class ModuleMakeCommand extends Command
         ];
     }
 
-     /**
-     * Get module type .
-     *
-     * @return string
-     */
-    private function getModuleType(){
-
+    /**
+    * Get module type .
+    *
+    * @return string
+    */
+    private function getModuleType()
+    {
         $isPlain = $this->option('plain');
         $isApi = $this->option('api');
 
-        if( $isPlain && $isApi ){
+        if ($isPlain && $isApi) {
             return 'web';
         }
-        if( $isPlain ){
+        if ($isPlain) {
             return 'plain';
-        }
-        elseif( $isApi ){
+        } elseif ($isApi) {
             return 'api';
-        }
-        else{
+        } else {
             return 'web';
         }
     }

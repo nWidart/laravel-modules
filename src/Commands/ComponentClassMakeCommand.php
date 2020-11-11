@@ -33,14 +33,13 @@ class ComponentClassMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new component-class for the specified module.';
 
-
-
     public function handle() : int
     {
         if (parent::handle() === E_ERROR) {
             return E_ERROR;
         }
         $this->writeComponentViewTemplate();
+
         return 0;
     }
     /**
@@ -53,11 +52,10 @@ class ComponentClassMakeCommand extends GeneratorCommand
         $this->call('module:make-component-view', ['name' => $this->argument('name') , 'module' => $this->argument('module')]);
     }
 
-
-
     public function getDefaultNamespace() : string
     {
         $module = $this->laravel['modules'];
+
         return $module->config('paths.generator.component-class.namespace') ?: $module->config('paths.generator.component-class.path', 'View/Component');
     }
 
@@ -84,7 +82,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
             'NAMESPACE'         => $this->getClassNamespace($module),
             'CLASS'             => $this->getClass(),
             'LOWER_NAME'        => $module->getLowerName(),
-            'COMPONENT_NAME'    => 'components.'.Str::lower($this->argument('name'))
+            'COMPONENT_NAME'    => 'components.' . Str::lower($this->argument('name')),
         ]))->render();
     }
 
@@ -95,6 +93,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
         $factoryPath = GenerateConfigReader::read('component-class');
+
         return $path . $factoryPath->getPath() . '/' . $this->getFileName();
     }
 
@@ -105,5 +104,4 @@ class ComponentClassMakeCommand extends GeneratorCommand
     {
         return Str::studly($this->argument('name')) . '.php';
     }
-
 }

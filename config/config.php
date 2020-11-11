@@ -2,7 +2,6 @@
 
 use Nwidart\Modules\Activators\FileActivator;
 
-
 return [
 
     /*
@@ -127,7 +126,7 @@ return [
             'notifications' => ['path' => 'Notifications', 'generate' => false],
             'resource' => ['path' => 'Transformers', 'generate' => false],
             'component-view' => ['path' => 'Resources/views/components', 'generate' => false],
-            'component-class' => ['path' => 'View/Component', 'generate' => false]
+            'component-class' => ['path' => 'View/Component', 'generate' => false],
         ],
     ],
 
