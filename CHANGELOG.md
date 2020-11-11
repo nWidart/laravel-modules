@@ -4,6 +4,16 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 8.2 - 2020-11-11
+
+### Added
+
+- New `module:make-component` command to generate laravel components
+
+### Fixed
+
+- Fixed bug: `Target class [Nwidart\Modules\Commands\] does not exist.`
+
 ## 8.1 - 2020-11-10
 
 ### Added
