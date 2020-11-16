@@ -2,8 +2,7 @@
 
 namespace Nwidart\Modules\Tests;
 
-use Nwidart\Modules\Commands\ComponentClassMakeCommand;
-use Nwidart\Modules\Commands\ComponentViewMakeCommand;
+use Nwidart\Modules\Commands;
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
@@ -36,16 +35,16 @@ abstract class BaseTestCase extends OrchestraTestCase
     /**
      * Set up the environment.
      *
-     * @param \Illuminate\Foundation\Application $app
+     * @param  \Illuminate\Foundation\Application  $app
      */
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('database.default', 'sqlite');
-        $app['config']->set('database.connections.sqlite', array(
+        $app['config']->set('database.connections.sqlite', [
             'driver' => 'sqlite',
             'database' => ':memory:',
             'prefix' => '',
-        ));
+        ]);
         $app['config']->set('modules.paths.modules', base_path('modules'));
         $app['config']->set('modules.paths', [
             'modules' => base_path('modules'),
@@ -84,49 +83,49 @@ abstract class BaseTestCase extends OrchestraTestCase
         $app['config']->set('modules.composer-output', true);
 
         $app['config']->set('modules.commands', [
-            CommandMakeCommand::class,
-            ControllerMakeCommand::class,
-            DisableCommand::class,
-            DumpCommand::class,
-            EnableCommand::class,
-            EventMakeCommand::class,
-            JobMakeCommand::class,
-            ListenerMakeCommand::class,
-            MailMakeCommand::class,
-            MiddlewareMakeCommand::class,
-            NotificationMakeCommand::class,
-            ProviderMakeCommand::class,
-            RouteProviderMakeCommand::class,
-            InstallCommand::class,
-            ListCommand::class,
-            ModuleDeleteCommand::class,
-            ModuleMakeCommand::class,
-            FactoryMakeCommand::class,
-            PolicyMakeCommand::class,
-            RequestMakeCommand::class,
-            RuleMakeCommand::class,
-            MigrateCommand::class,
-            MigrateRefreshCommand::class,
-            MigrateResetCommand::class,
-            MigrateRollbackCommand::class,
-            MigrateStatusCommand::class,
-            MigrationMakeCommand::class,
-            ModelMakeCommand::class,
-            PublishCommand::class,
-            PublishConfigurationCommand::class,
-            PublishMigrationCommand::class,
-            PublishTranslationCommand::class,
-            SeedCommand::class,
-            SeedMakeCommand::class,
-            SetupCommand::class,
-            UnUseCommand::class,
-            UpdateCommand::class,
-            UseCommand::class,
-            ResourceMakeCommand::class,
-            TestMakeCommand::class,
-            LaravelModulesV6Migrator::class,
-            ComponentClassMakeCommand::class,
-            ComponentViewMakeCommand::class,
+            Commands\CommandMakeCommand::class,
+            Commands\ControllerMakeCommand::class,
+            Commands\DisableCommand::class,
+            Commands\DumpCommand::class,
+            Commands\EnableCommand::class,
+            Commands\EventMakeCommand::class,
+            Commands\JobMakeCommand::class,
+            Commands\ListenerMakeCommand::class,
+            Commands\MailMakeCommand::class,
+            Commands\MiddlewareMakeCommand::class,
+            Commands\NotificationMakeCommand::class,
+            Commands\ProviderMakeCommand::class,
+            Commands\RouteProviderMakeCommand::class,
+            Commands\InstallCommand::class,
+            Commands\ListCommand::class,
+            Commands\ModuleDeleteCommand::class,
+            Commands\ModuleMakeCommand::class,
+            Commands\FactoryMakeCommand::class,
+            Commands\PolicyMakeCommand::class,
+            Commands\RequestMakeCommand::class,
+            Commands\RuleMakeCommand::class,
+            Commands\MigrateCommand::class,
+            Commands\MigrateRefreshCommand::class,
+            Commands\MigrateResetCommand::class,
+            Commands\MigrateRollbackCommand::class,
+            Commands\MigrateStatusCommand::class,
+            Commands\MigrationMakeCommand::class,
+            Commands\ModelMakeCommand::class,
+            Commands\PublishCommand::class,
+            Commands\PublishConfigurationCommand::class,
+            Commands\PublishMigrationCommand::class,
+            Commands\PublishTranslationCommand::class,
+            Commands\SeedCommand::class,
+            Commands\SeedMakeCommand::class,
+            Commands\SetupCommand::class,
+            Commands\UnUseCommand::class,
+            Commands\UpdateCommand::class,
+            Commands\UseCommand::class,
+            Commands\ResourceMakeCommand::class,
+            Commands\TestMakeCommand::class,
+            Commands\LaravelModulesV6Migrator::class,
+            Commands\ComponentClassMakeCommand::class,
+            Commands\ComponentViewMakeCommand::class,
         ]);
     }
 

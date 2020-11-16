@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Fixed
+
+- Fixed the ability to override commands via config file.
+
 ## 8.2 - 2020-11-11
 
 ### Added
