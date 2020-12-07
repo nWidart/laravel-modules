@@ -214,9 +214,8 @@ return [
             'name' => 'Nicolas Widart',
             'email' => 'n.widart@gmail.com',
         ],
+        'composer-output' => false,
     ],
-
-    'composer-output' => false,
 
     /*
     |--------------------------------------------------------------------------
