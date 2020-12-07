@@ -105,8 +105,9 @@ class Stub
     {
         $contents = file_get_contents($this->getPath());
 
-        foreach ($this->replaces as $search => $replace) {
-            $contents = str_replace('$' . strtoupper($search) . '$', $replace, $contents);
+        foreach ($this->replaces as $search => $to) {
+            $replace = str_replace('VARIABLE_NAME', strtoupper($search), config('modules.stubs.style') ?: '$VARIABLE_NAME$');
+            $contents = str_replace($replace, $to, $contents);
         }
 
         return $contents;
