@@ -28,7 +28,7 @@ return [
     'stubs' => [
         'enabled' => false,
         'style' => '$VARIABLE_NAME$',
-        'path' => base_path() . '/vendor/nwidart/laravel-modules/src/Commands/stubs',
+        'path' => base_path('vendor/nwidart/laravel-modules/src/Commands/stubs'),
         'files' => [
             'routes/web' => 'Routes/web.php',
             'routes/api' => 'Routes/api.php',
