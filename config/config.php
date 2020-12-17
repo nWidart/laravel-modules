@@ -143,6 +143,8 @@ return [
     */
     'commands' => [
         Commands\CommandMakeCommand::class,
+        Commands\ComponentClassMakeCommand::class,
+        Commands\ComponentViewMakeCommand::class,
         Commands\ControllerMakeCommand::class,
         Commands\DisableCommand::class,
         Commands\DumpCommand::class,
