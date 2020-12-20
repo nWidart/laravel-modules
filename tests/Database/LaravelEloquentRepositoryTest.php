@@ -16,7 +16,7 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
      */
     private $repository;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->repository = app(LaravelEloquentRepository::class);
