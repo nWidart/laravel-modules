@@ -15,7 +15,7 @@ abstract class BaseTestCase extends OrchestraTestCase
         if (method_exists($this, 'withoutMockingConsoleOutput')) {
             $this->withoutMockingConsoleOutput();
         }
-        // $this->setUpDatabase();
+        $this->setUpDatabase();
     }
 
     private function resetDatabase()
@@ -132,5 +132,8 @@ abstract class BaseTestCase extends OrchestraTestCase
     protected function setUpDatabase()
     {
         $this->resetDatabase();
+
+        include_once __DIR__.'/../database/migrations/create_modules_table.php.stub';
+        (new \CreateModulesTable())->up();
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Nwidart\Modules\Laravel;
 
@@ -15,12 +16,6 @@ class Module extends BaseModule
      */
     public function getCachedServicesPath(): string
     {
-        // This checks if we are running on a Laravel Vapor managed instance
-        // and sets the path to a writable one (services path is not on a writable storage in Vapor).
-        if (!is_null(env('VAPOR_MAINTENANCE_MODE', null))) {
-            return Str::replaceLast('config.php', $this->getSnakeName() . '_module.php', $this->app->getCachedConfigPath());
-        }
-
         return Str::replaceLast('services.php', $this->getSnakeName() . '_module.php', $this->app->getCachedServicesPath());
     }
 
@@ -42,5 +37,20 @@ class Module extends BaseModule
         foreach ($this->get('aliases', []) as $aliasName => $aliasClass) {
             $loader->alias($aliasName, $aliasClass);
         }
+    }
+
+    public function getLaravel()
+    {
+        // TODO: Implement getLaravel() method.
+    }
+
+    public function enabled(): bool
+    {
+        // TODO: Implement enabled() method.
+    }
+
+    public function disabled(): bool
+    {
+        // TODO: Implement disabled() method.
     }
 }

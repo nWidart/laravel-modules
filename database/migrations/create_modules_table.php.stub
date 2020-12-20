@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateModulesTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('modules', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->string('path');
+            $table->string('alias')->nullable();
+            $table->text('description')->nullable();
+            $table->text('keywords')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->integer('order')->default(0);
+            $table->text('providers')->nullable();
+            $table->text('aliases')->nullable();
+            $table->text('files')->nullable();
+            $table->text('requires')->nullable();
+            $table->nullableTimestamps();
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('modules');
+    }
+}

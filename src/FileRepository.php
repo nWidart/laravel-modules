@@ -138,7 +138,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      *
      * @return array
      */
-    public function scan()
+    public function scan(): array
     {
         $paths = $this->getScanPaths();
 
@@ -198,7 +198,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      *
      * @return array
      */
-    public function getCached()
+    public function getCached(): array
     {
         return $this->cache->remember($this->config('cache.key'), $this->config('cache.lifetime'), function () {
             return $this->toCollection()->toArray();
@@ -285,7 +285,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      *
      * @return array
      */
-    public function getOrdered($direction = 'asc') : array
+    public function getOrdered(string $direction = 'asc') : array
     {
         $modules = $this->allEnabled();
 
@@ -343,7 +343,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
             }
         }
 
-        return;
+        return null;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Contracts;
 
+use Nwidart\Modules\Collection;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Module;
 
@@ -12,42 +13,42 @@ interface RepositoryInterface
      *
      * @return mixed
      */
-    public function all();
+    public function all(): array;
 
     /**
      * Get cached modules.
      *
      * @return array
      */
-    public function getCached();
+    public function getCached(): array;
 
     /**
      * Scan & get all available modules.
      *
      * @return array
      */
-    public function scan();
+    public function scan(): array;
 
     /**
      * Get modules as modules collection instance.
      *
      * @return \Nwidart\Modules\Collection
      */
-    public function toCollection();
+    public function toCollection(): Collection;
 
     /**
      * Get scanned paths.
      *
      * @return array
      */
-    public function getScanPaths();
+    public function getScanPaths(): array;
 
     /**
      * Get list of enabled modules.
      *
-     * @return mixed
+     * @return array
      */
-    public function allEnabled();
+    public function allEnabled(): array;
 
     /**
      * Get list of disabled modules.
@@ -61,29 +62,30 @@ interface RepositoryInterface
      *
      * @return int
      */
-    public function count();
+    public function count(): int;
 
     /**
      * Get all ordered modules.
      * @param string $direction
      * @return mixed
      */
-    public function getOrdered($direction = 'asc');
+    public function getOrdered(string $direction = 'asc'): array;
 
     /**
      * Get modules by the given status.
      *
      * @param int $status
      *
-     * @return mixed
+     * @return array
      */
-    public function getByStatus($status);
+    public function getByStatus($status): array;
 
     /**
      * Find a specific module.
      *
      * @param $name
      * @return Module|null
+     * @throws ModuleNotFoundException
      */
     public function find(string $name);
 
