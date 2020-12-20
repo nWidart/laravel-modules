@@ -32,4 +32,19 @@ class Module extends BaseModule
     public function registerAliases(): void
     {
     }
+
+    public function getLaravel()
+    {
+        // TODO: Implement getLaravel() method.
+    }
+
+    public function enabled(): bool
+    {
+        // TODO: Implement enabled() method.
+    }
+
+    public function disabled(): bool
+    {
+        // TODO: Implement disabled() method.
+    }
 }
