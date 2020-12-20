@@ -28,6 +28,7 @@ class ConsoleServiceProvider extends ServiceProvider
         Commands\RouteProviderMakeCommand::class,
         Commands\InstallCommand::class,
         Commands\ListCommand::class,
+        Commands\LivewireCommand::class,
         Commands\ModuleDeleteCommand::class,
         Commands\ModuleMakeCommand::class,
         Commands\FactoryMakeCommand::class,
