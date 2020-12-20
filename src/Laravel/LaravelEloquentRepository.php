@@ -34,7 +34,7 @@ class LaravelEloquentRepository implements RepositoryInterface
      */
     public function all(): array
     {
-        return $this->moduleEntity->get()->toArray();
+        return $this->convertToCollection($this->moduleEntity->get())->toArray();
     }
 
     /**
