@@ -8,6 +8,7 @@ use Illuminate\Container\Container;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Entities\ModuleEntity;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
+use Nwidart\Modules\Module;
 
 class LaravelEloquentRepository implements RepositoryInterface
 {
@@ -201,5 +202,50 @@ class LaravelEloquentRepository implements RepositoryInterface
             $collection->push($this->createModule($this->app, $module->name, $module->path));
         });
         return $collection;
+    }
+
+    public function findRequirements($name): array
+    {
+        // TODO: Implement findRequirements() method.
+    }
+
+    public function getPath(): string
+    {
+        // TODO: Implement getPath() method.
+    }
+
+    public function findByAlias(string $alias)
+    {
+        // TODO: Implement findByAlias() method.
+    }
+
+    public function boot(): void
+    {
+        // TODO: Implement boot() method.
+    }
+
+    public function register(): void
+    {
+        // TODO: Implement register() method.
+    }
+
+    public function assetPath(string $module): string
+    {
+        // TODO: Implement assetPath() method.
+    }
+
+    public function delete(string $module): bool
+    {
+        // TODO: Implement delete() method.
+    }
+
+    public function isEnabled(string $name): bool
+    {
+        // TODO: Implement isEnabled() method.
+    }
+
+    public function isDisabled(string $name): bool
+    {
+        // TODO: Implement isDisabled() method.
     }
 }
