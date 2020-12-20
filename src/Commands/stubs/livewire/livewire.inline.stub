@@ -1,0 +1,17 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use Livewire\Component;
+
+class $CLASS$ extends Component
+{
+    public function render()
+    {
+        return <<<'blade'
+            <div>
+                {{-- inline component --}}
+            </div>
+        blade;
+    }
+}

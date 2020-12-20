@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Providers\BootstrapServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
 use Nwidart\Modules\Providers\ContractsServiceProvider;
+use Nwidart\Modules\Livewire\LivewireServiceProvider;
 
 abstract class ModulesServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
     protected function registerModules()
     {
         $this->app->register(BootstrapServiceProvider::class);
+        $this->app->register(LivewireServiceProvider::class);
     }
 
     /**

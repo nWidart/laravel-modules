@@ -1,0 +1,13 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use Livewire\Component;
+
+class $CLASS$ extends Component
+{
+    public function render()
+    {
+        return view('$LOWER_NAME$::$VIEW_NAME$');
+    }
+}

@@ -128,6 +128,8 @@ return [
             'resource' => ['path' => 'Transformers', 'generate' => false],
             'component-view' => ['path' => 'Resources/views/components', 'generate' => false],
             'component-class' => ['path' => 'View/Component', 'generate' => false],
+            'livewire-namespace' => ['path' => 'Http\\Livewire', 'generate' => false],
+            'livewire-view' => ['path' => 'Resources/views/livewire', 'generate' => false],
         ],
     ],
 
@@ -159,6 +161,7 @@ return [
         Commands\RouteProviderMakeCommand::class,
         Commands\InstallCommand::class,
         Commands\ListCommand::class,
+        Commands\LivewireCommand::class,
         Commands\ModuleDeleteCommand::class,
         Commands\ModuleMakeCommand::class,
         Commands\FactoryMakeCommand::class,
