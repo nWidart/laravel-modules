@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\File;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
 
 class LivewireCommand extends Command
 {
@@ -19,8 +21,12 @@ class LivewireCommand extends Command
 
     public $directories;
 
-
-    protected $signature = 'module:make-livewire {module} {name} {--view=} {--force} {--inline}';
+    /**
+     * The console command name.
+     *
+     * @var string
+     */
+    protected $name = 'module:make-livewire';
 
     /**
      * The console command description.
@@ -67,6 +73,33 @@ class LivewireCommand extends Command
         }
 
         return 0;
+    }
+
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            ['module', InputArgument::REQUIRED, 'The name of module will be used.'],
+            ['name', InputArgument::REQUIRED, 'The name of the component.'],
+        ];
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            ['view', null, InputOption::VALUE_OPTIONAL, 'Set custom view path for Component.'],
+            ['force', false, InputOption::VALUE_NONE, 'Force create component if the class already exists.'],
+            ['inline', false, InputOption::VALUE_NONE, 'Create inline component.'],
+        ];
     }
 
     protected function getComponent()
