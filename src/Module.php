@@ -358,7 +358,7 @@ abstract class Module implements ModuleInterface
      */
     public function setActive(int $active): bool
     {
-        $this->activator->setActive($this, $active);
+        return $this->activator->setActive($this, $active);
     }
 
     /**
