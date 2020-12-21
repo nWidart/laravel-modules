@@ -68,7 +68,7 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     protected function createModule(...$args)
     {
-        return new Module(...$args);
+        //
     }
 
     /**
