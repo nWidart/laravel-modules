@@ -8,7 +8,7 @@ use Illuminate\Container\Container;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Entities\ModuleEntity;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
-use Nwidart\Modules\Module;
+use Nwidart\Modules\Laravel\Module;
 
 class LaravelEloquentRepository implements RepositoryInterface
 {
@@ -68,7 +68,7 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     protected function createModule(...$args)
     {
-        //
+        return new Module(...$args);
     }
 
     /**
