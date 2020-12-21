@@ -151,7 +151,7 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $this->createModule('Recipe');
 
         $this->assertEquals(
-            '/Users/nicolaswidart/Sites/Packages/laravel-modules-55/tests/Database/../stubs/valid/Recipe',
+            '/home/runner/work/laravel-modules/laravel-modules/tests/Database/../stubs/valid/Recipe',
             $this->repository->getModulePath('Recipe')
         );
     }
