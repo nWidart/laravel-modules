@@ -25,7 +25,7 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
     /** @test */
     public function it_returns_all_modules(): void
     {
-        $this->createModule('Recipe');
+        $this->it_returns_ordered_collection_of_enabled_modules_in_ascending_order('Recipe');
 
         $this->assertCount(1, $this->repository->all());
         $this->assertCount(1, $this->repository->scan());
@@ -151,7 +151,7 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $this->createModule('Recipe');
 
         $this->assertEquals(
-            '/Users/nicolaswidart/Sites/Packages/laravel-modules-55/tests/Database/../stubs/valid/Recipe',
+            '/home/runner/work/laravel-modules/laravel-modules/tests/Database/../stubs/valid/Recipe',
             $this->repository->getModulePath('Recipe')
         );
     }
