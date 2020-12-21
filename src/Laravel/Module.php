@@ -66,13 +66,7 @@ class Module extends BaseModule
      */
     public function __construct(Container $app, string $name, $path)
     {
-        $this->name = $name;
-        $this->path = $path;
-        $this->cache = $app['cache'];
-        $this->files = $app['files'];
-        $this->translator = $app['translator'];
-        $this->activator = $app[ActivatorInterface::class];
-        $this->app = $app;
+        parent::__construct($app, $name, $path);
     }
 
     /**
