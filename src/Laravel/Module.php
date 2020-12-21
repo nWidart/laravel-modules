@@ -3,14 +3,78 @@ declare(strict_types=1);
 
 namespace Nwidart\Modules\Laravel;
 
+use Illuminate\Cache\CacheManager;
+use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Foundation\ProviderRepository;
 use Illuminate\Support\Str;
+use Illuminate\Translation\Translator;
+use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Module as BaseModule;
 
 class Module extends BaseModule
 {
+
+    /**
+     * The laravel|lumen application instance.
+     *
+     * @var \Illuminate\Contracts\Foundation\Application|\Laravel\Lumen\Application
+     */
+    protected $app;
+
+    /**
+     * The module name.
+     *
+     * @var
+     */
+    public $name;
+
+    /**
+     * The module path.
+     *
+     * @var string
+     */
+    protected $path;
+
+    /**
+     * @var array of cached Json objects, keyed by filename
+     */
+    protected $moduleJson = [];
+    /**
+     * @var CacheManager
+     */
+    private $cache;
+    /**
+     * @var Filesystem
+     */
+    private $files;
+    /**
+     * @var Translator
+     */
+    private $translator;
+    /**
+     * @var ActivatorInterface
+     */
+    private $activator;
+
+    /**
+     * The constructor.
+     * @param Container $app
+     * @param $name
+     * @param $path
+     */
+    public function __construct(Container $app, string $name, $path)
+    {
+        $this->name = $name;
+        $this->path = $path;
+        $this->cache = $app['cache'];
+        $this->files = $app['files'];
+        $this->translator = $app['translator'];
+        $this->activator = $app[ActivatorInterface::class];
+        $this->app = $app;
+    }
+
     /**
      * {@inheritdoc}
      */
