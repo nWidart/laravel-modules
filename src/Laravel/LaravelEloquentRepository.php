@@ -16,7 +16,6 @@ class LaravelEloquentRepository implements RepositoryInterface
      * @var ModuleEntity
      */
     private $moduleEntity;
-
     /**
      * @var Container
      */
@@ -30,7 +29,7 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     /**
      * Get all modules.
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return EloquentCollection
      */
     public function all(): array
     {
@@ -39,7 +38,6 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     /**
      * Get cached modules.
-     * @return array
      */
     public function getCached(): array
     {
@@ -50,7 +48,6 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     /**
      * Scan & get all available modules.
-     * @return array
      */
     public function scan(): array
     {
@@ -59,11 +56,10 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     /**
      * Get modules as modules collection instance.
-     * @return EloquentCollection
      */
     public function toCollection(): Collection
     {
-        return $this->convertToCollection($this->all());
+        return $this->convertToCollection($this->moduleEntity->get());
     }
 
     protected function createModule(...$args)
@@ -82,10 +78,12 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     /**
      * Get list of enabled modules.
-     * @return array
+     * @return mixed
      */
     public function allEnabled(): array
     {
+        $results = $this->moduleEntity->newQuery()->where('is_active', 1)->get();
+
         return $this->convertToCollection($results)->toArray();
     }
 
@@ -111,8 +109,6 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     /**
      * Get all ordered modules.
-     * @param string $direction
-     * @return mixed
      */
     public function getOrdered(string $direction = 'asc'): array
     {
@@ -142,9 +138,9 @@ class LaravelEloquentRepository implements RepositoryInterface
     /**
      * Find a specific module.
      * @param $name
-     * @return \Nwidart\Modules\Module
+     * @return \Nwidart\Modules\Contracts\ModuleInterface
      */
-    public function find($name): ?\Nwidart\Modules\Module
+    public function find($name): ?\Nwidart\Modules\Contracts\ModuleInterface
     {
         $module = $this->moduleEntity
             ->newQuery()
@@ -161,10 +157,10 @@ class LaravelEloquentRepository implements RepositoryInterface
     /**
      * Find a specific module. If there return that, otherwise throw exception.
      * @param $name
-     * @return \Nwidart\Modules\Module
+     * @return \Nwidart\Modules\Contracts\ModuleInterface
      * @throws ModuleNotFoundException
      */
-    public function findOrFail($name): \Nwidart\Modules\Module
+    public function findOrFail($name): \Nwidart\Modules\Contracts\ModuleInterface
     {
         $module = $this->find($name);
 
@@ -193,6 +189,25 @@ class LaravelEloquentRepository implements RepositoryInterface
     public function config($key, $default = null)
     {
         return $this->app['config']->get('modules.' . $key, $default);
+    }
+
+    public function exists(string $name): bool
+    {
+        return (bool) $this->moduleEntity
+            ->newQuery()
+            ->where('name', $name)
+            ->count();
+    }
+
+    /**
+     * Delete a specific module.
+     * @param string $name
+     * @return bool
+     * @throws \Nwidart\Modules\Exceptions\ModuleNotFoundException
+     */
+    public function delete($name): bool
+    {
+        return $this->findOrFail($name)->delete();
     }
 
     private function convertToCollection(EloquentCollection $eloquentCollection): Collection
@@ -232,11 +247,6 @@ class LaravelEloquentRepository implements RepositoryInterface
     public function assetPath(string $module): string
     {
         // TODO: Implement assetPath() method.
-    }
-
-    public function delete(string $module): bool
-    {
-        // TODO: Implement delete() method.
     }
 
     public function isEnabled(string $name): bool
