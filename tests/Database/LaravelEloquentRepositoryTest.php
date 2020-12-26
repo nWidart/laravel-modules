@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Nwidart\Modules\Tests\Database;
 
+use Illuminate\Support\Str;
 use Nwidart\Modules\Collection;
 use Nwidart\Modules\Entities\ModuleEntity;
 use Nwidart\Modules\Laravel\LaravelEloquentRepository;
@@ -25,7 +26,7 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
     /** @test */
     public function it_returns_all_modules(): void
     {
-        $this->it_returns_ordered_collection_of_enabled_modules_in_ascending_order('Recipe');
+        $this->createModule('Recipe');
 
         $this->assertCount(1, $this->repository->all());
         $this->assertCount(1, $this->repository->scan());
@@ -36,7 +37,7 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
     {
         $this->createModule('Recipe');
         $this->createModule('Requirement');
-        $this->createModule('DisabledModule');
+        $this->createModule('DisabledModule',0);
 
         $this->assertInstanceOf(Collection::class, $this->repository->toCollection());
         $this->assertCount(3,  $this->repository->toCollection());
@@ -82,7 +83,7 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $moduleTwo = $this->createModule('Requirement');
         $moduleTwo->order = 10;
         $moduleTwo->save();
-        $moduleThree = $this->createModule('DisabledModule');
+        $moduleThree = $this->createModule('DisabledModule',0);
         $moduleThree->order = 5;
         $moduleThree->save();
 
@@ -101,7 +102,7 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $moduleTwo = $this->createModule('Requirement');
         $moduleTwo->order = 10;
         $moduleTwo->save();
-        $moduleThree = $this->createModule('DisabledModule');
+        $moduleThree = $this->createModule('DisabledModule',0);
         $moduleThree->order = 5;
         $moduleThree->save();
 
@@ -151,16 +152,18 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $this->createModule('Recipe');
 
         $this->assertEquals(
-            '/home/runner/work/laravel-modules/laravel-modules/tests/Database/../stubs/valid/Recipe',
+            __DIR__ . '/../stubs/valid/Recipe',
             $this->repository->getModulePath('Recipe')
         );
     }
 
-    private function createModule($moduleName): ModuleEntity
+    private function createModule($moduleName,$isActive = 1): ModuleEntity
     {
         $moduleEntity = new ModuleEntity();
         $moduleEntity->name = $moduleName;
+        $moduleEntity->alias = Str::lower($moduleName);
         $moduleEntity->path = __DIR__ . "/../stubs/valid/{$moduleName}";
+        $moduleEntity->is_active = $isActive;
         $moduleEntity->save();
 
         return $moduleEntity;

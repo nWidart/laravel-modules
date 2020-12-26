@@ -10,7 +10,10 @@ use Illuminate\Foundation\AliasLoader;
 use Illuminate\Foundation\ProviderRepository;
 use Illuminate\Support\Str;
 use Illuminate\Translation\Translator;
+use Illuminate\Support\Arr;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Entities\ModuleEntity;
+use Nwidart\Modules\Json;
 use Nwidart\Modules\Module as BaseModule;
 
 class Module extends BaseModule
@@ -58,15 +61,21 @@ class Module extends BaseModule
      */
     private $activator;
 
+    private $id;
+
+    private $attributes;
+
     /**
      * The constructor.
      * @param Container $app
-     * @param $name
-     * @param $path
+     * @param string $name
+     * @param           $path
      */
-    public function __construct(Container $app, string $name, $path)
+    public function __construct(Container $app, string $name, $path, $attributes = [])
     {
         parent::__construct($app, $name, $path);
+        $this->attributes = $attributes;
+        $this->id = isset($this->attributes['id']) ? $this->attributes['id'] : false;
     }
 
     /**
@@ -104,11 +113,38 @@ class Module extends BaseModule
 
     public function enabled(): bool
     {
-        // TODO: Implement enabled() method.
+        return $this->attributes['is_active'];
     }
 
     public function disabled(): bool
     {
-        // TODO: Implement disabled() method.
+        return !$this->attributes['is_active'];
+    }
+
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * Get a specific data from json file by given the key.
+     *
+     * @param string $key
+     * @param null $default
+     *
+     * @return mixed
+     */
+    public function get(string $key, $default = null)
+    {
+        return isset($this->attributes[$key]) ? $this->attributes[$key] : $default;
+    }
+
+    public function getAlias(): string
+    {
+        return $this->attributes['alias'];
     }
 }

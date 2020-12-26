@@ -214,7 +214,7 @@ class LaravelEloquentRepository implements RepositoryInterface
     {
         $collection = new Collection();
         $eloquentCollection->map(function ($module) use ($collection) {
-            $collection->push($this->createModule($this->app, $module->name, $module->path));
+            $collection->push($this->createModule($this->app, $module->name, $module->path, $module->toArray()));
         });
         return $collection;
     }
