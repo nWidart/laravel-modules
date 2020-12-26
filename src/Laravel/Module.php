@@ -8,9 +8,9 @@ use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Foundation\ProviderRepository;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Translation\Translator;
-use Illuminate\Support\Arr;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Entities\ModuleEntity;
 use Nwidart\Modules\Json;
@@ -67,9 +67,11 @@ class Module extends BaseModule
 
     /**
      * The constructor.
+     *
      * @param Container $app
-     * @param string $name
+     * @param string    $name
      * @param           $path
+     * @param array      $attributes
      */
     public function __construct(Container $app, string $name, $path, $attributes = [])
     {

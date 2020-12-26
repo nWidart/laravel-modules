@@ -37,7 +37,7 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
     {
         $this->createModule('Recipe');
         $this->createModule('Requirement');
-        $this->createModule('DisabledModule',0);
+        $this->createModule('DisabledModule', 0);
 
         $this->assertInstanceOf(Collection::class, $this->repository->toCollection());
         $this->assertCount(3,  $this->repository->toCollection());
@@ -83,14 +83,13 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $moduleTwo = $this->createModule('Requirement');
         $moduleTwo->order = 10;
         $moduleTwo->save();
-        $moduleThree = $this->createModule('DisabledModule',0);
+        $moduleThree = $this->createModule('DisabledModule', 0);
         $moduleThree->order = 5;
         $moduleThree->save();
 
         $modules = $this->repository->getOrdered('asc');
         $this->assertEquals('Recipe', $modules[0]['name']);
-        $this->assertEquals('DisabledModule', $modules[1]['name']);
-        $this->assertEquals('Requirement', $modules[2]['name']);
+        $this->assertEquals('Requirement', $modules[1]['name']);
     }
 
     /** @test */
@@ -102,14 +101,13 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         $moduleTwo = $this->createModule('Requirement');
         $moduleTwo->order = 10;
         $moduleTwo->save();
-        $moduleThree = $this->createModule('DisabledModule',0);
+        $moduleThree = $this->createModule('DisabledModule', 0);
         $moduleThree->order = 5;
         $moduleThree->save();
 
         $modules = $this->repository->getOrdered('desc');
         $this->assertEquals('Requirement', $modules[0]['name']);
-        $this->assertEquals('DisabledModule', $modules[1]['name']);
-        $this->assertEquals('Recipe', $modules[2]['name']);
+        $this->assertEquals('Recipe', $modules[1]['name']);
     }
 
     /** @test */
@@ -157,7 +155,7 @@ class LaravelEloquentRepositoryTest extends BaseTestCase
         );
     }
 
-    private function createModule($moduleName,$isActive = 1): ModuleEntity
+    private function createModule($moduleName, $isActive = 1): ModuleEntity
     {
         $moduleEntity = new ModuleEntity();
         $moduleEntity->name = $moduleName;
