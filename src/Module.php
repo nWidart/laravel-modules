@@ -239,7 +239,7 @@ abstract class Module implements ModuleInterface
      */
     public function get(string $key, $default = null)
     {
-        return $this->json()->get($key, $default);
+        return $this->json('module.json')->get($key, $default);
     }
 
     /**
