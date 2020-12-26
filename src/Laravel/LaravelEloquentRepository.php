@@ -231,7 +231,16 @@ class LaravelEloquentRepository implements RepositoryInterface
 
     public function findByAlias(string $alias)
     {
-        // TODO: Implement findByAlias() method.
+        $module = $this->moduleEntity
+            ->newQuery()
+            ->where('alias', $alias)
+            ->first();
+
+        if ($module === null) {
+            return null;
+        }
+
+        return $this->createModule($this->app, $module->name, $module->path);
     }
 
     public function boot(): void
