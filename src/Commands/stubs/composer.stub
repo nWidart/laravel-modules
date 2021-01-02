@@ -1,5 +1,5 @@
 {
-    "name": "$VENDOR$/$LOWER_NAME$",
+    "name": "$VENDOR$/$SNAKE_NAME$",
     "description": "",
     "authors": [
         {

@@ -1,6 +1,6 @@
 {
     "name": "$STUDLY_NAME$",
-    "alias": "$LOWER_NAME$",
+    "alias": "$SNAKE_NAME$",
     "description": "",
     "keywords": [],
     "priority": 0,

@@ -115,6 +115,16 @@ abstract class Module
     }
 
     /**
+     * Get name in kebab case.
+     *
+     * @return string
+     */
+    public function getKebabName(): string
+    {
+        return Str::kebab($this->name);
+    }
+
+    /**
      * Get description.
      *
      * @return string
@@ -279,6 +289,7 @@ abstract class Module
     {
         $this->app['events']->dispatch(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
     }
+
     /**
      * Register the aliases from this module.
      */
