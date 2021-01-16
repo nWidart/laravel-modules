@@ -3,7 +3,7 @@
 namespace $NAMESPACE$;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class $CLASS$ extends ServiceProvider
 {
