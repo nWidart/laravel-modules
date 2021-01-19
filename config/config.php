@@ -142,6 +142,7 @@ return [
     |
     */
     'commands' => [
+        Commands\ClearModulesCacheCommand::class,
         Commands\CommandMakeCommand::class,
         Commands\ComponentClassMakeCommand::class,
         Commands\ComponentViewMakeCommand::class,
