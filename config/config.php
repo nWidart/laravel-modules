@@ -230,7 +230,7 @@ return [
     |
     */
     'cache' => [
-        'enabled' => false,
+        'enabled' => env('MODULES_CACHE_ENABLED', false),
         'key' => 'laravel-modules',
         'lifetime' => 60,
     ],
