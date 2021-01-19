@@ -15,6 +15,8 @@ abstract class Module
 {
     use Macroable;
 
+    public const MODULE_JSON_FILE = 'module.json';
+
     /**
      * The laravel|lumen application instance.
      *
@@ -220,11 +222,12 @@ abstract class Module
     public function json($file = null) : Json
     {
         if ($file === null) {
-            $file = 'module.json';
+            $file = self::MODULE_JSON_FILE;
         }
 
         return Arr::get($this->moduleJson, $file, function () use ($file) {
-            return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->files);
+            $path = $this->getPath() . DIRECTORY_SEPARATOR . $file;
+            return $this->moduleJson[$file] = new Json($path, $this->files);
         });
     }
 
