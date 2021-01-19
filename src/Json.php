@@ -2,11 +2,15 @@
 
 namespace Nwidart\Modules;
 
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Exceptions\InvalidJsonException;
+use Nwidart\Modules\Traits\CanClearModulesCache;
 
 class Json
 {
+    use CanClearModulesCache;
+
     /**
      * The file path.
      *
@@ -106,10 +110,18 @@ class Json
      * Get file content.
      *
      * @return string
+     * @throws FileNotFoundException
      */
     public function getContents()
     {
-        return $this->filesystem->get($this->getPath());
+        if ($this->filesystem->exists($this->getPath())) {
+            return $this->filesystem->get($this->getPath());
+        }
+        $this->clearCache();
+        if ($this->filesystem->exists($this->getPath())) {
+            return $this->filesystem->get($this->getPath());
+        }
+        throw new FileNotFoundException($this->getPath());
     }
 
     /**
