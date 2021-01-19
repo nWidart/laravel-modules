@@ -114,9 +114,10 @@ class Json
      */
     public function getContents()
     {
-        if ($this->filesystem->exists($this->getPath()) === false) {
-            $this->clearCache();
+        if ($this->filesystem->exists($this->getPath()) === true) {
+            return $this->filesystem->get($this->getPath());
         }
+        $this->clearCache();
         if ($this->filesystem->exists($this->getPath()) === false) {
             throw new FileNotFoundException($this->getPath());
         }
