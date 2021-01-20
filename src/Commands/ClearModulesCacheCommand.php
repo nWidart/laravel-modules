@@ -33,5 +33,6 @@ class ClearModulesCacheCommand extends Command
         $force = $this->option('force');
         $this->clearCache($force);
         $this->info('The modules cache has been cleared.');
+        return 0;
     }
 }
