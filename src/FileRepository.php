@@ -310,7 +310,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
     public function getPath() : string
     {
         $path = $this->path ?: $this->config('paths.modules', base_path('Modules'));
-        $path = ($path === realpath($path)) ? $path : base_path($path);
+        $path = ($path[0] === '/') ? $path : base_path($path);
         return $path;
     }
 
