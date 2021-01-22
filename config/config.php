@@ -71,7 +71,7 @@ return [
         |
         */
 
-        'modules' => base_path('Modules'),
+        'modules' => env('MODULES_PATH', base_path('Modules')),
         /*
         |--------------------------------------------------------------------------
         | Modules assets path
@@ -142,6 +142,7 @@ return [
     |
     */
     'commands' => [
+        Commands\ClearModulesCacheCommand::class,
         Commands\CommandMakeCommand::class,
         Commands\ComponentClassMakeCommand::class,
         Commands\ComponentViewMakeCommand::class,
@@ -230,7 +231,7 @@ return [
     |
     */
     'cache' => [
-        'enabled' => false,
+        'enabled' => env('MODULES_CACHE_ENABLED', false),
         'key' => 'laravel-modules',
         'lifetime' => 60,
     ],
