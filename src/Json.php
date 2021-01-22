@@ -115,7 +115,8 @@ class Json
     public function getContents()
     {
         if ($this->filesystem->exists($this->getPath()) === false) {
-            throw new FileNotFoundException($this->getPath());
+            $message = sprintf('File Not Found at: "%s"', $this->getPath());
+            throw new FileNotFoundException($message);
         }
         return $this->filesystem->get($this->getPath());
     }
