@@ -5,7 +5,6 @@ namespace Nwidart\Modules;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Exceptions\InvalidJsonException;
-use Nwidart\Modules\Traits\CanClearModulesCache;
 
 class Json
 {
@@ -116,6 +115,7 @@ class Json
             $message = sprintf('File Not Found at: "%s"', $this->getPath());
             throw new FileNotFoundException($message);
         }
+
         return $this->filesystem->get($this->getPath());
     }
 
