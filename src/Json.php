@@ -9,8 +9,6 @@ use Nwidart\Modules\Traits\CanClearModulesCache;
 
 class Json
 {
-    use CanClearModulesCache;
-
     /**
      * The file path.
      *
