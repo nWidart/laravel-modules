@@ -71,7 +71,7 @@ class Stub
      */
     public function getPath()
     {
-        $path = static::getBasePath() . $this->path;
+        $path = base_path("nwidart-stubs/" . trim($this->path, '/'));
 
         return file_exists($path) ? $path : __DIR__ . '/../Commands/stubs' . $this->path;
     }
