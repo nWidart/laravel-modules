@@ -2,8 +2,10 @@
 
 namespace Nwidart\Modules\Generators;
 
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Nwidart\Modules\Laravel\LaravelDatabaseRepository;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 
@@ -53,6 +55,15 @@ class DatabaseModuleGenerator extends ModuleGenerator
                 $data['provider'] = [];
             }
             $this->module->getModel()->create($data);
+
+            // Check when folder exists, just remove it.
+            if (File::isDirectory($data['path'])) {
+                if ($this->force) {
+                    (new Filesystem())->deleteDirectory($data['path']);
+                } else {
+                    abort(400, "Directory exists.");
+                }
+            }
 
             $this->generateFolders();
 
