@@ -185,6 +185,7 @@ return [
         Commands\ResourceMakeCommand::class,
         Commands\TestMakeCommand::class,
         Commands\LaravelModulesV6Migrator::class,
+        Commands\MigrateFileToDatabaseCommand::class,
     ],
 
     /*
@@ -272,4 +273,12 @@ return [
     ],
 
     'activator' => 'file',
+
+    /**
+     * Use database management, not using module.json and modules_statuses.json.
+     */
+    'database_management' => [
+        'enabled' => false,
+        'update_file_to_database_when_updating' => true, // Option to update module.json into database when updating a module.
+    ],
 ];

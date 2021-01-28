@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Laravel\LaravelDatabaseRepository;
 use Nwidart\Modules\Laravel\LaravelFileRepository;
 
 class ContractsServiceProvider extends ServiceProvider
@@ -13,6 +14,10 @@ class ContractsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(RepositoryInterface::class, LaravelFileRepository::class);
+        if (config('modules.database_management.enabled')) {
+            $this->app->bind(RepositoryInterface::class, LaravelDatabaseRepository::class);
+        } else {
+            $this->app->bind(RepositoryInterface::class, LaravelFileRepository::class);
+        }
     }
 }
