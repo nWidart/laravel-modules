@@ -5,7 +5,10 @@ namespace Nwidart\Modules\Laravel;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Entities\ModuleEntity;
+use Nwidart\Modules\Json;
+use Nwidart\Modules\Process\Updater;
 
 class DatabaseModule extends Module
 {
@@ -193,5 +196,29 @@ class DatabaseModule extends Module
     public function getVersion()
     {
         return $this->get('version', '1.0.0');
+    }
+
+    public function update(Updater $updater)
+    {
+
+        if (config('modules.database_management.update_file_to_database_when_updating')) {
+            $json = Json::make($this->getPath() . '/' . 'module.json');
+            $data = $json->getAttributes();
+
+            if (!isset($data['version'])) {
+                $data['version'] = '1.0.0';
+            }
+
+            // Check version, if version is higher then update module.json into database.
+            if (version_compare($this->getVersion(), $data['version'], '<=')) {
+                $data = resolve(RepositoryInterface::class)->validateAttributes($data);
+                $this->getModel()->where(['name' => $data['name']])->update($data);
+            }
+        }
+
+        $response = with($updater)->update($this->getName());
+        $this->flushCache();
+
+        return $response;
     }
 }

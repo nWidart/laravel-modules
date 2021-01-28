@@ -12,7 +12,13 @@ use Nwidart\Modules\Entities\ModuleEntity;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Generators\DatabaseModuleGenerator;
 use Nwidart\Modules\Json;
+use Nwidart\Modules\Process\Updater;
 
+/**
+ * Class LaravelDatabaseRepository
+ * @package Nwidart\Modules\Laravel
+ * @method DatabaseModule findOrFail(string $name)
+ */
 class LaravelDatabaseRepository extends LaravelFileRepository implements DatabaseRepositoryInterface
 {
     /**
@@ -238,26 +244,7 @@ class LaravelDatabaseRepository extends LaravelFileRepository implements Databas
 
     public function update($name)
     {
-        if ($this->config('database_management.update_file_to_database_when_updating')) {
-
-            /** @var DatabaseModule $module */
-            $module = $this->findOrFail($name);
-
-            $json = Json::make($module->getPath() . '/' . 'module.json');
-            $data = $json->getAttributes();
-
-            if (!isset($data['version'])) {
-                $data['version'] = '1.0.0';
-            }
-
-            // Check version, if version is higher then update module.json into database.
-            if (version_compare($module->getVersion(), $data['version'], '<=')) {
-                $data = $this->validateAttributes($data);
-                $this->getModel()->where(['name' => $data['name']])->update($data);
-            }
-        }
-
-        parent::update($name);
+        return $this->findOrFail($name)->update(new Updater($this));
     }
 
     /**
