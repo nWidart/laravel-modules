@@ -239,6 +239,9 @@ class LaravelDatabaseRepository extends LaravelFileRepository implements Databas
             }
         }
 
+        $this->register();
+        $this->boot();
+
         return $modules;
     }
 
