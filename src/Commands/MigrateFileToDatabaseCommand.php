@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputOption;
 
 class MigrateFileToDatabaseCommand extends Command
 {
@@ -30,7 +31,7 @@ class MigrateFileToDatabaseCommand extends Command
 
             return false;
         }
-        $this->laravel['modules']->migrateFileToDatabase();
+        $this->laravel['modules']->migrateFileToDatabase($this->option('force'));
         $this->info('Migrated.');
 
         return 0;
@@ -43,6 +44,8 @@ class MigrateFileToDatabaseCommand extends Command
      */
     protected function getOptions()
     {
-        return [];
+        return [
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to update database.'],
+        ];
     }
 }

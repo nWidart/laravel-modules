@@ -209,7 +209,7 @@ class LaravelDatabaseRepository extends LaravelFileRepository implements Databas
         return $this->findOrFail($module);
     }
 
-    public function migrateFileToDatabase()
+    public function migrateFileToDatabase($forceUpdate = false)
     {
         $paths = $this->getScanPaths();
         $modules = [];
@@ -232,7 +232,8 @@ class LaravelDatabaseRepository extends LaravelFileRepository implements Databas
                     $modules[] = $this->getModel()->create($data);
                 } else {
                     // Check version, if version is higher then update module.json into database.
-                    if (version_compare($module->getVersion(), $data['version'], '<')) {
+                    // Can use force update here.
+                    if (version_compare($module->getVersion(), $data['version'], '<') || $forceUpdate) {
                         $modules[] = $this->getModel()->where(['name' => $data['name']])->update($data);
                     }
                 }

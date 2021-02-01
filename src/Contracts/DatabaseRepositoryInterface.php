@@ -8,5 +8,5 @@ interface DatabaseRepositoryInterface
 
     public function getModuleType($isApi = true, $isPlain = true);
 
-    public function migrateFileToDatabase();
+    public function migrateFileToDatabase($forceUpdate = false);
 }
