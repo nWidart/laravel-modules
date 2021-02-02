@@ -461,18 +461,14 @@ class LaravelDatabaseRepositoryTest extends BaseTestCase
     public function it_can_get_extra_data_module()
     {
         $this->fileRepository->addLocation(__DIR__ . '/../stubs/valid');
-        Schema::table('modules', function (Blueprint $table) {
-            $table->string('test_1')->nullable();
-            $table->integer('test_2')->default(0);
-        });
         $test_1 = 'Test string 123';
         $test_2 = 9999;
         $this->createModule('Recipe', true);
-        DB::table('modules')->where(['name' => 'Recipe'])->update([
-            'test_1' => $test_1,
-            'test_2' => $test_2,
-        ]);
         $module = $this->repository->findOrFail('Recipe');
+        $module->setAttributes(array_merge($module->getAttributes(), [
+            'test_1' => $test_1,
+            'test_2' => $test_2
+        ]));
         $this->assertEquals('Recipe', $module->get('name'));
         $this->assertEquals($test_1, $module->get('test_1'));
         $this->assertEquals($test_2, $module->get('test_2'));
