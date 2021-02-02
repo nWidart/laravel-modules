@@ -28,7 +28,8 @@
     "friendsofphp/php-cs-fixer": "^2.16",
     "laravel/framework": "^8.0",
     "spatie/phpunit-snapshot-assertions": "^2.1.0",
-    "phpstan/phpstan": "^0.12.14"
+    "phpstan/phpstan": "^0.12.14",
+    "doctrine/dbal": "^3.0"
   },
   "autoload": {
     "psr-4": {
