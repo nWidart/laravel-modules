@@ -269,4 +269,23 @@ class LaravelDatabaseRepository extends LaravelFileRepository implements Databas
             return in_array($k, $allows);
         }, ARRAY_FILTER_USE_KEY);
     }
+
+    public function getOrdered($direction = 'asc'): array
+    {
+        $modules = $this->allEnabled();
+
+        uasort($modules, function (DatabaseModule $a, DatabaseModule $b) use ($direction) {
+            if ($a->get('priority') === $b->get('priority')) {
+                return 0;
+            }
+
+            if ($direction === 'desc') {
+                return $a->get('priority') < $b->get('priority') ? 1 : -1;
+            }
+
+            return $a->get('priority') > $b->get('priority') ? 1 : -1;
+        });
+
+        return $modules;
+    }
 }
