@@ -15,7 +15,12 @@ class ContractsServiceProvider extends ServiceProvider
     public function register()
     {
         if (config('modules.database_management.enabled')) {
-            $this->app->bind(RepositoryInterface::class, LaravelDatabaseRepository::class);
+            $repository = LaravelDatabaseRepository::class;
+            $customRepository = config('modules.database_management.repository');
+            if ($customRepository && class_exists($customRepository)) {
+                $repository = $customRepository;
+            }
+            $this->app->bind(RepositoryInterface::class, $repository);
         } else {
             $this->app->bind(RepositoryInterface::class, LaravelFileRepository::class);
         }
