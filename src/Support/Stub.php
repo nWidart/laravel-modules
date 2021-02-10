@@ -103,6 +103,15 @@ class Stub
      */
     public function getContents()
     {
+        if (class_exists('\Laravel\Lumen\Application')) {
+            if (app() instanceof \Laravel\Lumen\Application) {
+                $lumenFileName = str_replace('.stub', '.lumen.stub', $this->path);
+                if (file_exists(static::getBasePath() . $lumenFileName)) {
+                    $this->setPath($lumenFileName);
+                }
+            }
+        }
+
         $contents = file_get_contents($this->getPath());
 
         foreach ($this->replaces as $search => $replace) {
