@@ -119,7 +119,7 @@ class ModelMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.model.path', 'Models');
 
-        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', 'f' => true]);
 
         $file = $this->finder->get($this->modulePath . '/Models/Post.php');
 
