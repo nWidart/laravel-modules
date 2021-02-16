@@ -77,7 +77,7 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name')) . 'Factory.php';
+        return basename(Str::studly($this->argument('name')) . 'Factory.php');
     }
 
     /**
@@ -107,6 +107,8 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     public function getModelNamespace(): string
     {
-        return $this->laravel['modules']->config('namespace') . '\\' . $this->laravel['modules']->findOrFail($this->getModuleName()) . '\\' . $this->laravel['modules']->config('paths.generator.model.path', 'Entities');
+        return str_replace('/', '\\',
+            $this->laravel['modules']->config('namespace') . '\\' . $this->laravel['modules']->findOrFail($this->getModuleName()) . '\\' . $this->laravel['modules']->config('paths.generator.model.path', 'Entities')
+        );
     }
 }

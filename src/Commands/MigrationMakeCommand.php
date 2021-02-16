@@ -124,7 +124,7 @@ class MigrationMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return date('Y_m_d_His_') . $this->getSchemaName();
+        return basename(date('Y_m_d_His_') . $this->getSchemaName());
     }
 
     /**

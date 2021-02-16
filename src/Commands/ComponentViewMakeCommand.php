@@ -71,6 +71,6 @@ class ComponentViewMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::lower($this->argument('name')) . '.blade.php';
+        return basename(Str::lower($this->argument('name')) . '.blade.php');
     }
 }
