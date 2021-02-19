@@ -54,7 +54,9 @@ class LaravelDatabaseRepository extends LaravelFileRepository implements Databas
         if (!empty($rows)) {
             foreach ($rows as $row) {
                 if (file_exists($row->path)) {
-                    $modules[$row->name] = $this->createModule($this->app, $row->name, $row->path);
+                    $module = $this->createModule($this->app, $row->name, $row->path);
+                    $module->setAttributes($row->toArray());
+                    $modules[$row->name] = $module;
                 }
             }
         }
