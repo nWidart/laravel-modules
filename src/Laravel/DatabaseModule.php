@@ -18,17 +18,6 @@ class DatabaseModule extends Module
     public $attributes;
 
     /**
-     * DatabaseModule constructor.
-     *
-     * @inheritDoc
-     */
-    public function __construct(Container $app, string $name, $path)
-    {
-        parent::__construct($app, $name, $path);
-        $this->loadAttributes();
-    }
-
-    /**
      * @return ModuleEntity
      */
     public function getModel()
