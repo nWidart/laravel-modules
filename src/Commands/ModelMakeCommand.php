@@ -41,6 +41,7 @@ class ModelMakeCommand extends GeneratorCommand
         }
 
         $this->handleOptionalMigrationOption();
+        $this->handleOptionalFactoryOption();
 
         return 0;
     }
@@ -90,6 +91,7 @@ class ModelMakeCommand extends GeneratorCommand
         return [
             ['fillable', null, InputOption::VALUE_OPTIONAL, 'The fillable attributes.', null],
             ['migration', 'm', InputOption::VALUE_NONE, 'Flag to create associated migrations', null],
+            ['factory', 'f', InputOption::VALUE_NONE, 'Flag to create associated factory', null]
         ];
     }
 
@@ -105,13 +107,28 @@ class ModelMakeCommand extends GeneratorCommand
     }
 
     /**
+     * Create the factory with the given model if factory flag was used
+     */
+    private function handleOptionalFactoryOption()
+    {
+        if ($this->option('factory') === true) {
+            $this->call('module:make-factory', ['name' => $this->getModelName(), 'module' => $this->argument('module')]);
+        }
+    }
+
+    /**
      * @return mixed
      */
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/model.stub', [
+        $stubFile = '/model.stub';
+        if ($this->option('factory') === true) {
+            $stubFile = '/model-with-factory.stub';
+        }
+
+        return (new Stub($stubFile, [
             'NAME'              => $this->getModelName(),
             'FILLABLE'          => $this->getFillable(),
             'NAMESPACE'         => $this->getClassNamespace($module),
