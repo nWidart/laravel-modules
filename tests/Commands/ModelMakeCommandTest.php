@@ -45,7 +45,7 @@ class ModelMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_generated_correct_file_with_content()
     {
-        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '-f' => true]);
 
         $file = $this->finder->get($this->modulePath . '/Entities/Post.php');
 
@@ -56,7 +56,7 @@ class ModelMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_correct_fillable_fields()
     {
-        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--fillable' => 'title,slug']);
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--fillable' => 'title,slug', '-f' => true]);
 
         $file = $this->finder->get($this->modulePath . '/Entities/Post.php');
 
@@ -107,8 +107,8 @@ class ModelMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_displays_error_if_model_already_exists()
     {
-        $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog']);
-        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog']);
+        $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '-f' => true]);
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '-f' => true]);
 
         $this->assertStringContainsString('already exists', Artisan::output());
         $this->assertSame(E_ERROR, $code);
@@ -119,7 +119,7 @@ class ModelMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.model.path', 'Models');
 
-        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', 'f' => true]);
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '-f' => true]);
 
         $file = $this->finder->get($this->modulePath . '/Models/Post.php');
 
@@ -132,7 +132,7 @@ class ModelMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.model.namespace', 'Models');
 
-        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '-f' => true]);
 
         $file = $this->finder->get($this->modulePath . '/Entities/Post.php');
 
