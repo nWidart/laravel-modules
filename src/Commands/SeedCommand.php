@@ -116,6 +116,7 @@ class SeedCommand extends Command
             } else {
                 //look at other namespaces
                 $classes = $this->getSeederNames($name);
+
                 foreach ($classes as $class) {
                     if (class_exists($class)) {
                         $seeders[] = $class;
@@ -163,13 +164,14 @@ class SeedCommand extends Command
      */
     public function getSeederName($name)
     {
-        $name = Str::studly($name);
+        $baseModuleName = basename($name);
+        $name = str_replace('/', '\\', Str::studly($name));
 
         $namespace = $this->laravel['modules']->config('namespace');
         $config = GenerateConfigReader::read('seeder');
         $seederPath = str_replace('/', '\\', $config->getPath());
 
-        return $namespace . '\\' . $name . '\\' . $seederPath . '\\' . $name . 'DatabaseSeeder';
+        return $namespace . '\\' . $name . '\\' . $seederPath . '\\' . $baseModuleName . 'DatabaseSeeder';
     }
 
     /**
