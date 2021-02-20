@@ -2,7 +2,7 @@
 
 namespace Nwidart\Modules\Migrations;
 
-use Illuminate\Contracts\Foundation\Application;
+#use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Module;
@@ -35,7 +35,7 @@ class Migrator
      * @param Module $module
      * @param Application $application
      */
-    public function __construct(Module $module, Application $application)
+    public function __construct(Module $module, $application)
     {
         $this->module = $module;
         $this->laravel = $application;
