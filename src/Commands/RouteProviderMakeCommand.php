@@ -61,6 +61,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
             'CLASS'                => $this->getFileName(),
             'MODULE_NAMESPACE'     => $this->laravel['modules']->config('namespace'),
             'MODULE'               => $this->getModuleName(),
+            'MODULENAMESPACE'      => str_replace('/', '\\', $this->getModuleName()),
             'CONTROLLER_NAMESPACE' => $this->getControllerNameSpace(),
             'WEB_ROUTES_PATH'      => $this->getWebRoutesPath(),
             'API_ROUTES_PATH'      => $this->getApiRoutesPath(),
