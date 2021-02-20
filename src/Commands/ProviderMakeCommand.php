@@ -110,6 +110,6 @@ class ProviderMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name'));
+        return basename(Str::studly(basename($this->argument('name'))));
     }
 }

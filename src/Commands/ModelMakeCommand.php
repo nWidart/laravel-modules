@@ -117,7 +117,7 @@ class ModelMakeCommand extends GeneratorCommand
             'NAMESPACE'         => $this->getClassNamespace($module),
             'CLASS'             => $this->getClass(),
             'LOWER_NAME'        => $module->getLowerName(),
-            'MODULE'            => $this->getModuleName(),
+            'MODULE'            => str_replace('/', '\\', $this->getModuleName()),
             'STUDLY_NAME'       => $module->getStudlyName(),
             'MODULE_NAMESPACE'  => $this->laravel['modules']->config('namespace'),
         ]))->render();

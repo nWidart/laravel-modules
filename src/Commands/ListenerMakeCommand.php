@@ -104,7 +104,7 @@ class ListenerMakeCommand extends GeneratorCommand
      */
     protected function getFileName()
     {
-        return Str::studly($this->argument('name'));
+        return basename(Str::studly($this->argument('name')));
     }
 
     /**

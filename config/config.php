@@ -200,7 +200,8 @@ return [
     'scan' => [
         'enabled' => false,
         'paths' => [
-            base_path('vendor/*/*'),
+            base_path('Modules/*/*'),
+            base_path('Modules/*'),
         ],
     ],
     /*
