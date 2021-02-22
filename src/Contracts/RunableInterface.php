@@ -10,4 +10,11 @@ interface RunableInterface
      * @param string $command
      */
     public function run($command);
+
+    /**
+     * Return module instance.
+     *
+     * @return mixed
+     */
+    public function getModule();
 }

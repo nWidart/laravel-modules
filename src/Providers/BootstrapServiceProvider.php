@@ -13,6 +13,14 @@ class BootstrapServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->app[RepositoryInterface::class]->boot();
+
+        if ($this->app->runningInConsole()) {
+            $this->registerMigrations();
+
+            $this->publishes([
+                __DIR__ . '/../../database/migrations' => database_path('migrations'),
+            ], 'module-migrations');
+        }
     }
 
     /**
@@ -21,5 +29,10 @@ class BootstrapServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app[RepositoryInterface::class]->register();
+    }
+
+    private function registerMigrations()
+    {
+        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
     }
 }

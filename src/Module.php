@@ -422,7 +422,7 @@ abstract class Module
             !class_exists('\Modules\Core\Foundation\AsgardCms');
     }
 
-    private function flushCache(): void
+    protected function flushCache(): void
     {
         if (config('modules.cache.enabled')) {
             $this->cache->store()->flush();
