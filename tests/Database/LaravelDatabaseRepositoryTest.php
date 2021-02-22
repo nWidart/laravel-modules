@@ -2,7 +2,6 @@
 
 namespace Nwidart\Modules\Tests\Database;
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Artisan;
@@ -396,8 +395,8 @@ class LaravelDatabaseRepositoryTest extends BaseTestCase
         config()->set('modules.cache.key', 'laravel-modules');
         config()->set('modules.cache.lifetime', 3000);
         $moduleName = 'Recipe';
-        $updatedModuleName = $this->generateModuleName();
-        $this->createModule($moduleName);
+        $updatedDescription = 'New description';
+        $moduleEntity = $this->createModule($moduleName);
 
         // Cache first.
         $this->repository->all();
@@ -405,14 +404,38 @@ class LaravelDatabaseRepositoryTest extends BaseTestCase
         // Update db.
         DB::table('modules')
             ->where('name', $moduleName)
-            ->update(['name' => $updatedModuleName]);
+            ->update(['description' => $updatedDescription]);
 
         $modules = $this->repository->all();
         $this->assertCount(1, $modules);
         $this->assertArrayHasKey($moduleName, $modules);
-        // Should get cache $moduleName, not $updatedModuleName.
-        $this->assertNotEquals($updatedModuleName, $modules[$moduleName]->getName());
+        // Should get cache, not updated description.
+        $this->assertNotEquals($updatedDescription, $modules[$moduleName]->get('description'));
+        $this->assertEquals($moduleEntity->description, $modules[$moduleName]->get('description'));
         config()->set('modules.cache.enabled', false);
+    }
+
+    /** @test */
+    public function it_returns_all_modules_without_using_cache()
+    {
+        config()->set('modules.cache.enabled', false);
+        $moduleName = 'Recipe';
+        $updatedDescription = 'New description';
+        $this->createModule($moduleName);
+
+        // Try to get first.
+        $this->repository->all();
+
+        // Update new module name.
+        DB::table('modules')
+            ->where('name', $moduleName)
+            ->update(['description' => $updatedDescription]);
+
+        $modules = $this->repository->all();
+        $this->assertCount(1, $modules);
+        $this->assertArrayHasKey($moduleName, $modules);
+        // Should get new module description.
+        $this->assertEquals($updatedDescription, $modules[$moduleName]->get('description'));
     }
 
     /** @test */
@@ -467,7 +490,7 @@ class LaravelDatabaseRepositoryTest extends BaseTestCase
         $module = $this->repository->findOrFail('Recipe');
         $module->setAttributes(array_merge($module->getAttributes(), [
             'test_1' => $test_1,
-            'test_2' => $test_2
+            'test_2' => $test_2,
         ]));
         $this->assertEquals('Recipe', $module->get('name'));
         $this->assertEquals($test_1, $module->get('test_1'));
