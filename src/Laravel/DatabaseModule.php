@@ -47,7 +47,7 @@ class DatabaseModule extends Module
      * Get a specific data from json file by given the key.
      *
      * @param string $key
-     * @param null   $default
+     * @param mixed  $default
      *
      * @return mixed
      */
@@ -145,14 +145,19 @@ class DatabaseModule extends Module
     /**
      * Get version.
      *
-     * @return mixed|null
+     * @return mixed
      */
     public function getVersion()
     {
         return $this->get('version', '1.0.0');
     }
 
-    public function update(Updater $updater)
+    /**
+     * @param Updater $updater
+     *
+     * @throws Exception
+     */
+    public function update(Updater $updater): void
     {
 
         if (config('modules.database_management.update_file_to_database_when_updating')) {
@@ -170,9 +175,7 @@ class DatabaseModule extends Module
             }
         }
 
-        $response = with($updater)->update($this->getName());
+        with($updater)->update($this->getName());
         $this->flushCache();
-
-        return $response;
     }
 }
