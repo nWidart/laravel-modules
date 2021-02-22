@@ -27,4 +27,14 @@ class Runner implements RunableInterface
     {
         passthru($command);
     }
+
+    /**
+     * Get module.
+     *
+     * @return RepositoryInterface
+     */
+    public function getModule()
+    {
+        return $this->module;
+    }
 }

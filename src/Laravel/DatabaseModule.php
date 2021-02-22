@@ -3,9 +3,7 @@
 namespace Nwidart\Modules\Laravel;
 
 use Exception;
-use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
-use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Entities\ModuleEntity;
 use Nwidart\Modules\Json;
 use Nwidart\Modules\Process\Updater;
@@ -13,7 +11,7 @@ use Nwidart\Modules\Process\Updater;
 class DatabaseModule extends Module
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     public $attributes;
 
@@ -23,39 +21,6 @@ class DatabaseModule extends Module
     public function getModel()
     {
         return new ModuleEntity();
-    }
-
-    /**
-     * Load attributes.
-     *
-     * @return mixed
-     * @throws Exception
-     */
-    private function loadAttributes()
-    {
-        if (!$this->getAttributes()) {
-
-            // Try to get from cache first.
-            $attributes = [];
-            if (config('modules.cache.enabled')) {
-                if ($modules = cache()->get(config('modules.cache.key'))) {
-                    foreach ($modules as $module) {
-                        if ($this->getName() == $module['name']) {
-                            $attributes = $module;
-                        }
-                    }
-                }
-            }
-
-            // Find from database. Throw error if still not found.
-            if (!isset($attributes['is_active'])) {
-                $attributes = $this->getModel()->where('name', $this->getName())->firstOrFail()->toArray();
-            }
-
-            $this->setAttributes($attributes);
-        }
-
-        return $this->attributes;
     }
 
     /**
@@ -143,8 +108,7 @@ class DatabaseModule extends Module
     {
         $this->fireEvent('disabling');
 
-        $this->getModel()->where(['name' => $this->getName()])->update(['is_active' => 0]);
-        $this->flushCache();
+        $this->setActive(false);
 
         $this->fireEvent('disabled');
     }
@@ -156,8 +120,7 @@ class DatabaseModule extends Module
     {
         $this->fireEvent('enabling');
 
-        $this->getModel()->where(['name' => $this->getName()])->update(['is_active' => 1]);
-        $this->flushCache();
+        $this->setActive(true);
 
         $this->fireEvent('enabled');
     }
@@ -180,6 +143,8 @@ class DatabaseModule extends Module
     }
 
     /**
+     * Get version.
+     *
      * @return mixed|null
      */
     public function getVersion()
@@ -200,7 +165,7 @@ class DatabaseModule extends Module
 
             // Check version, if version is higher then update module.json into database.
             if (version_compare($this->getVersion(), $data['version'], '<=')) {
-                $data = resolve(RepositoryInterface::class)->validateAttributes($data);
+                $data = $updater->getModule()->validateAttributes($data);
                 $this->getModel()->where(['name' => $data['name']])->update($data);
             }
         }
