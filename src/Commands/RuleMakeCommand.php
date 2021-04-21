@@ -62,7 +62,7 @@ class RuleMakeCommand extends GeneratorCommand
 
         return (new Stub('/rule.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
-            'CLASS'     => $this->getClass(),
+            'CLASS'     => $this->getFileName(),
         ]))->render();
     }
 
