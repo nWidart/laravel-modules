@@ -27,7 +27,7 @@
     "orchestra/testbench": "^6.2",
     "friendsofphp/php-cs-fixer": "^2.16",
     "laravel/framework": "^8.0",
-    "spatie/phpunit-snapshot-assertions": "^2.1.0",
+    "spatie/phpunit-snapshot-assertions": "^2.1.0|^4.2",
     "phpstan/phpstan": "^0.12.14"
   },
   "autoload": {
