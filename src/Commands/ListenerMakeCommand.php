@@ -63,7 +63,7 @@ class ListenerMakeCommand extends GeneratorCommand
         return (new Stub($this->getStubName(), [
             'NAMESPACE' => $this->getClassNamespace($module),
             'EVENTNAME' => $this->getEventName($module),
-            'SHORTEVENTNAME' => $this->option('event'),
+            'SHORTEVENTNAME' => $this->getShortEventName(),
             'CLASS' => $this->getClass(),
         ]))->render();
     }
@@ -77,9 +77,17 @@ class ListenerMakeCommand extends GeneratorCommand
 
     protected function getEventName(Module $module)
     {
+        $namespace = $this->laravel['modules']->config('namespace') . "\\" . $module->getStudlyName();
         $eventPath = GenerateConfigReader::read('event');
 
-        return $this->getClassNamespace($module) . "\\" . $eventPath->getPath() . "\\" . $this->option('event');
+        $eventName = $namespace . "\\" . $eventPath->getPath() . "\\" . $this->option('event');
+
+        return str_replace('/', '\\', $eventName);
+    }
+
+    protected function getShortEventName()
+    {
+        return class_basename($this->option('event'));
     }
 
     protected function getDestinationFilePath()

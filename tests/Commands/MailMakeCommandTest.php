@@ -35,19 +35,21 @@ class MailMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_the_mail_class()
     {
-        $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
         $this->assertTrue(is_file($this->modulePath . '/Emails/SomeMail.php'));
+        $this->assertSame(0, $code);
     }
 
     /** @test */
     public function it_generated_correct_file_with_content()
     {
-        $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/Emails/SomeMail.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -55,11 +57,12 @@ class MailMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.emails.path', 'SuperEmails');
 
-        $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/SuperEmails/SomeMail.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -67,10 +70,11 @@ class MailMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.emails.namespace', 'SuperEmails');
 
-        $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/Emails/SomeMail.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 }

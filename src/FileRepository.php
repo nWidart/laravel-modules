@@ -290,15 +290,15 @@ abstract class FileRepository implements RepositoryInterface, Countable
         $modules = $this->allEnabled();
 
         uasort($modules, function (Module $a, Module $b) use ($direction) {
-            if ($a->get('order') === $b->get('order')) {
+            if ($a->get('priority') === $b->get('priority')) {
                 return 0;
             }
 
             if ($direction === 'desc') {
-                return $a->get('order') < $b->get('order') ? 1 : -1;
+                return $a->get('priority') < $b->get('priority') ? 1 : -1;
             }
 
-            return $a->get('order') > $b->get('order') ? 1 : -1;
+            return $a->get('priority') > $b->get('priority') ? 1 : -1;
         });
 
         return $modules;

@@ -2,9 +2,9 @@
 
 namespace Modules\\Blog\\Transformers;
 
-use Illuminate\\Http\\Resources\\Json\\Resource;
+use Illuminate\\Http\\Resources\\Json\\JsonResource;
 
-class PostsTransformer extends Resource
+class PostsTransformer extends JsonResource
 {
     /**
      * Transform the resource into an array.

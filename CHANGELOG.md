@@ -4,6 +4,74 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Fixed
+
+- Fixed the ability to override commands via config file.
+
+## 8.2 - 2020-11-11
+
+### Added
+
+- New `module:make-component` command to generate laravel components
+
+### Fixed
+
+- Fixed bug: `Target class [Nwidart\Modules\Commands\] does not exist.`
+
+## 8.1 - 2020-11-10
+
+### Added
+
+- Command management via configuration file 
+- Laravel 8 Factories compatibility
+- New improved way to define controller types. `--web`, `--api` and `--plain` options.
+- New configuration option to make compose run in silent mode
+
+### Changed
+
+- New generated commands now use the `$signature` property instead of `$name`
+- Fixed issue where `order` was used instead of `priority`
+
+## 8.0 - 2020-10-03
+
+### Added
+
+- Laravel 8 support
+
+### Updated
+
+- Update `ListenerMakeCommand` to properly use the `--events` option
+
+## 7.2.0 - 2020-07-30
+
+### Added
+
+- Added return statements in artisan commands. Helpful to validate if something was successfully ran. (#1026)
+
+### Changed
+
+- Update JsonResource namespace, using the new `Illuminate\Http\Resources\Json\JsonResource`. (#969)
+- Enable command returns the status code (#978)
+- Removing module service provider from composer.json stub (#996)
+- Fixed custom stub path issue. Replacing a hardcoded stub path. (#1016)
+- Controller return type changed to `Illuminate\Contracts\Support\Renderable`. (#1020)
+- Change bigIncrements method to id (#1029)
+- Adding force option for module:seed (#1030)
+
+## 7.1.0 - 2020-04-14
+
+### Changed
+
+- `php artsian module:enable` (without any arguments) will enable all modules
+- `php artsian module:disable` (without any arguments) will disable all modules
+- Updating Laravel Mix version as well as cross-env. 
+
+## 7.0.0 - 2020-03-26
+
+### Added
+
+- Laravel 7.0 support 
+
 ## 6.2.0 - 2019-11-12
 
 ### Changed

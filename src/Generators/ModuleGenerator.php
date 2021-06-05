@@ -63,11 +63,11 @@ class ModuleGenerator extends Generator
     protected $force = false;
 
     /**
-     * Generate a plain module.
+     * set default module type.
      *
-     * @var bool
+     * @var string
      */
-    protected $plain = false;
+    protected $type = 'web';
 
     /**
      * Enables the module.
@@ -101,15 +101,15 @@ class ModuleGenerator extends Generator
     }
 
     /**
-     * Set plain flag.
+     * Set type.
      *
-     * @param bool $plain
+     * @param string $type
      *
      * @return $this
      */
-    public function setPlain($plain)
+    public function setType($type)
     {
-        $this->plain = $plain;
+        $this->type = $type;
 
         return $this;
     }
@@ -285,7 +285,7 @@ class ModuleGenerator extends Generator
     /**
      * Generate the module.
      */
-    public function generate()
+    public function generate() : int
     {
         $name = $this->getName();
 
@@ -295,7 +295,7 @@ class ModuleGenerator extends Generator
             } else {
                 $this->console->error("Module [{$name}] already exist!");
 
-                return;
+                return E_ERROR;
             }
         }
 
@@ -303,18 +303,20 @@ class ModuleGenerator extends Generator
 
         $this->generateModuleJsonFile();
 
-        if ($this->plain !== true) {
+        if ($this->type !== 'plain') {
             $this->generateFiles();
             $this->generateResources();
         }
 
-        if ($this->plain === true) {
+        if ($this->type === 'plain') {
             $this->cleanModuleJsonFile();
         }
 
         $this->activator->setActiveByName($name, $this->isActive);
 
         $this->console->info("Module [{$name}] created successfully.");
+
+        return 0;
     }
 
     /**
@@ -391,10 +393,11 @@ class ModuleGenerator extends Generator
         }
 
         if (GenerateConfigReader::read('controller')->generate() === true) {
+            $options = $this->type=='api'?['--api'=>true]:[];
             $this->console->call('module:make-controller', [
                 'controller' => $this->getName() . 'Controller',
                 'module' => $this->getName(),
-            ]);
+            ]+$options);
         }
     }
 

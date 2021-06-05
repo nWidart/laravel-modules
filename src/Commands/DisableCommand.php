@@ -25,8 +25,15 @@ class DisableCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle() : int
     {
+        /**
+         * check if user entred an argument
+         */
+        if ($this->argument('module') === null) {
+            $this->disableAll();
+        }
+
         /** @var Module $module */
         $module = $this->laravel['modules']->findOrFail($this->argument('module'));
 
@@ -36,6 +43,29 @@ class DisableCommand extends Command
             $this->info("Module [{$module}] disabled successful.");
         } else {
             $this->comment("Module [{$module}] has already disabled.");
+        }
+
+        return 0;
+    }
+
+    /**
+     * disableAll
+     *
+     * @return void
+     */
+    public function disableAll()
+    {
+        /** @var Modules $modules */
+        $modules = $this->laravel['modules']->all();
+
+        foreach ($modules as $module) {
+            if ($module->isEnabled()) {
+                $module->disable();
+
+                $this->info("Module [{$module}] disabled successful.");
+            } else {
+                $this->comment("Module [{$module}] has already disabled.");
+            }
         }
     }
 
@@ -47,7 +77,7 @@ class DisableCommand extends Command
     protected function getArguments()
     {
         return [
-            ['module', InputArgument::REQUIRED, 'Module name.'],
+            ['module', InputArgument::OPTIONAL, 'Module name.'],
         ];
     }
 }

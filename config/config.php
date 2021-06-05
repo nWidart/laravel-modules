@@ -1,6 +1,7 @@
 <?php
 
 use Nwidart\Modules\Activators\FileActivator;
+use Nwidart\Modules\Commands;
 
 return [
 
@@ -26,7 +27,7 @@ return [
 
     'stubs' => [
         'enabled' => false,
-        'path' => base_path() . '/vendor/nwidart/laravel-modules/src/Commands/stubs',
+        'path' => base_path('vendor/nwidart/laravel-modules/src/Commands/stubs'),
         'files' => [
             'routes/web' => 'Routes/web.php',
             'routes/api' => 'Routes/api.php',
@@ -125,8 +126,67 @@ return [
             'emails' => ['path' => 'Emails', 'generate' => false],
             'notifications' => ['path' => 'Notifications', 'generate' => false],
             'resource' => ['path' => 'Transformers', 'generate' => false],
+            'component-view' => ['path' => 'Resources/views/components', 'generate' => false],
+            'component-class' => ['path' => 'View/Component', 'generate' => false],
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Package commands
+    |--------------------------------------------------------------------------
+    |
+    | Here you can define which commands will be visible and used in your
+    | application. If for example you don't use some of the commands provided
+    | you can simply comment them out.
+    |
+    */
+    'commands' => [
+        Commands\CommandMakeCommand::class,
+        Commands\ComponentClassMakeCommand::class,
+        Commands\ComponentViewMakeCommand::class,
+        Commands\ControllerMakeCommand::class,
+        Commands\DisableCommand::class,
+        Commands\DumpCommand::class,
+        Commands\EnableCommand::class,
+        Commands\EventMakeCommand::class,
+        Commands\JobMakeCommand::class,
+        Commands\ListenerMakeCommand::class,
+        Commands\MailMakeCommand::class,
+        Commands\MiddlewareMakeCommand::class,
+        Commands\NotificationMakeCommand::class,
+        Commands\ProviderMakeCommand::class,
+        Commands\RouteProviderMakeCommand::class,
+        Commands\InstallCommand::class,
+        Commands\ListCommand::class,
+        Commands\ModuleDeleteCommand::class,
+        Commands\ModuleMakeCommand::class,
+        Commands\FactoryMakeCommand::class,
+        Commands\PolicyMakeCommand::class,
+        Commands\RequestMakeCommand::class,
+        Commands\RuleMakeCommand::class,
+        Commands\MigrateCommand::class,
+        Commands\MigrateRefreshCommand::class,
+        Commands\MigrateResetCommand::class,
+        Commands\MigrateRollbackCommand::class,
+        Commands\MigrateStatusCommand::class,
+        Commands\MigrationMakeCommand::class,
+        Commands\ModelMakeCommand::class,
+        Commands\PublishCommand::class,
+        Commands\PublishConfigurationCommand::class,
+        Commands\PublishMigrationCommand::class,
+        Commands\PublishTranslationCommand::class,
+        Commands\SeedCommand::class,
+        Commands\SeedMakeCommand::class,
+        Commands\SetupCommand::class,
+        Commands\UnUseCommand::class,
+        Commands\UpdateCommand::class,
+        Commands\UseCommand::class,
+        Commands\ResourceMakeCommand::class,
+        Commands\TestMakeCommand::class,
+        Commands\LaravelModulesV6Migrator::class,
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Scan Path
@@ -158,7 +218,9 @@ return [
             'name' => 'Nicolas Widart',
             'email' => 'n.widart@gmail.com',
         ],
+        'composer-output' => false,
     ],
+
     /*
     |--------------------------------------------------------------------------
     | Caching

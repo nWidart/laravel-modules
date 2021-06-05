@@ -35,12 +35,13 @@ class PolicyMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_makes_policy()
     {
-        $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
         $policyFile = $this->modulePath . '/Policies/PostPolicy.php';
 
         $this->assertTrue(is_file($policyFile), 'Policy file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($policyFile));
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -48,11 +49,12 @@ class PolicyMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.policies.path', 'SuperPolicies');
 
-        $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/SuperPolicies/PostPolicy.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -60,10 +62,11 @@ class PolicyMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.policies.namespace', 'SuperPolicies');
 
-        $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
         $file = $this->finder->get($this->modulePath . '/Policies/PostPolicy.php');
 
         $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
     }
 }

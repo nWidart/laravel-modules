@@ -35,7 +35,7 @@ class SeedCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle() : int
     {
         try {
             if ($name = $this->argument('module')) {
@@ -51,13 +51,15 @@ class SeedCommand extends Command
             $this->reportException($e);
             $this->renderException($this->getOutput(), $e);
 
-            return 1;
+            return E_ERROR;
         } catch (\Exception $e) {
             $this->reportException($e);
             $this->renderException($this->getOutput(), $e);
 
-            return 1;
+            return E_ERROR;
         }
+
+        return 0;
     }
 
     /**

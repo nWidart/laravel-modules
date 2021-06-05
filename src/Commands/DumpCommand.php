@@ -24,7 +24,7 @@ class DumpCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle() : int
     {
         $this->info('Generating optimized autoload modules.');
 
@@ -35,6 +35,8 @@ class DumpCommand extends Command
                 $this->dump($module->getStudlyName());
             }
         }
+
+        return 0;
     }
 
     public function dump($module)

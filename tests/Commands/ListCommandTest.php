@@ -34,9 +34,10 @@ class ListCommandTest extends BaseTestCase
     /** @test */
     public function it_can_list_modules()
     {
-        $this->artisan('module:list');
+        $code = $this->artisan('module:list');
 
         // We just want to make sure nothing throws an exception inside the list command
         $this->assertTrue(true);
+        $this->assertSame(0, $code);
     }
 }
