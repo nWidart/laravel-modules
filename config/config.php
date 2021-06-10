@@ -272,4 +272,6 @@ return [
     ],
 
     'activator' => 'file',
+
+    'routes_with_namespace' => false,
 ];
