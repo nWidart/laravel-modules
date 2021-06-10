@@ -65,6 +65,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
             'WEB_ROUTES_PATH'      => $this->getWebRoutesPath(),
             'API_ROUTES_PATH'      => $this->getApiRoutesPath(),
             'LOWER_NAME'           => $module->getLowerName(),
+            'COMMENT_NAMESPACE'    => $module->getCommentNamespace(),
         ]))->render();
     }
 
@@ -121,5 +122,17 @@ class RouteProviderMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules'];
 
         return str_replace('/', '\\', $module->config('paths.generator.controller.namespace') ?: $module->config('paths.generator.controller.path', 'Controller'));
+    }
+
+    /**
+     * @return string
+     */
+    private function getCommentNamespace(): string
+    {
+        if ($this->laravel['modules']->config('routes_with_namespace') === true) {
+            return '';
+        }
+
+        return '// ';
     }
 }

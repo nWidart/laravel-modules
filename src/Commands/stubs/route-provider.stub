@@ -10,9 +10,9 @@ class $CLASS$ extends ServiceProvider
     /**
      * The module namespace to assume when generating URLs to actions.
      *
-     * @var string
+     * @var string|null
      */
-    protected $moduleNamespace = '$MODULE_NAMESPACE$\$MODULE$\$CONTROLLER_NAMESPACE$';
+    $COMMENT_NAMESPACE$protected $moduleNamespace = '$MODULE_NAMESPACE$\$MODULE$\$CONTROLLER_NAMESPACE$';
 
     /**
      * Called before routes are registered.
