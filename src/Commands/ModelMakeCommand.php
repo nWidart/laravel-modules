@@ -41,6 +41,7 @@ class ModelMakeCommand extends GeneratorCommand
         }
 
         $this->handleOptionalMigrationOption();
+        $this->handleOptionalControllerOption();
 
         return 0;
     }
@@ -90,6 +91,7 @@ class ModelMakeCommand extends GeneratorCommand
         return [
             ['fillable', null, InputOption::VALUE_OPTIONAL, 'The fillable attributes.', null],
             ['migration', 'm', InputOption::VALUE_NONE, 'Flag to create associated migrations', null],
+            ['controller', 'c', InputOption::VALUE_NONE, 'Flag to create associated controllers', null],
         ];
     }
 
@@ -102,6 +104,18 @@ class ModelMakeCommand extends GeneratorCommand
             $migrationName = 'create_' . $this->createMigrationName() . '_table';
             $this->call('module:make-migration', ['name' => $migrationName, 'module' => $this->argument('module')]);
         }
+    }
+
+    /**
+     * Create the controller file for the given model if controller flag was used
+     */
+    private function handleOptionalControllerOption()
+    {
+        $controllerName = "{$this->getModelName()}Controller";
+
+        $this->call('module:make-controller', array_filter([
+            'controller'  => $controllerName
+        ]));
     }
 
     /**
