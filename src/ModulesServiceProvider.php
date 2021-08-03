@@ -39,7 +39,6 @@ abstract class ModulesServiceProvider extends ServiceProvider
         $configPath = __DIR__ . '/../config/config.php';
         $stubsPath = dirname(__DIR__) . '/src/Commands/stubs';
 
-        $this->mergeConfigFrom($configPath, 'modules');
         $this->publishes([
             $configPath => config_path('modules.php'),
         ], 'config');
