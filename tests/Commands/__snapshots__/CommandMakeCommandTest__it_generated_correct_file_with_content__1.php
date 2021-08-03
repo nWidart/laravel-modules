@@ -13,7 +13,7 @@ class MyAwesomeCommand extends Command
      *
      * @var string
      */
-    protected $signature = \'command:name\';
+    protected $name = \'command:name\';
 
     /**
      * The console command description.
