@@ -91,6 +91,31 @@ class ModelMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_generates_controller_file_with_model()
+    {
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--controller' => true]);
+        $controllers = $this->finder->allFiles($this->modulePath . '/Http/Controllers');
+        $controllerFile = $controllers[1];
+        $controllerContent = $this->finder->get($this->modulePath . '/Http/Controllers/' . $controllerFile->getFilename());
+        $this->assertCount(2, $controllers);
+        $this->assertMatchesSnapshot($controllerContent);
+        $this->assertSame(0, $code);
+    }
+
+    /** @test */
+    public function it_generates_controller_file_with_model_using_shortcut_option()
+    {
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '-c' => true]);
+
+        $controllers = $this->finder->allFiles($this->modulePath . '/Http/Controllers');
+        $controllerFile = $controllers[1];
+        $controllerContent = $this->finder->get($this->modulePath . '/Http/Controllers/' . $controllerFile->getFilename());
+        $this->assertCount(2, $controllers);
+        $this->assertMatchesSnapshot($controllerContent);
+        $this->assertSame(0, $code);
+    }
+
+    /** @test */
     public function it_generates_correct_migration_file_name_with_multiple_words_model()
     {
         $code = $this->artisan('module:make-model', ['model' => 'ProductDetail', 'module' => 'Blog', '-m' => true]);
