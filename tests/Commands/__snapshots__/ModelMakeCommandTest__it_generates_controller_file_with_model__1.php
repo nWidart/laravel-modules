@@ -6,7 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\\Http\\Request;
 use Illuminate\\Routing\\Controller;
 
-class MyController extends Controller
+class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
