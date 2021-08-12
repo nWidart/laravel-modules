@@ -115,7 +115,8 @@ class ModelMakeCommand extends GeneratorCommand
             $controllerName = "{$this->getModelName()}Controller";
 
             $this->call('module:make-controller', array_filter([
-                'controller' => $controllerName
+                'controller' => $controllerName,
+                'module' => $this->argument('module')
             ]));
         }
     }
