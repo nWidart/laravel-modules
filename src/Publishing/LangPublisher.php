@@ -22,7 +22,7 @@ class LangPublisher extends Publisher
     {
         $name = $this->module->getLowerName();
 
-        return base_path("resources/lang/{$name}");
+        return base_path("resources/lang/vendor/{$name}");
     }
 
     /**
