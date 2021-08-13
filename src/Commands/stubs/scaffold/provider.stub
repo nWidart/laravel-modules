@@ -80,11 +80,9 @@ class $CLASS$ extends ServiceProvider
      */
     public function registerTranslations()
     {
-        $langPath = resource_path('lang/modules/' . $this->moduleNameLower);
+        $langPath = resource_path('lang/vendor/' . $this->moduleNameLower);
 
-        if (is_dir($langPath)) {
-            $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
-        } else {
+        if (!is_dir($langPath)) {
             $this->loadTranslationsFrom(module_path($this->moduleName, '$PATH_LANG$'), $this->moduleNameLower);
         }
     }
