@@ -19,11 +19,38 @@ class ModuleDeleteCommandTest extends BaseTestCase
      */
     private $activator;
 
+    /**
+     * @var string
+     */
+    protected $confirmationMessage = 'Are you sure you want to delete module WrongModule? (Y/n)';
+
     public function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
         $this->activator = new FileActivator($this->app);
+    }
+
+    public function withoutMockingConsoleOutput()
+    {
+        //
+    }
+
+    /** @test */
+    public function it_deletes_modules_when_user_has_confirmed(): void
+    {
+        $this->artisan('module:make', ['name' => ['WrongModule']]);
+        $this->assertDirectoryExists(base_path('modules/WrongModule'));
+
+        $this->artisan('module:delete', ['module' => 'WrongModule'])
+            ->expectsConfirmation($this->confirmationMessage, 'no')
+            ->assertExitCode(1);
+        $this->assertDirectoryExists(base_path('modules/WrongModule'));
+
+        $this->artisan('module:delete', ['module' => 'WrongModule'])
+            ->expectsConfirmation($this->confirmationMessage, 'yes')
+            ->assertExitCode(0);
+        $this->assertDirectoryNotExists(base_path('modules/WrongModule'));
     }
 
     /** @test */
@@ -32,9 +59,10 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['WrongModule']]);
         $this->assertDirectoryExists(base_path('modules/WrongModule'));
 
-        $code = $this->artisan('module:delete', ['module' => 'WrongModule']);
+        $this->artisan('module:delete', ['module' => 'WrongModule'])
+            ->expectsConfirmation($this->confirmationMessage, 'yes')
+            ->assertExitCode(0);
         $this->assertDirectoryNotExists(base_path('modules/WrongModule'));
-        $this->assertSame(0, $code);
     }
 
     /** @test */
@@ -43,8 +71,9 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['WrongModule']]);
         $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));
 
-        $code = $this->artisan('module:delete', ['module' => 'WrongModule']);
+        $this->artisan('module:delete', ['module' => 'WrongModule'])
+            ->expectsConfirmation($this->confirmationMessage, 'yes')
+            ->assertExitCode(0);
         $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));
-        $this->assertSame(0, $code);
     }
 }
