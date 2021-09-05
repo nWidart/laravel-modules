@@ -13,14 +13,16 @@ class ModuleDeleteCommand extends Command
 
     public function handle() : int
     {
-        $confirmation = $this->ask("Are you sure you want to delete module {$this->argument('module')}? (Y/n)");
-        if( Str::startsWith(Str::lower($confirmation), 'y') ) {
+        $confirmed = $this->confirm("Are you sure you want to delete module {$this->argument('module')}? (Y/n)", false);
+        if ($confirmed) {
             $this->laravel['modules']->delete($this->argument('module'));
 
             $this->info("Module {$this->argument('module')} has been deleted.");
-        }
-        else {
+            return 0;
+        } else {
             $this->info("Module delete has been canceled");
+
+            return 1;
         }
     }
 
