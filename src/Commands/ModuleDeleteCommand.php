@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputArgument;
 
 class ModuleDeleteCommand extends Command
@@ -12,11 +13,15 @@ class ModuleDeleteCommand extends Command
 
     public function handle() : int
     {
-        $this->laravel['modules']->delete($this->argument('module'));
+        $confirmation = $this->ask("Are you sure you want to delete module {$this->argument('module')}? (Y/n)");
+        if( Str::startsWith(Str::lower($confirmation), 'y') ) {
+            $this->laravel['modules']->delete($this->argument('module'));
 
-        $this->info("Module {$this->argument('module')} has been deleted.");
-
-        return 0;
+            $this->info("Module {$this->argument('module')} has been deleted.");
+        }
+        else {
+            $this->info("Module delete has been canceled");
+        }
     }
 
     protected function getArguments()
