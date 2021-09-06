@@ -47,12 +47,6 @@ class MigrateFreshCommand extends Command
             '--seed' => $this->option('seed'),
         ]);
 
-        if ($this->option('seed')) {
-            $this->call('module:seed', [
-                'module' => $this->getModuleName(),
-            ]);
-        }
-
         return 0;
     }
 
@@ -65,7 +59,6 @@ class MigrateFreshCommand extends Command
     {
         return [
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
-            ['seed', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
 
