@@ -237,7 +237,11 @@ class Installer
     {
         $parts = explode('/', $this->name);
 
-        return Str::studly(end($parts));
+        $names =  explode('-', end($parts));
+        
+        $name = end($names) == 'module' ? reset($names) : end($parts);
+
+        return Str::studly(end($names) == 'module' ? reset($names) : end($parts));
     }
 
     /**
