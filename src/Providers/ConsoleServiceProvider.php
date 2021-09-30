@@ -37,6 +37,7 @@ class ConsoleServiceProvider extends ServiceProvider
         Commands\MigrateCommand::class,
         Commands\MigrateRefreshCommand::class,
         Commands\MigrateResetCommand::class,
+        Commands\MigrateFreshCommand::class,
         Commands\MigrateRollbackCommand::class,
         Commands\MigrateStatusCommand::class,
         Commands\MigrationMakeCommand::class,
