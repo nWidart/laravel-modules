@@ -277,7 +277,11 @@ abstract class Module
      */
     protected function fireEvent($event): void
     {
-        $this->app['events']->dispatch(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
+        $this->app['events']->dispatch(sprintf(
+            '%s%s.' . $event,
+            config('modules.events.prefix', 'modules.'),
+            $this->getLowerName()
+        ), [$this]);
     }
     /**
      * Register the aliases from this module.
