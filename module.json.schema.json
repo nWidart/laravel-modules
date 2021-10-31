@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "JSON schema for Laravel-Modules module.json files",
+    "properties": {
+        "name": {
+            "description": "The name of the module.",
+            "type": "string"
+        },
+        "alias": {
+            "description": "The alias of the module.",
+            "type": "string"
+        },
+        "description": {
+            "description": "The description of the module.",
+            "type": "string"
+        },
+        "keywords": {
+            "description": "The keywords of the module.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "priority": {
+            "description": "The priority of the module.",
+            "type": "integer"
+        },
+        "providers": {
+            "description": "The providers of the module.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "aliases": {
+            "description": "The aliases of the module.",
+            "type": "object"
+        },
+        "files": {
+            "description": "The files of the module.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "requires": {
+            "description": "The requires of the module.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}
