@@ -198,9 +198,13 @@ class Migrator
      */
     public function resolve($file)
     {
-        $file = implode('_', array_slice(explode('_', $file), 4));
+        $name = implode('_', array_slice(explode('_', $file), 4));
 
-        $class = Str::studly($file);
+        $class = Str::studly($name);
+
+        if (!class_exists($class) && file_exists($this->getPath() . '/' . $file . '.php') ) {
+            return include $this->getPath() . '/' . $file . '.php';
+        }
 
         return new $class();
     }
