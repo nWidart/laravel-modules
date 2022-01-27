@@ -35,7 +35,7 @@ class Migrator
      * @param Module $module
      * @param Application $application
      */
-    public function __construct(Module $module, Application $application)
+    public function __construct(Module $module, Application|\Laravel\Lumen\Application $application)
     {
         $this->module = $module;
         $this->laravel = $application;
