@@ -4,9 +4,33 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 8.3 - 2022-02-10
+
 ### Fixed
 
-- Fixed the ability to override commands via config file.
+- The ability to override commands via config file.
+- Incorrectly placed config key
+- Class name when special characters are used in the rule name
+- Fix error on anonymous migration
+
+### Changed
+
+- Changed `View/Component` to `View/Components`
+- Updated test snapshots for the MakeCommand test snapshots
+- Command stub signature from `signature` to `name`
+- Revert PR1171 which causes tests to fail
+
+### Added 
+
+- Added comands make class component and make view component
+- Test against php 8.0
+- Merge config in register method
+- Added optional controller flag to model generator command
+- Set module for make-controller command
+- Added tests for generating controller in model generator command
+- Added test for check if migration and controller flag are both present
+- Laravel mix v6 support
+
 
 ## 8.2 - 2020-11-11
 
