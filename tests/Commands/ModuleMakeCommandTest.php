@@ -277,8 +277,8 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->assertDirectoryExists($this->modulePath . '/Assets');
         $this->assertDirectoryExists($this->modulePath . '/Emails');
-        $this->assertDirectoryNotExists($this->modulePath . '/Rules');
-        $this->assertDirectoryNotExists($this->modulePath . '/Policies');
+        $this->assertFileDoesNotExist($this->modulePath . '/Rules');
+        $this->assertFileDoesNotExist($this->modulePath . '/Policies');
         $this->assertSame(0, $code);
     }
 
@@ -290,8 +290,8 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertDirectoryNotExists($this->modulePath . '/Assets');
-        $this->assertDirectoryNotExists($this->modulePath . '/Emails');
+        $this->assertFileDoesNotExist($this->modulePath . '/Assets');
+        $this->assertFileDoesNotExist($this->modulePath . '/Emails');
         $this->assertSame(0, $code);
     }
 
@@ -303,8 +303,8 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertDirectoryNotExists($this->modulePath . '/Assets');
-        $this->assertDirectoryNotExists($this->modulePath . '/Emails');
+        $this->assertFileDoesNotExist($this->modulePath . '/Assets');
+        $this->assertFileDoesNotExist($this->modulePath . '/Emails');
         $this->assertSame(0, $code);
     }
 
@@ -317,9 +317,9 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertDirectoryNotExists($this->modulePath . '/Database/Seeders');
-        $this->assertDirectoryNotExists($this->modulePath . '/Providers');
-        $this->assertDirectoryNotExists($this->modulePath . '/Http/Controllers');
+        $this->assertFileDoesNotExist($this->modulePath . '/Database/Seeders');
+        $this->assertFileDoesNotExist($this->modulePath . '/Providers');
+        $this->assertFileDoesNotExist($this->modulePath . '/Http/Controllers');
         $this->assertSame(0, $code);
     }
 

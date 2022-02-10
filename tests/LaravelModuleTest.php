@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests;
 
+use Illuminate\Support\Facades\Event;
 use Modules\Recipe\Providers\DeferredServiceProvider;
 use Modules\Recipe\Providers\RecipeServiceProvider;
 use Nwidart\Modules\Contracts\ActivatorInterface;
@@ -170,23 +171,23 @@ class ModuleTest extends BaseTestCase
     /** @test */
     public function it_fires_events_when_module_is_enabled()
     {
-        $this->expectsEvents([
-            sprintf('modules.%s.enabling', $this->module->getLowerName()),
-            sprintf('modules.%s.enabled', $this->module->getLowerName()),
-        ]);
+        Event::fake();
 
         $this->module->enable();
+
+        Event::assertDispatched(sprintf('modules.%s.enabling', $this->module->getLowerName()));
+        Event::assertDispatched(sprintf('modules.%s.enabled', $this->module->getLowerName()));
     }
 
     /** @test */
     public function it_fires_events_when_module_is_disabled()
     {
-        $this->expectsEvents([
-            sprintf('modules.%s.disabling', $this->module->getLowerName()),
-            sprintf('modules.%s.disabled', $this->module->getLowerName()),
-        ]);
+        Event::fake();
 
         $this->module->disable();
+
+        Event::assertDispatched(sprintf('modules.%s.disabling', $this->module->getLowerName()));
+        Event::assertDispatched(sprintf('modules.%s.disabled', $this->module->getLowerName()));
     }
 
     /** @test */
@@ -204,7 +205,7 @@ class ModuleTest extends BaseTestCase
         $cachedServicesPath = $this->module->getCachedServicesPath();
 
         @unlink($cachedServicesPath);
-        $this->assertFileNotExists($cachedServicesPath);
+        $this->assertFileDoesNotExist($cachedServicesPath);
 
         $this->module->registerProviders();
 
