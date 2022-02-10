@@ -4,6 +4,16 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 9.0 - 2022-02-10
+
+### Changed
+
+- Minimum PHP version to 8.0 for supporting Laravel 9
+- Laravel 9 version
+- Increased PHPUnit to 9.5
+- Increased Mockery to 1.4
+- Fixed test replaced expectsEvents with event fakes
+
 ## 8.3 - 2022-02-10
 
 ### Fixed
@@ -30,7 +40,6 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - Added tests for generating controller in model generator command
 - Added test for check if migration and controller flag are both present
 - Laravel mix v6 support
-
 
 ## 8.2 - 2020-11-11
 
