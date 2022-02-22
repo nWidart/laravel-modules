@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Changed
+
+- [@iamine](https://github.com/iamine) Added Anonymous migration class as default like in Laravel 9.0 [#1363](https://github.com/nWidart/laravel-modules/pull/1363)
+
 ## 9.0 - 2022-02-10
 
 ### Changed
