@@ -29,4 +29,4 @@ $FIELDS$
     {
         Schema::dropIfExists('$TABLE$');
     }
-}
+};
