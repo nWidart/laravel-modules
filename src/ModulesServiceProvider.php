@@ -37,10 +37,15 @@ abstract class ModulesServiceProvider extends ServiceProvider
     protected function registerNamespaces()
     {
         $configPath = __DIR__ . '/../config/config.php';
+        $stubsPath = dirname(__DIR__) . '/src/Commands/stubs';
 
         $this->publishes([
             $configPath => config_path('modules.php'),
         ], 'config');
+
+        $this->publishes([
+            $stubsPath => base_path('stubs/nwidart-stubs'),
+        ], 'stubs');
     }
 
     /**
