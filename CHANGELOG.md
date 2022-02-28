@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+### Added 
+
+- Added option to publish stubs for modules `php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag="stubs"`
+
 ### Changed
 
 - [@iamine](https://github.com/iamine) Added Anonymous migration class as default like in Laravel 9.0 [#1363](https://github.com/nWidart/laravel-modules/pull/1363)
@@ -36,7 +40,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ### Added 
 
-- Added comands make class component and make view component
+- Added commands make class component and make view component
 - Test against php 8.0
 - Merge config in register method
 - Added optional controller flag to model generator command
