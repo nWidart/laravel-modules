@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -107,6 +108,12 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     public function getModelNamespace(): string
     {
-        return $this->laravel['modules']->config('namespace') . '\\' . $this->laravel['modules']->findOrFail($this->getModuleName()) . '\\' . $this->laravel['modules']->config('paths.generator.model.path', 'Entities');
+        return str_replace(
+            '/',
+            '\\',
+            $this->laravel['modules']->config('namespace')
+            . '\\' . $this->laravel['modules']->findOrFail($this->getModuleName()) . Module::MODULE_SUFFIX
+            . '\\' . $this->laravel['modules']->config('paths.generator.model.path', 'Entities')
+        );
     }
 }

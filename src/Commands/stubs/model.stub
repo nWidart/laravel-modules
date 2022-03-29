@@ -10,9 +10,9 @@ class $CLASS$ extends Model
     use HasFactory;
 
     protected $fillable = $FILLABLE$;
-    
+
     protected static function newFactory()
     {
-        return \$MODULE_NAMESPACE$\$MODULE$\Database\factories\$NAME$Factory::new();
+        return \$FACTORY_NAMESPACE$\$NAME$Factory::new();
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\FileRepository;
+use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 
@@ -136,6 +137,16 @@ class ModuleGenerator extends Generator
     public function getName()
     {
         return Str::studly($this->name);
+    }
+
+    /**
+     * Get the name of module with suffix.
+     *
+     * @return string
+     */
+    public function getNameWithSuffix()
+    {
+        return Str::studly($this->name . Module::MODULE_SUFFIX);
     }
 
     /**
@@ -487,8 +498,9 @@ class ModuleGenerator extends Generator
         $content = $this->filesystem->get($path);
         $namespace = $this->getModuleNamespaceReplacement();
         $studlyName = $this->getStudlyNameReplacement();
+        $studlyNameSuffix = $this->getStudlyNameSuffixReplacement();
 
-        $provider = '"' . $namespace . '\\\\' . $studlyName . '\\\\Providers\\\\' . $studlyName . 'ServiceProvider"';
+        $provider = '"' . $namespace . '\\\\' . $studlyNameSuffix . '\\\\Providers\\\\' . $studlyName . 'ServiceProvider"';
 
         $content = str_replace($provider, '', $content);
 
@@ -506,6 +518,16 @@ class ModuleGenerator extends Generator
     }
 
     /**
+     * Get the module name in lower case.
+     *
+     * @return string
+     */
+    protected function getKekabNameSuffixReplacement()
+    {
+        return Str::kebab($this->getNameWithSuffix());
+    }
+
+    /**
      * Get the module name in studly case.
      *
      * @return string
@@ -513,6 +535,16 @@ class ModuleGenerator extends Generator
     protected function getStudlyNameReplacement()
     {
         return $this->getName();
+    }
+
+    /**
+     * Get the module name in studly case.
+     *
+     * @return string
+     */
+    protected function getStudlyNameSuffixReplacement(): string
+    {
+        return $this->getNameWithSuffix();
     }
 
     /**

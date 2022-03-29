@@ -91,7 +91,7 @@ abstract class GeneratorCommand extends Command
 
         $namespace = $this->laravel['modules']->config('namespace');
 
-        $namespace .= '\\' . $module->getStudlyName();
+        $namespace .= '\\' . $module->getStudlyNameWithSuffix();
 
         $namespace .= '\\' . $this->getDefaultNamespace();
 

@@ -1,5 +1,5 @@
 {
-    "name": "$VENDOR$/$LOWER_NAME$",
+    "name": "$VENDOR$/$KEKAB_NAME_SUFFIX$",
     "description": "",
     "authors": [
         {
@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "$MODULE_NAMESPACE$\\$STUDLY_NAME$\\": ""
+            "$MODULE_NAMESPACE$\\$STUDLY_NAME_SUFFIX$\\": ""
         }
     }
 }

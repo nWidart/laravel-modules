@@ -10,10 +10,13 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Translation\Translator;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Generators\ModuleGenerator;
 
 abstract class Module
 {
     use Macroable;
+
+    const MODULE_SUFFIX = 'Module';
 
     /**
      * The laravel|lumen application instance.
@@ -102,6 +105,16 @@ abstract class Module
     public function getStudlyName(): string
     {
         return Str::studly($this->name);
+    }
+
+    /**
+     * Get name in studly case.
+     *
+     * @return string
+     */
+    public function getStudlyNameWithSuffix(): string
+    {
+        return Str::studly($this->name . self::MODULE_SUFFIX);
     }
 
     /**

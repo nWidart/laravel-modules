@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -61,6 +62,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
             'CLASS'                => $this->getFileName(),
             'MODULE_NAMESPACE'     => $this->laravel['modules']->config('namespace'),
             'MODULE'               => $this->getModuleName(),
+            'MODULE_SUFFIX'        => $this->getModuleName() . Module::MODULE_SUFFIX,
             'CONTROLLER_NAMESPACE' => $this->getControllerNameSpace(),
             'WEB_ROUTES_PATH'      => $this->getWebRoutesPath(),
             'API_ROUTES_PATH'      => $this->getApiRoutesPath(),

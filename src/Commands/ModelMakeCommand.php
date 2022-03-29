@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -135,6 +136,7 @@ class ModelMakeCommand extends GeneratorCommand
             'CLASS'             => $this->getClass(),
             'LOWER_NAME'        => $module->getLowerName(),
             'MODULE'            => $this->getModuleName(),
+            'FACTORY_NAMESPACE' => $this->getFactoryNamespace(),
             'STUDLY_NAME'       => $module->getStudlyName(),
             'MODULE_NAMESPACE'  => $this->laravel['modules']->config('namespace'),
         ]))->render();
@@ -186,5 +188,21 @@ class ModelMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules'];
 
         return $module->config('paths.generator.model.namespace') ?: $module->config('paths.generator.model.path', 'Entities');
+    }
+
+    /**
+     * Get model namespace.
+     *
+     * @return string
+     */
+    public function getFactoryNamespace(): string
+    {
+        return str_replace(
+            '/',
+            '\\',
+            $this->laravel['modules']->config('namespace')
+            . '\\' . $this->laravel['modules']->findOrFail($this->getModuleName()) . Module::MODULE_SUFFIX
+            . '\\' . $this->laravel['modules']->config('paths.generator.factory.path', 'Database/factories')
+        );
     }
 }
