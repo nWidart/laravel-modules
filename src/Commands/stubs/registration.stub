@@ -1,0 +1,12 @@
+<?php
+
+use Composer\Autoload\ClassLoader;
+
+$loader = new ClassLoader();
+
+$loader->addPsr4(
+    '$MODULE_NAMESPACE$\\$STUDLY_NAME_SUFFIX$\\',
+    __DIR__,
+);
+
+$loader->register();

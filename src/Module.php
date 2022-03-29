@@ -272,6 +272,11 @@ abstract class Module
      */
     public function register(): void
     {
+        try {
+            $loaderFile = $this->json()->get('loader', 'register.php');
+            $this->files->requireOnce("$this->path/$loaderFile");
+        } catch (\Exception) {}
+
         $this->registerAliases();
 
         $this->registerProviders();

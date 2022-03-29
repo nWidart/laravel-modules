@@ -39,6 +39,7 @@ return [
             'assets/sass/app' => 'Resources/assets/sass/app.scss',
             'webpack' => 'webpack.mix.js',
             'package' => 'package.json',
+            'registration' => 'registration.php',
         ],
         'replacements' => [
             'routes/web' => ['LOWER_NAME', 'STUDLY_NAME'],
@@ -59,6 +60,7 @@ return [
                 'MODULE_NAMESPACE',
                 'PROVIDER_NAMESPACE',
             ],
+            'registration' => ['MODULE_NAMESPACE', 'STUDLY_NAME_PREFIX'],
         ],
         'gitkeep' => true,
     ],
