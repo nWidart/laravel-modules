@@ -51,7 +51,7 @@ return [
             'scaffold/config' => ['STUDLY_NAME'],
             'composer' => [
                 'LOWER_NAME',
-                'LOWER_NAME_SUFFIX',
+                'KEKAB_NAME_SUFFIX',
                 'STUDLY_NAME',
                 'STUDLY_NAME_SUFFIX',
                 'VENDOR',
