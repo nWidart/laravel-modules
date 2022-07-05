@@ -15,6 +15,7 @@ use Nwidart\Modules\Exceptions\InvalidAssetPath;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Process\Installer;
 use Nwidart\Modules\Process\Updater;
+use SplFileInfo;
 
 abstract class FileRepository implements RepositoryInterface, Countable
 {
@@ -110,8 +111,6 @@ abstract class FileRepository implements RepositoryInterface, Countable
     {
         $paths = $this->paths;
 
-        $paths[] = $this->getPath();
-
         if ($this->config('scan.enabled')) {
             $paths = array_merge($paths, $this->config('scan.paths'));
         }
@@ -134,6 +133,27 @@ abstract class FileRepository implements RepositoryInterface, Countable
     abstract protected function createModule(...$args);
 
     /**
+     * Search recursively for a file.
+     * @param string $folder
+     * @param string $filename
+     * @return array
+     */
+    public function recursiveSearch(string $folder, string $filename): array
+    {
+        $dir = new \RecursiveDirectoryIterator($folder);
+        $ite = new \RecursiveIteratorIterator($dir);
+        $fileList = [];
+        foreach ($ite as $file) {
+            /** @var SplFileInfo $file */
+            if ($file->getFilename() === $filename) {
+                $fileList[] = $file->getPathname();
+            }
+        }
+
+        return $fileList;
+    }
+
+    /**
      * Get & scan all modules.
      *
      * @return array
@@ -142,10 +162,13 @@ abstract class FileRepository implements RepositoryInterface, Countable
     {
         $paths = $this->getScanPaths();
 
+        $mainPath = $this->getPath();
+        $paths[] = $mainPath;
+
         $modules = [];
 
         foreach ($paths as $key => $path) {
-            $manifests = $this->getFiles()->glob("{$path}/module.json");
+            $manifests = $this->recursiveSearch($mainPath, 'module.json');
 
             is_array($manifests) || $manifests = [];
 
