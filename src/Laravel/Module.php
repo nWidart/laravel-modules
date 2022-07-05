@@ -18,10 +18,9 @@ class Module extends BaseModule
         // This checks if we are running on a Laravel Vapor managed instance
         // and sets the path to a writable one (services path is not on a writable storage in Vapor).
         if (!is_null(env('VAPOR_MAINTENANCE_MODE', null))) {
-            return Str::replaceLast('config.php', $this->getSnakeName() . '_module.php', $this->app->getCachedConfigPath());
+            return Str::replaceLast('config.php', $this->getSnakeNamespace() . '_module.php', $this->app->getCachedConfigPath());
         }
-
-        return Str::replaceLast('services.php', $this->getSnakeName() . '_module.php', $this->app->getCachedServicesPath());
+        return Str::replaceLast('services.php', $this->getSnakeNamespace() . '_module.php', $this->app->getCachedServicesPath());
     }
 
     /**
