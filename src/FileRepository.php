@@ -111,13 +111,11 @@ abstract class FileRepository implements RepositoryInterface, Countable
     {
         $paths = $this->paths;
 
+        $paths[] = $this->getPath();
+
         if ($this->config('scan.enabled')) {
             $paths = array_merge($paths, $this->config('scan.paths'));
         }
-
-        $paths = array_map(function ($path) {
-            return Str::endsWith($path, '/*') ? $path : Str::finish($path, '/*');
-        }, $paths);
 
         return $paths;
     }
@@ -162,13 +160,10 @@ abstract class FileRepository implements RepositoryInterface, Countable
     {
         $paths = $this->getScanPaths();
 
-        $mainPath = $this->getPath();
-        $paths[] = $mainPath;
-
         $modules = [];
 
         foreach ($paths as $key => $path) {
-            $manifests = $this->recursiveSearch($mainPath, 'module.json');
+            $manifests = $this->recursiveSearch($path, 'module.json');
 
             is_array($manifests) || $manifests = [];
 
