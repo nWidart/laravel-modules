@@ -1,0 +1,13 @@
+{
+    "name": "Blog/Sub",
+    "alias": "blog/sub",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Blog\\Sub\\Base\\Providers\\SubServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

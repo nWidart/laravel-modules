@@ -13,6 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/$LOWER_NAME$', function (Request $request) {
+Route::middleware('auth:api')->get('/$LOWER_BASE_NAME$', function (Request $request) {
     return $request->user();
 });

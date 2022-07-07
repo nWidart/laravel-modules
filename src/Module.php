@@ -115,6 +115,17 @@ abstract class Module
     }
 
     /**
+     * Get name in snake case.
+     *
+     * @return string
+     */
+    public function getSnakeNamespace(): string
+    {
+        // replace Tests/Test to tests_test
+        return Str::snake(str_replace(DIRECTORY_SEPARATOR, '', $this->name));
+    }
+
+    /**
      * Get description.
      *
      * @return string

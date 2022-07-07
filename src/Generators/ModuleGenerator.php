@@ -138,6 +138,11 @@ class ModuleGenerator extends Generator
         return Str::studly($this->name);
     }
 
+    public function getBaseName(): string
+    {
+        return basename(Str::studly($this->name));
+    }
+
     /**
      * Get the laravel config instance.
      *
@@ -375,7 +380,7 @@ class ModuleGenerator extends Generator
     {
         if (GenerateConfigReader::read('seeder')->generate() === true) {
             $this->console->call('module:make-seed', [
-                'name' => $this->getName(),
+                'name' => $this->getBaseName(),
                 'module' => $this->getName(),
                 '--master' => true,
             ]);
@@ -383,10 +388,11 @@ class ModuleGenerator extends Generator
 
         if (GenerateConfigReader::read('provider')->generate() === true) {
             $this->console->call('module:make-provider', [
-                'name' => $this->getName() . 'ServiceProvider',
+                'name' => $this->getBaseName() . 'ServiceProvider',
                 'module' => $this->getName(),
                 '--master' => true,
             ]);
+
             $this->console->call('module:route-provider', [
                 'module' => $this->getName(),
             ]);
@@ -395,7 +401,7 @@ class ModuleGenerator extends Generator
         if (GenerateConfigReader::read('controller')->generate() === true) {
             $options = $this->type=='api'?['--api'=>true]:[];
             $this->console->call('module:make-controller', [
-                'controller' => $this->getName() . 'Controller',
+                'controller' => $this->getBaseName() . 'Controller',
                 'module' => $this->getName(),
             ]+$options);
         }
@@ -449,6 +455,7 @@ class ModuleGenerator extends Generator
                 $keys[] = 'PROVIDER_NAMESPACE';
             }
         }
+
         foreach ($keys as $key) {
             if (method_exists($this, $method = 'get' . ucfirst(Str::studly(strtolower($key))) . 'Replacement')) {
                 $replaces[$key] = $this->$method();
@@ -506,6 +513,26 @@ class ModuleGenerator extends Generator
     }
 
     /**
+     * Get the base module name in lower case.
+     *
+     * @return string
+     */
+    protected function getLowerBaseNameReplacement(): string
+    {
+        return strtolower($this->getBaseName());
+    }
+
+    /**
+     * Get the base module name in studly case.
+     *
+     * @return string
+     */
+    protected function getStudlyBaseNameReplacement(): string
+    {
+        return $this->getBaseName();
+    }
+
+    /**
      * Get the module name in studly case.
      *
      * @return string
@@ -523,6 +550,16 @@ class ModuleGenerator extends Generator
     protected function getVendorReplacement()
     {
         return $this->module->config('composer.vendor');
+    }
+
+    /**
+     * Get replacement for $SUB_MODULE_NAMESPACE$.
+     *
+     * @return string
+     */
+    protected function getSubModuleNamespaceReplacement(): string
+    {
+        return str_replace(DIRECTORY_SEPARATOR, '\\\\', $this->getName());
     }
 
     /**
