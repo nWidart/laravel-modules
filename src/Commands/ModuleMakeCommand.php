@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Events\ModuleCreated;
 use Nwidart\Modules\Generators\ModuleGenerator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -33,7 +34,7 @@ class ModuleMakeCommand extends Command
         $success = true;
 
         foreach ($names as $name) {
-            $code = with(new ModuleGenerator($name))
+            $moduleGenerator = with(new ModuleGenerator($name))
                 ->setFilesystem($this->laravel['files'])
                 ->setModule($this->laravel['modules'])
                 ->setConfig($this->laravel['config'])
@@ -41,11 +42,14 @@ class ModuleMakeCommand extends Command
                 ->setConsole($this)
                 ->setForce($this->option('force'))
                 ->setType($this->getModuleType())
-                ->setActive(!$this->option('disabled'))
-                ->generate();
+                ->setActive(!$this->option('disabled'));
+
+            $code = $moduleGenerator->generate();
 
             if ($code === E_ERROR) {
                 $success = false;
+            } else {
+                event(new ModuleCreated($moduleGenerator));
             }
         }
 

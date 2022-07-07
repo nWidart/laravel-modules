@@ -2,7 +2,9 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Illuminate\Support\Facades\Event;
 use Nwidart\Modules\Activators\FileActivator;
+use Nwidart\Modules\Events\ModuleDeleted;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -46,5 +48,20 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $code = $this->artisan('module:delete', ['module' => 'WrongModule']);
         $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));
         $this->assertSame(0, $code);
+    }
+
+    /** @test */
+    public function an_event_is_emitted_when_a_module_is_deleted()
+    {
+        Event::fake();
+
+        $name = 'WrongModule';
+
+        $this->artisan('module:make', ['name' => [$name]]);
+        $this->artisan('module:delete', ['module' => $name]);
+
+        Event::assertDispatched(ModuleDeleted::class, function ($event) use ($name) {
+            return $event->name === $name;
+        });
     }
 }
