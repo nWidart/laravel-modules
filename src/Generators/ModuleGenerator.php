@@ -18,7 +18,7 @@ class ModuleGenerator extends Generator
      *
      * @var string
      */
-    protected $name;
+    public $name;
 
     /**
      * The laravel config instance.
@@ -53,7 +53,7 @@ class ModuleGenerator extends Generator
      *
      * @var \Nwidart\Modules\Module
      */
-    protected $module;
+    public $module;
 
     /**
      * Force status.
@@ -67,22 +67,23 @@ class ModuleGenerator extends Generator
      *
      * @var string
      */
-    protected $type = 'web';
+    public $type = 'web';
 
     /**
      * Enables the module.
      *
      * @var bool
      */
-    protected $isActive = false;
+    public $isActive = false;
 
     /**
      * The constructor.
      * @param $name
-     * @param FileRepository $module
-     * @param Config     $config
-     * @param Filesystem $filesystem
-     * @param Console    $console
+     * @param FileRepository|null $module
+     * @param Config|null $config
+     * @param Filesystem|null $filesystem
+     * @param Console|null $console
+     * @param ActivatorInterface|null $activator
      */
     public function __construct(
         $name,

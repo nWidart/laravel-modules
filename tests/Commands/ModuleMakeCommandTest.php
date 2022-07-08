@@ -6,8 +6,10 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Events\ModuleCreated;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
+use Illuminate\Support\Facades\Event;
 
 class ModuleMakeCommandTest extends BaseTestCase
 {
@@ -67,6 +69,19 @@ class ModuleMakeCommandTest extends BaseTestCase
             $this->assertDirectoryExists($this->modulePath . '/' . $directory['path']);
         }
         $this->assertSame(0, $code);
+    }
+
+    /** @test */
+    public function an_event_is_emitted_when_a_new_module_is_generated()
+    {
+        Event::fake();
+
+        $name = 'Blog';
+        $this->artisan('module:make', ['name' => [$name]]);
+
+        Event::assertDispatched(ModuleCreated::class, function ($event) use ($name) {
+            return $event->moduleGenerator->name === $name;
+        });
     }
 
     /** @test */

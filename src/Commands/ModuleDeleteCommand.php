@@ -3,6 +3,8 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Events\ModuleCreated;
+use Nwidart\Modules\Events\ModuleDeleted;
 use Symfony\Component\Console\Input\InputArgument;
 
 class ModuleDeleteCommand extends Command
@@ -12,9 +14,13 @@ class ModuleDeleteCommand extends Command
 
     public function handle() : int
     {
-        $this->laravel['modules']->delete($this->argument('module'));
+        $module = $this->argument('module');
 
-        $this->info("Module {$this->argument('module')} has been deleted.");
+        $this->laravel['modules']->delete($module);
+
+        $this->info("Module {$module} has been deleted.");
+
+        event(new ModuleDeleted($module));
 
         return 0;
     }
