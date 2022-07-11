@@ -10,7 +10,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        php-versions: ['8.0']
+        php-versions: ['8.1']
 
     name: PHP ${{ matrix.php-versions }}
 
