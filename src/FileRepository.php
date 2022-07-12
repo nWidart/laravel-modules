@@ -138,6 +138,11 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function recursiveSearch(string $folder, string $filename): array
     {
+        // if that folder doesn't exist, then return an empty array to indicate that there is no $filename in such dir
+        if (!is_dir($folder)) {
+            return [];
+        }
+
         $dir = new \RecursiveDirectoryIterator($folder);
         $ite = new \RecursiveIteratorIterator($dir);
         $fileList = [];
