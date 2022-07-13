@@ -45,7 +45,7 @@ return [
             'routes/api' => ['LOWER_BASE_NAME'],
             'webpack' => ['LOWER_NAME'],
             'json' => ['LOWER_BASE_NAME', 'LOWER_NAME', 'STUDLY_BASE_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE', 'SUB_MODULE_NAMESPACE', 'PROVIDER_NAMESPACE'],
-            'views/index' => ['LOWER_BASE_NAME'],
+            'views/index' => ['LOWER_NAME'],
             'views/master' => ['LOWER_BASE_NAME', 'LOWER_NAME', 'STUDLY_BASE_NAME'],
             'scaffold/config' => ['STUDLY_NAME'],
             'composer' => [

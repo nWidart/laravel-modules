@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -51,10 +52,8 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
-
         return (new Stub('/factory.stub', [
-            'NAMESPACE' => $this->getClassNamespace($module),
+            'NAMESPACE' => $this->getClassNamespace($this->getModule()),
             'NAME' => $this->getModelName(),
             'MODEL_NAMESPACE' => $this->getModelNamespace(),
         ]))->render();
@@ -100,6 +99,11 @@ class FactoryMakeCommand extends GeneratorCommand
         return $module->config('paths.generator.factory.namespace') ?: $module->config('paths.generator.factory.path');
     }
 
+    public function getModule(): Module
+    {
+        return $this->laravel['modules']->findOrFail($this->getModuleName());
+    }
+
     /**
      * Get model namespace.
      *
@@ -107,6 +111,6 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     public function getModelNamespace(): string
     {
-        return $this->laravel['modules']->config('namespace') . '\\' . $this->laravel['modules']->findOrFail($this->getModuleName()) . '\\' . $this->laravel['modules']->config('paths.generator.model.path', 'Entities');
+        return $this->laravel['modules']->config('namespace') . '\\' . $this->getModule()->getSubModuleOneSlashNamespace() . '\\' . $this->laravel['modules']->config('paths.generator.model.path', 'Entities');
     }
 }
