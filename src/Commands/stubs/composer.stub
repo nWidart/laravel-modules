@@ -1,5 +1,5 @@
 {
-    "name": "$VENDOR$/$LOWER_BASE_NAME$",
+    "name": "$VENDOR$/$LOWER_NAME$",
     "description": "",
     "authors": [
         {
