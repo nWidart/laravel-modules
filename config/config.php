@@ -50,6 +50,7 @@ return [
             'scaffold/config' => ['STUDLY_NAME'],
             'composer' => [
                 'LOWER_BASE_NAME',
+                'LOWER_NAME',
                 'STUDLY_BASE_NAME',
                 'VENDOR',
                 'AUTHOR_NAME',
