@@ -4,7 +4,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
-## 9.0.1 - 2022-07-22
+## 9.0.2 - 2022-07-22
 
 ## Added
 
