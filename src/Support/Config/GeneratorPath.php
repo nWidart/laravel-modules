@@ -11,14 +11,14 @@ class GeneratorPath
     public function __construct($config)
     {
         if (is_array($config)) {
-            $this->path = $config['path'];
-            $this->generate = $config['generate'];
+            $this->path      = $config['path'];
+            $this->generate  = $config['generate'];
             $this->namespace = $config['namespace'] ?? $this->convertPathToNamespace($config['path']);
 
             return;
         }
-        $this->path = $config;
-        $this->generate = (bool) $config;
+        $this->path      = $config;
+        $this->generate  = (bool) $config;
         $this->namespace = $config;
     }
 

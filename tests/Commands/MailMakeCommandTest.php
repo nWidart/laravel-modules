@@ -9,10 +9,12 @@ use Spatie\Snapshots\MatchesSnapshots;
 class MailMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -22,7 +24,7 @@ class MailMakeCommandTest extends BaseTestCase
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
+        $this->finder     = $this->app['files'];
         $this->artisan('module:make', ['name' => ['Blog']]);
     }
 
@@ -37,7 +39,7 @@ class MailMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Emails/SomeMail.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Emails/SomeMail.php'));
         $this->assertSame(0, $code);
     }
 
@@ -46,7 +48,7 @@ class MailMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Emails/SomeMail.php');
+        $file = $this->finder->get($this->modulePath.'/Emails/SomeMail.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -59,7 +61,7 @@ class MailMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/SuperEmails/SomeMail.php');
+        $file = $this->finder->get($this->modulePath.'/SuperEmails/SomeMail.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -72,7 +74,7 @@ class MailMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Emails/SomeMail.php');
+        $file = $this->finder->get($this->modulePath.'/Emails/SomeMail.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

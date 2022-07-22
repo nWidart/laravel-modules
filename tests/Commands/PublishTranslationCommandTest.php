@@ -11,6 +11,7 @@ class PublishTranslationCommandTest extends BaseTestCase
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -20,7 +21,7 @@ class PublishTranslationCommandTest extends BaseTestCase
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
+        $this->finder     = $this->app['files'];
         $this->artisan('module:make', ['name' => ['Blog']]);
     }
 

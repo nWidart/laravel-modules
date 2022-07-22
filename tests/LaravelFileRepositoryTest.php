@@ -26,7 +26,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     {
         parent::setUp();
         $this->repository = new LaravelFileRepository($this->app);
-        $this->activator = $this->app[ActivatorInterface::class];
+        $this->activator  = $this->app[ActivatorInterface::class];
     }
 
     public function tearDown(): void
@@ -48,7 +48,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_returns_a_collection()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
 
         $this->assertInstanceOf(Collection::class, $this->repository->toCollection());
         $this->assertInstanceOf(Collection::class, $this->repository->collections());
@@ -57,7 +57,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_returns_all_enabled_modules()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
 
         $this->assertCount(0, $this->repository->getByStatus(true));
         $this->assertCount(0, $this->repository->allEnabled());
@@ -66,7 +66,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_returns_all_disabled_modules()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
 
         $this->assertCount(3, $this->repository->getByStatus(false));
         $this->assertCount(3, $this->repository->allDisabled());
@@ -75,7 +75,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_counts_all_modules()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
 
         $this->assertEquals(3, $this->repository->count());
     }
@@ -83,7 +83,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_finds_a_module()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
 
         $this->assertInstanceOf(Module::class, $this->repository->find('recipe'));
     }
@@ -91,7 +91,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_finds_a_module_by_alias()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
 
         $this->assertInstanceOf(Module::class, $this->repository->findByAlias('recipe'));
         $this->assertInstanceOf(Module::class, $this->repository->findByAlias('required_module'));
@@ -108,7 +108,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_finds_the_module_asset_path()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid/Recipe');
+        $this->repository->addLocation(__DIR__.'/stubs/valid/Recipe');
         $assetPath = $this->repository->assetPath('recipe');
 
         $this->assertEquals(public_path('modules/recipe'), $assetPath);
@@ -125,7 +125,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_sets_used_module()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
 
         $this->repository->setUsed('Recipe');
 
@@ -164,7 +164,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_can_detect_if_module_is_active()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
 
         $this->repository->enable('Recipe');
 
@@ -174,7 +174,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_can_detect_if_module_is_inactive()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
 
         $this->repository->isDisabled('Recipe');
 
@@ -206,7 +206,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_can_disabled_a_module()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
 
         $this->repository->disable('Recipe');
 
@@ -216,7 +216,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_can_enable_a_module()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
 
         $this->repository->enable('Recipe');
 
@@ -236,7 +236,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     /** @test */
     public function it_can_find_all_requirements_of_a_module()
     {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
 
         $requirements = $this->repository->findRequirements('Recipe');
 
@@ -266,7 +266,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
             return strrev($this->getLowerName());
         });
 
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
         $module = $this->repository->find('recipe');
 
         $this->assertEquals('epicer', $module->getReverseName());

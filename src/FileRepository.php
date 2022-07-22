@@ -46,18 +46,22 @@ abstract class FileRepository implements RepositoryInterface, Countable
      * @var string
      */
     protected $stubPath;
+
     /**
      * @var UrlGenerator
      */
     private $url;
+
     /**
      * @var ConfigRepository
      */
     private $config;
+
     /**
      * @var Filesystem
      */
     private $files;
+
     /**
      * @var CacheManager
      */
@@ -70,12 +74,12 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function __construct(Container $app, $path = null)
     {
-        $this->app = $app;
-        $this->path = $path;
-        $this->url = $app['url'];
+        $this->app    = $app;
+        $this->path   = $path;
+        $this->url    = $app['url'];
         $this->config = $app['config'];
-        $this->files = $app['files'];
-        $this->cache = $app['cache'];
+        $this->files  = $app['files'];
+        $this->cache  = $app['cache'];
     }
 
     /**
@@ -121,7 +125,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
-     * Creates a new Module instance
+     * Creates a new Module instance.
      *
      * @param Container $app
      * @param string $args
@@ -139,12 +143,12 @@ abstract class FileRepository implements RepositoryInterface, Countable
     public function recursiveSearch(string $folder, string $filename): array
     {
         // if that folder doesn't exist, then return an empty array to indicate that there is no $filename in such dir
-        if (!is_dir($folder)) {
+        if (! is_dir($folder)) {
             return [];
         }
 
-        $dir = new \RecursiveDirectoryIterator($folder);
-        $ite = new \RecursiveIteratorIterator($dir);
+        $dir      = new \RecursiveDirectoryIterator($folder);
+        $ite      = new \RecursiveIteratorIterator($dir);
         $fileList = [];
         foreach ($ite as $file) {
             /** @var SplFileInfo $file */
@@ -189,7 +193,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function all() : array
     {
-        if (!$this->config('cache.enabled')) {
+        if (! $this->config('cache.enabled')) {
             return $this->scan();
         }
 
@@ -366,7 +370,6 @@ abstract class FileRepository implements RepositoryInterface, Countable
             }
         }
 
-        return;
     }
 
     /**
@@ -380,7 +383,6 @@ abstract class FileRepository implements RepositoryInterface, Countable
             }
         }
 
-        return;
     }
 
     /**
@@ -441,9 +443,9 @@ abstract class FileRepository implements RepositoryInterface, Countable
     public function getModulePath($module)
     {
         try {
-            return $this->findOrFail($module)->getPath() . '/';
+            return $this->findOrFail($module)->getPath().'/';
         } catch (ModuleNotFoundException $e) {
-            return $this->getPath() . '/' . Str::studly($module) . '/';
+            return $this->getPath().'/'.Str::studly($module).'/';
         }
     }
 
@@ -452,7 +454,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function assetPath(string $module) : string
     {
-        return $this->config('paths.assets') . '/' . $module;
+        return $this->config('paths.assets').'/'.$module;
     }
 
     /**
@@ -460,7 +462,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function config(string $key, $default = null)
     {
-        return $this->config->get('modules.' . $key, $default);
+        return $this->config->get('modules.'.$key, $default);
     }
 
     /**
@@ -476,7 +478,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
         }
 
         $path = storage_path('app/modules/modules.used');
-        if (!$this->getFiles()->exists($path)) {
+        if (! $this->getFiles()->exists($path)) {
             $this->getFiles()->put($path, '');
         }
 
@@ -550,9 +552,9 @@ abstract class FileRepository implements RepositoryInterface, Countable
         }
         list($name, $url) = explode(':', $asset);
 
-        $baseUrl = str_replace(public_path() . DIRECTORY_SEPARATOR, '', $this->getAssetsPath());
+        $baseUrl = str_replace(public_path().DIRECTORY_SEPARATOR, '', $this->getAssetsPath());
 
-        $url = $this->url->asset($baseUrl . "/{$name}/" . $url);
+        $url = $this->url->asset($baseUrl."/{$name}/".$url);
 
         return str_replace(['http://', 'https://'], '//', $url);
     }
@@ -570,7 +572,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function isDisabled(string $name) : bool
     {
-        return !$this->isEnabled($name);
+        return ! $this->isEnabled($name);
     }
 
     /**

@@ -21,7 +21,7 @@ class LumenModuleTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->module = new LumenTestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');
+        $this->module    = new LumenTestingModule($this->app, 'Recipe Name', __DIR__.'/stubs/valid/Recipe');
         $this->activator = $this->app[ActivatorInterface::class];
     }
 
@@ -70,7 +70,7 @@ class LumenModuleTest extends BaseTestCase
     /** @test */
     public function it_gets_module_path()
     {
-        $this->assertEquals(__DIR__ . '/stubs/valid/Recipe', $this->module->getPath());
+        $this->assertEquals(__DIR__.'/stubs/valid/Recipe', $this->module->getPath());
     }
 
     /** @test */
@@ -82,14 +82,14 @@ class LumenModuleTest extends BaseTestCase
     /** @test */
     public function it_loads_module_translations()
     {
-        (new LumenTestingModule($this->app, 'Recipe', __DIR__ . '/stubs/valid/Recipe'))->boot();
+        (new LumenTestingModule($this->app, 'Recipe', __DIR__.'/stubs/valid/Recipe'))->boot();
         $this->assertEquals('Recipe', trans('recipe::recipes.title.recipes'));
     }
 
     /** @test */
     public function it_reads_module_json_files()
     {
-        $jsonModule = $this->module->json();
+        $jsonModule   = $this->module->json();
         $composerJson = $this->module->json('composer.json');
 
         $this->assertInstanceOf(Json::class, $jsonModule);

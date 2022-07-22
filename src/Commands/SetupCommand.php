@@ -64,7 +64,7 @@ class SetupCommand extends Command
      */
     protected function generateDirectory($dir, $success, $error) : int
     {
-        if (!$this->laravel['files']->isDirectory($dir)) {
+        if (! $this->laravel['files']->isDirectory($dir)) {
             $this->laravel['files']->makeDirectory($dir, 0755, true, true);
 
             $this->info($success);

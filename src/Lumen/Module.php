@@ -8,15 +8,15 @@ use Nwidart\Modules\Module as BaseModule;
 class Module extends BaseModule
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getCachedServicesPath(): string
     {
-        return Str::replaceLast('services.php', $this->getSnakeName() . '_module.php', $this->app->basePath('storage/app/') . 'services.php');
+        return Str::replaceLast('services.php', $this->getSnakeName().'_module.php', $this->app->basePath('storage/app/').'services.php');
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function registerProviders(): void
     {
@@ -26,7 +26,7 @@ class Module extends BaseModule
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function registerAliases(): void
     {

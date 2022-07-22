@@ -40,14 +40,14 @@ class MigrateResetCommand extends Command
 
         $name = $this->argument('module');
 
-        if (!empty($name)) {
+        if (! empty($name)) {
             $this->reset($name);
 
             return 0;
         }
 
         foreach ($this->module->getOrdered($this->option('direction')) as $module) {
-            $this->line('Running for module: <info>' . $module->getName() . '</info>');
+            $this->line('Running for module: <info>'.$module->getName().'</info>');
 
             $this->reset($module);
         }
@@ -70,7 +70,7 @@ class MigrateResetCommand extends Command
 
         $database = $this->option('database');
 
-        if (!empty($database)) {
+        if (! empty($database)) {
             $migrator->setDatabase($database);
         }
 

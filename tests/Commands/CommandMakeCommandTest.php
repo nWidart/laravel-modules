@@ -9,10 +9,12 @@ use Spatie\Snapshots\MatchesSnapshots;
 class CommandMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -22,7 +24,7 @@ class CommandMakeCommandTest extends BaseTestCase
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
+        $this->finder     = $this->app['files'];
         $this->artisan('module:make', ['name' => ['Blog']]);
     }
 
@@ -37,7 +39,7 @@ class CommandMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-command', ['name' => 'MyAwesomeCommand', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Console/MyAwesomeCommand.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Console/MyAwesomeCommand.php'));
         $this->assertSame(0, $code);
     }
 
@@ -46,7 +48,7 @@ class CommandMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-command', ['name' => 'MyAwesomeCommand', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Console/MyAwesomeCommand.php');
+        $file = $this->finder->get($this->modulePath.'/Console/MyAwesomeCommand.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -60,7 +62,7 @@ class CommandMakeCommandTest extends BaseTestCase
             ['name' => 'MyAwesomeCommand', 'module' => 'Blog', '--command' => 'my:awesome']
         );
 
-        $file = $this->finder->get($this->modulePath . '/Console/MyAwesomeCommand.php');
+        $file = $this->finder->get($this->modulePath.'/Console/MyAwesomeCommand.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -73,7 +75,7 @@ class CommandMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-command', ['name' => 'AwesomeCommand', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Commands/AwesomeCommand.php');
+        $file = $this->finder->get($this->modulePath.'/Commands/AwesomeCommand.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -86,7 +88,7 @@ class CommandMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-command', ['name' => 'AwesomeCommand', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Console/AwesomeCommand.php');
+        $file = $this->finder->get($this->modulePath.'/Console/AwesomeCommand.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

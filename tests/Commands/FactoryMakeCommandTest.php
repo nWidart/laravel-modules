@@ -9,10 +9,12 @@ use Spatie\Snapshots\MatchesSnapshots;
 class FactoryMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -22,7 +24,7 @@ class FactoryMakeCommandTest extends BaseTestCase
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
+        $this->finder     = $this->app['files'];
         $this->artisan('module:make', ['name' => ['Blog']]);
     }
 
@@ -37,7 +39,7 @@ class FactoryMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-factory', ['name' => 'Post', 'module' => 'Blog']);
 
-        $factoryFile = $this->modulePath . '/Database/factories/PostFactory.php';
+        $factoryFile = $this->modulePath.'/Database/factories/PostFactory.php';
 
         $this->assertTrue(is_file($factoryFile), 'Factory file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($factoryFile));

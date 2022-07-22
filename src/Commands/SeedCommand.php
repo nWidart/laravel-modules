@@ -69,7 +69,7 @@ class SeedCommand extends Command
     public function getModuleRepository(): RepositoryInterface
     {
         $modules = $this->laravel['modules'];
-        if (!$modules instanceof RepositoryInterface) {
+        if (! $modules instanceof RepositoryInterface) {
             throw new RuntimeException('Module repository not found!');
         }
 
@@ -101,10 +101,10 @@ class SeedCommand extends Command
     public function moduleSeed(Module $module)
     {
         $seeders = [];
-        $name = $module->getName();
-        $config = $module->get('migration');
+        $name    = $module->getName();
+        $config  = $module->get('migration');
         if (is_array($config) && array_key_exists('seeds', $config)) {
-            foreach ((array)$config['seeds'] as $class) {
+            foreach ((array) $config['seeds'] as $class) {
                 if (class_exists($class)) {
                     $seeders[] = $class;
                 }
@@ -138,7 +138,7 @@ class SeedCommand extends Command
     protected function dbSeed($className)
     {
         if ($option = $this->option('class')) {
-            $params['--class'] = Str::finish(substr($className, 0, strrpos($className, '\\')), '\\') . $option;
+            $params['--class'] = Str::finish(substr($className, 0, strrpos($className, '\\')), '\\').$option;
         } else {
             $params = ['--class' => $className];
         }
@@ -165,11 +165,11 @@ class SeedCommand extends Command
     {
         $name = Str::studly($name);
 
-        $namespace = $this->laravel['modules']->config('namespace');
-        $config = GenerateConfigReader::read('seeder');
+        $namespace  = $this->laravel['modules']->config('namespace');
+        $config     = GenerateConfigReader::read('seeder');
         $seederPath = str_replace('/', '\\', $config->getPath());
 
-        return $namespace . '\\' . $name . '\\' . $seederPath . '\\' . $name . 'DatabaseSeeder';
+        return $namespace.'\\'.$name.'\\'.$seederPath.'\\'.$name.'DatabaseSeeder';
     }
 
     /**
@@ -188,8 +188,8 @@ class SeedCommand extends Command
 
         $foundModules = [];
         foreach ($this->laravel['modules']->config('scan.paths') as $path) {
-            $namespace = array_slice(explode('/', $path), -1)[0];
-            $foundModules[] = $namespace . '\\' . $name . '\\' . $seederPath . '\\' . $name . 'DatabaseSeeder';
+            $namespace      = array_slice(explode('/', $path), -1)[0];
+            $foundModules[] = $namespace.'\\'.$name.'\\'.$seederPath.'\\'.$name.'DatabaseSeeder';
         }
 
         return $foundModules;

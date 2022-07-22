@@ -27,7 +27,7 @@ class DisableCommand extends Command
      */
     public function handle() : int
     {
-        /**
+        /*
          * check if user entred an argument
          */
         if ($this->argument('module') === null) {
@@ -49,7 +49,7 @@ class DisableCommand extends Command
     }
 
     /**
-     * disableAll
+     * disableAll.
      *
      * @return void
      */

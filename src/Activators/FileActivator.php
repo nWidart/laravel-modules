@@ -13,21 +13,21 @@ use Nwidart\Modules\Module;
 class FileActivator implements ActivatorInterface
 {
     /**
-     * Laravel cache instance
+     * Laravel cache instance.
      *
      * @var CacheManager
      */
     private $cache;
 
     /**
-     * Laravel Filesystem instance
+     * Laravel Filesystem instance.
      *
      * @var Filesystem
      */
     private $files;
 
     /**
-     * Laravel config instance
+     * Laravel config instance.
      *
      * @var Config
      */
@@ -44,14 +44,14 @@ class FileActivator implements ActivatorInterface
     private $cacheLifetime;
 
     /**
-     * Array of modules activation statuses
+     * Array of modules activation statuses.
      *
      * @var array
      */
     private $modulesStatuses;
 
     /**
-     * File used to store activation statuses
+     * File used to store activation statuses.
      *
      * @var string
      */
@@ -59,17 +59,17 @@ class FileActivator implements ActivatorInterface
 
     public function __construct(Container $app)
     {
-        $this->cache = $app['cache'];
-        $this->files = $app['files'];
-        $this->config = $app['config'];
-        $this->statusesFile = $this->config('statuses-file');
-        $this->cacheKey = $this->config('cache-key');
-        $this->cacheLifetime = $this->config('cache-lifetime');
+        $this->cache           = $app['cache'];
+        $this->files           = $app['files'];
+        $this->config          = $app['config'];
+        $this->statusesFile    = $this->config('statuses-file');
+        $this->cacheKey        = $this->config('cache-key');
+        $this->cacheLifetime   = $this->config('cache-lifetime');
         $this->modulesStatuses = $this->getModulesStatuses();
     }
 
     /**
-     * Get the path of the file where statuses are stored
+     * Get the path of the file where statuses are stored.
      *
      * @return string
      */
@@ -111,7 +111,7 @@ class FileActivator implements ActivatorInterface
      */
     public function hasStatus(Module $module, bool $status): bool
     {
-        if (!isset($this->modulesStatuses[$module->getName()])) {
+        if (! isset($this->modulesStatuses[$module->getName()])) {
             return $status === false;
         }
 
@@ -141,7 +141,7 @@ class FileActivator implements ActivatorInterface
      */
     public function delete(Module $module): void
     {
-        if (!isset($this->modulesStatuses[$module->getName()])) {
+        if (! isset($this->modulesStatuses[$module->getName()])) {
             return;
         }
         unset($this->modulesStatuses[$module->getName()]);
@@ -150,7 +150,7 @@ class FileActivator implements ActivatorInterface
     }
 
     /**
-     * Writes the activation statuses in a file, as json
+     * Writes the activation statuses in a file, as json.
      */
     private function writeJson(): void
     {
@@ -164,7 +164,7 @@ class FileActivator implements ActivatorInterface
      */
     private function readJson(): array
     {
-        if (!$this->files->exists($this->statusesFile)) {
+        if (! $this->files->exists($this->statusesFile)) {
             return [];
         }
 
@@ -179,7 +179,7 @@ class FileActivator implements ActivatorInterface
      */
     private function getModulesStatuses(): array
     {
-        if (!$this->config->get('modules.cache.enabled')) {
+        if (! $this->config->get('modules.cache.enabled')) {
             return $this->readJson();
         }
 
@@ -189,7 +189,7 @@ class FileActivator implements ActivatorInterface
     }
 
     /**
-     * Reads a config parameter under the 'activators.file' key
+     * Reads a config parameter under the 'activators.file' key.
      *
      * @param  string $key
      * @param  $default
@@ -197,11 +197,11 @@ class FileActivator implements ActivatorInterface
      */
     private function config(string $key, $default = null)
     {
-        return $this->config->get('modules.activators.file.' . $key, $default);
+        return $this->config->get('modules.activators.file.'.$key, $default);
     }
 
     /**
-     * Flushes the modules activation statuses cache
+     * Flushes the modules activation statuses cache.
      */
     private function flushCache(): void
     {

@@ -10,6 +10,7 @@ class HelpersTest extends BaseTestCase
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -19,7 +20,7 @@ class HelpersTest extends BaseTestCase
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
+        $this->finder     = $this->app['files'];
         $this->artisan('module:make', ['name' => ['Blog']]);
     }
 

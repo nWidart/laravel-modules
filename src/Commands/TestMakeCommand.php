@@ -14,8 +14,8 @@ class TestMakeCommand extends GeneratorCommand
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
-    protected $name = 'module:make-test';
-    protected $description = 'Create a new test class for the specified module.';
+    protected $name         = 'module:make-test';
+    protected $description  = 'Create a new test class for the specified module.';
 
     public function getDefaultNamespace() : string
     {
@@ -59,7 +59,7 @@ class TestMakeCommand extends GeneratorCommand
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
-        $stub = '/unit-test.stub';
+        $stub   = '/unit-test.stub';
 
         if ($this->option('feature')) {
             $stub = '/feature-test.stub';
@@ -84,7 +84,7 @@ class TestMakeCommand extends GeneratorCommand
             $testPath = GenerateConfigReader::read('test');
         }
 
-        return $path . $testPath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path.$testPath->getPath().'/'.$this->getFileName().'.php';
     }
 
     /**

@@ -11,20 +11,21 @@ use Nwidart\Modules\Module as BaseModule;
 class Module extends BaseModule
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getCachedServicesPath(): string
     {
         // This checks if we are running on a Laravel Vapor managed instance
         // and sets the path to a writable one (services path is not on a writable storage in Vapor).
-        if (!is_null(env('VAPOR_MAINTENANCE_MODE', null))) {
-            return Str::replaceLast('config.php', $this->getSnakeNamespace() . '_module.php', $this->app->getCachedConfigPath());
+        if (! is_null(env('VAPOR_MAINTENANCE_MODE', null))) {
+            return Str::replaceLast('config.php', $this->getSnakeNamespace().'_module.php', $this->app->getCachedConfigPath());
         }
-        return Str::replaceLast('services.php', $this->getSnakeNamespace() . '_module.php', $this->app->getCachedServicesPath());
+
+        return Str::replaceLast('services.php', $this->getSnakeNamespace().'_module.php', $this->app->getCachedServicesPath());
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function registerProviders(): void
     {
@@ -33,7 +34,7 @@ class Module extends BaseModule
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function registerAliases(): void
     {

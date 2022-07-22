@@ -15,7 +15,7 @@ class SchemaParser implements Arrayable
      */
     protected $customAttributes = [
         'remember_token' => 'rememberToken()',
-        'soft_delete' => 'softDeletes()',
+        'soft_delete'    => 'softDeletes()',
     ];
 
     /**
@@ -146,7 +146,7 @@ class SchemaParser implements Arrayable
      */
     public function createField($column, $attributes, $type = 'add')
     {
-        $results = "\t\t\t" . '$table';
+        $results = "\t\t\t".'$table';
 
         foreach ($attributes as $key => $field) {
             if (in_array($column, $this->relationshipKeys)) {
@@ -156,7 +156,7 @@ class SchemaParser implements Arrayable
             }
         }
 
-        return $results . ';' . PHP_EOL;
+        return $results.';'.PHP_EOL;
     }
 
     /**
@@ -171,9 +171,9 @@ class SchemaParser implements Arrayable
     protected function addRelationColumn($key, $field, $column)
     {
         if ($key === 0) {
-            $relatedColumn = Str::snake(class_basename($field)) . '_id';
+            $relatedColumn = Str::snake(class_basename($field)).'_id';
 
-            return "->integer('{$relatedColumn}')->unsigned();" . PHP_EOL . "\t\t\t" . "\$table->foreign('{$relatedColumn}')";
+            return "->integer('{$relatedColumn}')->unsigned();".PHP_EOL."\t\t\t"."\$table->foreign('{$relatedColumn}')";
         }
         if ($key === 1) {
             return "->references('{$field}')";
@@ -182,10 +182,10 @@ class SchemaParser implements Arrayable
             return "->on('{$field}')";
         }
         if (Str::contains($field, '(')) {
-            return '->' . $field;
+            return '->'.$field;
         }
 
-        return '->' . $field . '()';
+        return '->'.$field.'()';
     }
 
     /**
@@ -200,18 +200,18 @@ class SchemaParser implements Arrayable
     protected function addColumn($key, $field, $column)
     {
         if ($this->hasCustomAttribute($column)) {
-            return '->' . $field;
+            return '->'.$field;
         }
 
         if ($key == 0) {
-            return '->' . $field . "('" . $column . "')";
+            return '->'.$field."('".$column."')";
         }
 
         if (Str::contains($field, '(')) {
-            return '->' . $field;
+            return '->'.$field;
         }
 
-        return '->' . $field . '()';
+        return '->'.$field.'()';
     }
 
     /**
@@ -226,10 +226,10 @@ class SchemaParser implements Arrayable
     protected function removeColumn($key, $field, $column)
     {
         if ($this->hasCustomAttribute($column)) {
-            return '->' . $field;
+            return '->'.$field;
         }
 
-        return '->dropColumn(' . "'" . $column . "')";
+        return '->dropColumn('."'".$column."')";
     }
 
     /**
@@ -254,7 +254,7 @@ class SchemaParser implements Arrayable
      */
     public function getAttributes($column, $schema)
     {
-        $fields = str_replace($column . ':', '', $schema);
+        $fields = str_replace($column.':', '', $schema);
 
         return $this->hasCustomAttribute($column) ? $this->getCustomAttribute($column) : explode(':', $fields);
     }

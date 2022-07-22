@@ -7,7 +7,7 @@ use Nwidart\Modules\FileRepository;
 class LaravelFileRepository extends FileRepository
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function createModule(...$args)
     {

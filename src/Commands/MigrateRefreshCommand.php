@@ -32,22 +32,22 @@ class MigrateRefreshCommand extends Command
     {
         $module = $this->argument('module');
 
-        if ($module && !$this->getModuleName()) {
+        if ($module && ! $this->getModuleName()) {
             $this->error("Module [$module] does not exists.");
 
             return E_ERROR;
         }
 
         $this->call('module:migrate-reset', [
-            'module' => $this->getModuleName(),
+            'module'     => $this->getModuleName(),
             '--database' => $this->option('database'),
-            '--force' => $this->option('force'),
+            '--force'    => $this->option('force'),
         ]);
 
         $this->call('module:migrate', [
-            'module' => $this->getModuleName(),
+            'module'     => $this->getModuleName(),
             '--database' => $this->option('database'),
-            '--force' => $this->option('force'),
+            '--force'    => $this->option('force'),
         ]);
 
         if ($this->option('seed')) {
@@ -89,7 +89,7 @@ class MigrateRefreshCommand extends Command
     {
         $module = $this->argument('module');
 
-        if (!$module) {
+        if (! $module) {
             return null;
         }
 

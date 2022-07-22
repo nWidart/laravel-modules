@@ -29,7 +29,7 @@ class ModuleMakeCommand extends Command
      */
     public function handle() : int
     {
-        $names = $this->argument('name');
+        $names   = $this->argument('name');
         $success = true;
 
         foreach ($names as $name) {
@@ -41,7 +41,7 @@ class ModuleMakeCommand extends Command
                 ->setConsole($this)
                 ->setForce($this->option('force'))
                 ->setType($this->getModuleType())
-                ->setActive(!$this->option('disabled'))
+                ->setActive(! $this->option('disabled'))
                 ->generate();
 
             if ($code === E_ERROR) {
@@ -76,14 +76,14 @@ class ModuleMakeCommand extends Command
     }
 
     /**
-    * Get module type .
-    *
-    * @return string
-    */
+     * Get module type .
+     *
+     * @return string
+     */
     private function getModuleType()
     {
         $isPlain = $this->option('plain');
-        $isApi = $this->option('api');
+        $isApi   = $this->option('api');
 
         if ($isPlain && $isApi) {
             return 'web';

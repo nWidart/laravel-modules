@@ -49,7 +49,7 @@ class MigrateStatusCommand extends Command
         }
 
         foreach ($this->module->getOrdered($this->option('direction')) as $module) {
-            $this->line('Running for module: <info>' . $module->getName() . '</info>');
+            $this->line('Running for module: <info>'.$module->getName().'</info>');
             $this->migrateStatus($module);
         }
 
@@ -66,7 +66,7 @@ class MigrateStatusCommand extends Command
         $path = str_replace(base_path(), '', (new Migrator($module, $this->getLaravel()))->getPath());
 
         $this->call('migrate:status', [
-            '--path' => $path,
+            '--path'     => $path,
             '--database' => $this->option('database'),
         ]);
     }

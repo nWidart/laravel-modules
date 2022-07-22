@@ -74,7 +74,7 @@ class MailMakeCommand extends GeneratorCommand
 
         $mailPath = GenerateConfigReader::read('emails');
 
-        return $path . $mailPath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path.$mailPath->getPath().'/'.$this->getFileName().'.php';
     }
 
     /**

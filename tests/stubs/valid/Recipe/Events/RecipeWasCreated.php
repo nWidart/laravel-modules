@@ -10,6 +10,7 @@ class RecipeWasCreated implements StoringMedia
      * @var
      */
     private $recipe;
+
     /**
      * @var
      */
@@ -18,11 +19,11 @@ class RecipeWasCreated implements StoringMedia
     public function __construct($recipe, $data)
     {
         $this->recipe = $recipe;
-        $this->data = $data;
+        $this->data   = $data;
     }
 
     /**
-     * Return the entity
+     * Return the entity.
      * @return \Illuminate\Database\Eloquent\Model
      */
     public function getEntity()
@@ -31,7 +32,7 @@ class RecipeWasCreated implements StoringMedia
     }
 
     /**
-     * Return the ALL data sent
+     * Return the ALL data sent.
      * @return array
      */
     public function getSubmissionData()

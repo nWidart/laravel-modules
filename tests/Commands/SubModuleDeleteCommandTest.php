@@ -14,6 +14,7 @@ class SubModuleDeleteCommandTest extends BaseTestCase
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var FileActivator
      */
@@ -22,7 +23,7 @@ class SubModuleDeleteCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->finder = $this->app['files'];
+        $this->finder    = $this->app['files'];
         $this->activator = new FileActivator($this->app);
     }
 

@@ -97,7 +97,7 @@ class CommandMakeCommand extends GeneratorCommand
 
         $commandPath = GenerateConfigReader::read('command');
 
-        return $path . $commandPath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path.$commandPath->getPath().'/'.$this->getFileName().'.php';
     }
 
     /**

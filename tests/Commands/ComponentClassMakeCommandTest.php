@@ -6,13 +6,15 @@ use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class ComponentClassCommandTest extends BaseTestCase
+class ComponentClassMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -22,7 +24,7 @@ class ComponentClassCommandTest extends BaseTestCase
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
+        $this->finder     = $this->app['files'];
         $this->artisan('module:make', ['name' => ['Blog']]);
     }
 
@@ -36,22 +38,24 @@ class ComponentClassCommandTest extends BaseTestCase
     public function it_generates_the_component_class()
     {
         $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
-        $this->assertTrue(is_file($this->modulePath . '/View/Component/Blog.php'));
+        $this->assertTrue(is_file($this->modulePath.'/View/Component/Blog.php'));
         $this->assertSame(0, $code);
     }
+
     /** @test */
     public function it_generates_the_component_view_from_component_class_command()
     {
         $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
-        $file = $this->finder->get($this->modulePath . '/Resources/views/components/blog.blade.php');
+        $file = $this->finder->get($this->modulePath.'/Resources/views/components/blog.blade.php');
         $this->assertTrue(str_contains($file, '<div>'));
         $this->assertSame(0, $code);
     }
+
     /** @test */
     public function it_generated_correct_file_with_content()
     {
         $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
-        $file = $this->finder->get($this->modulePath . '/View/Component/Blog.php');
+        $file = $this->finder->get($this->modulePath.'/View/Component/Blog.php');
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
@@ -63,7 +67,7 @@ class ComponentClassCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/View/Component/newDirectory/Blog.php');
+        $file = $this->finder->get($this->modulePath.'/View/Component/newDirectory/Blog.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

@@ -3,7 +3,6 @@
 namespace Modules\Recipe\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use Laracasts\Flash\Flash;
 use Modules\Core\Http\Controllers\Admin\AdminBaseController;
 use Modules\Media\Repositories\FileRepository;
 use Modules\Recipe\Entities\Recipe;
@@ -15,6 +14,7 @@ class RecipeController extends AdminBaseController
      * @var RecipeRepository
      */
     private $recipe;
+
     /**
      * @var FileRepository
      */
@@ -25,7 +25,7 @@ class RecipeController extends AdminBaseController
         parent::__construct();
 
         $this->recipe = $recipe;
-        $this->file = $file;
+        $this->file   = $file;
     }
 
     /**
@@ -73,7 +73,7 @@ class RecipeController extends AdminBaseController
      */
     public function edit(Recipe $recipe)
     {
-        $galleryFiles = $this->file->findMultipleFilesByZoneForEntity('gallery', $recipe);
+        $galleryFiles   = $this->file->findMultipleFilesByZoneForEntity('gallery', $recipe);
         $featured_image = $this->file->findFileByZoneForEntity('featured_image', $recipe);
 
         return view('recipe::admin.recipes.edit', compact('recipe', 'galleryFiles', 'featured_image'));

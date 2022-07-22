@@ -26,8 +26,8 @@ class Collection extends BaseCollection
     {
         return array_map(function ($value) {
             if ($value instanceof Module) {
-                $attributes = $value->json()->getAttributes();
-                $attributes["path"] = $value->getPath();
+                $attributes         = $value->json()->getAttributes();
+                $attributes['path'] = $value->getPath();
 
                 return $attributes;
             }

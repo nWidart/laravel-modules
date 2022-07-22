@@ -7,14 +7,14 @@ use Nwidart\Modules\Module;
 interface ActivatorInterface
 {
     /**
-     * Enables a module
+     * Enables a module.
      *
      * @param Module $module
      */
     public function enable(Module $module): void;
 
     /**
-     * Disables a module
+     * Disables a module.
      *
      * @param Module $module
      */
@@ -39,7 +39,7 @@ interface ActivatorInterface
     public function setActive(Module $module, bool $active): void;
 
     /**
-     * Sets a module status by its name
+     * Sets a module status by its name.
      *
      * @param  string $name
      * @param  bool $active
@@ -47,7 +47,7 @@ interface ActivatorInterface
     public function setActiveByName(string $name, bool $active): void;
 
     /**
-     * Deletes a module activation status
+     * Deletes a module activation status.
      *
      * @param  Module $module
      */

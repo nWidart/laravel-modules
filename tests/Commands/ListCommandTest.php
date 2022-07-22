@@ -12,6 +12,7 @@ class ListCommandTest extends BaseTestCase
      * @var Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -21,7 +22,7 @@ class ListCommandTest extends BaseTestCase
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
+        $this->finder     = $this->app['files'];
         $this->artisan('module:make', ['name' => ['Blog']]);
     }
 

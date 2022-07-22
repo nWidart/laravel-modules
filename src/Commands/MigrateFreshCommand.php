@@ -32,7 +32,7 @@ class MigrateFreshCommand extends Command
     {
         $module = $this->argument('module');
 
-        if ($module && !$this->getModuleName()) {
+        if ($module && ! $this->getModuleName()) {
             $this->error("Module [$module] does not exists.");
 
             return E_ERROR;
@@ -41,10 +41,10 @@ class MigrateFreshCommand extends Command
         $this->call('migrate:fresh');
 
         $this->call('module:migrate', [
-            'module' => $this->getModuleName(),
+            'module'     => $this->getModuleName(),
             '--database' => $this->option('database'),
-            '--force' => $this->option('force'),
-            '--seed' => $this->option('seed'),
+            '--force'    => $this->option('force'),
+            '--seed'     => $this->option('seed'),
         ]);
 
         return 0;
@@ -80,7 +80,7 @@ class MigrateFreshCommand extends Command
     {
         $module = $this->argument('module');
 
-        if (!$module) {
+        if (! $module) {
             return null;
         }
 

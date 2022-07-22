@@ -11,6 +11,7 @@ class PublishCommandTest extends BaseTestCase
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -20,9 +21,9 @@ class PublishCommandTest extends BaseTestCase
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
+        $this->finder     = $this->app['files'];
         $this->artisan('module:make', ['name' => ['Blog']]);
-        $this->finder->put($this->modulePath . '/Assets/script.js', 'assetfile');
+        $this->finder->put($this->modulePath.'/Assets/script.js', 'assetfile');
     }
 
     public function tearDown(): void

@@ -9,10 +9,12 @@ use Spatie\Snapshots\MatchesSnapshots;
 class RuleMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -22,7 +24,7 @@ class RuleMakeCommandTest extends BaseTestCase
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
+        $this->finder     = $this->app['files'];
         $this->artisan('module:make', ['name' => ['Blog']]);
     }
 
@@ -37,7 +39,7 @@ class RuleMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
 
-        $ruleFile = $this->modulePath . '/Rules/UniqueRule.php';
+        $ruleFile = $this->modulePath.'/Rules/UniqueRule.php';
 
         $this->assertTrue(is_file($ruleFile), 'Rule file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($ruleFile));
@@ -51,7 +53,7 @@ class RuleMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/SuperRules/UniqueRule.php');
+        $file = $this->finder->get($this->modulePath.'/SuperRules/UniqueRule.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -64,7 +66,7 @@ class RuleMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Rules/UniqueRule.php');
+        $file = $this->finder->get($this->modulePath.'/Rules/UniqueRule.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

@@ -13,6 +13,7 @@ abstract class MigrateCommandTest extends BaseTestCase
      * @var FileRepository
      */
     private $repository;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -22,13 +23,13 @@ abstract class MigrateCommandTest extends BaseTestCase
     {
         parent::setUp();
         $this->repository = new LaravelFileRepository($this->app);
-        $this->finder = $this->app['files'];
+        $this->finder     = $this->app['files'];
     }
 
     /** @test */
     public function it_migrates_a_module()
     {
-        $this->repository->addLocation(__DIR__ . '/../stubs/Recipe');
+        $this->repository->addLocation(__DIR__.'/../stubs/Recipe');
 
         $this->artisan('module:migrate', ['module' => 'Recipe']);
 

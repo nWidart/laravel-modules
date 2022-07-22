@@ -23,7 +23,7 @@ class ModuleTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');
+        $this->module    = new TestingModule($this->app, 'Recipe Name', __DIR__.'/stubs/valid/Recipe');
         $this->activator = $this->app[ActivatorInterface::class];
     }
 
@@ -36,13 +36,13 @@ class ModuleTest extends BaseTestCase
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-        symlink(__DIR__ . '/stubs/valid', __DIR__ . '/stubs/valid_symlink');
+        symlink(__DIR__.'/stubs/valid', __DIR__.'/stubs/valid_symlink');
     }
 
     public static function tearDownAfterClass(): void
     {
         parent::tearDownAfterClass();
-        unlink(__DIR__ . '/stubs/valid_symlink');
+        unlink(__DIR__.'/stubs/valid_symlink');
     }
 
     /** @test */
@@ -84,7 +84,7 @@ class ModuleTest extends BaseTestCase
     /** @test */
     public function it_gets_module_path()
     {
-        $this->assertEquals(__DIR__ . '/stubs/valid/Recipe', $this->module->getPath());
+        $this->assertEquals(__DIR__.'/stubs/valid/Recipe', $this->module->getPath());
     }
 
     /** @test */
@@ -92,9 +92,9 @@ class ModuleTest extends BaseTestCase
     {
         // symlink created in setUpBeforeClass
 
-        $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid_symlink/Recipe');
+        $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__.'/stubs/valid_symlink/Recipe');
 
-        $this->assertEquals(__DIR__ . '/stubs/valid_symlink/Recipe', $this->module->getPath());
+        $this->assertEquals(__DIR__.'/stubs/valid_symlink/Recipe', $this->module->getPath());
 
         // symlink deleted in tearDownAfterClass
     }
@@ -108,14 +108,14 @@ class ModuleTest extends BaseTestCase
     /** @test */
     public function it_loads_module_translations()
     {
-        (new TestingModule($this->app, 'Recipe', __DIR__ . '/stubs/valid/Recipe'))->boot();
+        (new TestingModule($this->app, 'Recipe', __DIR__.'/stubs/valid/Recipe'))->boot();
         $this->assertEquals('Recipe', trans('recipe::recipes.title.recipes'));
     }
 
     /** @test */
     public function it_reads_module_json_files()
     {
-        $jsonModule = $this->module->json();
+        $jsonModule   = $this->module->json();
         $composerJson = $this->module->json('composer.json');
 
         $this->assertInstanceOf(Json::class, $jsonModule);
@@ -219,8 +219,7 @@ class ModuleTest extends BaseTestCase
             ],
             'eager'     => [RecipeServiceProvider::class],
             'deferred'  => ['deferred' => DeferredServiceProvider::class],
-            'when'      =>
-                [DeferredServiceProvider::class => []],
+            'when'      => [DeferredServiceProvider::class => []],
         ], $manifest);
     }
 

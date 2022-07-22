@@ -29,7 +29,7 @@ class UseCommand extends Command
     {
         $module = Str::studly($this->argument('module'));
 
-        if (!$this->laravel['modules']->has($module)) {
+        if (! $this->laravel['modules']->has($module)) {
             $this->error("Module [{$module}] does not exists.");
 
             return E_ERROR;

@@ -24,7 +24,7 @@ class Migrator
     protected $laravel;
 
     /**
-     * The database connection to be used
+     * The database connection to be used.
      *
      * @var string
      */
@@ -37,12 +37,12 @@ class Migrator
      */
     public function __construct(Module $module, Application $application)
     {
-        $this->module = $module;
+        $this->module  = $module;
         $this->laravel = $application;
     }
 
     /**
-     * Set the database connection to be used
+     * Set the database connection to be used.
      *
      * @param $database
      *
@@ -75,7 +75,7 @@ class Migrator
         $config = $this->module->get('migration');
 
         $migrationPath = GenerateConfigReader::read('migration');
-        $path = (is_array($config) && array_key_exists('path', $config)) ? $config['path'] : $migrationPath->getPath();
+        $path          = (is_array($config) && array_key_exists('path', $config)) ? $config['path'] : $migrationPath->getPath();
 
         return $this->module->getExtraPath($path);
     }
@@ -83,12 +83,12 @@ class Migrator
     /**
      * Get migration files.
      *
-     * @param boolean $reverse
+     * @param bool $reverse
      * @return array
      */
     public function getMigrations($reverse = false)
     {
-        $files = $this->laravel['files']->glob($this->getPath() . '/*_*.php');
+        $files = $this->laravel['files']->glob($this->getPath().'/*_*.php');
 
         // Once we have the array of files in the directory we will just remove the
         // extension and take the basename of the file which is all we need when
@@ -202,8 +202,8 @@ class Migrator
 
         $class = Str::studly($name);
 
-        if (!class_exists($class) && file_exists($this->getPath() . '/' . $file . '.php') ) {
-            return include $this->getPath() . '/' . $file . '.php';
+        if (! class_exists($class) && file_exists($this->getPath().'/'.$file.'.php')) {
+            return include $this->getPath().'/'.$file.'.php';
         }
 
         return new $class();
@@ -218,7 +218,7 @@ class Migrator
     {
         $path = $this->getPath();
         foreach ($files as $file) {
-            $this->laravel['files']->requireOnce($path . '/' . $file . '.php');
+            $this->laravel['files']->requireOnce($path.'/'.$file.'.php');
         }
     }
 
@@ -255,7 +255,7 @@ class Migrator
     {
         return $this->table()->insert([
             'migration' => $migration,
-            'batch' => $this->getNextBatchNumber(),
+            'batch'     => $this->getNextBatchNumber(),
         ]);
     }
 

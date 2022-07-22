@@ -9,10 +9,12 @@ use Spatie\Snapshots\MatchesSnapshots;
 class PolicyMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -22,7 +24,7 @@ class PolicyMakeCommandTest extends BaseTestCase
     {
         parent::setUp();
         $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
+        $this->finder     = $this->app['files'];
         $this->artisan('module:make', ['name' => ['Blog']]);
     }
 
@@ -37,7 +39,7 @@ class PolicyMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
-        $policyFile = $this->modulePath . '/Policies/PostPolicy.php';
+        $policyFile = $this->modulePath.'/Policies/PostPolicy.php';
 
         $this->assertTrue(is_file($policyFile), 'Policy file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($policyFile));
@@ -51,7 +53,7 @@ class PolicyMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/SuperPolicies/PostPolicy.php');
+        $file = $this->finder->get($this->modulePath.'/SuperPolicies/PostPolicy.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -64,7 +66,7 @@ class PolicyMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Policies/PostPolicy.php');
+        $file = $this->finder->get($this->modulePath.'/Policies/PostPolicy.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
