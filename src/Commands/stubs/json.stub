@@ -5,7 +5,7 @@
     "keywords": [],
     "priority": 0,
     "providers": [
-        "$MODULE_NAMESPACE$\\$STUDLY_NAME$\\$PROVIDER_NAMESPACE$\\$STUDLY_NAME$ServiceProvider"
+        "$MODULE_NAMESPACE$\\$SUB_MODULE_NAMESPACE$\\$PROVIDER_NAMESPACE$\\$STUDLY_BASE_NAME$ServiceProvider"
     ],
     "aliases": {},
     "files": [],

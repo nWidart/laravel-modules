@@ -1,0 +1,3 @@
+{
+    "Blog\/WrongSubModule": true
+}

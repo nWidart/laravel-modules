@@ -11,6 +11,6 @@
 |
 */
 
-Route::prefix('$LOWER_NAME$')->group(function() {
-    Route::get('/', '$STUDLY_NAME$Controller@index');
+Route::prefix('$LOWER_BASE_NAME$')->group(function() {
+    Route::get('/', '$STUDLY_BASE_NAME$Controller@index');
 });

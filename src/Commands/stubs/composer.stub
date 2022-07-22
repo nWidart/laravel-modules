@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "$MODULE_NAMESPACE$\\$STUDLY_NAME$\\": ""
+            "$MODULE_NAMESPACE$\\$SUB_MODULE_NAMESPACE$\\": ""
         }
     }
 }

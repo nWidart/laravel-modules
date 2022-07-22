@@ -12,7 +12,7 @@ class $CLASS$ extends ServiceProvider
      *
      * @var string
      */
-    protected $moduleNamespace = '$MODULE_NAMESPACE$\$MODULE$\$CONTROLLER_NAMESPACE$';
+    protected $moduleNamespace = '$MODULE_NAMESPACE$\$ONE_SLASH_SUB_MODULE_NAMESPACE$\$CONTROLLER_NAMESPACE$';
 
     /**
      * Called before routes are registered.
