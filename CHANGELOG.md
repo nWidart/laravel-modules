@@ -4,6 +4,16 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 9.0.1 - 2022-07-22
+
+## Added
+
+- [@mshamaseen](https://github.com/mshamaseen) added support for sub modules see [#1409](https://github.com/nWidart/laravel-modules/pull/1409) for more details
+
+## Changed
+
+- updated styling old cs-fixer was outdated
+
 ## 9.0.1 - 2022-02-28
 
 ### Added 
