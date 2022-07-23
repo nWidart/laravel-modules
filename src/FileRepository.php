@@ -369,7 +369,6 @@ abstract class FileRepository implements RepositoryInterface, Countable
                 return $module;
             }
         }
-
     }
 
     /**
@@ -382,7 +381,6 @@ abstract class FileRepository implements RepositoryInterface, Countable
                 return $module;
             }
         }
-
     }
 
     /**
