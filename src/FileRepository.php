@@ -147,8 +147,18 @@ abstract class FileRepository implements RepositoryInterface, Countable
             return [];
         }
 
-        $dir      = new \RecursiveDirectoryIterator($folder);
-        $ite      = new \RecursiveIteratorIterator($dir);
+        $ignoreFiles = function ($fileInfo) {
+            if (in_array($fileInfo->getFilename(), $this->config('scan.exclude', []))) {
+                return false;
+            }
+
+            return true;
+        };
+
+        $dir      = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::KEY_AS_PATHNAME|\FilesystemIterator::CURRENT_AS_FILEINFO|\FilesystemIterator::FOLLOW_SYMLINKS);
+        $filtered = new \RecursiveCallbackFilterIterator($dir, $ignoreFiles);
+        $ite      = new \RecursiveIteratorIterator($filtered);
+
         $fileList = [];
         foreach ($ite as $file) {
             /** @var SplFileInfo $file */
