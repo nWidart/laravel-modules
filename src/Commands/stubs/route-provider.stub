@@ -8,6 +8,11 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 class $CLASS$ extends ServiceProvider
 {
     /**
+     * @var string $moduleName
+     */
+    protected $moduleName = '$MODULE$';
+
+    /**
      * The module namespace to assume when generating URLs to actions.
      *
      * @var string
@@ -49,7 +54,7 @@ class $CLASS$ extends ServiceProvider
     {
         Route::middleware('web')
             ->namespace($this->moduleNamespace)
-            ->group(module_path('$MODULE$', '$WEB_ROUTES_PATH$'));
+            ->group(module_path($this->moduleName, '$WEB_ROUTES_PATH$'));
     }
 
     /**
@@ -64,6 +69,6 @@ class $CLASS$ extends ServiceProvider
         Route::prefix('api')
             ->middleware('api')
             ->namespace($this->moduleNamespace)
-            ->group(module_path('$MODULE$', '$API_ROUTES_PATH$'));
+            ->group(module_path($this->moduleName, '$API_ROUTES_PATH$'));
     }
 }
