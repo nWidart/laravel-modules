@@ -4,6 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Updated
+
+- [@Sophist-UK](https://github.com/Sophist-UK) added support for RouteProvider to use variable to hold $MODULE$ name see [1417](https://github.com/nWidart/laravel-modules/pull/1417) for more details
+- Updated snapshot tests due to stub change in `route-provider.stub`
+
 ## 9.0.2 - 2022-07-22
 
 ## Added
