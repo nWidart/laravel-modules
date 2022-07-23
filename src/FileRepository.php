@@ -148,9 +148,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
         }
 
         $ignoreFiles = function ($fileInfo) {
-            $filesToIgnore = $this->config('scan.exclude', []);
-
-            if (in_array($fileInfo->getFilename(), $filesToIgnore)) {
+            if (in_array($fileInfo->getFilename(), $this->config('scan.exclude', []))) {
                 return false;
             }
 
