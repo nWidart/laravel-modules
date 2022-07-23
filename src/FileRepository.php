@@ -148,7 +148,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
         }
 
         $ignoreFiles = function ($fileInfo) {
-            $filesToIgnore = ['.git', '.idea'];
+            $filesToIgnore = $this->config('scan.exclude', []);
 
             if (in_array($fileInfo->getFilename(), $filesToIgnore)) {
                 return false;
