@@ -2,7 +2,7 @@
 /**
  * Extend Laravel's ServiceProvider to handle config file hierarchies  
  * 
- * If a module has required packages, you m,ight have a hierarchy of
+ * If a module has required packages, you might have a hierarchy of
  * config files e.g.
  * 1. Config/package.php
  * 2. Modules/module1/Config/package.php
