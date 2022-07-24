@@ -32,7 +32,6 @@
 namespace Nwidart\Modules\Laravel;
 
 trait ModuleConfigMerge {
-{
     /**
      * Handle hierarchy of app, module and package configs
      * 
