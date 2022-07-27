@@ -34,7 +34,7 @@ class MigrateStatusCommand extends Command
      *
      * @return mixed
      */
-    public function handle() : int
+    public function handle(): int
     {
         $this->module = $this->laravel['modules'];
 

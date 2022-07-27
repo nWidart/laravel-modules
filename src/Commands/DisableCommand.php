@@ -25,7 +25,7 @@ class DisableCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle() : int
+    public function handle(): int
     {
         /**
          * check if user entred an argument

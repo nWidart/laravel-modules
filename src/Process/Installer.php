@@ -196,6 +196,7 @@ class Installer
 
             case 'gitlab':
                 return "git@gitlab.com:{$this->name}.git";
+
                 break;
 
             case 'bitbucket':
@@ -214,6 +215,7 @@ class Installer
                 }
 
                 return;
+
                 break;
         }
     }

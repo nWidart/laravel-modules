@@ -106,7 +106,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
         return '/' . $this->laravel['modules']->config('stubs.files.routes/api', 'Routes/api.php');
     }
 
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace(): string
     {
         $module = $this->laravel['modules'];
 

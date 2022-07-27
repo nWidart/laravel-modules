@@ -25,7 +25,7 @@ class UseCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle() : int
+    public function handle(): int
     {
         $module = Str::studly($this->argument('module'));
 

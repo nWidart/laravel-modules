@@ -217,7 +217,7 @@ abstract class Module
      *
      * @return Json
      */
-    public function json($file = null) : Json
+    public function json($file = null): Json
     {
         if ($file === null) {
             $file = 'module.json';
@@ -323,7 +323,7 @@ abstract class Module
      *
      * @return bool
      */
-    public function isStatus(bool $status) : bool
+    public function isStatus(bool $status): bool
     {
         return $this->activator->hasStatus($this, $status);
     }
@@ -333,7 +333,7 @@ abstract class Module
      *
      * @return bool
      */
-    public function isEnabled() : bool
+    public function isEnabled(): bool
     {
         return $this->activator->hasStatus($this, true);
     }
@@ -343,7 +343,7 @@ abstract class Module
      *
      * @return bool
      */
-    public function isDisabled() : bool
+    public function isDisabled(): bool
     {
         return !$this->isEnabled();
     }
@@ -405,7 +405,7 @@ abstract class Module
      *
      * @return string
      */
-    public function getExtraPath(string $path) : string
+    public function getExtraPath(string $path): string
     {
         return $this->getPath() . '/' . $path;
     }

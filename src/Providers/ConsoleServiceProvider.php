@@ -3,7 +3,6 @@
 namespace Nwidart\Modules\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 use Nwidart\Modules\Commands;
 
 class ConsoleServiceProvider extends ServiceProvider

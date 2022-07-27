@@ -68,7 +68,7 @@ class ListenerMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace(): string
     {
         $module = $this->laravel['modules'];
 
