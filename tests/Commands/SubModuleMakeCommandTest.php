@@ -33,6 +33,10 @@ class SubModuleMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
+        $this->app['config']->set('modules.scan.enabled', true);
+        $this->app['config']->set('modules.scan.paths', [
+            base_path('modules/*/'),
+        ]);
         $this->modulePath = base_path('modules/Blog/Sub');
         $this->finder = $this->app['files'];
         $this->repository = $this->app[RepositoryInterface::class];
