@@ -22,6 +22,12 @@ class SubModuleDeleteCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        $this->app['config']->set('modules.scan.enabled', true);
+        $this->app['config']->set('modules.scan.paths', [
+            base_path('modules/*/'),
+        ]);
+
         $this->finder = $this->app['files'];
         $this->activator = new FileActivator($this->app);
     }
