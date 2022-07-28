@@ -17,7 +17,7 @@ class TestMakeCommand extends GeneratorCommand
     protected $name = 'module:make-test';
     protected $description = 'Create a new test class for the specified module.';
 
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace(): string
     {
         $module = $this->laravel['modules'];
 

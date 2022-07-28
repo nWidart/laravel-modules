@@ -4,6 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 9.0.4 - 2022-07-28
+
+- 9.02 - 9.0.3 have been removed due to savere performance problems
+
+
 ## 9.0.1 - 2022-02-28
 
 ### Added 

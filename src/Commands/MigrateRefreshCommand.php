@@ -28,7 +28,7 @@ class MigrateRefreshCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle() : int
+    public function handle(): int
     {
         $module = $this->argument('module');
 

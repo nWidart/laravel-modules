@@ -202,7 +202,7 @@ class Migrator
 
         $class = Str::studly($name);
 
-        if (!class_exists($class) && file_exists($this->getPath() . '/' . $file . '.php') ) {
+        if (!class_exists($class) && file_exists($this->getPath() . '/' . $file . '.php')) {
             return include $this->getPath() . '/' . $file . '.php';
         }
 

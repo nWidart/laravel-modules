@@ -27,7 +27,7 @@ class UpdateCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle() : int
+    public function handle(): int
     {
         $name = $this->argument('module');
 

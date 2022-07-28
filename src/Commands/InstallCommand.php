@@ -35,7 +35,7 @@ class InstallCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle() : int
+    public function handle(): int
     {
         if (is_null($this->argument('name'))) {
             return $this->installFromFile();
@@ -54,7 +54,7 @@ class InstallCommand extends Command
     /**
      * Install modules from modules.json file.
      */
-    protected function installFromFile() : int
+    protected function installFromFile(): int
     {
         if (!file_exists($path = base_path('modules.json'))) {
             $this->error("File 'modules.json' does not exist in your project root.");

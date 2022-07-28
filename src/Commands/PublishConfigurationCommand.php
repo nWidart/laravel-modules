@@ -26,7 +26,7 @@ class PublishConfigurationCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle() : int
+    public function handle(): int
     {
         if ($module = $this->argument('module')) {
             $this->publishConfiguration($module);

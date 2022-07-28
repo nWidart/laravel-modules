@@ -126,7 +126,7 @@ interface RepositoryInterface
      *
      * @return string
      */
-    public function getPath() : string;
+    public function getPath(): string;
 
     /**
      * Find a specific module by its alias.
@@ -167,7 +167,7 @@ interface RepositoryInterface
      * @return bool
      * @throws ModuleNotFoundException
      */
-    public function isEnabled(string $name) : bool;
+    public function isEnabled(string $name): bool;
 
     /**
      * Determine whether the given module is not activated.
@@ -175,5 +175,5 @@ interface RepositoryInterface
      * @return bool
      * @throws ModuleNotFoundException
      */
-    public function isDisabled(string $name) : bool;
+    public function isDisabled(string $name): bool;
 }

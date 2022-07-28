@@ -112,16 +112,19 @@ class NameParser
             case 'update':
             case 'insert':
                 return "/{$action}_(.*)_to_(.*)_table/";
+
                 break;
 
             case 'delete':
             case 'remove':
             case 'alter':
                 return "/{$action}_(.*)_from_(.*)_table/";
+
                 break;
 
             default:
                 return "/{$action}_(.*)_table/";
+
                 break;
         }
     }
