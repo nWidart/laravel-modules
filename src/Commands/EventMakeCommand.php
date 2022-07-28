@@ -55,7 +55,7 @@ class EventMakeCommand extends GeneratorCommand
         return Str::studly($this->argument('name'));
     }
 
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace(): string
     {
         $module = $this->laravel['modules'];
 

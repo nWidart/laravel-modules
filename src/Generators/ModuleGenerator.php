@@ -290,7 +290,7 @@ class ModuleGenerator extends Generator
     /**
      * Generate the module.
      */
-    public function generate() : int
+    public function generate(): int
     {
         $name = $this->getName();
 
@@ -399,7 +399,7 @@ class ModuleGenerator extends Generator
         }
 
         if (GenerateConfigReader::read('controller')->generate() === true) {
-            $options = $this->type=='api'?['--api'=>true]:[];
+            $options = $this->type=='api' ? ['--api'=>true] : [];
             $this->console->call('module:make-controller', [
                 'controller' => $this->getBaseName() . 'Controller',
                 'module' => $this->getName(),

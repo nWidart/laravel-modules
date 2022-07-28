@@ -28,7 +28,7 @@ class MailMakeCommand extends GeneratorCommand
 
     protected $argumentName = 'name';
 
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace(): string
     {
         $module = $this->laravel['modules'];
 

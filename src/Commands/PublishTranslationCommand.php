@@ -26,7 +26,7 @@ class PublishTranslationCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle() : int
+    public function handle(): int
     {
         if ($name = $this->argument('module')) {
             $this->publish($name);

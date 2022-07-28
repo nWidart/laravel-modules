@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Http\Controllers;
+namespace Modules\Blog\Http\Controllers\Api;
 
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;

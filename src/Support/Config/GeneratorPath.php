@@ -27,7 +27,7 @@ class GeneratorPath
         return $this->path;
     }
 
-    public function generate() : bool
+    public function generate(): bool
     {
         return $this->generate;
     }

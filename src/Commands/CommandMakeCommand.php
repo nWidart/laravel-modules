@@ -34,7 +34,7 @@ class CommandMakeCommand extends GeneratorCommand
      */
     protected $description = 'Generate new Artisan command for the specified module.';
 
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace(): string
     {
         $module = $this->laravel['modules'];
 

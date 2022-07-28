@@ -33,7 +33,7 @@ class MiddlewareMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new middleware class for the specified module.';
 
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace(): string
     {
         $module = $this->laravel['modules'];
 
