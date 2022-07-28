@@ -28,7 +28,7 @@ class ModuleMakeCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle() : int
+    public function handle(): int
     {
         $names = $this->argument('name');
         $success = true;

@@ -84,6 +84,11 @@ abstract class Module
         return $this->name;
     }
 
+    public function getBaseName(): string
+    {
+        return basename($this->getStudlyName());
+    }
+
     /**
      * Get name in lower case.
      *
@@ -123,6 +128,26 @@ abstract class Module
     {
         // replace Tests/Test to tests_test
         return Str::snake(str_replace(DIRECTORY_SEPARATOR, '', $this->name));
+    }
+
+    /**
+     * Get replacement for $SUB_MODULE_NAMESPACE$.
+     *
+     * @return string
+     */
+    public function getSubModuleNamespace(): string
+    {
+        return str_replace(DIRECTORY_SEPARATOR, '\\\\', $this->getName());
+    }
+
+    /**
+     * Get replacement for $SUB_MODULE_NAMESPACE$.
+     *
+     * @return string
+     */
+    public function getSubModuleOneSlashNamespace(): string
+    {
+        return str_replace(DIRECTORY_SEPARATOR, '\\', $this->getName());
     }
 
     /**
@@ -228,7 +253,7 @@ abstract class Module
      *
      * @return Json
      */
-    public function json($file = null) : Json
+    public function json($file = null): Json
     {
         if ($file === null) {
             $file = 'module.json';
@@ -334,7 +359,7 @@ abstract class Module
      *
      * @return bool
      */
-    public function isStatus(bool $status) : bool
+    public function isStatus(bool $status): bool
     {
         return $this->activator->hasStatus($this, $status);
     }
@@ -344,7 +369,7 @@ abstract class Module
      *
      * @return bool
      */
-    public function isEnabled() : bool
+    public function isEnabled(): bool
     {
         return $this->activator->hasStatus($this, true);
     }
@@ -354,7 +379,7 @@ abstract class Module
      *
      * @return bool
      */
-    public function isDisabled() : bool
+    public function isDisabled(): bool
     {
         return !$this->isEnabled();
     }
@@ -416,7 +441,7 @@ abstract class Module
      *
      * @return string
      */
-    public function getExtraPath(string $path) : string
+    public function getExtraPath(string $path): string
     {
         return $this->getPath() . '/' . $path;
     }

@@ -33,7 +33,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new component-class for the specified module.';
 
-    public function handle() : int
+    public function handle(): int
     {
         if (parent::handle() === E_ERROR) {
             return E_ERROR;
@@ -52,7 +52,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
         $this->call('module:make-component-view', ['name' => $this->argument('name') , 'module' => $this->argument('module')]);
     }
 
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace(): string
     {
         $module = $this->laravel['modules'];
 

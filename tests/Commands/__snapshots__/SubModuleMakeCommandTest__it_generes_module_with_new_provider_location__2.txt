@@ -1,5 +1,5 @@
 {
-    "name": "nwidart/sub",
+    "name": "nwidart/blog/sub",
     "description": "",
     "authors": [
         {

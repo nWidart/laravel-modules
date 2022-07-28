@@ -24,7 +24,7 @@ class DumpCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle() : int
+    public function handle(): int
     {
         $this->info('Generating optimized autoload modules.');
 

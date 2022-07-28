@@ -33,7 +33,7 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new form request class for the specified module.';
 
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace(): string
     {
         $module = $this->laravel['modules'];
 

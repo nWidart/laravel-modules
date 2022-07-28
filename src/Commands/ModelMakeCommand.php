@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -34,7 +35,7 @@ class ModelMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new model for the specified module.';
 
-    public function handle() : int
+    public function handle(): int
     {
         if (parent::handle() === E_ERROR) {
             return E_ERROR;
@@ -116,7 +117,7 @@ class ModelMakeCommand extends GeneratorCommand
 
             $this->call('module:make-controller', array_filter([
                 'controller' => $controllerName,
-                'module' => $this->argument('module')
+                'module' => $this->argument('module'),
             ]));
         }
     }
@@ -126,6 +127,7 @@ class ModelMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
+        /** @var Module $module */
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/model.stub', [
@@ -134,7 +136,7 @@ class ModelMakeCommand extends GeneratorCommand
             'NAMESPACE'         => $this->getClassNamespace($module),
             'CLASS'             => $this->getClass(),
             'LOWER_NAME'        => $module->getLowerName(),
-            'MODULE'            => $this->getModuleName(),
+            'ONE_SLASH_SUB_MODULE_NAMESPACE' => $module->getSubModuleOneSlashNamespace(),
             'STUDLY_NAME'       => $module->getStudlyName(),
             'MODULE_NAMESPACE'  => $this->laravel['modules']->config('namespace'),
         ]))->render();
@@ -181,7 +183,7 @@ class ModelMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    public function getDefaultNamespace() : string
+    public function getDefaultNamespace(): string
     {
         $module = $this->laravel['modules'];
 

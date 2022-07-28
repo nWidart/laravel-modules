@@ -12,7 +12,7 @@ class ModuleDeleteCommand extends Command
     protected $name = 'module:delete';
     protected $description = 'Delete a module from the application';
 
-    public function handle() : int
+    public function handle(): int
     {
         $module = $this->argument('module');
 
