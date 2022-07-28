@@ -4,9 +4,12 @@ namespace $NAMESPACE$;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
+use Nwidart\Modules\Laravel\ModuleConfigMerge;
 
 class $CLASS$ extends ServiceProvider
 {
+    use ModuleConfigMerge;
+
     /**
      * @var string $moduleName
      */
