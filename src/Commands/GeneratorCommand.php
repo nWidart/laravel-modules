@@ -85,11 +85,22 @@ abstract class GeneratorCommand extends Command
      */
     public function getClassNamespace($module)
     {
+        $extra = '';
+
+        // if this is the module then we don't want to add the extra from it as the extra will be the submodule.
+        if ($this->argumentName !== 'module') {
+            $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
+
+            $extra = str_replace('/', '\\', $extra);
+        }
+
         $namespace = $this->laravel['modules']->config('namespace');
 
         $namespace .= '\\' . $module->getStudlyName();
 
         $namespace .= '\\' . $this->getDefaultNamespace();
+
+        $namespace .= '\\' . $extra;
 
         $namespace = str_replace('/', '\\', $namespace);
 
