@@ -223,9 +223,11 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['Blog']]);
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $expected = 'Module [Blog] already exist!
-';
-        $this->assertEquals($expected, Artisan::output());
+        $output = Artisan::output();
+        $expected = 'ERROR  Module [Blog] already exists!';
+
+        $this->assertTrue(Str::contains($output, $expected));
+
         $this->assertSame(E_ERROR, $code);
     }
 
