@@ -314,17 +314,16 @@ class ModuleGenerator extends Generator
     {
         $name = $this->getName();
 
-        $this->component->info("Creating module: [$name]");
-
         if ($this->module->has($name)) {
             if ($this->force) {
                 $this->module->delete($name);
             } else {
-                $this->component->error("Module [{$name}] already exist!");
+                $this->component->error("Module [{$name}] already exists!");
 
                 return E_ERROR;
             }
         }
+        $this->component->info("Creating module: [$name]");
 
         $this->generateFolders();
 
