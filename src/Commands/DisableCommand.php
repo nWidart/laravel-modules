@@ -40,9 +40,9 @@ class DisableCommand extends Command
         if ($module->isEnabled()) {
             $module->disable();
 
-            $this->info("Module [{$module}] disabled successful.");
+            $this->components->info("Module [{$module}] disabled successful.");
         } else {
-            $this->comment("Module [{$module}] has already disabled.");
+            $this->components->warn("Module [{$module}] has already disabled.");
         }
 
         return 0;
@@ -62,9 +62,9 @@ class DisableCommand extends Command
             if ($module->isEnabled()) {
                 $module->disable();
 
-                $this->info("Module [{$module}] disabled successful.");
+                $this->components->info("Module [{$module}] disabled successful.");
             } else {
-                $this->comment("Module [{$module}] has already disabled.");
+                $this->components->warn("Module [{$module}] has already disabled.");
             }
         }
     }
