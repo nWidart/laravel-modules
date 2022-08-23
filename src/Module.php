@@ -425,7 +425,7 @@ abstract class Module
     private function flushCache(): void
     {
         if (config('modules.cache.enabled')) {
-            $this->cache->store()->flush();
+            $this->cache->store(config('modules.cache.driver'))->flush();
         }
     }
 
