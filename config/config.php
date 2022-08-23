@@ -231,6 +231,7 @@ return [
     */
     'cache' => [
         'enabled' => false,
+        'driver' => 'file',
         'key' => 'laravel-modules',
         'lifetime' => 60,
     ],
