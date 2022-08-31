@@ -183,7 +183,7 @@ class FileActivator implements ActivatorInterface
             return $this->readJson();
         }
 
-        return $this->cache->remember($this->cacheKey, $this->cacheLifetime, function () {
+        return $this->cache->store($this->config->get('modules.cache.driver'))->remember($this->cacheKey, $this->cacheLifetime, function () {
             return $this->readJson();
         });
     }
@@ -205,6 +205,6 @@ class FileActivator implements ActivatorInterface
      */
     private function flushCache(): void
     {
-        $this->cache->forget($this->cacheKey);
+        $this->cache->store($this->config->get('modules.cache.driver'))->forget($this->cacheKey);
     }
 }

@@ -200,7 +200,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function getCached()
     {
-        return $this->cache->remember($this->config('cache.key'), $this->config('cache.lifetime'), function () {
+        return $this->cache->store($this->config->get('modules.cache.driver'))->remember($this->config('cache.key'), $this->config('cache.lifetime'), function () {
             return $this->toCollection()->toArray();
         });
     }

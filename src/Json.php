@@ -130,7 +130,7 @@ class Json
             return $attributes;
         }
 
-        return app('cache')->remember($this->getPath(), config('modules.cache.lifetime'), function () use ($attributes) {
+        return app('cache')->store(config('modules.cache.driver'))->remember($this->getPath(), config('modules.cache.lifetime'), function () use ($attributes) {
             return $attributes;
         });
     }
