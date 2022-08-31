@@ -4,6 +4,20 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Added
+
+- [@alissn](https://github.com/alissn) add command show model information [#1429](https://github.com/nWidart/laravel-modules/pull/1429) 
+- [@JaberWiki](https://github.com/JaberWiki) add optional flag for seeder or request in model generator command [#1431](https://github.com/nWidart/laravel-modules/pull/1431)
+
+## Changed
+- [@alissn](https://github.com/alissn) updated command style to new version of artisan [#1430](https://github.com/nWidart/laravel-modules/pull/1430)
+- [@ChauDucGiang](https://github.com/ChauDucGiang) updated Feature/cache driver [#1443](https://github.com/nWidart/laravel-modules/pull/1443) 
+
+### Fixed
+
+- [@ajayfroiden](https://github.com/alissn) fixed module:disable [#1438](https://github.com/nWidart/laravel-modules/pull/1438)
+- [@inovar-tecnologia](https://github.com/inovar-tecnologia) fixed DisableCommand.php[#1435](https://github.com/nWidart/laravel-modules/pull/1435)
+
 ## 9.0.4 - 2022-07-28
 
 - 9.02 - 9.0.3 have been removed due to savere performance problems
