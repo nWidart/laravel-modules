@@ -42,6 +42,8 @@ class ModelMakeCommand extends GeneratorCommand
 
         $this->handleOptionalMigrationOption();
         $this->handleOptionalControllerOption();
+        $this->handleOptionalSeedOption();
+        $this->handleOptionalRequestOption();
 
         return 0;
     }
@@ -92,6 +94,8 @@ class ModelMakeCommand extends GeneratorCommand
             ['fillable', null, InputOption::VALUE_OPTIONAL, 'The fillable attributes.', null],
             ['migration', 'm', InputOption::VALUE_NONE, 'Flag to create associated migrations', null],
             ['controller', 'c', InputOption::VALUE_NONE, 'Flag to create associated controllers', null],
+            ['seed', 's', InputOption::VALUE_NONE, 'Create a new seeder for the model', null],
+            ['request', 'r', InputOption::VALUE_NONE, 'Create a new request for the model', null]
         ];
     }
 
@@ -117,6 +121,40 @@ class ModelMakeCommand extends GeneratorCommand
             $this->call('module:make-controller', array_filter([
                 'controller' => $controllerName,
                 'module' => $this->argument('module'),
+            ]));
+        }
+    }
+    
+    /**
+     * Create a seeder file for the model.
+     *
+     * @return void
+     */
+    protected function handleOptionalSeedOption()
+    {
+        if ($this->option('seed') === true) {
+            $seedName = "{$this->getModelName()}Seeder";
+
+            $this->call('module:make-seed', array_filter([
+                'name' => $seedName,
+                'module' => $this->argument('module')
+            ]));
+        }
+    }
+
+    /**
+     * Create a request file for the model.
+     *
+     * @return void
+     */
+    protected function handleOptionalRequestOption()
+    {
+        if ($this->option('request') === true) {
+            $requestName = "{$this->getModelName()}Request";
+
+            $this->call('module:make-request', array_filter([
+                'name' => $requestName,
+                'module' => $this->argument('module')
             ]));
         }
     }
