@@ -42,6 +42,14 @@ class ModuleGenerator extends Generator
     protected $console;
 
     /**
+     * The laravel component Factory instance.
+     *
+     * @var \Illuminate\Console\View\Components\Factory
+     */
+    protected $component;
+
+
+    /**
      * The activator instance
      *
      * @var ActivatorInterface
@@ -225,6 +233,23 @@ class ModuleGenerator extends Generator
     }
 
     /**
+     * @return \Illuminate\Console\View\Components\Factory
+     */
+    public function getComponent(): \Illuminate\Console\View\Components\Factory
+    {
+        return $this->component;
+    }
+
+    /**
+     * @param \Illuminate\Console\View\Components\Factory $component
+     */
+    public function setComponent(\Illuminate\Console\View\Components\Factory $component): self
+    {
+        $this->component = $component;
+        return $this;
+    }
+
+    /**
      * Get the module instance.
      *
      * @return \Nwidart\Modules\Module
@@ -293,11 +318,12 @@ class ModuleGenerator extends Generator
             if ($this->force) {
                 $this->module->delete($name);
             } else {
-                $this->console->error("Module [{$name}] already exist!");
+                $this->component->error("Module [{$name}] already exists!");
 
                 return E_ERROR;
             }
         }
+        $this->component->info("Creating module: [$name]");
 
         $this->generateFolders();
 
@@ -314,7 +340,9 @@ class ModuleGenerator extends Generator
 
         $this->activator->setActiveByName($name, $this->isActive);
 
-        $this->console->info("Module [{$name}] created successfully.");
+        $this->console->newLine(1);
+
+        $this->component->info("Module [{$name}] created successfully.");
 
         return 0;
     }
@@ -358,13 +386,13 @@ class ModuleGenerator extends Generator
         foreach ($this->getFiles() as $stub => $file) {
             $path = $this->module->getModulePath($this->getName()) . $file;
 
-            if (!$this->filesystem->isDirectory($dir = dirname($path))) {
-                $this->filesystem->makeDirectory($dir, 0775, true);
-            }
+            $this->component->task("Generating file {$path}",function () use ($stub, $path) {
+                if (!$this->filesystem->isDirectory($dir = dirname($path))) {
+                    $this->filesystem->makeDirectory($dir, 0775, true);
+                }
 
-            $this->filesystem->put($path, $this->getStubContents($stub));
-
-            $this->console->info("Created : {$path}");
+                $this->filesystem->put($path, $this->getStubContents($stub));
+            });
         }
     }
 
@@ -467,13 +495,13 @@ class ModuleGenerator extends Generator
     {
         $path = $this->module->getModulePath($this->getName()) . 'module.json';
 
-        if (!$this->filesystem->isDirectory($dir = dirname($path))) {
-            $this->filesystem->makeDirectory($dir, 0775, true);
-        }
+        $this->component->task("Generating file $path",function () use ($path) {
+            if (!$this->filesystem->isDirectory($dir = dirname($path))) {
+                $this->filesystem->makeDirectory($dir, 0775, true);
+            }
 
-        $this->filesystem->put($path, $this->getStubContents('json'));
-
-        $this->console->info("Created : {$path}");
+            $this->filesystem->put($path, $this->getStubContents('json'));
+        });
     }
 
     /**

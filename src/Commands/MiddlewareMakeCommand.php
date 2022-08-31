@@ -85,4 +85,17 @@ class MiddlewareMakeCommand extends GeneratorCommand
     {
         return Str::studly($this->argument('name'));
     }
+
+    /**
+     * Run the command.
+     */
+    public function handle(): int
+    {
+
+        $this->components->info('Creating middleware...');
+
+        parent::handle();
+
+        return 0;
+    }
 }

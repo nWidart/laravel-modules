@@ -153,6 +153,9 @@ class MigrationMakeCommand extends GeneratorCommand
      */
     public function handle(): int
     {
+
+        $this->components->info('Creating migration...');
+
         if (parent::handle() === E_ERROR) {
             return E_ERROR;
         }

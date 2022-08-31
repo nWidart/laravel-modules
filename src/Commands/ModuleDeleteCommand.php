@@ -14,7 +14,7 @@ class ModuleDeleteCommand extends Command
     {
         $this->laravel['modules']->delete($this->argument('module'));
 
-        $this->info("Module {$this->argument('module')} has been deleted.");
+        $this->components->info("Module {$this->argument('module')} has been deleted.");
 
         return 0;
     }
