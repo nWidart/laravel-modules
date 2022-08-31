@@ -347,36 +347,6 @@ abstract class FileRepository implements RepositoryInterface, Countable
     }
 
     /**
-     * @inheritDoc
-     */
-    public function findByAlias(string $alias)
-    {
-        foreach ($this->all() as $module) {
-            if ($module->getAlias() === $alias) {
-                return $module;
-            }
-        }
-
-        return;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function findRequirements($name): array
-    {
-        $requirements = [];
-
-        $module = $this->findOrFail($name);
-
-        foreach ($module->getRequires() as $requirementName) {
-            $requirements[] = $this->findByAlias($requirementName);
-        }
-
-        return $requirements;
-    }
-
-    /**
      * Find a specific module, if there return that, otherwise throw exception.
      *
      * @param $name

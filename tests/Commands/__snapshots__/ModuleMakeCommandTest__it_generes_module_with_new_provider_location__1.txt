@@ -7,7 +7,5 @@
     "providers": [
         "Modules\\Blog\\Base\\Providers\\BlogServiceProvider"
     ],
-    "aliases": {},
-    "files": [],
-    "requires": []
+    "files": []
 }

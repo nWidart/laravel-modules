@@ -89,15 +89,6 @@ class LaravelFileRepositoryTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_finds_a_module_by_alias()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
-
-        $this->assertInstanceOf(Module::class, $this->repository->findByAlias('recipe'));
-        $this->assertInstanceOf(Module::class, $this->repository->findByAlias('required_module'));
-    }
-
-    /** @test */
     public function it_find_or_fail_throws_exception_if_module_not_found()
     {
         $this->expectException(ModuleNotFoundException::class);
@@ -231,17 +222,6 @@ class LaravelFileRepositoryTest extends BaseTestCase
         $this->repository->delete('Blog');
 
         $this->assertFalse(is_dir(base_path('modules/Blog')));
-    }
-
-    /** @test */
-    public function it_can_find_all_requirements_of_a_module()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
-
-        $requirements = $this->repository->findRequirements('Recipe');
-
-        $this->assertCount(1, $requirements);
-        $this->assertInstanceOf(Module::class, $requirements[0]);
     }
 
     /** @test */

@@ -125,16 +125,6 @@ abstract class Module
     }
 
     /**
-     * Get alias.
-     *
-     * @return string
-     */
-    public function getAlias(): string
-    {
-        return $this->get('alias');
-    }
-
-    /**
      * Get priority.
      *
      * @return string
@@ -142,16 +132,6 @@ abstract class Module
     public function getPriority(): string
     {
         return $this->get('priority');
-    }
-
-    /**
-     * Get module requirements.
-     *
-     * @return array
-     */
-    public function getRequires(): array
-    {
-        return $this->get('requires');
     }
 
     /**

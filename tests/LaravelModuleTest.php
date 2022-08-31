@@ -76,12 +76,6 @@ class ModuleTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_gets_module_alias()
-    {
-        $this->assertEquals('recipe', $this->module->getAlias());
-    }
-
-    /** @test */
     public function it_gets_module_path()
     {
         $this->assertEquals(__DIR__ . '/stubs/valid/Recipe', $this->module->getPath());
@@ -97,12 +91,6 @@ class ModuleTest extends BaseTestCase
         $this->assertEquals(__DIR__ . '/stubs/valid_symlink/Recipe', $this->module->getPath());
 
         // symlink deleted in tearDownAfterClass
-    }
-
-    /** @test */
-    public function it_gets_required_modules()
-    {
-        $this->assertEquals(['required_module'], $this->module->getRequires());
     }
 
     /** @test */
