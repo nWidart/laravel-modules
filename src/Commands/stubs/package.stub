@@ -10,7 +10,7 @@
     "dotenv-expand": "^5.1.0",
     "laravel-vite-plugin": "^0.6.0",
     "lodash": "^4.17.21",
-    "postcss": "^8.3.7"
+    "postcss": "^8.3.7",
     "vite": "^3.0.9",
   }
 }
