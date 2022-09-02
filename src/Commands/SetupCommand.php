@@ -67,12 +67,12 @@ class SetupCommand extends Command
         if (!$this->laravel['files']->isDirectory($dir)) {
             $this->laravel['files']->makeDirectory($dir, 0755, true, true);
 
-            $this->info($success);
+            $this->components->info($success);
 
             return 0;
         }
 
-        $this->error($error);
+        $this->components->error($error);
 
         return E_ERROR;
     }
