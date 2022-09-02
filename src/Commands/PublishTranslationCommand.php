@@ -28,6 +28,8 @@ class PublishTranslationCommand extends Command
      */
     public function handle(): int
     {
+        $this->components->info('Publishing module translations...');
+
         if ($name = $this->argument('module')) {
             $this->publish($name);
 

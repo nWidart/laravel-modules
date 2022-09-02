@@ -28,6 +28,8 @@ class PublishConfigurationCommand extends Command
      */
     public function handle(): int
     {
+        $this->components->info('publishing module config files...');
+
         if ($module = $this->argument('module')) {
             $this->publishConfiguration($module);
 
