@@ -6,7 +6,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     build: {
-        outDir: '../../public/build-$LOWER_NAME$',
+        outDir: '../../public/build-blog',
         emptyOutDir: true,
         manifest: true,
         target: 'es2018',
