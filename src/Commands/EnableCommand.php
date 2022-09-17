@@ -27,25 +27,16 @@ class EnableCommand extends Command
      */
     public function handle(): int
     {
-        /**
-         * check if user entred an argument
-         */
-        if ($this->argument('module') === null) {
-            $this->enableAll();
+
+        $this->components->info('Enabling module ...');
+
+        if ($name = $this->argument('module') ) {
+            $this->enable($name);
 
             return 0;
         }
 
-        /** @var Module $module */
-        $module = $this->laravel['modules']->findOrFail($this->argument('module'));
-
-        if ($module->isDisabled()) {
-            $module->enable();
-
-            $this->info("Module [{$module}] enabled successful.");
-        } else {
-            $this->comment("Module [{$module}] has already enabled.");
-        }
+        $this->enableAll();
 
         return 0;
     }
@@ -61,14 +52,32 @@ class EnableCommand extends Command
         $modules = $this->laravel['modules']->all();
 
         foreach ($modules as $module) {
-            if ($module->isDisabled()) {
-                $module->enable();
-
-                $this->info("Module [{$module}] enabled successful.");
-            } else {
-                $this->comment("Module [{$module}] has already enabled.");
-            }
+            $this->enable($module);
         }
+    }
+
+    /**
+     * enable
+     *
+     * @param string $name
+     * @return void
+     */
+    public function enable($name)
+    {
+        if ($name instanceof Module) {
+            $module = $name;
+        }else {
+            $module = $this->laravel['modules']->findOrFail($name);
+        }
+
+        if ($module->isDisabled()) {
+            $module->enable();
+
+            $this->components->info("Module [{$module}] enabled successful.");
+        }else {
+            $this->components->warn("Module [{$module}] has already enabled.");
+        }
+
     }
 
     /**

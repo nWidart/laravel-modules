@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputArgument;
 
 class DumpCommand extends Command
@@ -26,28 +27,48 @@ class DumpCommand extends Command
      */
     public function handle(): int
     {
-        $this->info('Generating optimized autoload modules.');
+        $this->components->info('Generating optimized autoload modules.');
 
-        if ($module = $this->argument('module')) {
-            $this->dump($module);
-        } else {
-            foreach ($this->laravel['modules']->all() as $module) {
-                $this->dump($module->getStudlyName());
-            }
+        if ($name = $this->argument('module') ) {
+            $this->dump($name);
+
+            return 0;
         }
+
+        $this->dumpAll();
 
         return 0;
     }
 
-    public function dump($module)
+    /**
+     * dumpAll
+     *
+     * @return void
+     */
+    public function dumpAll()
     {
-        $module = $this->laravel['modules']->findOrFail($module);
+        /** @var Modules $modules */
+        $modules = $this->laravel['modules']->all();
 
-        $this->line("<comment>Running for module</comment>: {$module}");
+        foreach ($modules as $module) {
+            $this->dump($module);
+        }
+    }
 
-        chdir($module->getPath());
+    public function dump($name)
+    {
+        if ($name instanceof Module) {
+            $module = $name;
+        } else {
+            $module = $this->laravel['modules']->findOrFail($name);
+        }
 
-        passthru('composer dump -o -n -q');
+        $this->components->task("$module", function () use ($module) {
+            chdir($module->getPath());
+
+            passthru('composer dump -o -n -q');
+        });
+
     }
 
     /**

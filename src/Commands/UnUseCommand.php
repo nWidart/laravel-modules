@@ -27,7 +27,7 @@ class UnUseCommand extends Command
     {
         $this->laravel['modules']->forgetUsed();
 
-        $this->info('Previous module used successfully forgotten.');
+        $this->components->info('Previous module used successfully forgotten.');
 
         return 0;
     }

@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Module;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -29,29 +30,45 @@ class UpdateCommand extends Command
      */
     public function handle(): int
     {
-        $name = $this->argument('module');
+        $this->components->info('Updating module ...');
 
-        if ($name) {
+        if ($name = $this->argument('module')) {
             $this->updateModule($name);
 
             return 0;
         }
 
-        /** @var \Nwidart\Modules\Module $module */
-        foreach ($this->laravel['modules']->getOrdered() as $module) {
-            $this->updateModule($module->getName());
-        }
+        $this->updateAllModule();
 
         return 0;
     }
 
+
+    protected function updateAllModule()
+    {
+        /** @var \Nwidart\Modules\Module $module */
+        $modules = $this->laravel['modules']->getOrdered();
+
+        foreach ($modules as $module) {
+            $this->updateModule($module);
+        }
+
+    }
+
     protected function updateModule($name)
     {
-        $this->line('Running for module: <info>' . $name . '</info>');
 
+        if ($name instanceof Module) {
+            $module = $name;
+        }else {
+            $module = $this->laravel['modules']->findOrFail($name);
+        }
+
+        $this->components->task("Updating {$module->getName()} module", function () use ($module) {
+            $this->laravel['modules']->update($module);
+        });
         $this->laravel['modules']->update($name);
 
-        $this->info("Module [{$name}] updated successfully.");
     }
 
     /**
