@@ -384,6 +384,8 @@ class ModuleGenerator extends Generator
     public function generateFiles()
     {
         foreach ($this->getFiles() as $stub => $file) {
+            $file = str_replace('$LOWER_NAME$',$this->getLowerNameReplacement(),$file);
+            $file = str_replace('$STUDLY_NAME$', $this->getName(),$file);
             $path = $this->module->getModulePath($this->getName()) . $file;
 
             $this->component->task("Generating file {$path}",function () use ($stub, $path) {
