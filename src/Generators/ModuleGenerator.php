@@ -427,6 +427,14 @@ class ModuleGenerator extends Generator
                 'module' => $this->getName(),
             ]+$options);
         }
+        
+       if (GenerateConfigReader::read('model')->generate() === true) {
+            $options = [];
+            $this->console->call('module:make-model', [
+                    'model' => $this->getName(),
+                    'module' => $this->getName(),
+                ]+$options);
+        }
     }
 
     /**
