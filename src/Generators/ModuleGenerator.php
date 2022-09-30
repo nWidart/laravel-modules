@@ -483,7 +483,7 @@ class ModuleGenerator extends Generator
             ]);
         }
 
-        if (GenerateConfigReader::read('job')->generate() === true) {
+        if (GenerateConfigReader::read('jobs')->generate() === true) {
             $this->console->call('module:make-job', [
                 'name' => $this->getName().'Job',
                 'module' => $this->getName(),
