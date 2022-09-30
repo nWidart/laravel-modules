@@ -403,6 +403,8 @@ class ModuleGenerator extends Generator
      */
     public function generateResources()
     {
+        $modelNameSuffix = GenerateConfigReader::read('model')->suffix();
+
         if (GenerateConfigReader::read('seeder')->generate() === true) {
             $this->console->call('module:make-seed', [
                 'name' => $this->getName(),
@@ -433,7 +435,7 @@ class ModuleGenerator extends Generator
         if (GenerateConfigReader::read('model')->generate() === true) {
             $options = [];
             $this->console->call('module:make-model', [
-                    'model' => $this->getName(),
+                    'model' => $this->getName().$modelNameSuffix,
                     'module' => $this->getName(),
                 ]+$options);
         }
