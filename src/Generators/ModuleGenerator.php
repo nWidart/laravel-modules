@@ -384,6 +384,8 @@ class ModuleGenerator extends Generator
     public function generateFiles()
     {
         foreach ($this->getFiles() as $stub => $file) {
+            $file = str_replace('$LOWER_NAME$',$this->getLowerNameReplacement(),$file);
+            $file = str_replace('$STUDLY_NAME$', $this->getName(),$file);
             $path = $this->module->getModulePath($this->getName()) . $file;
 
             $this->component->task("Generating file {$path}",function () use ($stub, $path) {
@@ -427,6 +429,14 @@ class ModuleGenerator extends Generator
                 'module' => $this->getName(),
             ]+$options);
         }
+
+        if (GenerateConfigReader::read('model')->generate() === true) {
+            $options = [];
+            $this->console->call('module:make-model', [
+                    'model' => $this->getName(),
+                    'module' => $this->getName(),
+                ]+$options);
+        }
     }
 
     /**
@@ -440,52 +450,9 @@ class ModuleGenerator extends Generator
     {
         return (new Stub(
             '/' . $stub . '.stub',
-            $this->getReplacement($stub)
+            $this->getReplacement()
         )
         )->render();
-    }
-
-    /**
-     * get the list for the replacements.
-     */
-    public function getReplacements()
-    {
-        return $this->module->config('stubs.replacements');
-    }
-
-    /**
-     * Get array replacement for the specified stub.
-     *
-     * @param $stub
-     *
-     * @return array
-     */
-    protected function getReplacement($stub)
-    {
-        $replacements = $this->module->config('stubs.replacements');
-
-        if (!isset($replacements[$stub])) {
-            return [];
-        }
-
-        $keys = $replacements[$stub];
-
-        $replaces = [];
-
-        if ($stub === 'json' || $stub === 'composer') {
-            if (in_array('PROVIDER_NAMESPACE', $keys, true) === false) {
-                $keys[] = 'PROVIDER_NAMESPACE';
-            }
-        }
-        foreach ($keys as $key) {
-            if (method_exists($this, $method = 'get' . ucfirst(Str::studly(strtolower($key))) . 'Replacement')) {
-                $replaces[$key] = $this->$method();
-            } else {
-                $replaces[$key] = null;
-            }
-        }
-
-        return $replaces;
     }
 
     /**
@@ -521,6 +488,24 @@ class ModuleGenerator extends Generator
         $content = str_replace($provider, '', $content);
 
         $this->filesystem->put($path, $content);
+    }
+
+    /**
+     * Get array replacement for the specified stub.
+     *
+     * @return array
+     */
+    protected function getReplacement()
+    {
+        return [
+            'PROVIDER_NAMESPACE'=>$this->getProviderNamespaceReplacement(),
+            'VENDOR'            =>$this->getVendorReplacement(),
+            'MODULE_NAMESPACE'  =>$this->getModuleNamespaceReplacement(),
+            'AUTHOR_NAME'       =>$this->getAuthorNameReplacement(),
+            'AUTHOR_EMAIL'      =>$this->getAuthorEmailReplacement(),
+            'STUDLY_NAME'       =>$this->getStudlyNameReplacement(),
+            'LowerName'         =>$this->getLowerNameReplacement()
+        ];
     }
 
     /**
