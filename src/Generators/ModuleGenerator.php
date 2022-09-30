@@ -496,6 +496,13 @@ class ModuleGenerator extends Generator
                 'module' => $this->getName(),
             ]);
         }
+
+        if (GenerateConfigReader::read('notifications')->generate() === true) {
+            $this->console->call('module:make-notification', [
+                'name' => $this->getName().'Notification',
+                'module' => $this->getName(),
+            ]);
+        }
     }
 
     /**
