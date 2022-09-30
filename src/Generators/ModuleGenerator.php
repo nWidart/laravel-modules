@@ -427,34 +427,74 @@ class ModuleGenerator extends Generator
         if (GenerateConfigReader::read('controller')->generate() === true) {
             $options = $this->type=='api' ? ['--api'=>true] : [];
             $this->console->call('module:make-controller', [
-                'controller' => $this->getName() . 'Controller',
-                'module' => $this->getName(),
-            ]+$options);
+                    'controller' => $this->getName() . 'Controller',
+                    'module' => $this->getName(),
+                ]+$options);
         }
 
         if (GenerateConfigReader::read('model')->generate() === true) {
-            $options = [];
             $this->console->call('module:make-model', [
-                    'model' => $this->getName().$modelNameSuffix,
-                    'module' => $this->getName(),
-                ]+$options);
+                'model' => $this->getName().$modelNameSuffix,
+                'module' => $this->getName(),
+            ]);
         }
 
         if (GenerateConfigReader::read('factory')->generate() === true) {
-            $options = [];
             $this->console->call('module:make-factory', [
-                    'name' => $this->getName(),
-                    'model' => $this->getName().$modelNameSuffix,
-                    'module' => $this->getName(),
-                ]+$options);
+                'name' => $this->getName(),
+                'model' => $this->getName().$modelNameSuffix,
+                'module' => $this->getName(),
+            ]);
         }
 
         if (GenerateConfigReader::read('migration')->generate() === true) {
-            $options = [];
             $this->console->call('module:make-migration', [
-                    'name' => 'create_'.$this->getLowerNameReplacement().'_table',
-                    'module' => $this->getName(),
-                ]+$options);
+                'name' => 'create_'.$this->getLowerNameReplacement().'_table',
+                'module' => $this->getName(),
+            ]);
+        }
+
+        if (GenerateConfigReader::read('filter')->generate() === true) {
+            $this->console->call('module:make-middleware', [
+                'name' => $this->getName().'Middleware',
+                'module' => $this->getName(),
+            ]);
+        }
+
+        if (GenerateConfigReader::read('request')->generate() === true) {
+            $this->console->call('module:make-request', [
+                'name' => $this->getName().'Request',
+                'module' => $this->getName(),
+            ]);
+        }
+
+        if (GenerateConfigReader::read('event')->generate() === true) {
+            $this->console->call('module:make-event', [
+                'name' => $this->getName().'Event',
+                'module' => $this->getName(),
+            ]);
+        }
+
+        if (GenerateConfigReader::read('listener')->generate() === true) {
+            $this->console->call('module:make-listener', [
+                'name' => $this->getName().'Listener',
+                'module' => $this->getName(),
+                '--event' => $this->getName().'Event',
+            ]);
+        }
+
+        if (GenerateConfigReader::read('job')->generate() === true) {
+            $this->console->call('module:make-job', [
+                'name' => $this->getName().'Job',
+                'module' => $this->getName(),
+            ]);
+        }
+
+        if (GenerateConfigReader::read('emails')->generate() === true) {
+            $this->console->call('module:make-mail', [
+                'name' => $this->getName().'Email',
+                'module' => $this->getName(),
+            ]);
         }
     }
 

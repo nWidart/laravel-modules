@@ -42,7 +42,7 @@ class FactoryMakeCommand extends GeneratorCommand
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the model.'],
-            ['model', InputArgument::OPTIONAL, 'The name of the model.'],
+            ['model', InputArgument::OPTIONAL, 'The name of the specific model.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
