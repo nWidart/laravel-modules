@@ -581,7 +581,7 @@ class ModuleGenerator extends Generator
      */
     protected function getLowerNameReplacement()
     {
-        return strtolower($this->getName());
+        return lcfirst($this->getName());
     }
 
     /**
