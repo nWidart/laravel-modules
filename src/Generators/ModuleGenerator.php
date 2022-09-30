@@ -570,7 +570,7 @@ class ModuleGenerator extends Generator
             'AUTHOR_NAME'       =>$this->getAuthorNameReplacement(),
             'AUTHOR_EMAIL'      =>$this->getAuthorEmailReplacement(),
             'STUDLY_NAME'       =>$this->getStudlyNameReplacement(),
-            'LowerName'         =>$this->getLowerNameReplacement()
+            'LOWER_NAME'         =>$this->getLowerNameReplacement()
         ];
     }
 
