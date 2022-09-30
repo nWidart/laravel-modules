@@ -439,6 +439,23 @@ class ModuleGenerator extends Generator
                     'module' => $this->getName(),
                 ]+$options);
         }
+
+        if (GenerateConfigReader::read('factory')->generate() === true) {
+            $options = [];
+            $this->console->call('module:make-factory', [
+                    'name' => $this->getName(),
+                    'model' => $this->getName().$modelNameSuffix,
+                    'module' => $this->getName(),
+                ]+$options);
+        }
+
+        if (GenerateConfigReader::read('migration')->generate() === true) {
+            $options = [];
+            $this->console->call('module:make-migration', [
+                    'name' => 'create_'.$this->getLowerNameReplacement().'_table',
+                    'module' => $this->getName(),
+                ]+$options);
+        }
     }
 
     /**

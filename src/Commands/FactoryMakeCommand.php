@@ -42,6 +42,7 @@ class FactoryMakeCommand extends GeneratorCommand
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the model.'],
+            ['model', InputArgument::OPTIONAL, 'The name of the model.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
@@ -56,6 +57,7 @@ class FactoryMakeCommand extends GeneratorCommand
         return (new Stub('/factory.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
             'NAME' => $this->getModelName(),
+            'MODEL' => $this->getSpecificModelName() ?: $this->getModelName(),
             'MODEL_NAMESPACE' => $this->getModelNamespace(),
         ]))->render();
     }
@@ -86,6 +88,14 @@ class FactoryMakeCommand extends GeneratorCommand
     private function getModelName()
     {
         return Str::studly($this->argument('name'));
+    }
+
+    /**
+     * @return mixed|string
+     */
+    private function getSpecificModelName()
+    {
+        return Str::studly($this->argument('model'));
     }
 
     /**

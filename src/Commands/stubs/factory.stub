@@ -11,7 +11,7 @@ class $NAME$Factory extends Factory
      *
      * @var string
      */
-    protected $model = \$MODEL_NAMESPACE$\$NAME$::class;
+    protected $model = \$MODEL_NAMESPACE$\$MODEL$::class;
 
     /**
      * Define the model's default state.
