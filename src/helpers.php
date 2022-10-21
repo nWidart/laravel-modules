@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Vite;
+use Illuminate\Foundation\Vite;
+use Illuminate\Support\Facades\Vite as ViteFacade;
 
 if (! function_exists('module_path')) {
     function module_path($name, $path = '')
@@ -41,8 +42,8 @@ if (! function_exists('module_vite')) {
     /**
      * support for vite
      */
-    function module_vite($module, $asset): \Illuminate\Foundation\Vite
+    function module_vite($module, $asset): Vite
     {
-        return Vite::useHotFile(storage_path('vite.hot'))->useBuildDirectory($module)->withEntryPoints([$asset]);
+        return ViteFacade::useHotFile(storage_path('vite.hot'))->useBuildDirectory($module)->withEntryPoints([$asset]);
     }
 }
