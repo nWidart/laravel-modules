@@ -166,6 +166,7 @@ return [
         Commands\RequestMakeCommand::class,
         Commands\RuleMakeCommand::class,
         Commands\MigrateCommand::class,
+        Commands\MigrateFreshCommand::class,
         Commands\MigrateRefreshCommand::class,
         Commands\MigrateResetCommand::class,
         Commands\MigrateRollbackCommand::class,
