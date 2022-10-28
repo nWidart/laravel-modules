@@ -109,11 +109,11 @@ class ModuleMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_generates_webpack_file()
+    public function it_generates_vite_file()
     {
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $path = $this->modulePath . '/' . $this->app['modules']->config('stubs.files.webpack');
+        $path = $this->modulePath . '/' . $this->app['modules']->config('stubs.files.vite');
 
         $this->assertMatchesSnapshot($this->finder->get($path));
         $this->assertSame(0, $code);
