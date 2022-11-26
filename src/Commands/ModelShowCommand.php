@@ -3,7 +3,9 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Foundation\Console\ShowModelCommand;
+use Symfony\Component\Console\Attribute\AsCommand;
 
+#[AsCommand('module:model-show', 'Show information about an Eloquent model in modules')]
 class ModelShowCommand extends ShowModelCommand
 {
 
@@ -14,17 +16,6 @@ class ModelShowCommand extends ShowModelCommand
      * @var string
      */
     protected $name = 'module:model-show';
-
-    /**
-     * The name of the console command.
-     *
-     * This name is used to identify the command during lazy loading.
-     *
-     * @var string|null
-     *
-     * @deprecated
-     */
-    protected static $defaultName = 'module:model-show';
 
     /**
      * The console command description.
