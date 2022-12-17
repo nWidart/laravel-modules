@@ -4,6 +4,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 9.0.6 - 2022-11-17
+
+## Added
+
+- [@alissn](https://github.com/alissn) implement command check lang folder, and show missing files [#1496](https://github.com/nWidart/laravel-modules/pull/1496)
+- [@kmizzi](https://github.com/kmizzi) Use AsCommand in lieu of defaultName for ModelShowCommand [#1503](https://github.com/nWidart/laravel-modules/pull/1503)
+
 ## 9.0.6 - 2022-10-28
 
 ## Added
