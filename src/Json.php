@@ -113,18 +113,31 @@ class Json
     }
 
     /**
+     *  Decode contents as array.
+     *
+     * @return array
+     * @throws InvalidJsonException
+     */
+    public function decodeContents()
+    {
+        $attributes =  json_decode($this->getContents(), 1);
+
+        // any JSON parsing errors should throw an exception
+        if (json_last_error() > 0) {
+            throw new InvalidJsonException('Error processing file: ' . $this->getPath() . '. Error: ' . json_last_error_msg());
+        }
+
+        return $attributes;
+    }
+
+    /**
      * Get file contents as array.
      * @return array
      * @throws \Exception
      */
     public function getAttributes()
     {
-        $attributes = json_decode($this->getContents(), 1);
-
-        // any JSON parsing errors should throw an exception
-        if (json_last_error() > 0) {
-            throw new InvalidJsonException('Error processing file: ' . $this->getPath() . '. Error: ' . json_last_error_msg());
-        }
+        $attributes = $this->decodeContents();
 
         if (config('modules.cache.enabled') === false) {
             return $attributes;
