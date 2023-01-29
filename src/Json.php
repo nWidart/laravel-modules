@@ -131,20 +131,19 @@ class Json
     }
 
     /**
-     * Get file contents as array.
+     * Get file contents as array, either from the cache or from
+     * the json content file if the cache is disabled.
      * @return array
      * @throws \Exception
      */
     public function getAttributes()
     {
-        $attributes = $this->decodeContents();
-
         if (config('modules.cache.enabled') === false) {
-            return $attributes;
+            return $this->decodeContents();
         }
 
-        return app('cache')->store(config('modules.cache.driver'))->remember($this->getPath(), config('modules.cache.lifetime'), function () use ($attributes) {
-            return $attributes;
+        return app('cache')->store(config('modules.cache.driver'))->remember($this->getPath(), config('modules.cache.lifetime'), function () {
+            return $this->decodeContents();
         });
     }
 
