@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Generators\DatabaseModuleGenerator;
 use Nwidart\Modules\Generators\ModuleGenerator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -32,8 +33,14 @@ class ModuleMakeCommand extends Command
         $names = $this->argument('name');
         $success = true;
 
+        if (empty($names) || !is_array($names)) {
+            $this->error('The names of modules are required');
+            return 1;
+        }
+
         foreach ($names as $name) {
-            $code = with(new ModuleGenerator($name))
+            $generator = config('modules.database_management.enabled') ? new DatabaseModuleGenerator($name) : new ModuleGenerator($name);
+            $code = with($generator)
                 ->setFilesystem($this->laravel['files'])
                 ->setModule($this->laravel['modules'])
                 ->setConfig($this->laravel['config'])

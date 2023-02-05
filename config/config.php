@@ -186,6 +186,7 @@ return [
         Commands\ResourceMakeCommand::class,
         Commands\TestMakeCommand::class,
         Commands\LaravelModulesV6Migrator::class,
+        Commands\MigrateToDatabaseCommand::class,
     ],
 
     /*
@@ -274,4 +275,27 @@ return [
     ],
 
     'activator' => 'file',
+
+    /**
+     * Use database management, not using module.json and modules_statuses.json.
+     */
+    'database_management' => [
+        'enabled' => false,
+        'update_file_to_database_when_updating' => true, // Option to update module.json into database when updating a module.
+        'repository' => null,
+    ],
+    'default_version' => '1.0.0',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Package commands are excluded from booting all modules.
+    |--------------------------------------------------------------------------
+    |
+    | Here you can define which commands will be excluded from booting all modules
+    | in your application.
+    |
+    */
+    'exclude_boot_commands' => [
+        Commands\MigrateToDatabaseCommand::class,
+    ],
 ];

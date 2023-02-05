@@ -359,7 +359,7 @@ class ModuleGenerator extends Generator
                 continue;
             }
 
-            $path = $this->module->getModulePath($this->getName()) . '/' . $folder->getPath();
+            $path = $this->module->getModulePath($this->getName()) . DIRECTORY_SEPARATOR . $folder->getPath();
 
             $this->filesystem->makeDirectory($path, 0755, true);
             if (config('modules.stubs.gitkeep')) {
@@ -375,7 +375,7 @@ class ModuleGenerator extends Generator
      */
     public function generateGitKeep($path)
     {
-        $this->filesystem->put($path . '/.gitkeep', '');
+        $this->filesystem->put($path . DIRECTORY_SEPARATOR . '.gitkeep', '');
     }
 
     /**
@@ -439,7 +439,7 @@ class ModuleGenerator extends Generator
     protected function getStubContents($stub)
     {
         return (new Stub(
-            '/' . $stub . '.stub',
+            DIRECTORY_SEPARATOR . $stub . '.stub',
             $this->getReplacement($stub)
         )
         )->render();

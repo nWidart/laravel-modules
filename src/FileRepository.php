@@ -52,7 +52,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
     /**
      * @var ConfigRepository
      */
-    private $config;
+    protected $config;
     /**
      * @var Filesystem
      */
@@ -60,7 +60,7 @@ abstract class FileRepository implements RepositoryInterface, Countable
     /**
      * @var CacheManager
      */
-    private $cache;
+    protected $cache;
 
     /**
      * The constructor.

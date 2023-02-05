@@ -204,7 +204,7 @@ abstract class Module
         }
 
         return Arr::get($this->moduleJson, $file, function () use ($file) {
-            return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->files);
+            return $this->moduleJson[$file] = new Json($this->getPath() . DIRECTORY_SEPARATOR . $file, $this->files);
         });
     }
 
@@ -282,7 +282,7 @@ abstract class Module
     protected function registerFiles(): void
     {
         foreach ($this->get('files', []) as $file) {
-            include $this->path . '/' . $file;
+            include $this->path . DIRECTORY_SEPARATOR . $file;
         }
     }
 
@@ -387,7 +387,7 @@ abstract class Module
      */
     public function getExtraPath(string $path): string
     {
-        return $this->getPath() . '/' . $path;
+        return $this->getPath() . DIRECTORY_SEPARATOR . $path;
     }
 
     /**
@@ -402,7 +402,7 @@ abstract class Module
             !class_exists('\Modules\Core\Foundation\AsgardCms');
     }
 
-    private function flushCache(): void
+    public function flushCache(): void
     {
         if (config('modules.cache.enabled')) {
             $this->cache->store(config('modules.cache.driver'))->flush();
