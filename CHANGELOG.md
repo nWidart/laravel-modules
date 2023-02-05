@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Updated
+
+- [@dev-karpenko](https://github.com/dev-karpenko) updated get attributes cache [#1526](https://github.com/nWidart/laravel-modules/pull/1526)
+
 ## 9.0.7 - 2022-11-17
 
 ## Added
