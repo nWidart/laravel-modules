@@ -113,25 +113,37 @@ class Json
     }
 
     /**
-     * Get file contents as array.
+     *  Decode contents as array.
+     *
      * @return array
-     * @throws \Exception
+     * @throws InvalidJsonException
      */
-    public function getAttributes()
+    public function decodeContents()
     {
-        $attributes = json_decode($this->getContents(), 1);
+        $attributes =  json_decode($this->getContents(), 1);
 
         // any JSON parsing errors should throw an exception
         if (json_last_error() > 0) {
             throw new InvalidJsonException('Error processing file: ' . $this->getPath() . '. Error: ' . json_last_error_msg());
         }
 
+        return $attributes;
+    }
+
+    /**
+     * Get file contents as array, either from the cache or from
+     * the json content file if the cache is disabled.
+     * @return array
+     * @throws \Exception
+     */
+    public function getAttributes()
+    {
         if (config('modules.cache.enabled') === false) {
-            return $attributes;
+            return $this->decodeContents();
         }
 
-        return app('cache')->store(config('modules.cache.driver'))->remember($this->getPath(), config('modules.cache.lifetime'), function () use ($attributes) {
-            return $attributes;
+        return app('cache')->store(config('modules.cache.driver'))->remember($this->getPath(), config('modules.cache.lifetime'), function () {
+            return $this->decodeContents();
         });
     }
 
