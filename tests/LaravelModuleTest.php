@@ -8,7 +8,7 @@ use Modules\Recipe\Providers\RecipeServiceProvider;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Json;
 
-class ModuleTest extends BaseTestCase
+class LaravelModuleTest extends BaseTestCase
 {
     /**
      * @var TestingModule

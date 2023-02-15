@@ -6,7 +6,7 @@ use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class ComponentViewCommandTest extends BaseTestCase
+class ComponentViewMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
     /**
