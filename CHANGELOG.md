@@ -4,6 +4,15 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 10.0 - 2022-02-14
+
+### Changed
+
+- Minimum PHP version to 8.1 for supporting Laravel 10
+- Laravel 10 version
+- Increased PHPUnit to 10.0
+- Increased Mockery to 1.5
+
 ## Updated
 
 - [@dev-karpenko](https://github.com/dev-karpenko) updated get attributes cache [#1526](https://github.com/nWidart/laravel-modules/pull/1526)

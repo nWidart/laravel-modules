@@ -39,6 +39,7 @@ abstract class BaseTestCase extends OrchestraTestCase
      */
     protected function getEnvironmentSetUp($app)
     {
+        $app['config']->set('app.asset_url', null);
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
             'driver' => 'sqlite',

@@ -18,16 +18,16 @@
     }
   ],
   "require": {
-    "php": ">=8.0",
+    "php": ">=8.1",
     "ext-json": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.5",
-    "mockery/mockery": "^1.4",
-    "orchestra/testbench": "^7.0",
+    "phpunit/phpunit": "^10.0",
+    "mockery/mockery": "^1.5",
+    "orchestra/testbench": "^8.0",
     "friendsofphp/php-cs-fixer": "^3.6",
-    "laravel/framework": "^9.21",
-    "spatie/phpunit-snapshot-assertions": "^4.2",
+    "laravel/framework": "^10.0",
+    "spatie/phpunit-snapshot-assertions": "^5.0",
     "phpstan/phpstan": "^1.4"
   },
   "autoload": {
@@ -54,13 +54,13 @@
       }
     },
     "branch-alias": {
-      "dev-master": "9.0-dev"
+      "dev-master": "10.0-dev"
     }
   },
   "scripts": {
     "update-snapshots": "./vendor/bin/phpunit --no-coverage -d --update-snapshots",
     "test": "vendor/bin/phpunit",
-    "test-coverage": "vendor/bin/phpunit --debug --coverage-html coverage",
+    "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
     "pcf": "vendor/bin/php-cs-fixer fix --verbose"
   },
   "minimum-stability": "dev",
