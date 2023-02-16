@@ -7,19 +7,20 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/nWidart/laravel-modules.svg?style=flat-square)](https://scrutinizer-ci.com/g/nWidart/laravel-modules)
 [![Total Downloads](https://img.shields.io/packagist/dt/nwidart/laravel-modules.svg?style=flat-square)](https://packagist.org/packages/nwidart/laravel-modules)
 
-| **Laravel**  |  **laravel-modules** |
-|---|---|
-| 5.4  | ^1.0  |
-| 5.5  | ^2.0  |
-| 5.6  | ^3.0  |
-| 5.7  | ^4.0  |
-| 5.8  | ^5.0  |
-| 6.0  | ^6.0  |
-| 7.0  | ^7.0 |
-| 8.0  | ^8.0 |
-| 9.0  | ^9.0 |
+| **Laravel** | **laravel-modules** |
+|-------------|---------------------|
+| 5.4         | ^1.0                |
+| 5.5         | ^2.0                |
+| 5.6         | ^3.0                |
+| 5.7         | ^4.0                |
+| 5.8         | ^5.0                |
+| 6.0         | ^6.0                |
+| 7.0         | ^7.0                |
+| 8.0         | ^8.0                |
+| 9.0         | ^9.0                |
+| 10.0        | ^10.0               |
 
-`nwidart/laravel-modules` is a Laravel package which created to manage your large Laravel app using modules. Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 9.
+`nwidart/laravel-modules` is a Laravel package which created to manage your large Laravel app using modules. Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 10.
 
 This package is a re-published, re-organised and maintained version of [pingpong/modules](https://github.com/pingpong-labs/modules), which isn't maintained anymore. This package is used in [AsgardCMS](https://asgardcms.com/).
 
