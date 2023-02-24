@@ -64,6 +64,11 @@ class MigrateCommand extends Command
      */
     protected function migrate(Module $module)
     {
+        $database = $this->option('database');
+        if(!$database) {
+            $database = $module->getDatabaseName();
+        }
+
         $path = str_replace(base_path(), '', (new Migrator($module, $this->getLaravel()))->getPath());
 
         if ($this->option('subpath')) {
@@ -72,7 +77,7 @@ class MigrateCommand extends Command
 
         $this->call('migrate', [
             '--path' => $path,
-            '--database' => $this->option('database'),
+            '--database' => $database,
             '--pretend' => $this->option('pretend'),
             '--force' => $this->option('force'),
         ]);

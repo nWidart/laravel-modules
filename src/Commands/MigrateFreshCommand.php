@@ -38,11 +38,17 @@ class MigrateFreshCommand extends Command
             return E_ERROR;
         }
 
+
+        $database = $this->option('database');
+        if(!$database) {
+            $database = $module->getDatabaseName();
+        }
+
         $this->call('migrate:fresh');
 
         $this->call('module:migrate', [
             'module' => $this->getModuleName(),
-            '--database' => $this->option('database'),
+            '--database' => $database,
             '--force' => $this->option('force'),
             '--seed' => $this->option('seed'),
         ]);

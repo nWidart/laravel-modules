@@ -65,9 +65,14 @@ class MigrateStatusCommand extends Command
     {
         $path = str_replace(base_path(), '', (new Migrator($module, $this->getLaravel()))->getPath());
 
+        $database = $this->option('database');
+        if(!$database) {
+            $database = $module->getDatabaseName();
+        }
+
         $this->call('migrate:status', [
             '--path' => $path,
-            '--database' => $this->option('database'),
+            '--database' => $database,
         ]);
     }
 

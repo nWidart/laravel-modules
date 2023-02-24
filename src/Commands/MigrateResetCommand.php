@@ -69,6 +69,9 @@ class MigrateResetCommand extends Command
         $migrator = new Migrator($module, $this->getLaravel());
 
         $database = $this->option('database');
+        if(!$database) {
+            $database = $module->getDatabaseName();
+        }
 
         if (!empty($database)) {
             $migrator->setDatabase($database);

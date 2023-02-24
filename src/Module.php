@@ -420,4 +420,20 @@ abstract class Module
     {
         $this->translator->addNamespace($namespace, $path);
     }
+
+
+    /**
+     * Get the modules connection from its config file.
+     *
+     * @return string|null
+     */
+    public function getDatabaseName(): ?string
+    {
+        $connectionName = config($this->getLowerName().'.connection');
+        if($connectionName) {
+            return DB::connection($connectionName)->getDatabaseName();
+        }
+
+        return null;
+    }
 }

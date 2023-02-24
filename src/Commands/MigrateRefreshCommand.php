@@ -38,15 +38,20 @@ class MigrateRefreshCommand extends Command
             return E_ERROR;
         }
 
+        $database = $this->option('database');
+        if(!$database) {
+            $database = $module->getDatabaseName();
+        }
+
         $this->call('module:migrate-reset', [
             'module' => $this->getModuleName(),
-            '--database' => $this->option('database'),
+            '--database' => $database,
             '--force' => $this->option('force'),
         ]);
 
         $this->call('module:migrate', [
             'module' => $this->getModuleName(),
-            '--database' => $this->option('database'),
+            '--database' => $database,
             '--force' => $this->option('force'),
         ]);
 
