@@ -29,7 +29,7 @@ class Migrator
      * @var string|null
      * @example subpath 2000_01_01_000000_create_example_table.php
      */
-    protected $subpath = null;
+    protected $subpath = '';
 
     /**
      * The database connection to be used
@@ -98,7 +98,7 @@ class Migrator
      */
     public function getMigrations($reverse = false)
     {
-        if ($this->subpath) {
+        if (!empty($this->subpath)) {
             $files = $this->laravel['files']->glob($this->getPath() . '/' . $this->subpath);
         } else {
             $files = $this->laravel['files']->glob($this->getPath() . '/*_*.php');
