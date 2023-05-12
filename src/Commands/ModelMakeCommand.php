@@ -56,18 +56,7 @@ class ModelMakeCommand extends GeneratorCommand
      */
     private function createMigrationName()
     {
-        $pieces = preg_split('/(?=[A-Z])/', $this->argument('model'), -1, PREG_SPLIT_NO_EMPTY);
-
-        $string = '';
-        foreach ($pieces as $i => $piece) {
-            if ($i+1 < count($pieces)) {
-                $string .= strtolower($piece) . '_';
-            } else {
-                $string .= Str::plural(strtolower($piece));
-            }
-        }
-
-        return $string;
+        return Str::snake(Str::pluralStudly($this->argument('model')));
     }
 
     /**
