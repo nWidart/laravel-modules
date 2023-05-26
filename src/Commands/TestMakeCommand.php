@@ -36,7 +36,7 @@ class TestMakeCommand extends GeneratorCommand
     protected function getArguments()
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the form request class.'],
+            ['name', InputArgument::REQUIRED, 'The name of the test class.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
