@@ -63,6 +63,13 @@ abstract class FileRepository implements RepositoryInterface, Countable
     private $cache;
 
     /**
+     * Scanned modules array.
+     *
+     * @var array
+     */
+    private static array $modules = [];
+
+    /**
      * The constructor.
      * @param Container $app
      * @param string|null $path
@@ -140,6 +147,10 @@ abstract class FileRepository implements RepositoryInterface, Countable
      */
     public function scan()
     {
+        if (count(static::$modules)) {
+            return static::$modules;
+        }
+
         $paths = $this->getScanPaths();
 
         $modules = [];
@@ -155,6 +166,8 @@ abstract class FileRepository implements RepositoryInterface, Countable
                 $modules[$name] = $this->createModule($this->app, $name, dirname($manifest));
             }
         }
+
+        static::$modules = $modules;
 
         return $modules;
     }
