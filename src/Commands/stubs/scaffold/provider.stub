@@ -48,11 +48,22 @@ class $CLASS$ extends ServiceProvider
     protected function registerConfig()
     {
         $this->publishes([
-            module_path($this->moduleName, '$PATH_CONFIG$/config.php') => config_path($this->moduleNameLower . '.php'),
+            module_path($this->moduleName, '$PATH_CONFIG$/config.php') => $this->getConfigPath($this->moduleNameLower),
         ], 'config');
         $this->mergeConfigFrom(
             module_path($this->moduleName, '$PATH_CONFIG$/config.php'), $this->moduleNameLower
         );
+    }
+
+    /**
+     * Get config path.
+     *
+     * @param  string $configName
+     * @return string
+     */
+    public function getConfigPath(string $configName): string
+    {
+        return config_path("{$this->moduleNameLower}/{$configName}.php");
     }
 
     /**
