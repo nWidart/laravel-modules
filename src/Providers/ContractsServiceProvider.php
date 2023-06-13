@@ -13,6 +13,6 @@ class ContractsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(RepositoryInterface::class, LaravelFileRepository::class);
+        $this->app->singleton(RepositoryInterface::class, LaravelFileRepository::class);
     }
 }
