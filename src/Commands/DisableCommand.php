@@ -35,11 +35,13 @@ class DisableCommand extends Command
     public function handle(): int
     {
         $this->components->info('Disabling module ...');
-
-        foreach($this->argument('module') as $name) {
-            $this->disable($name);
+        
+        if (count($this->argument('module'))) {
+            foreach($this->argument('module') as $name) {
+                $this->disable($name);
+            }
+            return 0;
         }
-        return 0;
 
         $this->disableAll();
 
