@@ -33,7 +33,7 @@ class NotificationMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_generates_the_mail_class()
+    public function it_generates_the_notification_class()
     {
         $code = $this->artisan('module:make-notification', ['name' => 'WelcomeNotification', 'module' => 'Blog']);
 
