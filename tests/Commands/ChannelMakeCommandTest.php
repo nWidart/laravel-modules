@@ -33,7 +33,7 @@ class ChannelMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_generates_the_mail_class()
+    public function it_generates_the_channel_class()
     {
         $code = $this->artisan('module:make-channel', ['name' => 'WelcomeChannel', 'module' => 'Blog']);
 
