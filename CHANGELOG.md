@@ -4,6 +4,16 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Added
+
+- [@alissn](https://github.com/alissn) Add phpdoc to Module facade class for IDE auto-completion.
+
+## Changed
+
+- [@moeen-basra](https://github.com/moeen-basra) Remove the unused Factory import
+- [@moeen-basra](https://github.com/moeen-basra) Replace the \Config::get with config function
+- [@aryala7](https://github.com/aryala7) Changed disable module Command to accept array of modules instead of single module to disable
+
 ## 10.0 - 2023-02-14
 
 ### Changed
