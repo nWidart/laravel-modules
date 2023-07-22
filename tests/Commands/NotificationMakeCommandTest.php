@@ -6,7 +6,7 @@ use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class ChannelMakeCommandTest extends BaseTestCase
+class NotificationMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
     /**
@@ -35,18 +35,18 @@ class ChannelMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_generates_the_mail_class()
     {
-        $code = $this->artisan('module:make-channel', ['name' => 'WelcomeChannel', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-notification', ['name' => 'WelcomeNotification', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Broadcasting/WelcomeChannel.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Notifications/WelcomeNotification.php'));
         $this->assertSame(0, $code);
     }
 
     /** @test */
     public function it_generated_correct_file_with_content()
     {
-        $code = $this->artisan('module:make-channel', ['name' => 'WelcomeChannel', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-notification', ['name' => 'WelcomeNotification', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Broadcasting/WelcomeChannel.php');
+        $file = $this->finder->get($this->modulePath . '/Notifications/WelcomeNotification.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -55,11 +55,11 @@ class ChannelMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_can_change_the_default_namespace()
     {
-        $this->app['config']->set('modules.paths.generator.channels.path', 'SuperChannel');
+        $this->app['config']->set('modules.paths.generator.notifications.path', 'SuperNotifications');
 
-        $code = $this->artisan('module:make-channel', ['name' => 'WelcomeChannel', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-notification', ['name' => 'WelcomeNotification', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/SuperChannel/WelcomeChannel.php');
+        $file = $this->finder->get($this->modulePath . '/SuperNotifications/WelcomeNotification.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -68,11 +68,11 @@ class ChannelMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_can_change_the_default_namespace_specific()
     {
-        $this->app['config']->set('modules.paths.generator.channels.namespace', 'SuperChannel');
+        $this->app['config']->set('modules.paths.generator.notifications.namespace', 'SuperNotifications');
 
-        $code = $this->artisan('module:make-channel', ['name' => 'WelcomeChannel', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-notification', ['name' => 'WelcomeNotification', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Broadcasting/WelcomeChannel.php');
+        $file = $this->finder->get($this->modulePath . '/Notifications/WelcomeNotification.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

@@ -143,6 +143,7 @@ return [
     |
     */
     'commands' => [
+        Commands\ChannelMakeCommand::class,
         Commands\CommandMakeCommand::class,
         Commands\ComponentClassMakeCommand::class,
         Commands\ComponentViewMakeCommand::class,

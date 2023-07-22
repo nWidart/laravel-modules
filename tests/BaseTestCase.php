@@ -55,6 +55,7 @@ abstract class BaseTestCase extends OrchestraTestCase
                 'assets' => ['path' => 'Assets', 'generate' => true],
                 'config' => ['path' => 'Config', 'generate' => true],
                 'command' => ['path' => 'Console', 'generate' => true],
+                'channels' => ['path' => 'Broadcasting', 'generate' => true],
                 'event' => ['path' => 'Events', 'generate' => true],
                 'listener' => ['path' => 'Listeners', 'generate' => true],
                 'migration' => ['path' => 'Database/Migrations', 'generate' => true],
@@ -84,6 +85,7 @@ abstract class BaseTestCase extends OrchestraTestCase
         $app['config']->set('modules.composer-output', true);
 
         $app['config']->set('modules.commands', [
+            Commands\ChannelMakeCommand::class,
             Commands\CommandMakeCommand::class,
             Commands\ControllerMakeCommand::class,
             Commands\DisableCommand::class,
