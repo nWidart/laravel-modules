@@ -12,6 +12,7 @@ class ConsoleServiceProvider extends ServiceProvider
      * @var array
      */
     protected $commands = [
+        Commands\ChannelMakeCommand::class,
         Commands\CommandMakeCommand::class,
         Commands\ControllerMakeCommand::class,
         Commands\DisableCommand::class,
