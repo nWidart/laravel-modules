@@ -6,13 +6,14 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Added
 
-- [@alissn](https://github.com/alissn) Add phpdoc to Module facade class for IDE auto-completion.
+- [@alissn](https://github.com/alissn) Add phpdoc to Module facade class for IDE auto-completion. [#1589](https://github.com/nWidart/laravel-modules/pull/1589)
+- [@aryala7](https://github.com/aryala7) Add command to create broadcasting channel [#1599](https://github.com/nWidart/laravel-modules/pull/1599)
 
 ## Changed
 
-- [@moeen-basra](https://github.com/moeen-basra) Remove the unused Factory import
-- [@moeen-basra](https://github.com/moeen-basra) Replace the \Config::get with config function
-- [@aryala7](https://github.com/aryala7) Changed disable module Command to accept array of modules instead of single module to disable
+- [@moeen-basra](https://github.com/moeen-basra) Remove the unused Factory import [#1596](https://github.com/nWidart/laravel-modules/pull/1596)
+- [@moeen-basra](https://github.com/moeen-basra) Replace the \Config::get with config function [#1596](https://github.com/nWidart/laravel-modules/pull/1596)
+- [@aryala7](https://github.com/aryala7) Changed disable module Command to accept array of modules instead of single module to disable [#1591](https://github.com/nWidart/laravel-modules/pull/1591)
 
 ## 10.0 - 2023-02-14
 
