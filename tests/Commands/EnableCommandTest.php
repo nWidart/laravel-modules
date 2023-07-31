@@ -29,9 +29,26 @@ class EnableCommandTest extends BaseTestCase
         $blogModule = $this->app[RepositoryInterface::class]->find('Blog');
         $blogModule->disable();
 
-        $code = $this->artisan('module:enable', ['module' => 'Blog']);
+        $code = $this->artisan('module:enable', ['module' => ['Blog']]);
 
         $this->assertTrue($blogModule->isEnabled());
+        $this->assertSame(0, $code);
+    }
+
+    /** @test */
+    public function it_disables_array_of_modules()
+    {
+        /** @var Module $blogModule */
+        $blogModule = $this->app[RepositoryInterface::class]->find('Blog');
+        $blogModule->disable();
+
+        /** @var Module $taxonomyModule */
+        $taxonomyModule = $this->app[RepositoryInterface::class]->find('Taxonomy');
+        $taxonomyModule->disable();
+
+        $code = $this->artisan('module:enable',['module' => ['Blog2','Taxonomy']]);
+
+        $this->assertTrue($blogModule->isEnabled() && $taxonomyModule->isEnabled());
         $this->assertSame(0, $code);
     }
 
