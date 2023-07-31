@@ -16,11 +16,18 @@ class EnableCommand extends Command
     protected $name = 'module:enable';
 
     /**
+     * The console command signature.
+     *
+     * @var string
+     */
+    protected $signature = 'module:enable {module?*}';
+
+    /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Enable the specified module.';
+    protected $description = 'Enable an array of modules.';
 
     /**
      * Execute the console command.
@@ -30,9 +37,10 @@ class EnableCommand extends Command
 
         $this->components->info('Enabling module ...');
 
-        if ($name = $this->argument('module') ) {
-            $this->enable($name);
-
+        if (count($this->argument('module'))) {
+            foreach($this->argument('module') as $name) {
+                $this->enable($name);
+            }
             return 0;
         }
 
