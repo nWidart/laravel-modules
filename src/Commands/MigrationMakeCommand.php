@@ -76,12 +76,14 @@ class MigrationMakeCommand extends GeneratorCommand
 
         if ($parser->isCreate()) {
             return Stub::create('/migration/create.stub', [
+                'module' => Str::lower(Str::studly($this->getModuleName())),
                 'class' => $this->getClass(),
                 'table' => $parser->getTableName(),
                 'fields' => $this->getSchemaParser()->render(),
             ]);
         } elseif ($parser->isAdd()) {
             return Stub::create('/migration/add.stub', [
+                'module' => Str::lower(Str::studly($this->getModuleName())),
                 'class' => $this->getClass(),
                 'table' => $parser->getTableName(),
                 'fields_up' => $this->getSchemaParser()->up(),
@@ -89,6 +91,7 @@ class MigrationMakeCommand extends GeneratorCommand
             ]);
         } elseif ($parser->isDelete()) {
             return Stub::create('/migration/delete.stub', [
+                'module' => Str::lower(Str::studly($this->getModuleName())),
                 'class' => $this->getClass(),
                 'table' => $parser->getTableName(),
                 'fields_down' => $this->getSchemaParser()->up(),
@@ -96,6 +99,7 @@ class MigrationMakeCommand extends GeneratorCommand
             ]);
         } elseif ($parser->isDrop()) {
             return Stub::create('/migration/drop.stub', [
+                'module' => Str::lower(Str::studly($this->getModuleName())),
                 'class' => $this->getClass(),
                 'table' => $parser->getTableName(),
                 'fields' => $this->getSchemaParser()->render(),
@@ -103,6 +107,7 @@ class MigrationMakeCommand extends GeneratorCommand
         }
 
         return Stub::create('/migration/plain.stub', [
+            'module' => Str::lower(Str::studly($this->getModuleName())),
             'class' => $this->getClass(),
         ]);
     }
