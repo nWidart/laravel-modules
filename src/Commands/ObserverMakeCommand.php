@@ -7,7 +7,6 @@ use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 
 class ObserverMakeCommand extends GeneratorCommand
 {
@@ -55,19 +54,53 @@ class ObserverMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
         return (new Stub('/observer.stub', [
-            'NAMESPACE' => $this->getClassNamespace($module).'\Observers',
-            'CLASS' => $this->getClass(),
-//            'NAMESPACEMODEL' => $this->getClass()
-        ]))->render();
+                'NAMESPACE' => $this->getClassNamespace($module) . '\Observers',
+                'NAME' => $this->getModelName(),
+                'MODEL_NAMESPACE' => $this->getModelNamespace(),
+                'NAME_VARIABLE' => $this->getModelVariable(),
+            ]))->render();
     }
+
+    /**
+     * Get model namespace.
+     *
+     * @return string
+     */
+    public function getModelNamespace(): string
+    {
+        $path = $this->laravel['modules']->config('paths.generator.model.path', 'Entities');
+
+        $path = str_replace('/', '\\', $path);
+
+        return $this->laravel['modules']->config('namespace') . '\\' . $this->laravel['modules']->findOrFail($this->getModuleName()) . '\\' . $path;
+    }
+
+    /**
+     * @return mixed|string
+     */
+    private function getModelName()
+    {
+        return Str::studly($this->argument('name'));
+    }
+
+    /**
+     *  @return mixed|string
+     */
+    private function getModelVariable() : string
+    {
+        return '$'.Str::lower($this->argument('name'));
+    }
+
     /**
      * @return mixed
      */
     protected function getDestinationFilePath()
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+
         $observerPath = GenerateConfigReader::read('observer');
-        return $path . $observerPath->getPath() . '/' . $this->getFileName() . '.php';
+
+        return $path . $observerPath->getPath() . '/' . $this->getFileName();
     }
 
     /**
@@ -75,7 +108,7 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name'));
+        return Str::studly($this->argument('name')) . 'Observer.php';
     }
 
 
@@ -87,5 +120,4 @@ class ObserverMakeCommand extends GeneratorCommand
 
         return 0;
     }
-
 }
