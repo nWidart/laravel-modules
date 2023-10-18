@@ -4,13 +4,18 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 10.1 - 2023-02-14
+
 ## Added
 
+- [@sergiy-petrov](https://github.com/sergiy-petrov) Added support for testing GitHub actions against PHP versions 8.2 and 8.3. [#1624](https://github.com/nWidart/laravel-modules/pull/1624)
+- [@hanieas](https://github.com/hanieas) Added make Observer command. [#1623](https://github.com/nWidart/laravel-modules/pull/1623)
 - [@alissn](https://github.com/alissn) Add phpdoc to Module facade class for IDE auto-completion. [#1589](https://github.com/nWidart/laravel-modules/pull/1589)
 - [@aryala7](https://github.com/aryala7) Add command to create broadcasting channel [#1599](https://github.com/nWidart/laravel-modules/pull/1599)
 
 ## Changed
 
+- [@Rattone](https://github.com/Rattone) Updated stubs for command from `name` to `signature` [#1625](https://github.com/nWidart/laravel-modules/pull/1625)
 - [@moeen-basra](https://github.com/moeen-basra) Remove the unused Factory import [#1596](https://github.com/nWidart/laravel-modules/pull/1596)
 - [@moeen-basra](https://github.com/moeen-basra) Replace the \Config::get with config function [#1596](https://github.com/nWidart/laravel-modules/pull/1596)
 - [@aryala7](https://github.com/aryala7) Changed disable module Command to accept array of modules instead of single module to disable [#1591](https://github.com/nWidart/laravel-modules/pull/1591)
