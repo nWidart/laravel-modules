@@ -8,6 +8,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Added
 
+- [@JaberWiki](https://github.com/JaberWiki) Added Include an optional flag `subpath` for rolling back a module's specific migration file [#1626](https://github.com/nWidart/laravel-modules/pull/1626)
 - [@sergiy-petrov](https://github.com/sergiy-petrov) Added support for testing GitHub actions against PHP versions 8.2 and 8.3. [#1624](https://github.com/nWidart/laravel-modules/pull/1624)
 - [@hanieas](https://github.com/hanieas) Added make Observer command. [#1623](https://github.com/nWidart/laravel-modules/pull/1623)
 - [@alissn](https://github.com/alissn) Add phpdoc to Module facade class for IDE auto-completion. [#1589](https://github.com/nWidart/laravel-modules/pull/1589)
