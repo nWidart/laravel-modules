@@ -4,7 +4,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
-## 10.1 - 2023-02-14
+## 10.0.1 - 2023-09-18
 
 ## Added
 
@@ -21,7 +21,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - [@moeen-basra](https://github.com/moeen-basra) Replace the \Config::get with config function [#1596](https://github.com/nWidart/laravel-modules/pull/1596)
 - [@aryala7](https://github.com/aryala7) Changed disable module Command to accept array of modules instead of single module to disable [#1591](https://github.com/nWidart/laravel-modules/pull/1591)
 
-## 10.0 - 2023-02-14
+## 10.0.0 - 2023-02-14
 
 ### Changed
 
