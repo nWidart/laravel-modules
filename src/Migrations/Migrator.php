@@ -24,6 +24,14 @@ class Migrator
     protected $laravel;
 
     /**
+     * Optional subpath for specific migration file.
+     *
+     * @var string|null
+     * @example subpath 2000_01_01_000000_create_example_table.php
+     */
+    protected $subpath = '';
+
+    /**
      * The database connection to be used
      *
      * @var string
@@ -34,11 +42,13 @@ class Migrator
      * Create new instance.
      * @param Module $module
      * @param Application $application
+     * @param string|null $subpath
      */
-    public function __construct(Module $module, Application $application)
+    public function __construct(Module $module, Application $application, $subpath = null)
     {
         $this->module = $module;
         $this->laravel = $application;
+        $this->subpath = $subpath;
     }
 
     /**
@@ -88,7 +98,11 @@ class Migrator
      */
     public function getMigrations($reverse = false)
     {
-        $files = $this->laravel['files']->glob($this->getPath() . '/*_*.php');
+        if (!empty($this->subpath)) {
+            $files = $this->laravel['files']->glob($this->getPath() . '/' . $this->subpath);
+        } else {
+            $files = $this->laravel['files']->glob($this->getPath() . '/*_*.php');
+        }
 
         // Once we have the array of files in the directory we will just remove the
         // extension and take the basename of the file which is all we need when

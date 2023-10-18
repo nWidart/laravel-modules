@@ -66,7 +66,7 @@ class MigrateRollbackCommand extends Command
             $module = $this->module->findOrFail($module);
         }
 
-        $migrator = new Migrator($module, $this->getLaravel());
+        $migrator = new Migrator($module, $this->getLaravel(), $this->option('subpath'));
 
         $database = $this->option('database');
 
@@ -111,6 +111,7 @@ class MigrateRollbackCommand extends Command
             ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
             ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
+            ['subpath', null, InputOption::VALUE_OPTIONAL, 'Indicate a subpath for modules specific migration file']
         ];
     }
 }
