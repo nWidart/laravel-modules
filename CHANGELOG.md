@@ -4,6 +4,12 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 10.0.2 - 2023-09-18
+
+## Changed
+
+- reordered config commands and added missing observer command
+
 ## 10.0.1 - 2023-09-18
 
 ## Added
