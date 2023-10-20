@@ -8,32 +8,24 @@ class $CLASS$ implements Rule
 {
     /**
      * Create a new rule instance.
-     *
-     * @return void
      */
-    public function __construct()
+    public function __construct(): void
     {
         //
     }
 
     /**
      * Determine if the validation rule passes.
-     *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(string $attribute, $value): bool
     {
         //
     }
 
     /**
      * Get the validation error message.
-     *
-     * @return string
      */
-    public function message()
+    public function message(): string
     {
         return 'The validation error message.';
     }
