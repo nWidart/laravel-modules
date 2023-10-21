@@ -10,8 +10,6 @@ class $CLASS$
 {
     /**
      * Create the event listener.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -20,11 +18,8 @@ class $CLASS$
 
     /**
      * Handle the event.
-     *
-     * @param $SHORTEVENTNAME$ $event
-     * @return void
      */
-    public function handle($SHORTEVENTNAME$ $event)
+    public function handle($SHORTEVENTNAME$ $event): void
     {
         //
     }
