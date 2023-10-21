@@ -11,7 +11,7 @@ class $CLASS$
     /**
      * Create a new policy instance.
      */
-    public function __construct(): void
+    public function __construct()
     {
         //
     }
