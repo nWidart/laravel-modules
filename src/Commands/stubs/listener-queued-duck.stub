@@ -10,9 +10,7 @@ class $CLASS$ implements ShouldQueue
     use InteractsWithQueue;
 
     /**
-     * Create the event listener.
-     *
-     * @return void
+     * Create the event listener
      */
     public function __construct()
     {
@@ -21,11 +19,8 @@ class $CLASS$ implements ShouldQueue
 
     /**
      * Handle the event.
-     *
-     * @param  object  $event
-     * @return void
      */
-    public function handle($event)
+    public function handle($event): void
     {
         //
     }
