@@ -9,7 +9,7 @@ class $CLASS$ implements Rule
     /**
      * Create a new rule instance.
      */
-    public function __construct(): void
+    public function __construct()
     {
         //
     }
