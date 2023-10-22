@@ -1,7 +1,6 @@
 <?php
 
-// use Illuminate\Support\Facades\Route;
-// use Modules\$STUDLY_NAME$\app\Http\Controllers\$STUDLY_NAME$Controller;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,10 +11,6 @@
 | contains the "web" middleware group. Now create something great!
 */
 
-Route::group([], function () {
-    Route::resource('$LOWER_NAME$', $STUDLY_NAME$Controller::class)->except(['index'])->names('$LOWER_NAME$');
-    Route::get('$LOWER_NAME$s', [$STUDLY_NAME$Controller::class, 'index'])->name('$LOWER_NAME$.index');
-    Route::get('$LOWER_NAME$/{$LOWER_NAME$}/restore', [$STUDLY_NAME$Controller::class, 'restore'])->name('$LOWER_NAME$.restore');
-    Route::delete('$LOWER_NAME$/{$LOWER_NAME$}/permanent', [$STUDLY_NAME$Controller::class, 'permanent'])->name('$LOWER_NAME$.destroy.permanent');
-    Route::get('$LOWER_NAME$', fn () => redirect()->route('$LOWER_NAME$.index'))->name('$LOWER_NAME$.index.redirect');
+Route::prefix('$LOWER_NAME$')->group(function() {
+    Route::get('/', '$STUDLY_NAME$Controller@index');
 });
