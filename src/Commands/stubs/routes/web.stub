@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Modules\$STUDLY_NAME$\app\Http\Controllers\$STUDLY_NAME$Controller;
+// use Illuminate\Support\Facades\Route;
+// use Modules\$STUDLY_NAME$\app\Http\Controllers\$STUDLY_NAME$Controller;
 
 /*
 |--------------------------------------------------------------------------
