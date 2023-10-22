@@ -4,6 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Changed
+
+- [@solomon-ochepa](https://github.com/solomon-ochepa) updated stubs to use return types
+
+
 ## 10.0.2 - 2023-09-18
 
 ## Changed
@@ -13,7 +18,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 ## 10.0.1 - 2023-09-18
 
 ## Added
-
+ 
 - [@JaberWiki](https://github.com/JaberWiki) Added Include an optional flag `subpath` for rolling back a module's specific migration file [#1626](https://github.com/nWidart/laravel-modules/pull/1626)
 - [@sergiy-petrov](https://github.com/sergiy-petrov) Added support for testing GitHub actions against PHP versions 8.2 and 8.3. [#1624](https://github.com/nWidart/laravel-modules/pull/1624)
 - [@hanieas](https://github.com/hanieas) Added make Observer command. [#1623](https://github.com/nWidart/laravel-modules/pull/1623)
