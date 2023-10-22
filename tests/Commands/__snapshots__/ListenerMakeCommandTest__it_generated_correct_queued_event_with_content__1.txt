@@ -12,8 +12,6 @@ class NotifyUsersOfANewPost implements ShouldQueue
 
     /**
      * Create the event listener.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -22,11 +20,8 @@ class NotifyUsersOfANewPost implements ShouldQueue
 
     /**
      * Handle the event.
-     *
-     * @param  UserWasCreated  $event
-     * @return void
      */
-    public function handle(UserWasCreated $event)
+    public function handle(UserWasCreated $event): void
     {
         //
     }
