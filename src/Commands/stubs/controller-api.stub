@@ -17,7 +17,7 @@ class $CLASS$ extends Controller
     {
         //
 
-        return response()->json($this->data)->setStatusCode(200);
+        return response()->json($this->data);
     }
 
     /**
@@ -27,7 +27,7 @@ class $CLASS$ extends Controller
     {
         //
 
-        return response()->json($this->data)->setStatusCode(200);
+        return response()->json($this->data);
     }
 
     /**
@@ -37,7 +37,7 @@ class $CLASS$ extends Controller
     {
         //
 
-        return response()->json($this->data)->setStatusCode(200);
+        return response()->json($this->data);
     }
 
     /**
@@ -47,7 +47,7 @@ class $CLASS$ extends Controller
     {
         //
 
-        return response()->json($this->data)->setStatusCode(200);
+        return response()->json($this->data);
     }
 
     /**
@@ -57,6 +57,6 @@ class $CLASS$ extends Controller
     {
         //
 
-        return response()->json($this->data)->setStatusCode(200);
+        return response()->json($this->data);
     }
 }
