@@ -67,6 +67,10 @@ By default, the module classes are not loaded automatically. You can autoload yo
 
 You'll find installation instructions and full documentation on [https://docs.laravelmodules.com/](https://docs.laravelmodules.com/).
 
+## Community
+
+We also have a Discord community. [https://discord.gg/hkF7BRvRZK](https://discord.gg/hkF7BRvRZK) For quick help, ask questions in the appropriate channel.
+
 ## Credits
 
 - [Nicolas Widart](https://github.com/nwidart)
@@ -77,7 +81,6 @@ You'll find installation instructions and full documentation on [https://docs.la
 ## About Nicolas Widart
 
 Nicolas Widart is a freelance web developer specialising on the Laravel framework. View all my packages [on my website](https://nwidart.com/), or visit [my website](https://nicolaswidart.com).
-
 
 ## License
 
