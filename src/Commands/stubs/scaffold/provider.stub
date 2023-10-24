@@ -2,8 +2,8 @@
 
 namespace $NAMESPACE$;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-
 
 class $CLASS$ extends ServiceProvider
 {
@@ -57,6 +57,9 @@ class $CLASS$ extends ServiceProvider
         ], ['views', $this->moduleNameLower.'-module-views',]);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
+
+        $componentNamespace = str_replace('/', '\\', config('modules.namespace').'\\'.$this->moduleName.'\\'.config('modules.paths.generator.component-class.path'));
+        Blade::componentNamespace($componentNamespace, $this->moduleNameLower);
     }
 
     /**
