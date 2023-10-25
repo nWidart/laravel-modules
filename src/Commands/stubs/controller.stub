@@ -12,7 +12,7 @@ class $CLASS$ extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index()
     {
         return view('$LOWER_NAME$::index');
     }
@@ -20,7 +20,7 @@ class $CLASS$ extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): Response
+    public function create()
     {
         return view('$LOWER_NAME$::create');
     }
@@ -36,7 +36,7 @@ class $CLASS$ extends Controller
     /**
      * Show the specified resource.
      */
-    public function show($id): Response
+    public function show($id)
     {
         return view('$LOWER_NAME$::show');
     }
@@ -44,7 +44,7 @@ class $CLASS$ extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id): Response
+    public function edit($id)
     {
         return view('$LOWER_NAME$::edit');
     }
@@ -60,7 +60,7 @@ class $CLASS$ extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id): RedirectResponse
+    public function destroy($id)
     {
         //
     }
