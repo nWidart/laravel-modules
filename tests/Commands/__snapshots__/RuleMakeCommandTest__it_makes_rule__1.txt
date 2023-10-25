@@ -2,31 +2,16 @@
 
 namespace Modules\Blog\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class UniqueRule implements Rule
+class UniqueRule implements ValidationRule
 {
     /**
-     * Create a new rule instance.
+     * Run the validation rule.
      */
-    public function __construct()
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         //
-    }
-
-    /**
-     * Determine if the validation rule passes.
-     */
-    public function passes(string $attribute, $value): bool
-    {
-        //
-    }
-
-    /**
-     * Get the validation error message.
-     */
-    public function message(): string
-    {
-        return 'The validation error message.';
     }
 }
