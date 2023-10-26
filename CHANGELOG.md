@@ -9,6 +9,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - [@solomon-ochepa](https://github.com/solomon-ochepa) updated stubs to use return types
 - [@hungthai1401](https://github.com/hungthai1401) updated rule stub
 
+## Added
+
+- [@hungthai1401](https://github.com/hungthai1401 ) added implicit rule
+
 
 ## 10.0.2 - 2023-09-18
 
