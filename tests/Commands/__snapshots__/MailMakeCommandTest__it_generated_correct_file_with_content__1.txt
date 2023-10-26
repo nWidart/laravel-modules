@@ -13,8 +13,6 @@ class SomeMail extends Mailable
 
     /**
      * Create a new message instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -23,10 +21,8 @@ class SomeMail extends Mailable
 
     /**
      * Build the message.
-     *
-     * @return $this
      */
-    public function build()
+    public function build(): self
     {
         return $this->view('view.name');
     }

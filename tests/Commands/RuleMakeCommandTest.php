@@ -45,6 +45,18 @@ class RuleMakeCommandTest extends BaseTestCase
     }
 
     /** @test */
+    public function it_makes_implicit_rule()
+    {
+        $code = $this->artisan('module:make-rule', ['name' => 'ImplicitUniqueRule', 'module' => 'Blog', '--implicit' => true]);
+
+        $ruleFile = $this->modulePath . '/Rules/ImplicitUniqueRule.php';
+
+        $this->assertTrue(is_file($ruleFile), 'Rule file was not created.');
+        $this->assertMatchesSnapshot($this->finder->get($ruleFile));
+        $this->assertSame(0, $code);
+    }
+
+    /** @test */
     public function it_can_change_the_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.rules.path', 'SuperRules');

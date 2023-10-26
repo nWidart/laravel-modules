@@ -1,12 +1,17 @@
 <?php
 
-namespace Modules\Blog\SuperRules;
+namespace Modules\Blog\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class UniqueRule implements ValidationRule
+class ImplicitUniqueRule implements ValidationRule
 {
+    /**
+     * Indicates whether the rule should be implicit.
+     */
+    public bool $implicit = true;
+
     /**
      * Run the validation rule.
      */

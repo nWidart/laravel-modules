@@ -22,7 +22,7 @@
 
 `nwidart/laravel-modules` is a Laravel package which created to manage your large Laravel app using modules. Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 10.
 
-This package is a re-published, re-organised and maintained version of [pingpong/modules](https://github.com/pingpong-labs/modules), which isn't maintained anymore. This package is used in [AsgardCMS](https://asgardcms.com/).
+This package is a re-published, re-organised and maintained version of [pingpong/modules](https://github.com/pingpong-labs/modules), which isn't maintained anymore. This package is used in [AsgardCMS](https://github.com/AsgardCms).
 
 With one big added bonus that the original package didn't have: **tests**.
 
@@ -67,6 +67,10 @@ By default, the module classes are not loaded automatically. You can autoload yo
 
 You'll find installation instructions and full documentation on [https://docs.laravelmodules.com/](https://docs.laravelmodules.com/).
 
+## Community
+
+We also have a Discord community. [https://discord.gg/hkF7BRvRZK](https://discord.gg/hkF7BRvRZK) For quick help, ask questions in the appropriate channel.
+
 ## Credits
 
 - [Nicolas Widart](https://github.com/nwidart)
@@ -77,7 +81,6 @@ You'll find installation instructions and full documentation on [https://docs.la
 ## About Nicolas Widart
 
 Nicolas Widart is a freelance web developer specialising on the Laravel framework. View all my packages [on my website](https://nwidart.com/), or visit [my website](https://nicolaswidart.com).
-
 
 ## License
 
