@@ -41,7 +41,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::middleware('web')
             ->namespace($this->moduleNamespace)
-            ->group(module_path('Blog', '/Routes/web.php'));
+            ->group(module_path('Blog', '/routes/web.php'));
     }
 
     /**
@@ -54,6 +54,6 @@ class RouteServiceProvider extends ServiceProvider
         Route::prefix('api')
             ->middleware('api')
             ->namespace($this->moduleNamespace)
-            ->group(module_path('Blog', '/Routes/api.php'));
+            ->group(module_path('Blog', '/routes/api.php'));
     }
 }
