@@ -107,7 +107,7 @@ return [
             'migration' => ['path' => 'database/migrations', 'generate' => true],
             'seeder' => [
                 'path' => 'database/seeders',
-                'namespace' => 'Database/Seeders',
+                'namespace' => 'database/seeders',
                 'generate' => true,
             ],
             'factory' => ['path' => 'database/factories', 'generate' => true],
