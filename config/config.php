@@ -105,7 +105,11 @@ return [
             'command' => ['path' => 'app/Console', 'generate' => false],
             'channels' => ['path' => 'app/Broadcasting', 'generate' => false],
             'migration' => ['path' => 'database/migrations', 'generate' => true],
-            'seeder' => ['path' => 'database/seeders', 'generate' => true],
+            'seeder' => [
+                'path' => 'database/seeders',
+                'namespace' => 'Database/Seeders',
+                'generate' => true,
+            ],
             'factory' => ['path' => 'database/factories', 'generate' => true],
             'model' => ['path' => 'app/Models', 'generate' => true],
             'observer' => ['path' => 'app/Observers', 'generate' => false],
