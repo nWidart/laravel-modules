@@ -7,6 +7,7 @@ use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class RuleMakeCommand extends GeneratorCommand
 {
@@ -54,13 +55,29 @@ class RuleMakeCommand extends GeneratorCommand
     }
 
     /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            ['implicit', 'i', InputOption::VALUE_NONE, 'Generate an implicit rule'],
+        ];
+    }
+
+    /**
      * @return mixed
      */
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/rule.stub', [
+        $stub = $this->option('implicit')
+            ? '/rule.implicit.stub'
+            : '/rule.stub';
+
+        return (new Stub($stub, [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS'     => $this->getFileName(),
         ]))->render();
