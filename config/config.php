@@ -41,7 +41,7 @@ return [
             'package' => 'package.json',
         ],
         'replacements' => [
-            'routes/web' => ['LOWER_NAME', 'STUDLY_NAME'],
+            'routes/web' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE', 'CONTROLLER_NAMESPACE'],
             'routes/api' => ['LOWER_NAME'],
             'vite' => ['LOWER_NAME'],
             'json' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE', 'PROVIDER_NAMESPACE'],
