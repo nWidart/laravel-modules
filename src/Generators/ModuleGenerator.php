@@ -445,6 +445,8 @@ class ModuleGenerator extends Generator
         )->render();
     }
 
+
+
     /**
      * get the list for the replacements.
      */
@@ -561,6 +563,16 @@ class ModuleGenerator extends Generator
     protected function getModuleNamespaceReplacement()
     {
         return str_replace('\\', '\\\\', $this->module->config('namespace'));
+    }
+
+    /**
+     * Get replacement for $CONTROLLER_NAMESPACE$.
+     *
+     * @return string
+     */
+    private function getControllerNamespaceReplacement(): string
+    {
+        return str_replace('/', '\\', $this->module->config('paths.generator.controller.namespace') ?: $this->module->config('paths.generator.controller.path', 'Controller'));
     }
 
     /**
