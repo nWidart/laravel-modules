@@ -10,7 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use Illuminate\Support\Facades\Route;
+use $MODULE_NAMESPACE$\$STUDLY_NAME$\$CONTROLLER_NAMESPACE$\$STUDLY_NAME$Controller;
 
 Route::prefix('$LOWER_NAME$')->group(function() {
-    Route::get('/', '$STUDLY_NAME$Controller@index');
+    Route::get('/', [$STUDLY_NAME$Controller::class, 'index'])->name('$LOWER_NAME$.index');
 });
