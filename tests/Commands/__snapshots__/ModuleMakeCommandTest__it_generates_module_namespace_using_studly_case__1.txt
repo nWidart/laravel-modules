@@ -16,6 +16,8 @@ class ModuleNameServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->registerCommands();
+        $this->registerCommandSchedules();
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
@@ -28,6 +30,47 @@ class ModuleNameServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->register(RouteServiceProvider::class);
+    }
+
+    /**
+     * Register commands in the format of Command::class
+     *
+     * @return void
+     */
+    protected function registerCommands()
+    {
+        /*$this->commands([
+
+        ]);*/
+    }
+
+    /**
+     * Register command Schedules.
+     *
+     * @return void
+     */
+    protected function registerCommandSchedules()
+    {
+        /*$this->app->booted(function () {
+            $schedule = $this->app->make(Schedule::class);
+            $schedule->command('inspire')->hourly();
+        });*/
+    }
+
+    /**
+     * Register translations.
+     */
+    public function registerTranslations(): void
+    {
+        $langPath = resource_path('lang/modules/'.$this->moduleNameLower);
+
+        if (is_dir($langPath)) {
+            $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
+            $this->loadJsonTranslationsFrom($langPath);
+        } else {
+            $this->loadTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
+            $this->loadJsonTranslationsFrom(module_path($this->moduleName, 'Resources/lang'));
+        }
     }
 
     /**
@@ -62,21 +105,7 @@ class ModuleNameServiceProvider extends ServiceProvider
         Blade::componentNamespace($componentNamespace, $this->moduleNameLower);
     }
 
-    /**
-     * Register translations.
-     */
-    public function registerTranslations(): void
-    {
-        $langPath = resource_path('lang/modules/'.$this->moduleNameLower);
 
-        if (is_dir($langPath)) {
-            $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
-            $this->loadJsonTranslationsFrom($langPath);
-        } else {
-            $this->loadTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
-            $this->loadJsonTranslationsFrom(module_path($this->moduleName, 'Resources/lang'));
-        }
-    }
 
     /**
      * Get the services provided by the provider.

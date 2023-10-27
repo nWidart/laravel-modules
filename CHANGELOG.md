@@ -6,8 +6,9 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Changed
 
-- [@solomon-ochepa](https://github.com/solomon-ochepa) updated stubs
+- [@solomon-ochepa](https://github.com/solomon-ochepa) updated multiple & config stubs for to follow modern laravel standards
 - [@dcblogdev](https://github.com/dcblogdev) updated enabled `$MODULE_NAMESPACE$` & `$CONTROLLER_NAMESPACE$` placeholders to be used inside stubs
+- [@dcblogdev](https://github.com/dcblogdev) added placeholders for console commands and their schedules inside module service provider
 - [@hungthai1401](https://github.com/hungthai1401) updated rule stub
 
 ## Added
