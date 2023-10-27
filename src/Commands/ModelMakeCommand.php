@@ -43,6 +43,7 @@ class ModelMakeCommand extends GeneratorCommand
         $this->handleOptionalMigrationOption();
         $this->handleOptionalControllerOption();
         $this->handleOptionalSeedOption();
+        $this->handleOptionalFactoryOption();
         $this->handleOptionalRequestOption();
 
         return 0;
@@ -95,7 +96,8 @@ class ModelMakeCommand extends GeneratorCommand
             ['migration', 'm', InputOption::VALUE_NONE, 'Flag to create associated migrations', null],
             ['controller', 'c', InputOption::VALUE_NONE, 'Flag to create associated controllers', null],
             ['seed', 's', InputOption::VALUE_NONE, 'Create a new seeder for the model', null],
-            ['request', 'r', InputOption::VALUE_NONE, 'Create a new request for the model', null]
+            ['factory', 'f', InputOption::VALUE_NONE, 'Create a new factory for the model', null],
+            ['request', 'r', InputOption::VALUE_NONE, 'Create a new request for the model', null],
         ];
     }
 
@@ -137,6 +139,21 @@ class ModelMakeCommand extends GeneratorCommand
 
             $this->call('module:make-seed', array_filter([
                 'name' => $seedName,
+                'module' => $this->argument('module')
+            ]));
+        }
+    }
+
+    /**
+     * Create a seeder file for the model.
+     *
+     * @return void
+     */
+    protected function handleOptionalFactoryOption()
+    {
+        if ($this->option('factory') === true) {
+            $this->call('module:make-factory', array_filter([
+                'name' => $this->getModelName(),
                 'module' => $this->argument('module')
             ]));
         }

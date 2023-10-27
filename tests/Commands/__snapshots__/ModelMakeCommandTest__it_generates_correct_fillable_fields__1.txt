@@ -4,6 +4,7 @@ namespace Modules\Blog\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Blog\Database\factories\PostFactory;
 
 class Post extends Model
 {
@@ -11,8 +12,8 @@ class Post extends Model
 
     protected $fillable = ["title","slug"];
     
-    protected static function newFactory()
+    protected static function newFactory(): PostFactory
     {
-        return \Modules\Blog\Database\factories\PostFactory::new();
+        //return PostFactory::new();
     }
 }
