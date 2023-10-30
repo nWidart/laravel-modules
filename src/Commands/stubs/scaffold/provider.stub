@@ -34,27 +34,21 @@ class $CLASS$ extends ServiceProvider
 
     /**
      * Register commands in the format of Command::class
-     *
-     * @return void
      */
-    protected function registerCommands()
+    protected function registerCommands(): void
     {
-        /*$this->commands([
-
-        ]);*/
+        // $this->commands([]);
     }
 
     /**
      * Register command Schedules.
-     *
-     * @return void
      */
-    protected function registerCommandSchedules()
+    protected function registerCommandSchedules(): void
     {
-        /*$this->app->booted(function () {
-            $schedule = $this->app->make(Schedule::class);
-            $schedule->command('inspire')->hourly();
-        });*/
+        // $this->app->booted(function () {
+        //     $schedule = $this->app->make(Schedule::class);
+        //     $schedule->command('inspire')->hourly();
+        // });
     }
 
     /**
@@ -78,12 +72,8 @@ class $CLASS$ extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $this->publishes([
-            module_path($this->moduleName, '$PATH_CONFIG$/config.php') => config_path($this->moduleNameLower.'.php'),
-        ], 'config');
-        $this->mergeConfigFrom(
-            module_path($this->moduleName, '$PATH_CONFIG$/config.php'), $this->moduleNameLower
-        );
+        $this->publishes([module_path($this->moduleName, '$PATH_CONFIG$/config.php') => config_path($this->moduleNameLower.'.php')], 'config');
+        $this->mergeConfigFrom(module_path($this->moduleName, '$PATH_CONFIG$/config.php'), $this->moduleNameLower);
     }
 
     /**
@@ -92,20 +82,15 @@ class $CLASS$ extends ServiceProvider
     public function registerViews(): void
     {
         $viewPath = resource_path('views/modules/'.$this->moduleNameLower);
-
         $sourcePath = module_path($this->moduleName, '$PATH_VIEWS$');
 
-        $this->publishes([
-            $sourcePath => $viewPath,
-        ], ['views', $this->moduleNameLower.'-module-views',]);
+        $this->publishes([$sourcePath => $viewPath], ['views', $this->moduleNameLower.'-module-views']);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
 
         $componentNamespace = str_replace('/', '\\', config('modules.namespace').'\\'.$this->moduleName.'\\'.config('modules.paths.generator.component-class.path'));
         Blade::componentNamespace($componentNamespace, $this->moduleNameLower);
     }
-
-
 
     /**
      * Get the services provided by the provider.
