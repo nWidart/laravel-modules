@@ -21,7 +21,7 @@
     {{-- {{ module_vite('build-$LOWER_NAME$', 'resources/sass/app.scss') }} --}}
 </head>
 
-<body class="font-sans text-gray-900 antialiased">
+<body>
     {{ $slot }}
 
     {{-- Vite JS --}}
