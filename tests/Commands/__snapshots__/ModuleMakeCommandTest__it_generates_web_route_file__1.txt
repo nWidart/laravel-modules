@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Modules\Blog\Http\Controllers\BlogController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,9 +13,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-use Illuminate\Support\Facades\Route;
-use Modules\Blog\Http\Controllers\BlogController;
 
-Route::prefix('blog')->group(function() {
-    Route::get('/', [BlogController::class, 'index'])->name('blog.index');
+Route::group([], function () {
+    Route::resource('blog', BlogController::class)->names('blog');
 });
