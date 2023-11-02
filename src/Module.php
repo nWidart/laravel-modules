@@ -6,6 +6,7 @@ use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Translation\Translator;
@@ -72,6 +73,30 @@ abstract class Module
         $this->translator = $app['translator'];
         $this->activator = $app[ActivatorInterface::class];
         $this->app = $app;
+    }
+
+    /**
+     * Returns an array of assets
+     *
+     * @return array
+     */
+    public static function getAssets(): array
+    {
+        $paths = [];
+
+        if (file_exists('build/manifest.json')) {
+            $files = json_decode(file_get_contents('build/manifest.json'), true);
+
+            if (is_array($files)) {
+                foreach ($files as $file) {
+                    if (isset($file['src'])) {
+                        $paths[] = $file['src'];
+                    }
+                }
+            }
+        }
+
+        return $paths;
     }
 
     /**

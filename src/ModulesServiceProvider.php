@@ -46,6 +46,10 @@ abstract class ModulesServiceProvider extends ServiceProvider
         $this->publishes([
             $stubsPath => base_path('stubs/nwidart-stubs'),
         ], 'stubs');
+
+        $this->publishes([
+            __DIR__.'/../scripts/vite-module-loader.js' => base_path('vite-module-loader.js'),
+        ], 'vite');
     }
 
     /**
