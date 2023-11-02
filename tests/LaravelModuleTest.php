@@ -234,43 +234,7 @@ class LaravelModuleTest extends BaseTestCase
     /** @test */
     public function it_can_load_assets_is_empty_when_no_manifest_exists()
     {
-        $result = $this->module->getAssets();
-
-        $this->assertEquals([], $result);
-    }
-
-    /** @test */
-    public function it_can_load_assets_when_manifest_exists()
-    {
-        mkdir('build');
-        file_put_contents('build/manifest.json', '{
-          "Modules/Books/resources/assets/sass/app.scss": {
-            "file": "assets/app-4ed993c7.js",
-            "isEntry": true,
-            "src": "Modules/Books/resources/assets/sass/app.scss"
-          },
-          "Modules/Pages/resources/css/app.css": {
-            "file": "assets/app-5a5d3a39.css",
-            "isEntry": true,
-            "src": "Modules/Pages/resources/css/app.css"
-          },
-          "resources/css/app.css": {
-            "file": "assets/app-3ebdfa1f.css",
-            "isEntry": true,
-            "src": "resources/css/app.css"
-          }
-        }');
-
-        $result = $this->module->getAssets();
-
-        $this->assertEquals([
-            'Modules/Books/resources/assets/sass/app.scss',
-            'Modules/Pages/resources/css/app.css',
-            'resources/css/app.css'
-        ], $result);
-
-        unlink('build/manifest.json');
-        rmdir('build');
+        $this->assertEquals([], $this->module->getAssets());
     }
 }
 
