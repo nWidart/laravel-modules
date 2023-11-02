@@ -8,13 +8,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 - [@solomon-ochepa](https://github.com/solomon-ochepa) updated multiple & config stubs for to follow modern laravel standards
 - [@dcblogdev](https://github.com/dcblogdev) updated enabled `$MODULE_NAMESPACE$` & `$CONTROLLER_NAMESPACE$` placeholders to be used inside stubs
-- [@dcblogdev](https://github.com/dcblogdev) updated enabled `$MODULE_NAMESPACE$` & `$CONTROLLER_NAMESPACE$` placeholders to be used inside stubs
 - [@hungthai1401](https://github.com/hungthai1401) updated rule stub
 
 ## Added
 
+- [@dcblogdev](https://github.com/dcblogdev) added support for using modules inside the main vite.config.js file https://github.com/nWidart/laravel-modules/pull/1682
 - [@dcblogdev](https://github.com/dcblogdev) added option to generate a factory by using the flag -f when generating a model
-- [@hungthai1401](https://github.com/hungthai1401 ) added implicit rule
+- [@hungthai1401](https://github.com/hungthai1401 ) added implicit rule https://github.com/nWidart/laravel-modules/pull/1664
 
 
 ## 10.0.2 - 2023-09-18
