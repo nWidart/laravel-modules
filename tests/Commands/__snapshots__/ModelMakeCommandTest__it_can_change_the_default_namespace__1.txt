@@ -10,6 +10,9 @@ class Post extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     */
     protected $fillable = [];
     
     protected static function newFactory(): PostFactory
