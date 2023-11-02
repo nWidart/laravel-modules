@@ -23,7 +23,7 @@ class LaravelModuleTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');
+        $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__.'/stubs/valid/Recipe');
         $this->activator = $this->app[ActivatorInterface::class];
     }
 
@@ -36,13 +36,13 @@ class LaravelModuleTest extends BaseTestCase
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-        symlink(__DIR__ . '/stubs/valid', __DIR__ . '/stubs/valid_symlink');
+        symlink(__DIR__.'/stubs/valid', __DIR__.'/stubs/valid_symlink');
     }
 
     public static function tearDownAfterClass(): void
     {
         parent::tearDownAfterClass();
-        unlink(__DIR__ . '/stubs/valid_symlink');
+        unlink(__DIR__.'/stubs/valid_symlink');
     }
 
     /** @test */
@@ -78,7 +78,7 @@ class LaravelModuleTest extends BaseTestCase
     /** @test */
     public function it_gets_module_path()
     {
-        $this->assertEquals(__DIR__ . '/stubs/valid/Recipe', $this->module->getPath());
+        $this->assertEquals(__DIR__.'/stubs/valid/Recipe', $this->module->getPath());
     }
 
     /** @test */
@@ -86,9 +86,9 @@ class LaravelModuleTest extends BaseTestCase
     {
         // symlink created in setUpBeforeClass
 
-        $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid_symlink/Recipe');
+        $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__.'/stubs/valid_symlink/Recipe');
 
-        $this->assertEquals(__DIR__ . '/stubs/valid_symlink/Recipe', $this->module->getPath());
+        $this->assertEquals(__DIR__.'/stubs/valid_symlink/Recipe', $this->module->getPath());
 
         // symlink deleted in tearDownAfterClass
     }
@@ -96,7 +96,7 @@ class LaravelModuleTest extends BaseTestCase
     /** @test */
     public function it_loads_module_translations()
     {
-        (new TestingModule($this->app, 'Recipe', __DIR__ . '/stubs/valid/Recipe'))->boot();
+        (new TestingModule($this->app, 'Recipe', __DIR__.'/stubs/valid/Recipe'))->boot();
         $this->assertEquals('Recipe', trans('recipe::recipes.title.recipes'));
     }
 
@@ -205,9 +205,9 @@ class LaravelModuleTest extends BaseTestCase
                 RecipeServiceProvider::class,
                 DeferredServiceProvider::class,
             ],
-            'eager'     => [RecipeServiceProvider::class],
-            'deferred'  => ['deferred' => DeferredServiceProvider::class],
-            'when'      =>
+            'eager' => [RecipeServiceProvider::class],
+            'deferred' => ['deferred' => DeferredServiceProvider::class],
+            'when' =>
                 [DeferredServiceProvider::class => []],
         ], $manifest);
     }
@@ -229,6 +229,48 @@ class LaravelModuleTest extends BaseTestCase
         app('deferred');
 
         $this->assertEquals('bar', app('foo'));
+    }
+
+    /** @test */
+    public function it_can_load_assets_is_empty_when_no_manifest_exists()
+    {
+        $result = $this->module->getAssets();
+
+        $this->assertEquals([], $result);
+    }
+
+    /** @test */
+    public function it_can_load_assets_when_manifest_exists()
+    {
+        mkdir('build');
+        file_put_contents('build/manifest.json', '{
+          "Modules/Books/resources/assets/sass/app.scss": {
+            "file": "assets/app-4ed993c7.js",
+            "isEntry": true,
+            "src": "Modules/Books/resources/assets/sass/app.scss"
+          },
+          "Modules/Pages/resources/css/app.css": {
+            "file": "assets/app-5a5d3a39.css",
+            "isEntry": true,
+            "src": "Modules/Pages/resources/css/app.css"
+          },
+          "resources/css/app.css": {
+            "file": "assets/app-3ebdfa1f.css",
+            "isEntry": true,
+            "src": "resources/css/app.css"
+          }
+        }');
+
+        $result = $this->module->getAssets();
+
+        $this->assertEquals([
+            'Modules/Books/resources/assets/sass/app.scss',
+            'Modules/Pages/resources/css/app.css',
+            'resources/css/app.css'
+        ], $result);
+
+        unlink('build/manifest.json');
+        rmdir('build');
     }
 }
 
