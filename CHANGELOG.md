@@ -12,8 +12,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Added
 
-- [@dcblogdev](https://github.com/dcblogdev) added support for using modules inside the main vite.config.js file https://github.com/nWidart/laravel-modules/pull/1682
-- [@dcblogdev](https://github.com/dcblogdev) added option to generate a factory by using the flag -f when generating a model
+- [@dcblogdev](https://github.com/dcblogdev) added support for using modules inside the main `vite.config.js` file https://github.com/nWidart/laravel-modules/pull/1682
+- [@dcblogdev](https://github.com/dcblogdev) added option to generate a factory by using the flag `-f` when generating a model
 - [@hungthai1401](https://github.com/hungthai1401 ) added implicit rule https://github.com/nWidart/laravel-modules/pull/1664
 
 
