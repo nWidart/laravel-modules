@@ -4,9 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 10.0.3 - 2023-10-02
+
 ## Changed
 
-- [@solomon-ochepa](https://github.com/solomon-ochepa) updated multiple & config stubs for to follow modern laravel standards
+- [@solomon-ochepa](https://github.com/solomon-ochepa) updated multiple & config stubs to follow modern laravel standards
 - [@dcblogdev](https://github.com/dcblogdev) updated enabled `$MODULE_NAMESPACE$` & `$CONTROLLER_NAMESPACE$` placeholders to be used inside stubs
 - [@hungthai1401](https://github.com/hungthai1401) updated rule stub
 
