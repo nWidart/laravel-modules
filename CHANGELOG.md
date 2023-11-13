@@ -4,6 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 10.0.4 - 2023-11-13
+
+## Changed
+- [@dcblogdev](https://github.com/dcblogdev) updated module:publish-config to a dynamic path to the service provider
+
 ## 10.0.3 - 2023-10-02
 
 ## Changed
