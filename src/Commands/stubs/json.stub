@@ -7,5 +7,6 @@
     "providers": [
         "$MODULE_NAMESPACE$\\$STUDLY_NAME$\\$PROVIDER_NAMESPACE$\\$STUDLY_NAME$ServiceProvider"
     ],
-    "files": []
+    "files": [],
+    "namespace": "$MODULE_NAMESPACE$"
 }

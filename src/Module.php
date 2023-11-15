@@ -170,6 +170,16 @@ abstract class Module
     }
 
     /**
+     * Get namespace.
+     *
+     * @return string
+     */
+    public function getNamespace(): string
+    {
+        return $this->get( 'namespace', config('modules.namespace') );
+    }
+
+    /**
      * Set path.
      *
      * @param string $path
