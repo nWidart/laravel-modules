@@ -30,7 +30,7 @@ Find out why you should use this package in the article: [Writing modular applic
 
 ## Install
 
-To install through Composer, by run the following command:
+To install via Composer, run:
 
 ``` bash
 composer require nwidart/laravel-modules
@@ -45,9 +45,7 @@ php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProv
 ```
 
 ### Autoloading
-
-By default, the module classes are not loaded automatically. You can autoload your modules using `psr-4`. For example:
-
+By default, module classes aren't loaded automatically. To autoload them using psr-4, add the following line to the end of the root composer.json file under the autoload section:
 ``` json
 {
   "autoload": {
