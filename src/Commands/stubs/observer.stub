@@ -2,46 +2,46 @@
 
 namespace $NAMESPACE$;
 
-use $MODEL_NAMESPACE$\$NAME$;
+use $MODEL$;
 
-class $NAME$Observer
+class $NAME$
 {
     /**
-     * Handle the $NAME$ "created" event.
+     * Handle the $MODULE$ "created" event.
      */
-    public function created($NAME$ $NAME_VARIABLE$): void
+    public function created($MODULE$ $$MODULE_NAME_LOWER$): void
     {
         //
     }
 
     /**
-     * Handle the $NAME$ "updated" event.
+     * Handle the $MODULE$ "updated" event.
      */
-    public function updated($NAME$ $NAME_VARIABLE$): void
+    public function updated($MODULE$ $$MODULE_NAME_LOWER$): void
     {
         //
     }
 
     /**
-     * Handle the $NAME$ "deleted" event.
+     * Handle the $MODULE$ "deleted" event.
      */
-    public function deleted($NAME$ $NAME_VARIABLE$): void
+    public function deleted($MODULE$ $$MODULE_NAME_LOWER$): void
     {
         //
     }
 
     /**
-     * Handle the $NAME$ "restored" event.
+     * Handle the $MODULE$ "restored" event.
      */
-    public function restored($NAME$ $NAME_VARIABLE$): void
+    public function restored($MODULE$ $$MODULE_NAME_LOWER$): void
     {
         //
     }
 
     /**
-     * Handle the $NAME$ "force deleted" event.
+     * Handle the $MODULE$ "force deleted" event.
      */
-    public function forceDeleted($NAME$ $NAME_VARIABLE$): void
+    public function forceDeleted($MODULE$ $$MODULE_NAME_LOWER$): void
     {
         //
     }
