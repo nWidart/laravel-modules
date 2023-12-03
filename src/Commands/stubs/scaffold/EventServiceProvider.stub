@@ -3,7 +3,6 @@
 namespace $NAMESPACE$;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class $CLASS$ extends ServiceProvider
 {
@@ -27,6 +26,6 @@ class $CLASS$ extends ServiceProvider
      */
     public function shouldDiscoverEvents(): bool
     {
-        return false;
+        return true;
     }
 }
