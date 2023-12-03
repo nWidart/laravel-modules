@@ -157,6 +157,7 @@ return [
         Commands\DumpCommand::class,
         Commands\EnableCommand::class,
         Commands\EventMakeCommand::class,
+        Commands\EventServiceProviderMakeCommand::class,
         Commands\FactoryMakeCommand::class,
         Commands\JobMakeCommand::class,
         Commands\ListenerMakeCommand::class,
