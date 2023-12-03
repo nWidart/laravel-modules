@@ -19,6 +19,7 @@ class ConsoleServiceProvider extends ServiceProvider
         Commands\DumpCommand::class,
         Commands\EnableCommand::class,
         Commands\EventMakeCommand::class,
+        Commands\EventServiceProviderMakeCommand::class,
         Commands\JobMakeCommand::class,
         Commands\ListenerMakeCommand::class,
         Commands\MailMakeCommand::class,
