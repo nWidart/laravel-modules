@@ -2,15 +2,12 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Console\Command;
 use Illuminate\Database\Console\ShowModelCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand('module:model-show', 'Show information about an Eloquent model in modules')]
-class ModelShowCommand extends Command
+class ModelShowCommand extends ShowModelCommand
 {
-
-
     /**
      * The console command name.
      *
