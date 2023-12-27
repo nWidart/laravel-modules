@@ -54,7 +54,7 @@ class ObserverMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
         return (new Stub('/observer.stub', [
-                'NAMESPACE' => $this->getClassNamespace($module) . '\Observers',
+                'NAMESPACE' => $this->getClassNamespace($module),
                 'NAME' => $this->getModelName(),
                 'MODEL_NAMESPACE' => $this->getModelNamespace(),
                 'NAME_VARIABLE' => $this->getModelVariable(),
@@ -119,5 +119,17 @@ class ObserverMakeCommand extends GeneratorCommand
         parent::handle();
 
         return 0;
+    }
+    
+    /**
+     * Get default namespace.
+     *
+     * @return string
+     */
+    public function getDefaultNamespace(): string
+    {
+        $module = $this->laravel['modules'];
+
+        return $module->config('paths.generator.observer.namespace') ?: $module->config('paths.generator.observer.path', 'Observers');
     }
 }
