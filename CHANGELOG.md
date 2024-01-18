@@ -4,6 +4,20 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Added
+
+- [@azim-kordpour](https://github.com/azim-kordpour) Add PHPDoc static to all methods in Module facade
+
+## Changed
+
+- [@fpermana](https://github.com/fpermana) Update ObserverMakeCommand.php
+
+## Fixed
+
+- [@benjaminniess](https://github.com/benjaminniess) Fix ModelShowCommand extends property
+- [@alissn](https://github.com/alissn) revert extend class to ShowModelCommand
+
+
 ## 10.0.4 - 2023-11-13
 
 ## Changed
