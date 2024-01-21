@@ -149,10 +149,7 @@ return [
     */
     'commands' => ConsoleServiceProvider::defaultCommands()
         ->merge([
-            //
-        ])
-        ->except([
-            //
+            // New commands go here
         ])->toArray(),
 
     /*
