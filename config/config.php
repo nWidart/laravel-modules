@@ -1,7 +1,7 @@
 <?php
 
 use Nwidart\Modules\Activators\FileActivator;
-use Nwidart\Modules\Commands;
+use Nwidart\Modules\Providers\ConsoleServiceProvider;
 
 return [
 
@@ -144,57 +144,16 @@ return [
     |
     | Here you can define which commands will be visible and used in your
     | application. If for example, you don't use some of the commands provided
-    | you can simply comment them out.
+    | you can add them to except section. and can add own command to merge section.
     |
     */
-    'commands' => [
-        Commands\CommandMakeCommand::class,
-        Commands\ComponentClassMakeCommand::class,
-        Commands\ComponentViewMakeCommand::class,
-        Commands\ControllerMakeCommand::class,
-        Commands\ChannelMakeCommand::class,
-        Commands\DisableCommand::class,
-        Commands\DumpCommand::class,
-        Commands\EnableCommand::class,
-        Commands\EventMakeCommand::class,
-        Commands\FactoryMakeCommand::class,
-        Commands\JobMakeCommand::class,
-        Commands\ListenerMakeCommand::class,
-        Commands\MailMakeCommand::class,
-        Commands\MiddlewareMakeCommand::class,
-        Commands\NotificationMakeCommand::class,
-        Commands\ObserverMakeCommand::class,
-        Commands\PolicyMakeCommand::class,
-        Commands\ProviderMakeCommand::class,
-        Commands\InstallCommand::class,
-        Commands\LaravelModulesV6Migrator::class,
-        Commands\ListCommand::class,
-        Commands\ModuleDeleteCommand::class,
-        Commands\ModuleMakeCommand::class,
-        Commands\MigrateCommand::class,
-        Commands\MigrateFreshCommand::class,
-        Commands\MigrateRefreshCommand::class,
-        Commands\MigrateResetCommand::class,
-        Commands\MigrateRollbackCommand::class,
-        Commands\MigrateStatusCommand::class,
-        Commands\MigrationMakeCommand::class,
-        Commands\ModelMakeCommand::class,
-        Commands\ResourceMakeCommand::class,
-        Commands\RequestMakeCommand::class,
-        Commands\RuleMakeCommand::class,
-        Commands\RouteProviderMakeCommand::class,
-        Commands\PublishCommand::class,
-        Commands\PublishConfigurationCommand::class,
-        Commands\PublishMigrationCommand::class,
-        Commands\PublishTranslationCommand::class,
-        Commands\SeedCommand::class,
-        Commands\SeedMakeCommand::class,
-        Commands\SetupCommand::class,
-        Commands\TestMakeCommand::class,
-        Commands\UnUseCommand::class,
-        Commands\UpdateCommand::class,
-        Commands\UseCommand::class,
-    ],
+    'commands' => ConsoleServiceProvider::defaultCommands()
+        ->merge([
+            //
+        ])
+        ->except([
+            //
+        ])->toArray(),
 
     /*
     |--------------------------------------------------------------------------
