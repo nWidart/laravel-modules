@@ -143,8 +143,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Here you can define which commands will be visible and used in your
-    | application. If for example, you don't use some of the commands provided
-    | you can add them to except section. and can add own command to merge section.
+    | application. You can add your own commands to merge section.
     |
     */
     'commands' => ConsoleServiceProvider::defaultCommands()
