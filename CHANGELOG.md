@@ -10,12 +10,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Changed
 
+- [@alissn](https://github.com/alissn) Command Synchronization and Alphabetical Sorting in ConsoleServiceProvider
 - [@fpermana](https://github.com/fpermana) Update ObserverMakeCommand.php
 
 ## Fixed
 
-- [@benjaminniess](https://github.com/benjaminniess) Fix ModelShowCommand extends property
 - [@alissn](https://github.com/alissn) revert extend class to ShowModelCommand
+- [@benjaminniess](https://github.com/benjaminniess) Fix ModelShowCommand extends property
 
 
 ## 10.0.4 - 2023-11-13
