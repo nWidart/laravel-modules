@@ -98,42 +98,38 @@ return [
         | Generator path
         |--------------------------------------------------------------------------
         | Customise the paths where the folders will be generated.
-        | Set the generate's key to false to not generate that folder
+        | Setting the generate key to false will not generate that folder
         */
         'generator' => [
             'config' => ['path' => 'config', 'generate' => true],
-            'command' => ['path' => 'app/Console', 'generate' => false],
-            'channels' => ['path' => 'app/Broadcasting', 'generate' => false],
-            'migration' => ['path' => 'database/migrations', 'generate' => true],
-            'seeder' => [
-                'path' => 'database/seeders',
-                'namespace' => 'database/seeders',
-                'generate' => true,
-            ],
-            'factory' => ['path' => 'database/factories', 'generate' => true],
-            'model' => ['path' => 'app/Models', 'generate' => true],
-            'observer' => ['path' => 'app/Observers', 'generate' => false],
+            'command' => ['path' => 'App/Console', 'generate' => false],
+            'channels' => ['path' => 'App/Broadcasting', 'generate' => false],
+            'migration' => ['path' => 'Database/migrations', 'generate' => false],
+            'seeder' => ['path' => 'Database/Seeders', 'generate' => true],
+            'factory' => ['path' => 'Database/Factories', 'generate' => false],
+            'model' => ['path' => 'App/Models', 'generate' => false],
+            'observer' => ['path' => 'App/Observers', 'generate' => false],
             'routes' => ['path' => 'routes', 'generate' => true],
-            'controller' => ['path' => 'app/Http/Controllers', 'generate' => true],
-            'filter' => ['path' => 'app/Http/Middleware', 'generate' => true],
-            'request' => ['path' => 'app/Http/Requests', 'generate' => true],
-            'provider' => ['path' => 'app/Providers', 'generate' => true],
-            'assets' => ['path' => 'resources/assets', 'generate' => true],
-            'lang' => ['path' => 'lang', 'generate' => true],
+            'controller' => ['path' => 'App/Http/Controllers', 'generate' => true],
+            'filter' => ['path' => 'App/Http/Middleware', 'generate' => false],
+            'request' => ['path' => 'App/Http/Requests', 'generate' => false],
+            'provider' => ['path' => 'App/Providers', 'generate' => true],
+            'assets' => ['path' => 'resources/assets', 'generate' => false],
+            'lang' => ['path' => 'lang', 'generate' => false],
             'views' => ['path' => 'resources/views', 'generate' => true],
-            'test' => ['path' => 'tests/Unit', 'generate' => true],
-            'test-feature' => ['path' => 'tests/Feature', 'generate' => true],
-            'repository' => ['path' => 'app/Repositories', 'generate' => false],
-            'event' => ['path' => 'app/Events', 'generate' => false],
-            'listener' => ['path' => 'app/Listeners', 'generate' => false],
-            'policies' => ['path' => 'app/Policies', 'generate' => false],
-            'rules' => ['path' => 'app/Rules', 'generate' => false],
-            'jobs' => ['path' => 'app/Jobs', 'generate' => false],
-            'emails' => ['path' => 'app/Emails', 'generate' => false],
-            'notifications' => ['path' => 'app/Notifications', 'generate' => false],
-            'resource' => ['path' => 'app/Resources', 'generate' => false],
+            'test' => ['path' => 'tests/Unit', 'generate' => false],
+            'test-feature' => ['path' => 'tests/Feature', 'generate' => false],
+            'repository' => ['path' => 'App/Repositories', 'generate' => false],
+            'event' => ['path' => 'App/Events', 'generate' => false],
+            'listener' => ['path' => 'App/Listeners', 'generate' => false],
+            'policies' => ['path' => 'App/Policies', 'generate' => false],
+            'rules' => ['path' => 'App/Rules', 'generate' => false],
+            'jobs' => ['path' => 'App/Jobs', 'generate' => false],
+            'emails' => ['path' => 'App/Emails', 'generate' => false],
+            'notifications' => ['path' => 'App/Notifications', 'generate' => false],
+            'resource' => ['path' => 'App/resources', 'generate' => false],
             'component-view' => ['path' => 'resources/views/components', 'generate' => false],
-            'component-class' => ['path' => 'app/View/Components', 'generate' => false],
+            'component-class' => ['path' => 'App/View/Components', 'generate' => false],
         ],
     ],
 
@@ -210,10 +206,6 @@ return [
         'translations' => true,
         /**
          * load files on boot or register method
-         *
-         * Note: boot not compatible with asgardcms
-         *
-         * @example boot|register
          */
         'files' => 'register',
     ],
