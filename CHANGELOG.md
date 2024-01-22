@@ -4,12 +4,15 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 10.0.5 - 2024-01-22
+
 ## Added
 
 - [@azim-kordpour](https://github.com/azim-kordpour) Add PHPDoc static to all methods in Module facade
 
 ## Changed
 
+- [@dcblogdev](https://github.com/dcblogdev) Reverted config to use `App` and `Database` namespace / folders by default
 - [@alissn](https://github.com/alissn) Command Synchronization and Alphabetical Sorting in ConsoleServiceProvider
 - [@fpermana](https://github.com/fpermana) Update ObserverMakeCommand.php
 
