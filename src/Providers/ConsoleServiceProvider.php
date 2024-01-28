@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Providers;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Commands;
 
@@ -20,9 +21,9 @@ class ConsoleServiceProvider extends ServiceProvider
     /**
      * Get the package default commands.
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
-    public static function defaultCommands(): \Illuminate\Support\Collection
+    public static function defaultCommands(): Collection
     {
         return collect([
             Commands\ChannelMakeCommand::class,
@@ -51,6 +52,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\MigrateStatusCommand::class,
             Commands\MigrationMakeCommand::class,
             Commands\ModelMakeCommand::class,
+            Commands\ModelPruneCommand::class,
             Commands\ModelShowCommand::class,
             Commands\ModuleDeleteCommand::class,
             Commands\ModuleMakeCommand::class,
