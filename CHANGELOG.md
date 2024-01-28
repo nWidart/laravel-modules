@@ -4,6 +4,12 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 10.0.6 - 2024-01-28
+
+## Added
+
+- [@alissn](https://github.com/alissn) Add command module prune
+
 ## 10.0.5 - 2024-01-22
 
 ## Added
