@@ -2,11 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Str;
-use Symfony\Component\Console\Input\InputArgument;
-
-class UseCommand extends Command
+class UseCommand extends BaseCommand
 {
     /**
      * The console command name.
@@ -22,35 +18,17 @@ class UseCommand extends Command
      */
     protected $description = 'Use the specified module.';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle(): int
+    public function executeAction($name): void
     {
-        $module = Str::studly($this->argument('module'));
+        $module = $this->getModuleModel($name);
 
-        if (!$this->laravel['modules']->has($module)) {
-            $this->error("Module [{$module}] does not exists.");
-
-            return E_ERROR;
-        }
-
-        $this->laravel['modules']->setUsed($module);
-
-        $this->info("Module [{$module}] used successfully.");
-
-        return 0;
+        $this->components->task("Using {$module->getName()} module", function () use ($module) {
+            $this->laravel['modules']->setUsed($module);
+        });
     }
 
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
+    function getInfo(): string|null
     {
-        return [
-            ['module', InputArgument::REQUIRED, 'The name of module will be used.'],
-        ];
+        return 'Using Module ...';
     }
 }
