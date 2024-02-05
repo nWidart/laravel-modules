@@ -22,7 +22,7 @@ class UseCommand extends BaseCommand
     {
         $module = $this->getModuleModel($name);
 
-        $this->components->task("Using {$module->getName()} module", function () use ($module) {
+        $this->components->task("Using <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
             $this->laravel['modules']->setUsed($module);
         });
     }
