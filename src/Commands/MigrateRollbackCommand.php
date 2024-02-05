@@ -5,10 +5,9 @@ namespace Nwidart\Modules\Commands;
 use Illuminate\Console\Command;
 use Nwidart\Modules\Migrations\Migrator;
 use Nwidart\Modules\Traits\MigrationLoaderTrait;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class MigrateRollbackCommand extends Command
+class MigrateRollbackCommand extends BaseCommand
 {
     use MigrationLoaderTrait;
 
@@ -26,51 +25,15 @@ class MigrateRollbackCommand extends Command
      */
     protected $description = 'Rollback the modules migrations.';
 
-    /**
-     * @var \Nwidart\Modules\Contracts\RepositoryInterface
-     */
-    protected $module;
-
-    /**
-     * Execute the console command.
-     */
-    public function handle(): int
+    public function executeAction($name): void
     {
-        $this->module = $this->laravel['modules'];
-
-        $name = $this->argument('module');
-
-        if (!empty($name)) {
-            $this->rollback($name);
-
-            return 0;
-        }
-
-        foreach ($this->module->getOrdered($this->option('direction')) as $module) {
-            $this->line('Running for module: <info>' . $module->getName() . '</info>');
-
-            $this->rollback($module);
-        }
-
-        return 0;
-    }
-
-    /**
-     * Rollback migration from the specified module.
-     *
-     * @param $module
-     */
-    public function rollback($module)
-    {
-        if (is_string($module)) {
-            $module = $this->module->findOrFail($module);
-        }
+        $module = $this->getModuleModel($name);
 
         $migrator = new Migrator($module, $this->getLaravel(), $this->option('subpath'));
 
         $database = $this->option('database');
 
-        if (!empty($database)) {
+        if (! empty($database)) {
             $migrator->setDatabase($database);
         }
 
@@ -78,25 +41,19 @@ class MigrateRollbackCommand extends Command
 
         if (count($migrated)) {
             foreach ($migrated as $migration) {
-                $this->line("Rollback: <info>{$migration}</info>");
+                $this->components->task("Rollback: <info>{$migration}</info>", );
             }
 
             return;
         }
 
-        $this->comment('Nothing to rollback.');
+        $this->components->warn("Nothing to rollback on module {$module->getName()}");
+
     }
 
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
+    public function getInfo(): string|null
     {
-        return [
-            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
-        ];
+        return NULL;
     }
 
     /**
@@ -108,10 +65,10 @@ class MigrateRollbackCommand extends Command
     {
         return [
             ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'desc'],
-            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
-            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
-            ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
-            ['subpath', null, InputOption::VALUE_OPTIONAL, 'Indicate a subpath for modules specific migration file']
+            ['database', NULL, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
+            ['force', NULL, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
+            ['pretend', NULL, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
+            ['subpath', NULL, InputOption::VALUE_OPTIONAL, 'Indicate a subpath for modules specific migration file'],
         ];
     }
 }
