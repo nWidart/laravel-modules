@@ -24,7 +24,7 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
     {
         parent::__construct();
         $this->getDefinition()->addOption(new InputOption(
-            'all',
+            strtolower(self::ALL),
             'a',
             InputOption::VALUE_NONE,
             'Check all Modules',
@@ -64,7 +64,7 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
     {
         $modules = array_keys(Module::all());
 
-        if ($input->getOption('all')) {
+        if ($input->getOption(strtolower(self::ALL))) {
             $input->setArgument('module', $modules);
             return;
         }
