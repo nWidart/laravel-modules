@@ -2,7 +2,11 @@
 
 namespace Nwidart\Modules\Commands;
 
-class EnableCommand extends BaseCommand
+use Illuminate\Console\Command;
+use Nwidart\Modules\Module;
+use Symfony\Component\Console\Input\InputArgument;
+
+class EnableCommand extends Command
 {
     /**
      * The console command name.
@@ -18,21 +22,73 @@ class EnableCommand extends BaseCommand
      */
     protected $description = 'Enable the specified module.';
 
-    public function executeAction($name): void
+    /**
+     * Execute the console command.
+     */
+    public function handle(): int
     {
-        $module = $this->getModuleModel($name);
 
-        $status = $module->isDisabled()
-            ? '<fg=red;options=bold>Disabled</>'
-            : '<fg=green;options=bold>Enabled</>';
+        $this->components->info('Enabling module ...');
 
-        $this->components->task("Enabling <fg=cyan;options=bold>{$module->getName()}</> Module, old status: $status", function () use ($module) {
-            $module->enable();
-        });
+        if ($name = $this->argument('module') ) {
+            $this->enable($name);
+
+            return 0;
+        }
+
+        $this->enableAll();
+
+        return 0;
     }
 
-    function getInfo(): string|null
+    /**
+     * enableAll
+     *
+     * @return void
+     */
+    public function enableAll()
     {
-        return 'Enabling module ...';
+        /** @var Modules $modules */
+        $modules = $this->laravel['modules']->all();
+
+        foreach ($modules as $module) {
+            $this->enable($module);
+        }
+    }
+
+    /**
+     * enable
+     *
+     * @param string $name
+     * @return void
+     */
+    public function enable($name)
+    {
+        if ($name instanceof Module) {
+            $module = $name;
+        }else {
+            $module = $this->laravel['modules']->findOrFail($name);
+        }
+
+        if ($module->isDisabled()) {
+            $module->enable();
+
+            $this->components->info("Module [{$module}] enabled successful.");
+        }else {
+            $this->components->warn("Module [{$module}] has already enabled.");
+        }
+
+    }
+
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            ['module', InputArgument::OPTIONAL, 'Module name.'],
+        ];
     }
 }
