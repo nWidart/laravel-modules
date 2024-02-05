@@ -2,7 +2,6 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Console\Command;
 use Nwidart\Modules\Migrations\Migrator;
 use Nwidart\Modules\Traits\MigrationLoaderTrait;
 use Symfony\Component\Console\Input\InputOption;
@@ -41,7 +40,7 @@ class MigrateRollbackCommand extends BaseCommand
 
         if (count($migrated)) {
             foreach ($migrated as $migration) {
-                $this->components->task("Rollback: <info>{$migration}</info>", );
+                $this->components->task("Rollback: <info>{$migration}</info>",);
             }
 
             return;
