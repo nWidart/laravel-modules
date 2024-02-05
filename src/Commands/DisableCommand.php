@@ -2,11 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Console\Command;
-use Nwidart\Modules\Module;
-use Symfony\Component\Console\Input\InputArgument;
-
-class DisableCommand extends Command
+class DisableCommand extends BaseCommand
 {
     /**
      * The console command name.
@@ -29,73 +25,21 @@ class DisableCommand extends Command
      */
     protected $description = 'Disable an array of modules.';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle(): int
+    public function executeAction($name): void
     {
-        $this->components->info('Disabling module ...');
-        
-        if (count($this->argument('module'))) {
-            foreach($this->argument('module') as $name) {
-                $this->disable($name);
-            }
-            return 0;
-        }
+        $module = $this->getModuleModel($name);
 
-        $this->disableAll();
+        $status = $module->isDisabled()
+            ? '<fg=red;options=bold>Disabled</>'
+            : '<fg=green;options=bold>Enabled</>';
 
-        return 0;
-    }
-
-    /**
-     * disableAll
-     *
-     * @return void
-     */
-    public function disableAll()
-    {
-        /** @var Modules $modules */
-        $modules = $this->laravel['modules']->all();
-
-        foreach ($modules as $module) {
-            $this->disable($module);
-        }
-    }
-
-    /**
-     * disable
-     *
-     * @param string $name
-     * @return void
-     */
-    public function disable($name)
-    {
-        if ($name instanceof Module) {
-            $module = $name;
-        }else {
-            $module = $this->laravel['modules']->findOrFail($name);
-        }
-
-        if ($module->isEnabled()) {
+        $this->components->task("Disabling <fg=cyan;options=bold>{$module->getName()}</> Module, old status: $status", function () use ($module) {
             $module->disable();
-
-            $this->components->info("Module [{$module}] disabled successful.");
-        } else {
-            $this->components->warn("Module [{$module}] has already disabled.");
-        }
-
+        });
     }
 
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
+    function getInfo(): string|null
     {
-        return [
-            ['module', InputArgument::OPTIONAL, 'Module name.'],
-        ];
+        return 'Disabling module ...';
     }
 }
