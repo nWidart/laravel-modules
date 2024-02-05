@@ -46,7 +46,7 @@ class MigrateRollbackCommand extends BaseCommand
             return;
         }
 
-        $this->components->warn("Nothing to rollback on module {$module->getName()}");
+        $this->components->warn("Nothing to rollback on module <fg=cyan;options=bold>{$module->getName()}</>");
 
     }
 
