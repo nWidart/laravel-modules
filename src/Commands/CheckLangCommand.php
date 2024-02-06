@@ -4,7 +4,7 @@ namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Collection;
 
-class CheckLangCommand extends baseCommand
+class CheckLangCommand extends BaseCommand
 {
 
     private $langPath;
