@@ -3,7 +3,6 @@
 namespace Nwidart\Modules\Commands;
 
 use ErrorException;
-use Illuminate\Console\Command;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Contracts\RepositoryInterface;
@@ -14,7 +13,7 @@ use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class SeedCommand extends Command
+class SeedCommand extends BaseCommand
 {
     use ModuleCommandTrait;
 
@@ -32,34 +31,33 @@ class SeedCommand extends Command
      */
     protected $description = 'Run database seeder from the specified module or from all modules.';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle(): int
+    public function executeAction($name): void
     {
-        try {
-            if ($name = $this->argument('module')) {
-                $name = Str::studly($name);
-                $this->moduleSeed($this->getModuleByName($name));
-            } else {
-                $modules = $this->getModuleRepository()->getOrdered();
-                array_walk($modules, [$this, 'moduleSeed']);
-                $this->info('All modules seeded.');
+        $module = $this->getModuleModel($name);
+
+        $this->components->task("Seeding <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
+            try {
+                $this->moduleSeed($module);
             }
-        } catch (\Error $e) {
-            $e = new ErrorException($e->getMessage(), $e->getCode(), 1, $e->getFile(), $e->getLine(), $e);
-            $this->reportException($e);
-            $this->renderException($this->getOutput(), $e);
+            catch (\Error $e) {
+                $e = new ErrorException($e->getMessage(), $e->getCode(), 1, $e->getFile(), $e->getLine(), $e);
+                $this->reportException($e);
+                $this->renderException($this->getOutput(), $e);
 
-            return E_ERROR;
-        } catch (\Exception $e) {
-            $this->reportException($e);
-            $this->renderException($this->getOutput(), $e);
+                return FALSE;
+            }
+            catch (\Exception $e) {
+                $this->reportException($e);
+                $this->renderException($this->getOutput(), $e);
 
-            return E_ERROR;
-        }
+                return FALSE;
+            }
+        });
+    }
 
-        return 0;
+    function getInfo(): string|null
+    {
+        return 'Seeding module ...';
     }
 
     /**
@@ -219,18 +217,6 @@ class SeedCommand extends Command
     }
 
     /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
-        ];
-    }
-
-    /**
      * Get the console command options.
      *
      * @return array
@@ -238,9 +224,9 @@ class SeedCommand extends Command
     protected function getOptions()
     {
         return [
-            ['class', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder.'],
-            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to seed.'],
-            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
+            ['class', NULL, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder.'],
+            ['database', NULL, InputOption::VALUE_OPTIONAL, 'The database connection to seed.'],
+            ['force', NULL, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
         ];
     }
 }
