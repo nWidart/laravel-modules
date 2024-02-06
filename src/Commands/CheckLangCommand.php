@@ -2,11 +2,9 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use Symfony\Component\Console\Input\InputArgument;
 
-class CheckLangCommand extends Command
+class CheckLangCommand extends baseCommand
 {
 
     private $langPath;
@@ -25,58 +23,16 @@ class CheckLangCommand extends Command
      */
     protected $description = 'Check missing language keys in the specified module.';
 
-
-    /**
-     * Execute the console command.
-     */
-    public function handle(): int
+    public function __construct()
     {
+        parent::__construct();
 
         $this->langPath = DIRECTORY_SEPARATOR . config('modules.paths.generator.lang.path', 'Resources/lang');
-
-        $this->components->alert('Checking languages ...');
-
-        $this->newLine();
-
-        if ($name = $this->argument('module')) {
-            $this->check($name);
-
-            return 0;
-        }
-
-        $this->checkAll();
-
-        return 0;
-
     }
 
-    /**
-     * enableAll
-     *
-     * @return void
-     */
-    public function checkAll()
+    public function executeAction($name): void
     {
-        $modules = $this->laravel['modules']->all();
-
-        foreach ($modules as $module) {
-            $this->check($module);
-        }
-    }
-
-    /**
-     * enable
-     *
-     * @param string $name
-     * @return void
-     */
-    public function check($name)
-    {
-        if ($name instanceof Module) {
-            $module = $name;
-        } else {
-            $module = $this->laravel['modules']->findOrFail($name);
-        }
+        $module = $this->getModuleModel($name);
 
         $directories = $this->getDirectories($module);
 
@@ -90,16 +46,9 @@ class CheckLangCommand extends Command
 
     }
 
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
+    function getInfo(): string|null
     {
-        return [
-            ['module', InputArgument::OPTIONAL, 'Module name.'],
-        ];
+        return 'Checking languages ...';
     }
 
     private function getLangFiles($module)
@@ -133,12 +82,12 @@ class CheckLangCommand extends Command
 
         if (count($directories) == 0) {
             $this->components->info("No language files found in module $moduleName");
-            return false;
+            return FALSE;
         }
 
         if (count($directories) == 1) {
             $this->components->warn("Only one language file found in module $moduleName");
-            return false;
+            return FALSE;
         }
 
         return collect($directories);
@@ -194,7 +143,7 @@ class CheckLangCommand extends Command
             $uniqeLangFiles->each(function ($file) use ($directory, $langDirectories, &$missingKeysMessage) {
                 $langKeys = $this->getLangKeys($directory['path'] . DIRECTORY_SEPARATOR . $file);
 
-                if ($langKeys == false) {
+                if ($langKeys == FALSE) {
                     return;
                 }
 
@@ -206,7 +155,7 @@ class CheckLangCommand extends Command
 
                         $otherLangKeys = $this->getLangKeys($basePath . DIRECTORY_SEPARATOR . $file);
 
-                        if ($otherLangKeys == false) {
+                        if ($otherLangKeys == FALSE) {
                             return;
                         }
 
@@ -244,8 +193,9 @@ class CheckLangCommand extends Command
         if (\File::exists($file)) {
             $lang = \File::getRequire($file);
             return collect(\Arr::dot($lang))->keys();
-        } else {
-            return false;
+        }
+        else {
+            return FALSE;
         }
     }
 }
