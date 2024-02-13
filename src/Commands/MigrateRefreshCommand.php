@@ -2,15 +2,10 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Console\Command;
-use Nwidart\Modules\Traits\ModuleCommandTrait;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class MigrateRefreshCommand extends Command
+class MigrateRefreshCommand extends BaseCommand
 {
-    use ModuleCommandTrait;
-
     /**
      * The console command name.
      *
@@ -25,50 +20,31 @@ class MigrateRefreshCommand extends Command
      */
     protected $description = 'Rollback & re-migrate the modules migrations.';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle(): int
+
+    public function executeAction($name): void
     {
-        $module = $this->argument('module');
+        $module = $this->getModuleModel($name);
 
-        if ($module && !$this->getModuleName()) {
-            $this->error("Module [$module] does not exists.");
-
-            return E_ERROR;
-        }
-
-        $this->call('module:migrate-reset', [
-            'module' => $this->getModuleName(),
-            '--database' => $this->option('database'),
-            '--force' => $this->option('force'),
-        ]);
-
-        $this->call('module:migrate', [
-            'module' => $this->getModuleName(),
-            '--database' => $this->option('database'),
-            '--force' => $this->option('force'),
-        ]);
-
-        if ($this->option('seed')) {
-            $this->call('module:seed', [
-                'module' => $this->getModuleName(),
+        $this->components->task("Refreshing Migration {$module->getName()} module", function () use ($module) {
+            $this->call('module:migrate-reset', [
+                'module'     => $module->getStudlyName(),
+                '--database' => $this->option('database'),
+                '--force'    => $this->option('force'),
             ]);
-        }
 
-        return 0;
-    }
+            $this->call('module:migrate', [
+                'module'     => $module->getStudlyName(),
+                '--database' => $this->option('database'),
+                '--force'    => $this->option('force'),
+            ]);
 
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
-        ];
+            if ($this->option('seed')) {
+                $this->call('module:seed', [
+                    'module' => $module->getStudlyName(),
+                ]);
+            }
+        });
+
     }
 
     /**
@@ -83,18 +59,5 @@ class MigrateRefreshCommand extends Command
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
             ['seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'],
         ];
-    }
-
-    public function getModuleName()
-    {
-        $module = $this->argument('module');
-
-        if (!$module) {
-            return null;
-        }
-
-        $module = app('modules')->find($module);
-
-        return $module ? $module->getStudlyName() : null;
     }
 }

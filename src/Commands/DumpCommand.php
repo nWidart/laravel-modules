@@ -2,11 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Console\Command;
-use Nwidart\Modules\Module;
-use Symfony\Component\Console\Input\InputArgument;
-
-class DumpCommand extends Command
+class DumpCommand extends BaseCommand
 {
     /**
      * The console command name.
@@ -22,64 +18,19 @@ class DumpCommand extends Command
      */
     protected $description = 'Dump-autoload the specified module or for all module.';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle(): int
+    public function executeAction($name): void
     {
-        $this->components->info('Generating optimized autoload modules.');
+        $module = $this->getModuleModel($name);
 
-        if ($name = $this->argument('module') ) {
-            $this->dump($name);
-
-            return 0;
-        }
-
-        $this->dumpAll();
-
-        return 0;
-    }
-
-    /**
-     * dumpAll
-     *
-     * @return void
-     */
-    public function dumpAll()
-    {
-        /** @var Modules $modules */
-        $modules = $this->laravel['modules']->all();
-
-        foreach ($modules as $module) {
-            $this->dump($module);
-        }
-    }
-
-    public function dump($name)
-    {
-        if ($name instanceof Module) {
-            $module = $name;
-        } else {
-            $module = $this->laravel['modules']->findOrFail($name);
-        }
-
-        $this->components->task("$module", function () use ($module) {
+        $this->components->task("Generating for <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
             chdir($module->getPath());
 
             passthru('composer dump -o -n -q');
         });
-
     }
 
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
+    function getInfo(): string|null
     {
-        return [
-            ['module', InputArgument::OPTIONAL, 'Module name.'],
-        ];
+        return 'Generating optimized autoload modules';
     }
 }
