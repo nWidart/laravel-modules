@@ -4,7 +4,7 @@ namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
 
-class UnUseCommand extends Command
+class UnUseCommand extends BaseCommand
 {
     /**
      * The console command name.
@@ -20,15 +20,17 @@ class UnUseCommand extends Command
      */
     protected $description = 'Forget the used module with module:use';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle(): int
+    public function executeAction($name): void
     {
-        $this->laravel['modules']->forgetUsed();
+        $module = $this->getModuleModel($name);
 
-        $this->components->info('Previous module used successfully forgotten.');
+        $this->components->task("Forget Using <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
+            $this->laravel['modules']->forgetUsed($module);
+        });
+    }
 
-        return 0;
+    function getInfo(): string|null
+    {
+        return 'Forget Using Module ...';
     }
 }

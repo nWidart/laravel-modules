@@ -2,13 +2,10 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Console\Command;
 use Nwidart\Modules\Migrations\Migrator;
-use Nwidart\Modules\Module;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class MigrateCommand extends Command
+class MigrateCommand extends BaseCommand
 {
     /**
      * The console command name.
@@ -24,74 +21,30 @@ class MigrateCommand extends Command
      */
     protected $description = 'Migrate the migrations from the specified module or from all modules.';
 
-    /**
-     * @var \Nwidart\Modules\Contracts\RepositoryInterface
-     */
-    protected $module;
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle(): int
+    public function executeAction($name): void
     {
-        $this->module = $this->laravel['modules'];
+        $module = $this->getModuleModel($name);
 
-        $name = $this->argument('module');
+        $this->components->task("Running Migration <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
+            $path = str_replace(base_path(), '', (new Migrator($module, $this->getLaravel()))->getPath());
 
-        if ($name) {
-            $module = $this->module->findOrFail($name);
+            if ($this->option('subpath')) {
+                $path = $path . "/" . $this->option("subpath");
+            }
 
-            $this->migrate($module);
+            $this->call('migrate', [
+                '--path'     => $path,
+                '--database' => $this->option('database'),
+                '--pretend'  => $this->option('pretend'),
+                '--force'    => $this->option('force'),
+            ]);
 
-            return 0;
-        }
+            if ($this->option('seed')) {
+                $this->call('module:seed', ['module' => $module->getName(), '--force' => $this->option('force')]);
+            }
+        });
 
-        foreach ($this->module->getOrdered($this->option('direction')) as $module) {
-            $this->line('Running for module: <info>' . $module->getName() . '</info>');
-
-            $this->migrate($module);
-        }
-
-        return 0;
-    }
-
-    /**
-     * Run the migration from the specified module.
-     *
-     * @param Module $module
-     */
-    protected function migrate(Module $module)
-    {
-        $path = str_replace(base_path(), '', (new Migrator($module, $this->getLaravel()))->getPath());
-
-        if ($this->option('subpath')) {
-            $path = $path . "/" . $this->option("subpath");
-        }
-
-        $this->call('migrate', [
-            '--path' => $path,
-            '--database' => $this->option('database'),
-            '--pretend' => $this->option('pretend'),
-            '--force' => $this->option('force'),
-        ]);
-
-        if ($this->option('seed')) {
-            $this->call('module:seed', ['module' => $module->getName(), '--force' => $this->option('force')]);
-        }
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
-        ];
     }
 
     /**
@@ -103,11 +56,11 @@ class MigrateCommand extends Command
     {
         return [
             ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'asc'],
-            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
-            ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
-            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
-            ['seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'],
-            ['subpath', null, InputOption::VALUE_OPTIONAL, 'Indicate a subpath to run your migrations from'],
+            ['database', NULL, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
+            ['pretend', NULL, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
+            ['force', NULL, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
+            ['seed', NULL, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'],
+            ['subpath', NULL, InputOption::VALUE_OPTIONAL, 'Indicate a subpath to run your migrations from'],
         ];
     }
 }
