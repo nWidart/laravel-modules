@@ -6,6 +6,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Updated
 
+- [@dcblogdev](https://github.com/dcblogdev) updated vite to rename placeholder with module name
+- [@alissn](https://github.com/alissn) Updated commands to use Laravel Prompt
 - [@dcblogdev](https://github.com/dcblogdev) updated event stub to include Dispatchable and InteractsWithSockets traits
 
 ## 10.0.6 - 2024-01-28
