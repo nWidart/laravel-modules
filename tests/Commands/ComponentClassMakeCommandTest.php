@@ -1,71 +1,47 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Tests\BaseTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 
-class ComponentClassMakeCommandTest extends BaseTestCase
-{
-    use MatchesSnapshots;
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
-    /**
-     * @var string
-     */
-    private $modulePath;
+uses(\Spatie\Snapshots\MatchesSnapshots::class);
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
-    }
+beforeEach(function () {
+    $this->modulePath = base_path('modules/Blog');
+    $this->finder = $this->app['files'];
+    $this->artisan('module:make', ['name' => ['Blog']]);
+});
 
-    public function tearDown(): void
-    {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        parent::tearDown();
-    }
+afterEach(function () {
+    $this->app[RepositoryInterface::class]->delete('Blog');
+});
 
-    /** @test */
-    public function it_generates_the_component_class()
-    {
-        $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
-        $this->assertTrue(is_file($this->modulePath . '/View/Component/Blog.php'));
-        $this->assertSame(0, $code);
-    }
-    /** @test */
-    public function it_generates_the_component_view_from_component_class_command()
-    {
-        $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
-        $file = $this->finder->get($this->modulePath . '/Resources/views/components/blog.blade.php');
-        $this->assertTrue(str_contains($file, '<div>'));
-        $this->assertSame(0, $code);
-    }
-    /** @test */
-    public function it_generated_correct_file_with_content()
-    {
-        $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
-        $file = $this->finder->get($this->modulePath . '/View/Component/Blog.php');
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+it('generates the component class', function () {
+    $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
+    expect(is_file($this->modulePath . '/View/Component/Blog.php'))->toBeTrue();
+    expect($code)->toBe(0);
+});
 
-    /** @test */
-    public function it_can_change_the_default_namespace()
-    {
-        $this->app['config']->set('modules.paths.generator.component-class.path', 'View/Component/newDirectory');
+it('generates the component view from component class command', function () {
+    $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
+    $file = $this->finder->get($this->modulePath . '/Resources/views/components/blog.blade.php');
+    expect(str_contains($file, '<div>'))->toBeTrue();
+    expect($code)->toBe(0);
+});
 
-        $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
+it('generated correct file with content', function () {
+    $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
+    $file = $this->finder->get($this->modulePath . '/View/Component/Blog.php');
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-        $file = $this->finder->get($this->modulePath . '/View/Component/newDirectory/Blog.php');
+it('can change the default namespace', function () {
+    $this->app['config']->set('modules.paths.generator.component-class.path', 'View/Component/newDirectory');
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
-}
+    $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
+
+    $file = $this->finder->get($this->modulePath . '/View/Component/newDirectory/Blog.php');
+
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});

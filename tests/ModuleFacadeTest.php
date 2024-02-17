@@ -1,36 +1,27 @@
 <?php
 
-namespace Nwidart\Modules\Tests;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Facades\Module;
 
-class ModuleFacadeTest extends BaseTestCase
-{
-    /** @test */
-    public function it_resolves_the_module_facade()
-    {
-        $modules = Module::all();
 
-        $this->assertTrue(is_array($modules));
-    }
+it('resolves the module facade', function () {
+    $modules = Module::all();
 
-    /** @test */
-    public function it_creates_macros_via_facade()
-    {
-        $modules = Module::macro('testMacro', function () {
-            return true;
-        });
+    expect(is_array($modules))->toBeTrue();
+});
 
-        $this->assertTrue(Module::hasMacro('testMacro'));
-    }
+it('creates macros via facade', function () {
+    $modules = Module::macro('testMacro', function () {
+        return true;
+    });
 
-    /** @test */
-    public function it_calls_macros_via_facade()
-    {
-        $modules = Module::macro('testMacro', function () {
-            return 'a value';
-        });
+    expect(Module::hasMacro('testMacro'))->toBeTrue();
+});
 
-        $this->assertEquals('a value', Module::testMacro());
-    }
-}
+it('calls macros via facade', function () {
+    $modules = Module::macro('testMacro', function () {
+        return 'a value';
+    });
+
+    expect(Module::testMacro())->toEqual('a value');
+});

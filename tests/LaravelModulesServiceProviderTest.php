@@ -1,33 +1,24 @@
 <?php
 
-namespace Nwidart\Modules\Tests;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 
-class LaravelModulesServiceProviderTest extends BaseTestCase
-{
-    /** @test */
-    public function it_binds_modules_key_to_repository_class()
-    {
-        $this->assertInstanceOf(RepositoryInterface::class, app(RepositoryInterface::class));
-        $this->assertInstanceOf(RepositoryInterface::class, app('modules'));
-    }
 
-    /** @test */
-    public function it_binds_activator_to_activator_class()
-    {
-        $this->assertInstanceOf(ActivatorInterface::class, app(ActivatorInterface::class));
-    }
+it('binds modules key to repository class', function () {
+    expect(app(RepositoryInterface::class))->toBeInstanceOf(RepositoryInterface::class);
+    expect(app('modules'))->toBeInstanceOf(RepositoryInterface::class);
+});
 
-    /** @test */
-    public function it_throws_exception_if_config_is_invalid()
-    {
-        $this->expectException(InvalidActivatorClass::class);
+it('binds activator to activator class', function () {
+    expect(app(ActivatorInterface::class))->toBeInstanceOf(ActivatorInterface::class);
+});
 
-        $this->app['config']->set('modules.activators.file', ['class' => null]);
+it('throws exception if config is invalid', function () {
+    $this->expectException(InvalidActivatorClass::class);
 
-        $this->assertInstanceOf(ActivatorInterface::class, app(ActivatorInterface::class));
-    }
-}
+    $this->app['config']->set('modules.activators.file', ['class' => null]);
+
+    expect(app(ActivatorInterface::class))->toBeInstanceOf(ActivatorInterface::class);
+});

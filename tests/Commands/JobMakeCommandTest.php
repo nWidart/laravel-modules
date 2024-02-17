@@ -1,91 +1,63 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Tests\BaseTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 
-class JobMakeCommandTest extends BaseTestCase
-{
-    use MatchesSnapshots;
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
-    /**
-     * @var string
-     */
-    private $modulePath;
+uses(\Spatie\Snapshots\MatchesSnapshots::class);
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
-    }
+beforeEach(function () {
+    $this->modulePath = base_path('modules/Blog');
+    $this->finder = $this->app['files'];
+    $this->artisan('module:make', ['name' => ['Blog']]);
+});
 
-    public function tearDown(): void
-    {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        parent::tearDown();
-    }
+afterEach(function () {
+    $this->app[RepositoryInterface::class]->delete('Blog');
+});
 
-    /** @test */
-    public function it_generates_the_job_class()
-    {
-        $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
+it('generates the job class', function () {
+    $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Jobs/SomeJob.php'));
-        $this->assertSame(0, $code);
-    }
+    expect(is_file($this->modulePath . '/Jobs/SomeJob.php'))->toBeTrue();
+    expect($code)->toBe(0);
+});
 
-    /** @test */
-    public function it_generated_correct_file_with_content()
-    {
-        $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
+it('generated correct file with content', function () {
+    $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
+    $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-    /** @test */
-    public function it_generated_correct_sync_job_file_with_content()
-    {
-        $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog', '--sync' => true]);
+it('generated correct sync job file with content', function () {
+    $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog', '--sync' => true]);
 
-        $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
+    $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-    /** @test */
-    public function it_can_change_the_default_namespace()
-    {
-        $this->app['config']->set('modules.paths.generator.jobs.path', 'SuperJobs');
+it('can change the default namespace', function () {
+    $this->app['config']->set('modules.paths.generator.jobs.path', 'SuperJobs');
 
-        $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
+    $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/SuperJobs/SomeJob.php');
+    $file = $this->finder->get($this->modulePath . '/SuperJobs/SomeJob.php');
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-    /** @test */
-    public function it_can_change_the_default_namespace_specific()
-    {
-        $this->app['config']->set('modules.paths.generator.jobs.namespace', 'SuperJobs');
+it('can change the default namespace specific', function () {
+    $this->app['config']->set('modules.paths.generator.jobs.namespace', 'SuperJobs');
 
-        $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
+    $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
+    $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
-}
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});

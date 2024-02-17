@@ -1,102 +1,73 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Tests\BaseTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 
-class ProviderMakeCommandTest extends BaseTestCase
-{
-    use MatchesSnapshots;
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
-    /**
-     * @var string
-     */
-    private $modulePath;
+uses(\Spatie\Snapshots\MatchesSnapshots::class);
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog'], '--plain' => true, ]);
-    }
+beforeEach(function () {
+    $this->modulePath = base_path('modules/Blog');
+    $this->finder = $this->app['files'];
+    $this->artisan('module:make', ['name' => ['Blog'], '--plain' => true, ]);
+});
 
-    public function tearDown(): void
-    {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        parent::tearDown();
-    }
+afterEach(function () {
+    $this->app[RepositoryInterface::class]->delete('Blog');
+});
 
-    /** @test */
-    public function it_generates_a_service_provider()
-    {
-        $code = $this->artisan('module:make-provider', ['name' => 'MyBlogServiceProvider', 'module' => 'Blog']);
+it('generates a service provider', function () {
+    $code = $this->artisan('module:make-provider', ['name' => 'MyBlogServiceProvider', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Providers/MyBlogServiceProvider.php'));
-        $this->assertSame(0, $code);
-    }
-    /** @test */
-    public function it_generated_correct_file_with_content()
-    {
-        $code = $this->artisan('module:make-provider', ['name' => 'MyBlogServiceProvider', 'module' => 'Blog']);
+    expect(is_file($this->modulePath . '/Providers/MyBlogServiceProvider.php'))->toBeTrue();
+    expect($code)->toBe(0);
+});
 
-        $file = $this->finder->get($this->modulePath . '/Providers/MyBlogServiceProvider.php');
+it('generated correct file with content', function () {
+    $code = $this->artisan('module:make-provider', ['name' => 'MyBlogServiceProvider', 'module' => 'Blog']);
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+    $file = $this->finder->get($this->modulePath . '/Providers/MyBlogServiceProvider.php');
 
-    /** @test */
-    public function it_generates_a_master_service_provider_with_resource_loading()
-    {
-        $code = $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-        $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
+it('generates a master service provider with resource loading', function () {
+    $code = $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+    $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
 
-    /** @test */
-    public function it_can_have_custom_migration_resources_location_paths()
-    {
-        $this->app['config']->set('modules.paths.generator.migration', 'migrations');
-        $code = $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-        $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
+it('can have custom migration resources location paths', function () {
+    $this->app['config']->set('modules.paths.generator.migration', 'migrations');
+    $code = $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+    $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
 
-    /** @test */
-    public function it_can_change_the_default_namespace()
-    {
-        $this->app['config']->set('modules.paths.generator.provider.path', 'SuperProviders');
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-        $code = $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
+it('can change the default namespace', function () {
+    $this->app['config']->set('modules.paths.generator.provider.path', 'SuperProviders');
 
-        $file = $this->finder->get($this->modulePath . '/SuperProviders/BlogServiceProvider.php');
+    $code = $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+    $file = $this->finder->get($this->modulePath . '/SuperProviders/BlogServiceProvider.php');
 
-    /** @test */
-    public function it_can_change_the_default_namespace_specific()
-    {
-        $this->app['config']->set('modules.paths.generator.provider.namespace', 'SuperProviders');
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-        $code = $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
+it('can change the default namespace specific', function () {
+    $this->app['config']->set('modules.paths.generator.provider.namespace', 'SuperProviders');
 
-        $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
+    $code = $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
-}
+    $file = $this->finder->get($this->modulePath . '/Providers/BlogServiceProvider.php');
+
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});

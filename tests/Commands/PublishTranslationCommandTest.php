@@ -1,41 +1,21 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Tests\BaseTestCase;
 
-class PublishTranslationCommandTest extends BaseTestCase
-{
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
-    /**
-     * @var string
-     */
-    private $modulePath;
+beforeEach(function () {
+    $this->modulePath = base_path('modules/Blog');
+    $this->finder = $this->app['files'];
+    $this->artisan('module:make', ['name' => ['Blog']]);
+});
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
-    }
+afterEach(function () {
+    $this->app[RepositoryInterface::class]->delete('Blog');
+});
 
-    public function tearDown(): void
-    {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        parent::tearDown();
-    }
+it('published module translations', function () {
+    $code = $this->artisan('module:publish-translation', ['module' => 'Blog']);
 
-    /** @test */
-    public function it_published_module_translations()
-    {
-        $code = $this->artisan('module:publish-translation', ['module' => 'Blog']);
-
-        $this->assertDirectoryExists(base_path('resources/lang/blog'));
-        $this->assertSame(0, $code);
-    }
-}
+    expect(base_path('resources/lang/blog'))->toBeDirectory();
+    expect($code)->toBe(0);
+});

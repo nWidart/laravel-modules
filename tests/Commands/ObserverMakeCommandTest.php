@@ -1,47 +1,27 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Tests\BaseTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 
-class ObserverMakeCommandTest extends BaseTestCase
-{
-    use MatchesSnapshots;
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
-    /**
-     * @var string
-     */
-    private $modulePath;
+uses(\Spatie\Snapshots\MatchesSnapshots::class);
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
-    }
+beforeEach(function () {
+    $this->modulePath = base_path('modules/Blog');
+    $this->finder = $this->app['files'];
+    $this->artisan('module:make', ['name' => ['Blog']]);
+});
 
-    public function tearDown(): void
-    {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        parent::tearDown();
-    }
+afterEach(function () {
+    $this->app[RepositoryInterface::class]->delete('Blog');
+});
 
-    /** @test */
-    public function it_makes_observer()
-    {
-        $code = $this->artisan('module:make-observer', ['name' => 'Post', 'module' => 'Blog']);
+it('makes observer', function () {
+    $code = $this->artisan('module:make-observer', ['name' => 'Post', 'module' => 'Blog']);
 
-        $observerFile = $this->modulePath . '/Observers/PostObserver.php';
-        // dd($observerFile);
+    $observerFile = $this->modulePath . '/Observers/PostObserver.php';
 
-        $this->assertTrue(is_file($observerFile), 'Observer file was not created.');
-        $this->assertMatchesSnapshot($this->finder->get($observerFile));
-        $this->assertSame(0, $code);
-    }
-}
+    // dd($observerFile);
+    expect(is_file($observerFile))->toBeTrue('Observer file was not created.');
+    $this->assertMatchesSnapshot($this->finder->get($observerFile));
+    expect($code)->toBe(0);
+});

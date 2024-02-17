@@ -1,72 +1,48 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Tests\BaseTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 
-class PolicyMakeCommandTest extends BaseTestCase
-{
-    use MatchesSnapshots;
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
-    /**
-     * @var string
-     */
-    private $modulePath;
+uses(\Spatie\Snapshots\MatchesSnapshots::class);
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
-    }
+beforeEach(function () {
+    $this->modulePath = base_path('modules/Blog');
+    $this->finder = $this->app['files'];
+    $this->artisan('module:make', ['name' => ['Blog']]);
+});
 
-    public function tearDown(): void
-    {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        parent::tearDown();
-    }
+afterEach(function () {
+    $this->app[RepositoryInterface::class]->delete('Blog');
+});
 
-    /** @test */
-    public function it_makes_policy()
-    {
-        $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
+it('makes policy', function () {
+    $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
-        $policyFile = $this->modulePath . '/Policies/PostPolicy.php';
+    $policyFile = $this->modulePath . '/Policies/PostPolicy.php';
 
-        $this->assertTrue(is_file($policyFile), 'Policy file was not created.');
-        $this->assertMatchesSnapshot($this->finder->get($policyFile));
-        $this->assertSame(0, $code);
-    }
+    expect(is_file($policyFile))->toBeTrue('Policy file was not created.');
+    $this->assertMatchesSnapshot($this->finder->get($policyFile));
+    expect($code)->toBe(0);
+});
 
-    /** @test */
-    public function it_can_change_the_default_namespace()
-    {
-        $this->app['config']->set('modules.paths.generator.policies.path', 'SuperPolicies');
+it('can change the default namespace', function () {
+    $this->app['config']->set('modules.paths.generator.policies.path', 'SuperPolicies');
 
-        $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
+    $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/SuperPolicies/PostPolicy.php');
+    $file = $this->finder->get($this->modulePath . '/SuperPolicies/PostPolicy.php');
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-    /** @test */
-    public function it_can_change_the_default_namespace_specific()
-    {
-        $this->app['config']->set('modules.paths.generator.policies.namespace', 'SuperPolicies');
+it('can change the default namespace specific', function () {
+    $this->app['config']->set('modules.paths.generator.policies.namespace', 'SuperPolicies');
 
-        $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
+    $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Policies/PostPolicy.php');
+    $file = $this->finder->get($this->modulePath . '/Policies/PostPolicy.php');
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
-}
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});

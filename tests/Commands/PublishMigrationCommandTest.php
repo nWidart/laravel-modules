@@ -1,45 +1,25 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Tests\BaseTestCase;
 
-class PublishMigrationCommandTest extends BaseTestCase
-{
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
-    /**
-     * @var string
-     */
-    private $modulePath;
+beforeEach(function () {
+    $this->modulePath = base_path('modules/Blog');
+    $this->finder = $this->app['files'];
+    $this->artisan('module:make', ['name' => ['Blog']]);
+    $this->artisan('module:make-migration', ['name' => 'create_posts_table', 'module' => 'Blog']);
+});
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
-        $this->artisan('module:make-migration', ['name' => 'create_posts_table', 'module' => 'Blog']);
-    }
+afterEach(function () {
+    $this->app[RepositoryInterface::class]->delete('Blog');
+    $this->finder->delete($this->finder->allFiles(base_path('database/migrations')));
+});
 
-    public function tearDown(): void
-    {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        $this->finder->delete($this->finder->allFiles(base_path('database/migrations')));
-        parent::tearDown();
-    }
+it('publishes module migrations', function () {
+    $code = $this->artisan('module:publish-migration', ['module' => 'Blog']);
 
-    /** @test */
-    public function it_publishes_module_migrations()
-    {
-        $code = $this->artisan('module:publish-migration', ['module' => 'Blog']);
+    $files = $this->finder->allFiles(base_path('database/migrations'));
 
-        $files = $this->finder->allFiles(base_path('database/migrations'));
-
-        $this->assertCount(1, $files);
-        $this->assertSame(0, $code);
-    }
-}
+    expect($files)->toHaveCount(1);
+    expect($code)->toBe(0);
+});

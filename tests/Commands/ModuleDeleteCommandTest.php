@@ -1,50 +1,29 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Activators\FileActivator;
-use Nwidart\Modules\Tests\BaseTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 
-class ModuleDeleteCommandTest extends BaseTestCase
-{
-    use MatchesSnapshots;
+uses(\Spatie\Snapshots\MatchesSnapshots::class);
 
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
-    /**
-     * @var FileActivator
-     */
-    private $activator;
+beforeEach(function () {
+    $this->finder = $this->app['files'];
+    $this->activator = new FileActivator($this->app);
+});
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->finder = $this->app['files'];
-        $this->activator = new FileActivator($this->app);
-    }
+it('can delete a module from disk', function () {
+    $this->artisan('module:make', ['name' => ['WrongModule']]);
+    expect(base_path('modules/WrongModule'))->toBeDirectory();
 
-    /** @test */
-    public function it_can_delete_a_module_from_disk(): void
-    {
-        $this->artisan('module:make', ['name' => ['WrongModule']]);
-        $this->assertDirectoryExists(base_path('modules/WrongModule'));
+    $code = $this->artisan('module:delete', ['module' => 'WrongModule']);
+    $this->assertFileDoesNotExist(base_path('modules/WrongModule'));
+    expect($code)->toBe(0);
+});
 
-        $code = $this->artisan('module:delete', ['module' => 'WrongModule']);
-        $this->assertFileDoesNotExist(base_path('modules/WrongModule'));
-        $this->assertSame(0, $code);
-    }
+it('deletes modules from status file', function () {
+    $this->artisan('module:make', ['name' => ['WrongModule']]);
+    $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));
 
-    /** @test */
-    public function it_deletes_modules_from_status_file(): void
-    {
-        $this->artisan('module:make', ['name' => ['WrongModule']]);
-        $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));
-
-        $code = $this->artisan('module:delete', ['module' => 'WrongModule']);
-        $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));
-        $this->assertSame(0, $code);
-    }
-}
+    $code = $this->artisan('module:delete', ['module' => 'WrongModule']);
+    $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));
+    expect($code)->toBe(0);
+});

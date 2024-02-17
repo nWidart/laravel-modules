@@ -1,90 +1,67 @@
 <?php
 
-namespace Nwidart\Modules\Tests;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Exceptions\InvalidJsonException;
 use Nwidart\Modules\Json;
 
-class JsonTest extends BaseTestCase
-{
-    /**
-     * @var Json
-     */
-    private $json;
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $path = __DIR__ . '/stubs/valid/module.json';
-        $this->json = new Json($path, $this->app['files']);
-    }
+beforeEach(function () {
+    $path = __DIR__ . '/stubs/valid/module.json';
+    $this->json = new Json($path, $this->app['files']);
+});
 
-    /** @test */
-    public function it_gets_the_file_path()
-    {
-        $path = __DIR__ . '/stubs/valid/module.json';
+it('gets the file path', function () {
+    $path = __DIR__ . '/stubs/valid/module.json';
 
-        $this->assertEquals($path, $this->json->getPath());
-    }
+    expect($this->json->getPath())->toEqual($path);
+});
 
-    /** @test */
-    public function it_throws_an_exception_with_invalid_json()
-    {
-        $path = __DIR__ . '/stubs/InvalidJsonModule/module.json';
+it('throws an exception with invalid json', function () {
+    $path = __DIR__ . '/stubs/InvalidJsonModule/module.json';
 
-        $this->expectException(InvalidJsonException::class);
-        $this->expectExceptionMessage('Error processing file: ' . $path . '. Error: Syntax error');
+    $this->expectException(InvalidJsonException::class);
+    $this->expectExceptionMessage('Error processing file: ' . $path . '. Error: Syntax error');
 
-        new Json($path, $this->app['files']);
-    }
+    new Json($path, $this->app['files']);
+});
 
-    /** @test */
-    public function it_gets_attributes_from_json_file()
-    {
-        $this->assertEquals('Order', $this->json->get('name'));
-        $this->assertEquals('order', $this->json->get('alias'));
-        $this->assertEquals('My demo module', $this->json->get('description'));
-        $this->assertEquals('0.1', $this->json->get('version'));
-        $this->assertEquals(['my', 'stub', 'module'], $this->json->get('keywords'));
-        $this->assertEquals(1, $this->json->get('active'));
-        $this->assertEquals(1, $this->json->get('order'));
-    }
+it('gets attributes from json file', function () {
+    expect($this->json->get('name'))->toEqual('Order');
+    expect($this->json->get('alias'))->toEqual('order');
+    expect($this->json->get('description'))->toEqual('My demo module');
+    expect($this->json->get('version'))->toEqual('0.1');
+    expect($this->json->get('keywords'))->toEqual(['my', 'stub', 'module']);
+    expect($this->json->get('active'))->toEqual(1);
+    expect($this->json->get('order'))->toEqual(1);
+});
 
-    /** @test */
-    public function it_reads_attributes_from_magic_get_method()
-    {
-        $this->assertEquals('Order', $this->json->name);
-        $this->assertEquals('order', $this->json->alias);
-        $this->assertEquals('My demo module', $this->json->description);
-        $this->assertEquals('0.1', $this->json->version);
-        $this->assertEquals(['my', 'stub', 'module'], $this->json->keywords);
-        $this->assertEquals(1, $this->json->active);
-        $this->assertEquals(1, $this->json->order);
-    }
+it('reads attributes from magic get method', function () {
+    expect($this->json->name)->toEqual('Order');
+    expect($this->json->alias)->toEqual('order');
+    expect($this->json->description)->toEqual('My demo module');
+    expect($this->json->version)->toEqual('0.1');
+    expect($this->json->keywords)->toEqual(['my', 'stub', 'module']);
+    expect($this->json->active)->toEqual(1);
+    expect($this->json->order)->toEqual(1);
+});
 
-    /** @test */
-    public function it_makes_json_class()
-    {
-        $path = __DIR__ . '/stubs/valid/module.json';
-        $json = Json::make($path, $this->app['files']);
+it('makes json class', function () {
+    $path = __DIR__ . '/stubs/valid/module.json';
+    $json = Json::make($path, $this->app['files']);
 
-        $this->assertInstanceOf(Json::class, $json);
-    }
+    expect($json)->toBeInstanceOf(Json::class);
+});
 
-    /** @test */
-    public function it_sets_a_path()
-    {
-        $path = __DIR__ . '/stubs/valid/module.json';
-        $this->assertEquals($path, $this->json->getPath());
+it('sets a path', function () {
+    $path = __DIR__ . '/stubs/valid/module.json';
+    expect($this->json->getPath())->toEqual($path);
 
-        $this->json->setPath('some/path.json');
-        $this->assertEquals('some/path.json', $this->json->getPath());
-    }
+    $this->json->setPath('some/path.json');
+    expect($this->json->getPath())->toEqual('some/path.json');
+});
 
-    /** @test */
-    public function it_decodes_json()
-    {
-        $expected = '{
+it('decodes json', function () {
+    $expected = '{
     "name": "Order",
     "alias": "order",
     "description": "My demo module",
@@ -104,21 +81,17 @@ class JsonTest extends BaseTestCase
     "aliases": [],
     "files": []
 }';
-        $this->assertEquals($expected, $this->json->toJsonPretty());
-    }
+    expect($this->json->toJsonPretty())->toEqual($expected);
+});
 
-    /** @test */
-    public function it_sets_a_key_value()
-    {
-        $this->json->set('key', 'value');
+it('sets a key value', function () {
+    $this->json->set('key', 'value');
 
-        $this->assertEquals('value', $this->json->get('key'));
-    }
+    expect($this->json->get('key'))->toEqual('value');
+});
 
-    /** @test */
-    public function it_can_be_casted_to_string()
-    {
-        $expected = '{
+it('can be casted to string', function () {
+    $expected = '{
     "name": "Order",
     "alias": "order",
     "description": "My demo module",
@@ -140,6 +113,5 @@ class JsonTest extends BaseTestCase
     ]
 }
 ';
-        $this->assertEquals($expected, (string)$this->json);
-    }
-}
+    expect((string)$this->json)->toEqual($expected);
+});

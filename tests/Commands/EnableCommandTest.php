@@ -1,54 +1,41 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Module;
-use Nwidart\Modules\Tests\BaseTestCase;
 
-class EnableCommandTest extends BaseTestCase
-{
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->artisan('module:make', ['name' => ['Blog']]);
-        $this->artisan('module:make', ['name' => ['Taxonomy']]);
-    }
+beforeEach(function () {
+    $this->artisan('module:make', ['name' => ['Blog']]);
+    $this->artisan('module:make', ['name' => ['Taxonomy']]);
+});
 
-    public function tearDown(): void
-    {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        $this->app[RepositoryInterface::class]->delete('Taxonomy');
-        parent::tearDown();
-    }
+afterEach(function () {
+    $this->app[RepositoryInterface::class]->delete('Blog');
+    $this->app[RepositoryInterface::class]->delete('Taxonomy');
+});
 
-    /** @test */
-    public function it_enables_a_module()
-    {
-        /** @var Module $blogModule */
-        $blogModule = $this->app[RepositoryInterface::class]->find('Blog');
-        $blogModule->disable();
+it('enables a module', function () {
+    /** @var Module $blogModule */
+    $blogModule = $this->app[RepositoryInterface::class]->find('Blog');
+    $blogModule->disable();
 
-        $code = $this->artisan('module:enable', ['module' => 'Blog']);
+    $code = $this->artisan('module:enable', ['module' => 'Blog']);
 
-        $this->assertTrue($blogModule->isEnabled());
-        $this->assertSame(0, $code);
-    }
+    expect($blogModule->isEnabled())->toBeTrue();
+    expect($code)->toBe(0);
+});
 
-    /** @test */
-    public function it_enables_all_modules()
-    {
-        /** @var Module $blogModule */
-        $blogModule = $this->app[RepositoryInterface::class]->find('Blog');
-        $blogModule->disable();
+it('enables all modules', function () {
+    /** @var Module $blogModule */
+    $blogModule = $this->app[RepositoryInterface::class]->find('Blog');
+    $blogModule->disable();
 
-        /** @var Module $taxonomyModule */
-        $taxonomyModule = $this->app[RepositoryInterface::class]->find('Taxonomy');
-        $taxonomyModule->disable();
+    /** @var Module $taxonomyModule */
+    $taxonomyModule = $this->app[RepositoryInterface::class]->find('Taxonomy');
+    $taxonomyModule->disable();
 
-        $code = $this->artisan('module:enable', ['--all' => true]);
+    $code = $this->artisan('module:enable', ['--all' => true]);
 
-        $this->assertTrue($blogModule->isEnabled() && $taxonomyModule->isEnabled());
-        $this->assertSame(0, $code);
-    }
-}
+    expect($blogModule->isEnabled() && $taxonomyModule->isEnabled())->toBeTrue();
+    expect($code)->toBe(0);
+});

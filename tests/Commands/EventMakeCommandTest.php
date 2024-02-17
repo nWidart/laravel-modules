@@ -1,81 +1,54 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Tests\BaseTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 
-class EventMakeCommandTest extends BaseTestCase
-{
-    use MatchesSnapshots;
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
+uses(\Spatie\Snapshots\MatchesSnapshots::class);
 
-    /**
-     * @var string
-     */
-    private $modulePath;
+beforeEach(function () {
+    $this->modulePath = base_path('modules/Blog');
+    $this->finder = $this->app['files'];
+    $this->artisan('module:make', ['name' => ['Blog']]);
+});
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
-    }
+afterEach(function () {
+    $this->app[RepositoryInterface::class]->delete('Blog');
+});
 
-    public function tearDown(): void
-    {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        parent::tearDown();
-    }
+it('generates a new event class', function () {
+    $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-    /** @test */
-    public function it_generates_a_new_event_class()
-    {
-        $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
+    expect(is_file($this->modulePath . '/Events/PostWasCreated.php'))->toBeTrue();
+    expect($code)->toBe(0);
+});
 
-        $this->assertTrue(is_file($this->modulePath . '/Events/PostWasCreated.php'));
-        $this->assertSame(0, $code);
-    }
+it('generated correct file with content', function () {
+    $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-    /** @test */
-    public function it_generated_correct_file_with_content()
-    {
-        $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
+    $file = $this->finder->get($this->modulePath . '/Events/PostWasCreated.php');
 
-        $file = $this->finder->get($this->modulePath . '/Events/PostWasCreated.php');
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+it('can change the default namespace', function () {
+    $this->app['config']->set('modules.paths.generator.event.path', 'SuperEvents');
 
-    /** @test */
-    public function it_can_change_the_default_namespace()
-    {
-        $this->app['config']->set('modules.paths.generator.event.path', 'SuperEvents');
+    $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-        $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
+    $file = $this->finder->get($this->modulePath . '/SuperEvents/PostWasCreated.php');
 
-        $file = $this->finder->get($this->modulePath . '/SuperEvents/PostWasCreated.php');
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+it('can change the default namespace specific', function () {
+    $this->app['config']->set('modules.paths.generator.event.namespace', 'SuperEvents');
 
-    /** @test */
-    public function it_can_change_the_default_namespace_specific()
-    {
-        $this->app['config']->set('modules.paths.generator.event.namespace', 'SuperEvents');
+    $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-        $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
+    $file = $this->finder->get($this->modulePath . '/Events/PostWasCreated.php');
 
-        $file = $this->finder->get($this->modulePath . '/Events/PostWasCreated.php');
-
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
-}
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});

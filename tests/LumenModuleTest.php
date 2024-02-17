@@ -1,158 +1,103 @@
 <?php
 
-namespace Nwidart\Modules\Tests;
-
+uses(\Nwidart\Modules\Lumen\Module::class);
+use \Nwidart\Modules\Tests\LumenTestingModule;
 use Illuminate\Support\Facades\Event;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Json;
 
-class LumenModuleTest extends BaseTestCase
-{
-    /**
-     * @var LumenTestingModule
-     */
-    private $module;
 
-    /**
-     * @var ActivatorInterface
-     */
-    private $activator;
+beforeEach(function () {
+    $this->module = new LumenTestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');
+    $this->activator = $this->app[ActivatorInterface::class];
+});
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->module = new LumenTestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');
-        $this->activator = $this->app[ActivatorInterface::class];
-    }
+afterEach(function () {
+    $this->activator->reset();
+});
 
-    public function tearDown(): void
-    {
-        $this->activator->reset();
-        parent::tearDown();
-    }
+it('gets module name', function () {
+    expect($this->module->getName())->toEqual('Recipe Name');
+});
 
-    /** @test */
-    public function it_gets_module_name()
-    {
-        $this->assertEquals('Recipe Name', $this->module->getName());
-    }
+it('gets lowercase module name', function () {
+    expect($this->module->getLowerName())->toEqual('recipe name');
+});
 
-    /** @test */
-    public function it_gets_lowercase_module_name()
-    {
-        $this->assertEquals('recipe name', $this->module->getLowerName());
-    }
+it('gets studly name', function () {
+    expect($this->module->getStudlyName())->toEqual('RecipeName');
+});
 
-    /** @test */
-    public function it_gets_studly_name()
-    {
-        $this->assertEquals('RecipeName', $this->module->getStudlyName());
-    }
+it('gets snake name', function () {
+    expect($this->module->getSnakeName())->toEqual('recipe_name');
+});
 
-    /** @test */
-    public function it_gets_snake_name()
-    {
-        $this->assertEquals('recipe_name', $this->module->getSnakeName());
-    }
+it('gets module description', function () {
+    expect($this->module->getDescription())->toEqual('recipe module');
+});
 
-    /** @test */
-    public function it_gets_module_description()
-    {
-        $this->assertEquals('recipe module', $this->module->getDescription());
-    }
+it('gets module path', function () {
+    expect($this->module->getPath())->toEqual(__DIR__ . '/stubs/valid/Recipe');
+});
 
-    /** @test */
-    public function it_gets_module_path()
-    {
-        $this->assertEquals(__DIR__ . '/stubs/valid/Recipe', $this->module->getPath());
-    }
+it('loads module translations', function () {
+    (new LumenTestingModule($this->app, 'Recipe', __DIR__ . '/stubs/valid/Recipe'))->boot();
+    expect(trans('recipe::recipes.title.recipes'))->toEqual('Recipe');
+});
 
-    /** @test */
-    public function it_loads_module_translations()
-    {
-        (new LumenTestingModule($this->app, 'Recipe', __DIR__ . '/stubs/valid/Recipe'))->boot();
-        $this->assertEquals('Recipe', trans('recipe::recipes.title.recipes'));
-    }
+it('reads module json files', function () {
+    $jsonModule = $this->module->json();
+    $composerJson = $this->module->json('composer.json');
 
-    /** @test */
-    public function it_reads_module_json_files()
-    {
-        $jsonModule = $this->module->json();
-        $composerJson = $this->module->json('composer.json');
+    expect($jsonModule)->toBeInstanceOf(Json::class);
+    expect($jsonModule->get('version'))->toEqual('0.1');
+    expect($composerJson)->toBeInstanceOf(Json::class);
+    expect($composerJson->get('type'))->toEqual('asgard-module');
+});
 
-        $this->assertInstanceOf(Json::class, $jsonModule);
-        $this->assertEquals('0.1', $jsonModule->get('version'));
-        $this->assertInstanceOf(Json::class, $composerJson);
-        $this->assertEquals('asgard-module', $composerJson->get('type'));
-    }
+it('reads key from module json file via helper method', function () {
+    expect($this->module->get('name'))->toEqual('Recipe');
+    expect($this->module->get('version'))->toEqual('0.1');
+    expect($this->module->get('some-thing-non-there', 'my default'))->toEqual('my default');
+    expect($this->module->get('requires'))->toEqual(['required_module']);
+});
 
-    /** @test */
-    public function it_reads_key_from_module_json_file_via_helper_method()
-    {
-        $this->assertEquals('Recipe', $this->module->get('name'));
-        $this->assertEquals('0.1', $this->module->get('version'));
-        $this->assertEquals('my default', $this->module->get('some-thing-non-there', 'my default'));
-        $this->assertEquals(['required_module'], $this->module->get('requires'));
-    }
+it('reads key from composer json file via helper method', function () {
+    expect($this->module->getComposerAttr('name'))->toEqual('nwidart/recipe');
+});
 
-    /** @test */
-    public function it_reads_key_from_composer_json_file_via_helper_method()
-    {
-        $this->assertEquals('nwidart/recipe', $this->module->getComposerAttr('name'));
-    }
+it('casts module to string', function () {
+    expect((string) $this->module)->toEqual('RecipeName');
+});
 
-    /** @test */
-    public function it_casts_module_to_string()
-    {
-        $this->assertEquals('RecipeName', (string) $this->module);
-    }
+it('module status check', function () {
+    expect($this->module->isStatus(true))->toBeFalse();
+    expect($this->module->isStatus(false))->toBeTrue();
+});
 
-    /** @test */
-    public function it_module_status_check()
-    {
-        $this->assertFalse($this->module->isStatus(true));
-        $this->assertTrue($this->module->isStatus(false));
-    }
+it('checks module enabled status', function () {
+    expect($this->module->isEnabled())->toBeFalse();
+    expect($this->module->isDisabled())->toBeTrue();
+});
 
-    /** @test */
-    public function it_checks_module_enabled_status()
-    {
-        $this->assertFalse($this->module->isEnabled());
-        $this->assertTrue($this->module->isDisabled());
-    }
+it('fires events when module is enabled', function () {
+    Event::fake();
 
-    /** @test */
-    public function it_fires_events_when_module_is_enabled()
-    {
-        Event::fake();
+    $this->module->enable();
 
-        $this->module->enable();
+    Event::assertDispatched(sprintf('modules.%s.enabling', $this->module->getLowerName()));
+    Event::assertDispatched(sprintf('modules.%s.enabled', $this->module->getLowerName()));
+});
 
-        Event::assertDispatched(sprintf('modules.%s.enabling', $this->module->getLowerName()));
-        Event::assertDispatched(sprintf('modules.%s.enabled', $this->module->getLowerName()));
-    }
+it('fires events when module is disabled', function () {
+    Event::fake();
 
-    /** @test */
-    public function it_fires_events_when_module_is_disabled()
-    {
-        Event::fake();
+    $this->module->disable();
 
-        $this->module->disable();
+    Event::assertDispatched(sprintf('modules.%s.disabling', $this->module->getLowerName()));
+    Event::assertDispatched(sprintf('modules.%s.disabled', $this->module->getLowerName()));
+});
 
-        Event::assertDispatched(sprintf('modules.%s.disabling', $this->module->getLowerName()));
-        Event::assertDispatched(sprintf('modules.%s.disabled', $this->module->getLowerName()));
-    }
-
-    /** @test */
-    public function it_has_a_good_providers_manifest_path()
-    {
-        $this->assertEquals(
-            $this->app->basePath("storage/app/{$this->module->getSnakeName()}_module.php"),
-            $this->module->getCachedServicesPath()
-        );
-    }
-}
-
-class LumenTestingModule extends \Nwidart\Modules\Lumen\Module
-{
-}
+it('has a good providers manifest path', function () {
+    expect($this->module->getCachedServicesPath())->toEqual($this->app->basePath("storage/app/{$this->module->getSnakeName()}_module.php"));
+});

@@ -1,7 +1,6 @@
 <?php
 
-namespace Nwidart\Modules\Tests;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Collection;
 use Nwidart\Modules\Contracts\ActivatorInterface;
@@ -10,245 +9,179 @@ use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Laravel\LaravelFileRepository;
 use Nwidart\Modules\Module;
 
-class LaravelFileRepositoryTest extends BaseTestCase
-{
-    /**
-     * @var LaravelFileRepository
-     */
-    private $repository;
 
-    /**
-     * @var ActivatorInterface
-     */
-    private $activator;
+beforeEach(function () {
+    $this->repository = new LaravelFileRepository($this->app);
+    $this->activator = $this->app[ActivatorInterface::class];
+});
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->repository = new LaravelFileRepository($this->app);
-        $this->activator = $this->app[ActivatorInterface::class];
-    }
+afterEach(function () {
+    $this->activator->reset();
+});
 
-    public function tearDown(): void
-    {
-        $this->activator->reset();
-        parent::tearDown();
-    }
+it('adds location to paths', function () {
+    $this->repository->addLocation('some/path');
 
-    /** @test */
-    public function it_adds_location_to_paths()
-    {
-        $this->repository->addLocation('some/path');
+    $paths = $this->repository->getPaths();
+    expect($paths)->toHaveCount(1);
+    expect($paths[0])->toEqual('some/path');
+});
 
-        $paths = $this->repository->getPaths();
-        $this->assertCount(1, $paths);
-        $this->assertEquals('some/path', $paths[0]);
-    }
+it('returns a collection', function () {
+    $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-    /** @test */
-    public function it_returns_a_collection()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+    expect($this->repository->toCollection())->toBeInstanceOf(Collection::class);
+    expect($this->repository->collections())->toBeInstanceOf(Collection::class);
+});
 
-        $this->assertInstanceOf(Collection::class, $this->repository->toCollection());
-        $this->assertInstanceOf(Collection::class, $this->repository->collections());
-    }
+it('returns all enabled modules', function () {
+    $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-    /** @test */
-    public function it_returns_all_enabled_modules()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+    expect($this->repository->getByStatus(true))->toHaveCount(0);
+    expect($this->repository->allEnabled())->toHaveCount(0);
+});
 
-        $this->assertCount(0, $this->repository->getByStatus(true));
-        $this->assertCount(0, $this->repository->allEnabled());
-    }
+it('returns all disabled modules', function () {
+    $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-    /** @test */
-    public function it_returns_all_disabled_modules()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+    expect($this->repository->getByStatus(false))->toHaveCount(2);
+    expect($this->repository->allDisabled())->toHaveCount(2);
+});
 
-        $this->assertCount(2, $this->repository->getByStatus(false));
-        $this->assertCount(2, $this->repository->allDisabled());
-    }
+it('counts all modules', function () {
+    $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-    /** @test */
-    public function it_counts_all_modules()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+    expect($this->repository->count())->toEqual(2);
+});
 
-        $this->assertEquals(2, $this->repository->count());
-    }
+it('finds a module', function () {
+    $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-    /** @test */
-    public function it_finds_a_module()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+    expect($this->repository->find('recipe'))->toBeInstanceOf(Module::class);
+});
 
-        $this->assertInstanceOf(Module::class, $this->repository->find('recipe'));
-    }
+it('find or fail throws exception if module not found', function () {
+    $this->expectException(ModuleNotFoundException::class);
 
-    /** @test */
-    public function it_find_or_fail_throws_exception_if_module_not_found()
-    {
-        $this->expectException(ModuleNotFoundException::class);
+    $this->repository->findOrFail('something');
+});
 
-        $this->repository->findOrFail('something');
-    }
+it('finds the module asset path', function () {
+    $this->repository->addLocation(__DIR__ . '/stubs/valid/Recipe');
+    $assetPath = $this->repository->assetPath('recipe');
 
-    /** @test */
-    public function it_finds_the_module_asset_path()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid/Recipe');
-        $assetPath = $this->repository->assetPath('recipe');
+    expect($assetPath)->toEqual(public_path('modules/recipe'));
+});
 
-        $this->assertEquals(public_path('modules/recipe'), $assetPath);
-    }
+it('gets the used storage path', function () {
+    $path = $this->repository->getUsedStoragePath();
 
-    /** @test */
-    public function it_gets_the_used_storage_path()
-    {
-        $path = $this->repository->getUsedStoragePath();
+    expect($path)->toEqual(storage_path('app/modules/modules.used'));
+});
 
-        $this->assertEquals(storage_path('app/modules/modules.used'), $path);
-    }
+it('sets used module', function () {
+    $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-    /** @test */
-    public function it_sets_used_module()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+    $this->repository->setUsed('Recipe');
 
-        $this->repository->setUsed('Recipe');
+    expect($this->repository->getUsedNow())->toEqual('Recipe');
+});
 
-        $this->assertEquals('Recipe', $this->repository->getUsedNow());
-    }
+it('returns laravel filesystem', function () {
+    expect($this->repository->getFiles())->toBeInstanceOf(Filesystem::class);
+});
 
-    /** @test */
-    public function it_returns_laravel_filesystem()
-    {
-        $this->assertInstanceOf(Filesystem::class, $this->repository->getFiles());
-    }
+it('gets the assets path', function () {
+    expect($this->repository->getAssetsPath())->toEqual(public_path('modules'));
+});
 
-    /** @test */
-    public function it_gets_the_assets_path()
-    {
-        $this->assertEquals(public_path('modules'), $this->repository->getAssetsPath());
-    }
+it('gets a specific module asset', function () {
+    $path = $this->repository->asset('recipe:test.js');
 
-    /** @test */
-    public function it_gets_a_specific_module_asset()
-    {
-        $path = $this->repository->asset('recipe:test.js');
+    expect($path)->toEqual('//localhost/modules/recipe/test.js');
+});
 
-        $this->assertEquals('//localhost/modules/recipe/test.js', $path);
-    }
+it('throws exception if module is omitted', function () {
+    $this->expectException(InvalidAssetPath::class);
+    $this->expectExceptionMessage('Module name was not specified in asset [test.js].');
 
-    /** @test */
-    public function it_throws_exception_if_module_is_omitted()
-    {
-        $this->expectException(InvalidAssetPath::class);
-        $this->expectExceptionMessage('Module name was not specified in asset [test.js].');
+    $this->repository->asset('test.js');
+});
 
-        $this->repository->asset('test.js');
-    }
+it('can detect if module is active', function () {
+    $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-    /** @test */
-    public function it_can_detect_if_module_is_active()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+    $this->repository->enable('Recipe');
 
-        $this->repository->enable('Recipe');
+    expect($this->repository->isEnabled('Recipe'))->toBeTrue();
+});
 
-        $this->assertTrue($this->repository->isEnabled('Recipe'));
-    }
+it('can detect if module is inactive', function () {
+    $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-    /** @test */
-    public function it_can_detect_if_module_is_inactive()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+    $this->repository->isDisabled('Recipe');
 
-        $this->repository->isDisabled('Recipe');
+    expect($this->repository->isDisabled('Recipe'))->toBeTrue();
+});
 
-        $this->assertTrue($this->repository->isDisabled('Recipe'));
-    }
+it('can get and set the stubs path', function () {
+    $this->repository->setStubPath('some/stub/path');
 
-    /** @test */
-    public function it_can_get_and_set_the_stubs_path()
-    {
-        $this->repository->setStubPath('some/stub/path');
+    expect($this->repository->getStubPath())->toEqual('some/stub/path');
+});
 
-        $this->assertEquals('some/stub/path', $this->repository->getStubPath());
-    }
+it('gets the configured stubs path if enabled', function () {
+    $this->app['config']->set('modules.stubs.enabled', true);
 
-    /** @test */
-    public function it_gets_the_configured_stubs_path_if_enabled()
-    {
-        $this->app['config']->set('modules.stubs.enabled', true);
+    expect($this->repository->getStubPath())->toEqual(base_path('vendor/nwidart/laravel-modules/src/Commands/stubs'));
+});
 
-        $this->assertEquals(base_path('vendor/nwidart/laravel-modules/src/Commands/stubs'), $this->repository->getStubPath());
-    }
+it('returns default stub path', function () {
+    expect($this->repository->getStubPath())->toBeNull();
+});
 
-    /** @test */
-    public function it_returns_default_stub_path()
-    {
-        $this->assertNull($this->repository->getStubPath());
-    }
+it('can disabled a module', function () {
+    $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-    /** @test */
-    public function it_can_disabled_a_module()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+    $this->repository->disable('Recipe');
 
-        $this->repository->disable('Recipe');
+    expect($this->repository->isDisabled('Recipe'))->toBeTrue();
+});
 
-        $this->assertTrue($this->repository->isDisabled('Recipe'));
-    }
+it('can enable a module', function () {
+    $this->repository->addLocation(__DIR__ . '/stubs/valid');
 
-    /** @test */
-    public function it_can_enable_a_module()
-    {
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
+    $this->repository->enable('Recipe');
 
-        $this->repository->enable('Recipe');
+    expect($this->repository->isEnabled('Recipe'))->toBeTrue();
+});
 
-        $this->assertTrue($this->repository->isEnabled('Recipe'));
-    }
+it('can delete a module', function () {
+    $this->artisan('module:make', ['name' => ['Blog']]);
 
-    /** @test */
-    public function it_can_delete_a_module()
-    {
-        $this->artisan('module:make', ['name' => ['Blog']]);
+    $this->repository->delete('Blog');
 
-        $this->repository->delete('Blog');
+    expect(is_dir(base_path('modules/Blog')))->toBeFalse();
+});
 
-        $this->assertFalse(is_dir(base_path('modules/Blog')));
-    }
+it('can register macros', function () {
+    Module::macro('registeredMacro', function () {
+    });
 
-    /** @test */
-    public function it_can_register_macros()
-    {
-        Module::macro('registeredMacro', function () {
-        });
+    expect(Module::hasMacro('registeredMacro'))->toBeTrue();
+});
 
-        $this->assertTrue(Module::hasMacro('registeredMacro'));
-    }
+it('does not have unregistered macros', function () {
+    expect(Module::hasMacro('unregisteredMacro'))->toBeFalse();
+});
 
-    /** @test */
-    public function it_does_not_have_unregistered_macros()
-    {
-        $this->assertFalse(Module::hasMacro('unregisteredMacro'));
-    }
+it('calls macros on modules', function () {
+    Module::macro('getReverseName', function () {
+        return strrev($this->getLowerName());
+    });
 
-    /** @test */
-    public function it_calls_macros_on_modules()
-    {
-        Module::macro('getReverseName', function () {
-            return strrev($this->getLowerName());
-        });
+    $this->repository->addLocation(__DIR__ . '/stubs/valid');
+    $module = $this->repository->find('recipe');
 
-        $this->repository->addLocation(__DIR__ . '/stubs/valid');
-        $module = $this->repository->find('recipe');
-
-        $this->assertEquals('epicer', $module->getReverseName());
-    }
-}
+    expect($module->getReverseName())->toEqual('epicer');
+});

@@ -1,42 +1,22 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Tests\BaseTestCase;
 
-class PublishCommandTest extends BaseTestCase
-{
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
-    /**
-     * @var string
-     */
-    private $modulePath;
+beforeEach(function () {
+    $this->modulePath = base_path('modules/Blog');
+    $this->finder = $this->app['files'];
+    $this->artisan('module:make', ['name' => ['Blog']]);
+    $this->finder->put($this->modulePath . '/Assets/script.js', 'assetfile');
+});
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
-        $this->finder->put($this->modulePath . '/Assets/script.js', 'assetfile');
-    }
+afterEach(function () {
+    $this->app[RepositoryInterface::class]->delete('Blog');
+});
 
-    public function tearDown(): void
-    {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        parent::tearDown();
-    }
+it('published module assets', function () {
+    $code = $this->artisan('module:publish', ['module' => 'Blog']);
 
-    /** @test */
-    public function it_published_module_assets()
-    {
-        $code = $this->artisan('module:publish', ['module' => 'Blog']);
-
-        $this->assertTrue(is_file(public_path('modules/blog/script.js')));
-        $this->assertSame(0, $code);
-    }
-}
+    expect(is_file(public_path('modules/blog/script.js')))->toBeTrue();
+    expect($code)->toBe(0);
+});

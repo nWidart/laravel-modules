@@ -1,41 +1,33 @@
 <?php
 
-namespace Nwidart\Modules;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
+use \Nwidart\Modules\Collection;
 use Nwidart\Modules\Laravel\Module;
-use Nwidart\Modules\Tests\BaseTestCase;
 
-class CollectionTest extends BaseTestCase
-{
-    /** @test */
-    public function toArraySetsPathAttribute()
-    {
-        $moduleOnePath = __DIR__ . '/stubs/valid/Recipe';
-        $moduleTwoPath = __DIR__ . '/stubs/valid/Requirement';
-        $modules = [
-            new Module($this->app, 'module-one', $moduleOnePath),
-            new Module($this->app, 'module-two', $moduleTwoPath),
-        ];
-        $collection = new Collection($modules);
-        $collectionArray = $collection->toArray();
+test('to array sets path attribute', function () {
+    $moduleOnePath = __DIR__ . '/stubs/valid/Recipe';
+    $moduleTwoPath = __DIR__ . '/stubs/valid/Requirement';
+    $modules = [
+        new Module($this->app, 'module-one', $moduleOnePath),
+        new Module($this->app, 'module-two', $moduleTwoPath),
+    ];
+    $collection = new Collection($modules);
+    $collectionArray = $collection->toArray();
 
-        $this->assertArrayHasKey('path', $collectionArray[0]);
-        $this->assertEquals($moduleOnePath, $collectionArray[0]['path']);
-        $this->assertArrayHasKey('path', $collectionArray[1]);
-        $this->assertEquals($moduleTwoPath, $collectionArray[1]['path']);
-    }
+    expect($collectionArray[0])->toHaveKey('path');
+    expect($collectionArray[0]['path'])->toEqual($moduleOnePath);
+    expect($collectionArray[1])->toHaveKey('path');
+    expect($collectionArray[1]['path'])->toEqual($moduleTwoPath);
+});
 
-    /** @test */
-    public function getItemsReturnsTheCollectionItems()
-    {
-        $modules = [
-            new Module($this->app, 'module-one', __DIR__ . '/stubs/valid/Recipe'),
-            new Module($this->app, 'module-two', __DIR__ . '/stubs/valid/Requirement'),
-        ];
-        $collection = new Collection($modules);
-        $items = $collection->getItems();
+test('get items returns the collection items', function () {
+    $modules = [
+        new Module($this->app, 'module-one', __DIR__ . '/stubs/valid/Recipe'),
+        new Module($this->app, 'module-two', __DIR__ . '/stubs/valid/Requirement'),
+    ];
+    $collection = new Collection($modules);
+    $items = $collection->getItems();
 
-        $this->assertCount(2, $items);
-        $this->assertInstanceOf(Module::class, $items[0]);
-    }
-}
+    expect($items)->toHaveCount(2);
+    expect($items[0])->toBeInstanceOf(Module::class);
+});

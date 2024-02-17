@@ -1,43 +1,23 @@
 <?php
 
-namespace Nwidart\Modules\Tests;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Illuminate\Support\Str;
 
-class HelpersTest extends BaseTestCase
-{
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
-    /**
-     * @var string
-     */
-    private $modulePath;
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
-    }
+beforeEach(function () {
+    $this->modulePath = base_path('modules/Blog');
+    $this->finder = $this->app['files'];
+    $this->artisan('module:make', ['name' => ['Blog']]);
+});
 
-    public function tearDown(): void
-    {
-        $this->finder->deleteDirectory($this->modulePath);
-        parent::tearDown();
-    }
+afterEach(function () {
+    $this->finder->deleteDirectory($this->modulePath);
+});
 
-    /** @test */
-    public function it_finds_the_module_path()
-    {
-        $this->assertTrue(Str::contains(module_path('Blog'), 'modules/Blog'));
-    }
+it('finds the module path', function () {
+    expect(Str::contains(module_path('Blog'), 'modules/Blog'))->toBeTrue();
+});
 
-    /** @test */
-    public function it_can_bind_a_relative_path_to_module_path()
-    {
-        $this->assertTrue(Str::contains(module_path('Blog', 'config/config.php'), 'modules/Blog/config/config.php'));
-    }
-}
+it('can bind a relative path to module path', function () {
+    expect(Str::contains(module_path('Blog', 'config/config.php'), 'modules/Blog/config/config.php'))->toBeTrue();
+});

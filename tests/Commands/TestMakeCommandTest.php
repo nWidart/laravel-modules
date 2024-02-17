@@ -1,127 +1,90 @@
 <?php
 
-namespace Nwidart\Modules\Tests\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Tests\BaseTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 
-class TestMakeCommandTest extends BaseTestCase
-{
-    use MatchesSnapshots;
-    /**
-     * @var \Illuminate\Filesystem\Filesystem
-     */
-    private $finder;
-    /**
-     * @var string
-     */
-    private $modulePath;
+uses(\Spatie\Snapshots\MatchesSnapshots::class);
 
-    /**
-     * @var ActivatorInterface
-     */
-    private $activator;
+beforeEach(function () {
+    $this->modulePath = base_path('modules/Blog');
+    $this->finder = $this->app['files'];
+    $this->artisan('module:make', ['name' => ['Blog']]);
+    $this->activator = $this->app[ActivatorInterface::class];
+});
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
-        $this->activator = $this->app[ActivatorInterface::class];
-    }
+afterEach(function () {
+    $this->app[RepositoryInterface::class]->delete('Blog');
+    $this->activator->reset();
+});
 
-    public function tearDown(): void
-    {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        $this->activator->reset();
-        parent::tearDown();
-    }
+it('generates a new test class', function () {
+    $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
+    $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
 
-    /** @test */
-    public function it_generates_a_new_test_class()
-    {
-        $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
-        $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
+    expect(is_file($this->modulePath . '/Tests/Unit/EloquentPostRepositoryTest.php'))->toBeTrue();
+    expect(is_file($this->modulePath . '/Tests/Feature/EloquentPostRepositoryTest.php'))->toBeTrue();
+    expect($code)->toBe(0);
+});
 
-        $this->assertTrue(is_file($this->modulePath . '/Tests/Unit/EloquentPostRepositoryTest.php'));
-        $this->assertTrue(is_file($this->modulePath . '/Tests/Feature/EloquentPostRepositoryTest.php'));
-        $this->assertSame(0, $code);
-    }
+it('generated correct unit file with content', function () {
+    $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
 
-    /** @test */
-    public function it_generated_correct_unit_file_with_content()
-    {
-        $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
+    $file = $this->finder->get($this->modulePath . '/Tests/Unit/EloquentPostRepositoryTest.php');
 
-        $file = $this->finder->get($this->modulePath . '/Tests/Unit/EloquentPostRepositoryTest.php');
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+it('generated correct feature file with content', function () {
+    $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
 
-    /** @test */
-    public function it_generated_correct_feature_file_with_content()
-    {
-        $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
+    $file = $this->finder->get($this->modulePath . '/Tests/Feature/EloquentPostRepositoryTest.php');
 
-        $file = $this->finder->get($this->modulePath . '/Tests/Feature/EloquentPostRepositoryTest.php');
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+it('can change the default unit namespace', function () {
+    $this->app['config']->set('modules.paths.generator.test.path', 'SuperTests/Unit');
 
-    /** @test */
-    public function it_can_change_the_default_unit_namespace()
-    {
-        $this->app['config']->set('modules.paths.generator.test.path', 'SuperTests/Unit');
+    $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
 
-        $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
+    $file = $this->finder->get($this->modulePath . '/SuperTests/Unit/EloquentPostRepositoryTest.php');
 
-        $file = $this->finder->get($this->modulePath . '/SuperTests/Unit/EloquentPostRepositoryTest.php');
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+it('can change the default unit namespace specific', function () {
+    $this->app['config']->set('modules.paths.generator.test.namespace', 'SuperTests\\Unit');
 
-    /** @test */
-    public function it_can_change_the_default_unit_namespace_specific()
-    {
-        $this->app['config']->set('modules.paths.generator.test.namespace', 'SuperTests\\Unit');
+    $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
 
-        $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
+    $file = $this->finder->get($this->modulePath . '/Tests/Unit/EloquentPostRepositoryTest.php');
 
-        $file = $this->finder->get($this->modulePath . '/Tests/Unit/EloquentPostRepositoryTest.php');
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+it('can change the default feature namespace', function () {
+    $this->app['config']->set('modules.paths.generator.test-feature.path', 'SuperTests/Feature');
 
-    /** @test */
-    public function it_can_change_the_default_feature_namespace()
-    {
-        $this->app['config']->set('modules.paths.generator.test-feature.path', 'SuperTests/Feature');
+    $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
 
-        $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
+    $file = $this->finder->get($this->modulePath . '/SuperTests/Feature/EloquentPostRepositoryTest.php');
 
-        $file = $this->finder->get($this->modulePath . '/SuperTests/Feature/EloquentPostRepositoryTest.php');
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});
 
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
+it('can change the default feature namespace specific', function () {
+    $this->app['config']->set('modules.paths.generator.test-feature.namespace', 'SuperTests\\Feature');
 
-    /** @test */
-    public function it_can_change_the_default_feature_namespace_specific()
-    {
-        $this->app['config']->set('modules.paths.generator.test-feature.namespace', 'SuperTests\\Feature');
+    $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
 
-        $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
+    $file = $this->finder->get($this->modulePath . '/Tests/Feature/EloquentPostRepositoryTest.php');
 
-        $file = $this->finder->get($this->modulePath . '/Tests/Feature/EloquentPostRepositoryTest.php');
-
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
-}
+    $this->assertMatchesSnapshot($file);
+    expect($code)->toBe(0);
+});

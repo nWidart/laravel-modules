@@ -28,7 +28,10 @@
     "friendsofphp/php-cs-fixer": "^3.6",
     "laravel/framework": "^10.41",
     "spatie/phpunit-snapshot-assertions": "^5.0",
-    "phpstan/phpstan": "^1.4"
+    "phpstan/phpstan": "^1.4",
+    "pestphp/pest": "^2.33",
+    "pestphp/pest-plugin-drift": "^2.5",
+    "pestphp/pest-plugin-type-coverage": "^2.8"
   },
   "autoload": {
     "psr-4": {
@@ -64,5 +67,10 @@
     "pcf": "vendor/bin/php-cs-fixer fix --verbose"
   },
   "minimum-stability": "dev",
-  "prefer-stable": true
+  "prefer-stable": true,
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
 }

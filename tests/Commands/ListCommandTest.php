@@ -1,43 +1,23 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
-
+uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Tests\BaseTestCase;
 
-class ListCommandTest extends BaseTestCase
-{
-    /**
-     * @var Filesystem
-     */
-    private $finder;
-    /**
-     * @var string
-     */
-    private $modulePath;
+beforeEach(function () {
+    $this->modulePath = base_path('modules/Blog');
+    $this->finder = $this->app['files'];
+    $this->artisan('module:make', ['name' => ['Blog']]);
+});
 
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
-    }
+afterEach(function () {
+    $this->app[RepositoryInterface::class]->delete('Blog');
+});
 
-    public function tearDown(): void
-    {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        parent::tearDown();
-    }
+it('can list modules', function () {
+    $code = $this->artisan('module:list');
 
-    /** @test */
-    public function it_can_list_modules()
-    {
-        $code = $this->artisan('module:list');
-
-        // We just want to make sure nothing throws an exception inside the list command
-        $this->assertTrue(true);
-        $this->assertSame(0, $code);
-    }
-}
+    // We just want to make sure nothing throws an exception inside the list command
+    expect(true)->toBeTrue();
+    expect($code)->toBe(0);
+});
