@@ -31,7 +31,6 @@ class ModelShowCommand extends ShowModelCommand
                 {--database= : The database connection to use}
                 {--json : Output the model as JSON}';
 
-
     /**
      * Qualify the given model class base name.
      *

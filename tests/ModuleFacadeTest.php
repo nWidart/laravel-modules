@@ -3,7 +3,6 @@
 uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Facades\Module;
 
-
 it('resolves the module facade', function () {
     $modules = Module::all();
 

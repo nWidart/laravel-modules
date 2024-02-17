@@ -34,7 +34,7 @@ it('disables array of modules', function () {
     $taxonomyModule = $this->app[RepositoryInterface::class]->find('Taxonomy');
     $taxonomyModule->enable();
 
-    $code = $this->artisan('module:disable',['module' => ['Blog','Taxonomy']]);
+    $code = $this->artisan('module:disable', ['module' => ['Blog','Taxonomy']]);
 
     expect($blogModule->isDisabled() && $taxonomyModule->isDisabled())->toBeTrue();
     expect($code)->toBe(0);
@@ -49,7 +49,7 @@ it('disables all modules', function () {
     $taxonomyModule = $this->app[RepositoryInterface::class]->find('Taxonomy');
     $taxonomyModule->enable();
 
-    $code = $this->artisan('module:disable',['--all' => true]);
+    $code = $this->artisan('module:disable', ['--all' => true]);
 
     expect($blogModule->isDisabled() && $taxonomyModule->isDisabled())->toBeTrue();
     expect($code)->toBe(0);

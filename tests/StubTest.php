@@ -4,7 +4,6 @@ uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Illuminate\Support\Str;
 use Nwidart\Modules\Support\Stub;
 
-
 beforeEach(function () {
     $this->finder = $this->app['files'];
 });

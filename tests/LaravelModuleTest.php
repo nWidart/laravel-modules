@@ -1,16 +1,15 @@
 <?php
 
 uses(\Nwidart\Modules\Laravel\Module::class);
-use \Nwidart\Modules\Tests\TestingModule;
 use Illuminate\Support\Facades\Event;
 use Modules\Recipe\Providers\DeferredServiceProvider;
 use Modules\Recipe\Providers\RecipeServiceProvider;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Json;
-
+use Nwidart\Modules\Tests\TestingModule;
 
 beforeEach(function () {
-    $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__.'/stubs/valid/Recipe');
+    $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');
     $this->activator = $this->app[ActivatorInterface::class];
 });
 
@@ -19,11 +18,11 @@ afterEach(function () {
 });
 
 beforeAll(function () {
-    symlink(__DIR__.'/stubs/valid', __DIR__.'/stubs/valid_symlink');
+    symlink(__DIR__ . '/stubs/valid', __DIR__ . '/stubs/valid_symlink');
 });
 
 afterAll(function () {
-    unlink(__DIR__.'/stubs/valid_symlink');
+    unlink(__DIR__ . '/stubs/valid_symlink');
 });
 
 it('gets module name', function () {
@@ -47,20 +46,20 @@ it('gets module description', function () {
 });
 
 it('gets module path', function () {
-    expect($this->module->getPath())->toEqual(__DIR__.'/stubs/valid/Recipe');
+    expect($this->module->getPath())->toEqual(__DIR__ . '/stubs/valid/Recipe');
 });
 
 it('gets module path with symlink', function () {
     // symlink created in setUpBeforeClass
-    $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__.'/stubs/valid_symlink/Recipe');
+    $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid_symlink/Recipe');
 
-    expect($this->module->getPath())->toEqual(__DIR__.'/stubs/valid_symlink/Recipe');
+    expect($this->module->getPath())->toEqual(__DIR__ . '/stubs/valid_symlink/Recipe');
 
     // symlink deleted in tearDownAfterClass
 });
 
 it('loads module translations', function () {
-    (new TestingModule($this->app, 'Recipe', __DIR__.'/stubs/valid/Recipe'))->boot();
+    (new TestingModule($this->app, 'Recipe', __DIR__ . '/stubs/valid/Recipe'))->boot();
     expect(trans('recipe::recipes.title.recipes'))->toEqual('Recipe');
 });
 

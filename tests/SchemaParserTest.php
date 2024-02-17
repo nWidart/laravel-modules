@@ -2,7 +2,6 @@
 
 use Nwidart\Modules\Support\Migrations\SchemaParser;
 
-
 it('generates migration method calls', function () {
     $parser = new SchemaParser('username:string, password:integer');
 

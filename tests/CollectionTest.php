@@ -1,7 +1,7 @@
 <?php
 
 uses(\Nwidart\Modules\Tests\BaseTestCase::class);
-use \Nwidart\Modules\Collection;
+use Nwidart\Modules\Collection;
 use Nwidart\Modules\Laravel\Module;
 
 test('to array sets path attribute', function () {

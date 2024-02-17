@@ -1,8 +1,8 @@
 <?php
 
 uses(\Nwidart\Modules\Laravel\Module::class);
-use \Nwidart\Modules\Tests\Activators\TestModule;
 use Nwidart\Modules\Activators\FileActivator;
+use Nwidart\Modules\Tests\Activators\TestModule;
 
 uses(\Spatie\Snapshots\MatchesSnapshots::class);
 
@@ -52,7 +52,7 @@ it('can check status of module that hasnt been enabled or disabled', function ()
     expect($this->activator->hasStatus($this->module, false))->toBeTrue();
 });
 
-function registerProviders() : void
+function registerProviders(): void
 {
     registerProviders();
 }

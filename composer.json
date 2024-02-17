@@ -61,9 +61,8 @@
     }
   },
   "scripts": {
-    "update-snapshots": "./vendor/bin/phpunit --no-coverage -d --update-snapshots",
-    "test": "vendor/bin/phpunit",
-    "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+    "test": "vendor/bin/pest",
+    "test-coverage": "vendor/bin/pest --coverage",
     "pcf": "vendor/bin/php-cs-fixer fix --verbose"
   },
   "minimum-stability": "dev",

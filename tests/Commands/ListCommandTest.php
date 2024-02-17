@@ -1,7 +1,6 @@
 <?php
 
 uses(\Nwidart\Modules\Tests\BaseTestCase::class);
-use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 
 beforeEach(function () {

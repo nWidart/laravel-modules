@@ -5,7 +5,6 @@ use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 
-
 it('binds modules key to repository class', function () {
     expect(app(RepositoryInterface::class))->toBeInstanceOf(RepositoryInterface::class);
     expect(app('modules'))->toBeInstanceOf(RepositoryInterface::class);

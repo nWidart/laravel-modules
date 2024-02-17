@@ -40,7 +40,7 @@ class MigrateStatusCommand extends BaseCommand
 
     public function getInfo(): string|null
     {
-        return NULL;
+        return null;
     }
 
     /**
@@ -52,7 +52,7 @@ class MigrateStatusCommand extends BaseCommand
     {
         return [
             ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'asc'],
-            ['database', NULL, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
+            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
         ];
     }
 }

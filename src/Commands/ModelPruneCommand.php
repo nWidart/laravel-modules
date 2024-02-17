@@ -7,15 +7,17 @@ use Illuminate\Database\Console\PruneCommand;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+
+use function Laravel\Prompts\multiselect;
+
 use Nwidart\Modules\Facades\Module;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
-use function Laravel\Prompts\multiselect;
 
 class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
 {
-    const ALL = 'All';
+    public const ALL = 'All';
 
     protected $name = 'module:prune';
 
@@ -43,6 +45,7 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
     {
         if ($this->option('all')) {
             $input->setArgument('module', [self::ALL]);
+
             return;
         }
 
@@ -55,13 +58,13 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
             required: 'You must select at least one module',
         );
 
-        $input->setArgument('module',
+        $input->setArgument(
+            'module',
             value: in_array(self::ALL, $selected_item)
                 ? [self::ALL]
                 : $selected_item
         );
     }
-
 
     /**
      * Determine the models that should be pruned.
@@ -83,27 +86,30 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
         }
 
         if ($this->argument('module') == [self::ALL]) {
-            $path = sprintf('%s/*/%s',
+            $path = sprintf(
+                '%s/*/%s',
                 config('modules.paths.modules'),
                 config('modules.paths.generator.model.path')
             );
-        }
-        else {
-            $path = sprintf('%s/{%s}/%s',
+        } else {
+            $path = sprintf(
+                '%s/{%s}/%s',
                 config('modules.paths.modules'),
                 collect($this->argument('module'))->implode(','),
-                config('modules.paths.generator.model.path'));
+                config('modules.paths.generator.model.path')
+            );
         }
 
         return collect(Finder::create()->in($path)->files()->name('*.php'))
             ->map(function ($model) {
 
                 $namespace = config('modules.namespace');
+
                 return $namespace . str_replace(
-                        ['/', '.php'],
-                        ['\\', ''],
-                        Str::after($model->getRealPath(), realpath(config('modules.paths.modules')))
-                    );
+                    ['/', '.php'],
+                    ['\\', ''],
+                    Str::after($model->getRealPath(), realpath(config('modules.paths.modules')))
+                );
             })->values()
             ->when(! empty($except), function ($models) use ($except) {
                 return $models->reject(function ($model) use ($except) {

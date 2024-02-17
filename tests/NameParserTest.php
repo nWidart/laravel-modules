@@ -2,7 +2,6 @@
 
 use Nwidart\Modules\Support\Migrations\NameParser;
 
-
 it('gets the original name', function () {
     $parser = new NameParser('create_users_table');
 

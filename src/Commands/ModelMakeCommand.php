@@ -61,7 +61,7 @@ class ModelMakeCommand extends GeneratorCommand
 
         $string = '';
         foreach ($pieces as $i => $piece) {
-            if ($i+1 < count($pieces)) {
+            if ($i + 1 < count($pieces)) {
                 $string .= strtolower($piece) . '_';
             } else {
                 $string .= Str::plural(strtolower($piece));
@@ -126,7 +126,7 @@ class ModelMakeCommand extends GeneratorCommand
             ]));
         }
     }
-    
+
     /**
      * Create a seeder file for the model.
      *
@@ -139,7 +139,7 @@ class ModelMakeCommand extends GeneratorCommand
 
             $this->call('module:make-seed', array_filter([
                 'name' => $seedName,
-                'module' => $this->argument('module')
+                'module' => $this->argument('module'),
             ]));
         }
     }
@@ -154,7 +154,7 @@ class ModelMakeCommand extends GeneratorCommand
         if ($this->option('factory') === true) {
             $this->call('module:make-factory', array_filter([
                 'name' => $this->getModelName(),
-                'module' => $this->argument('module')
+                'module' => $this->argument('module'),
             ]));
         }
     }
@@ -171,7 +171,7 @@ class ModelMakeCommand extends GeneratorCommand
 
             $this->call('module:make-request', array_filter([
                 'name' => $requestName,
-                'module' => $this->argument('module')
+                'module' => $this->argument('module'),
             ]));
         }
     }

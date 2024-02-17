@@ -333,7 +333,7 @@ it('generates api module with resources', function () {
 });
 
 it('generates web module with resources when adding more than one option', function () {
-    $code = $this->artisan('module:make', ['name' => ['Blog'], '--api' => true,'--plain'=>true]);
+    $code = $this->artisan('module:make', ['name' => ['Blog'], '--api' => true,'--plain' => true]);
 
     $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
     expect($this->finder->exists($path))->toBeTrue();

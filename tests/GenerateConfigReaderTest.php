@@ -4,7 +4,6 @@ uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Config\GeneratorPath;
 
-
 it('can read a configuration value with new format', function () {
     $seedConfig = GenerateConfigReader::read('seeder');
 

@@ -9,7 +9,6 @@ use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Laravel\LaravelFileRepository;
 use Nwidart\Modules\Module;
 
-
 beforeEach(function () {
     $this->repository = new LaravelFileRepository($this->app);
     $this->activator = $this->app[ActivatorInterface::class];

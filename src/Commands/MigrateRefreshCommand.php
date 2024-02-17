@@ -20,7 +20,6 @@ class MigrateRefreshCommand extends BaseCommand
      */
     protected $description = 'Rollback & re-migrate the modules migrations.';
 
-
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);

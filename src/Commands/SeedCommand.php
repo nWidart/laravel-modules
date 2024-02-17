@@ -10,7 +10,6 @@ use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use RuntimeException;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class SeedCommand extends BaseCommand
@@ -38,24 +37,22 @@ class SeedCommand extends BaseCommand
         $this->components->task("Seeding <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
             try {
                 $this->moduleSeed($module);
-            }
-            catch (\Error $e) {
+            } catch (\Error $e) {
                 $e = new ErrorException($e->getMessage(), $e->getCode(), 1, $e->getFile(), $e->getLine(), $e);
                 $this->reportException($e);
                 $this->renderException($this->getOutput(), $e);
 
-                return FALSE;
-            }
-            catch (\Exception $e) {
+                return false;
+            } catch (\Exception $e) {
                 $this->reportException($e);
                 $this->renderException($this->getOutput(), $e);
 
-                return FALSE;
+                return false;
             }
         });
     }
 
-    function getInfo(): string|null
+    public function getInfo(): string|null
     {
         return 'Seeding module ...';
     }
@@ -224,9 +221,9 @@ class SeedCommand extends BaseCommand
     protected function getOptions()
     {
         return [
-            ['class', NULL, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder.'],
-            ['database', NULL, InputOption::VALUE_OPTIONAL, 'The database connection to seed.'],
-            ['force', NULL, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
+            ['class', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder.'],
+            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to seed.'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
         ];
     }
 }

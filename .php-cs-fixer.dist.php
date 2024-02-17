@@ -19,8 +19,6 @@ $rules = [
         'no_whitespace_in_blank_line' => true,
         // There MUST be one blank line after the namespace declaration.
         'blank_line_after_namespace' => true,
-        // There should be exactly one blank line before a namespace declaration.
-        'single_blank_line_before_namespace' => true,
         // Each namespace use MUST go on its own line and there MUST be one blank line after the use statements block.
         'single_line_after_imports' => true,
         // Ensure there is no code on the same line as the PHP open tag and it is followed by a blankline.

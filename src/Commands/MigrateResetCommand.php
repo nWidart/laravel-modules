@@ -51,7 +51,7 @@ class MigrateResetCommand extends BaseCommand
 
     public function getInfo(): string|null
     {
-        return NULL;
+        return null;
     }
 
     /**
@@ -63,9 +63,9 @@ class MigrateResetCommand extends BaseCommand
     {
         return [
             ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'desc'],
-            ['database', NULL, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
-            ['force', NULL, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
-            ['pretend', NULL, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
+            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
+            ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
         ];
     }
 }

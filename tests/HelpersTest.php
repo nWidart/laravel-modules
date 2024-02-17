@@ -3,7 +3,6 @@
 uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Illuminate\Support\Str;
 
-
 beforeEach(function () {
     $this->modulePath = base_path('modules/Blog');
     $this->finder = $this->app['files'];

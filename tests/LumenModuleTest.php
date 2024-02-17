@@ -1,11 +1,10 @@
 <?php
 
 uses(\Nwidart\Modules\Lumen\Module::class);
-use \Nwidart\Modules\Tests\LumenTestingModule;
 use Illuminate\Support\Facades\Event;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Json;
-
+use Nwidart\Modules\Tests\LumenTestingModule;
 
 beforeEach(function () {
     $this->module = new LumenTestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');

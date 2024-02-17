@@ -4,7 +4,6 @@ uses(\Nwidart\Modules\Tests\BaseTestCase::class);
 use Nwidart\Modules\Exceptions\InvalidJsonException;
 use Nwidart\Modules\Json;
 
-
 beforeEach(function () {
     $path = __DIR__ . '/stubs/valid/module.json';
     $this->json = new Json($path, $this->app['files']);
