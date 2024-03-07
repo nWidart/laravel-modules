@@ -104,7 +104,7 @@ return [
             'config' => ['path' => 'config', 'generate' => true],
             'command' => ['path' => 'App/Console', 'generate' => false],
             'channels' => ['path' => 'App/Broadcasting', 'generate' => false],
-            'migration' => ['path' => 'Database/migrations', 'generate' => false],
+            'migration' => ['path' => 'database/migrations', 'generate' => false],
             'seeder' => ['path' => 'database/seeders', 'generate' => true],
             'factory' => ['path' => 'database/factories', 'generate' => false],
             'model' => ['path' => 'App/Models', 'generate' => false],
