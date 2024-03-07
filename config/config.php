@@ -142,8 +142,8 @@ return [
             'routes' => ['path' => 'routes', 'generate' => true],
 
             // Test Folder
-            'test-unit' => ['path' => 'Tests/Unit', 'generate' => false],
-            'test-feature' => ['path' => 'Tests/Feature', 'generate' => false],
+            'test-unit' => ['path' => 'tests/Unit', 'generate' => false],
+            'test-feature' => ['path' => 'tests/Feature', 'generate' => false],
         ],
     ],
 
