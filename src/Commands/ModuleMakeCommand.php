@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Process;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Generators\ModuleGenerator;
 use Symfony\Component\Console\Input\InputArgument;
@@ -49,6 +50,11 @@ class ModuleMakeCommand extends Command
                 $success = false;
             }
         }
+
+        // to discover new service providers
+        Process::path(base_path())
+            ->command('composer dump-autoload')
+            ->run();
 
         return $success ? 0 : E_ERROR;
     }
