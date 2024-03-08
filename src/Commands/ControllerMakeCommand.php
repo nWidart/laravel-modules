@@ -117,9 +117,8 @@ class ControllerMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules'];
-
-        return $module->config('paths.generator.controller.namespace') ?: $module->config('paths.generator.controller.path', 'Http/Controllers');
+        return config('modules.paths.generator.controller.namespace' )
+            ?? ltrim(config('modules.paths.generator.controller.path','Http/Controllers'),config('modules.paths.app_folder'));
     }
 
     /**
