@@ -31,9 +31,8 @@ class JobMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules'];
-
-        return $module->config('paths.generator.jobs.namespace') ?: $module->config('paths.generator.jobs.path', 'Jobs');
+        return config('modules.paths.generator.jobs.namespace')
+            ?? ltrim(config('modules.paths.generator.jobs.path', 'Jobs'), config('modules.paths.app_folder', ''));
     }
 
     /**

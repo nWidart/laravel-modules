@@ -30,9 +30,8 @@ final class ChannelMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules'];
-
-        return $module->config('paths.generator.channels.namespace') ?: $module->config('paths.generator.channels.path', 'Broadcasting');
+        return config('modules.paths.generator.channels.namespace')
+            ?? ltrim(config('modules.paths.generator.channels.path', 'Broadcasting'), config('modules.paths.app_folder', ''));
     }
 
     /**

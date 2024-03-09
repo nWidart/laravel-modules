@@ -54,9 +54,8 @@ class ComponentClassMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules'];
-
-        return $module->config('paths.generator.component-class.namespace') ?: $module->config('paths.generator.component-class.path', 'View/Component');
+        return config('modules.paths.generator.component-class.namespace')
+            ?? ltrim(config('modules.paths.generator.component-class.path', 'View/Component'), config('modules.paths.app_folder', ''));
     }
 
     /**
