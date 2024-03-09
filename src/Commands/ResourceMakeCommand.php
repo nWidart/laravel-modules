@@ -19,9 +19,8 @@ class ResourceMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules'];
-
-        return $module->config('paths.generator.resource.namespace') ?: $module->config('paths.generator.resource.path', 'Transformers');
+        return config('modules.paths.generator.resource.namespace')
+            ?? ltrim(config('modules.paths.generator.resource.path', 'Transformers'), config('modules.paths.app_folder', ''));
     }
 
     /**

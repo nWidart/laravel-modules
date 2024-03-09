@@ -30,9 +30,8 @@ class MailMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules'];
-
-        return $module->config('paths.generator.emails.namespace') ?: $module->config('paths.generator.emails.path', 'Emails');
+        return config('modules.paths.generator.emails.namespace')
+            ?? ltrim(config('modules.paths.generator.emails.path', 'Emails'), config('modules.paths.app_folder', ''));
     }
 
     /**

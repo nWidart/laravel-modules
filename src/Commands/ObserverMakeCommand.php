@@ -120,7 +120,7 @@ class ObserverMakeCommand extends GeneratorCommand
 
         return 0;
     }
-    
+
     /**
      * Get default namespace.
      *
@@ -128,8 +128,7 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     public function getDefaultNamespace(): string
     {
-        $module = $this->laravel['modules'];
-
-        return $module->config('paths.generator.observer.namespace') ?: $module->config('paths.generator.observer.path', 'Observers');
+        return config('modules.paths.generator.observer.namespace')
+            ?? ltrim(config('modules.paths.generator.observer.path', 'Observers'), config('modules.paths.app_folder', ''));
     }
 }

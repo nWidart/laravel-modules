@@ -22,6 +22,11 @@ class TestMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules'];
 
         if ($this->option('feature')) {
+
+            return config('modules.paths.generator.test-feature.namespace')
+                ?? config('modules.paths.generator.test-feature.path', 'Tests/Feature');
+
+
             return $module->config('paths.generator.test-feature.namespace') ?: $module->config('paths.generator.test-feature.path', 'Tests/Feature');
         }
 
