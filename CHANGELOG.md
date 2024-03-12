@@ -4,6 +4,16 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Fixed
+
+- [@Subtixx](https://github.com/subtixx) Fix Issue #1752 - Hardcoded string + undefined variable
+- [@jaymeh](https://github.com/jaymeh) fix: Failed to load module script for static assets such as images
+
+## Changed
+
+- [@alissn](https://github.com/alissn) delete command module:migrate-fresh
+- [@alissn](https://github.com/alissn) Fixing Case of tests/Unit and tests/Feature
+
 ## Updated
 
 - [@dcblogdev](https://github.com/dcblogdev) updated vite to rename placeholder with module name
