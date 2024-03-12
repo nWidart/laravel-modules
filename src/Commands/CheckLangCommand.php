@@ -65,7 +65,8 @@ class CheckLangCommand extends BaseCommand
     private function getDirectories($module)
     {
         $moduleName = $module->getStudlyName();
-        $path       = $module->getPath() . '/Resources/lang';
+        $path       = $module->getPath() . $this->langPath;
+        $directories = [];
         if (is_dir($path)) {
             $directories = $this->laravel['files']->directories($path);
             $directories = array_map(function ($directory) use ($moduleName) {
