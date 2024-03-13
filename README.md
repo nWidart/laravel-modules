@@ -22,11 +22,9 @@
 
 `nwidart/laravel-modules` is a Laravel package which created to manage your large Laravel app using modules. Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 10.
 
-This package is a re-published, re-organised and maintained version of [pingpong/modules](https://github.com/pingpong-labs/modules), which isn't maintained anymore. This package is used in [AsgardCMS](https://github.com/AsgardCms).
+This package is a re-published, re-organised and maintained version of [pingpong/modules](https://github.com/pingpong-labs/modules), which isn't maintained anymore.
 
 With one big added bonus that the original package didn't have: **tests**.
-
-Find out why you should use this package in the article: [Writing modular applications with laravel-modules](https://nicolaswidart.com/blog/writing-modular-applications-with-laravel-modules).
 
 ## Install
 
@@ -55,7 +53,6 @@ By default, module classes aren't loaded automatically. To autoload them using p
       "Database\\Seeders\\": "database/seeders/",
       "Modules\\": "Modules/"
   }
-
 }
 ```
 
@@ -63,7 +60,7 @@ By default, module classes aren't loaded automatically. To autoload them using p
 
 ## Documentation
 
-You'll find installation instructions and full documentation on [https://docs.laravelmodules.com/](https://docs.laravelmodules.com/).
+You'll find installation instructions and full documentation on [https://laravelmodules.com/](https://laravelmodules.com/docs).
 
 ## Community
 
@@ -75,10 +72,6 @@ We also have a Discord community. [https://discord.gg/hkF7BRvRZK](https://discor
 - [David Carr](https://github.com/dcblogdev)
 - [gravitano](https://github.com/gravitano)
 - [All Contributors](../../contributors)
-
-## About Nicolas Widart
-
-Nicolas Widart is a freelance web developer specialising on the Laravel framework. View all my packages [on my website](https://nwidart.com/), or visit [my website](https://nicolaswidart.com).
 
 ## License
 
