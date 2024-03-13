@@ -45,7 +45,6 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\MailMakeCommand::class,
             Commands\MiddlewareMakeCommand::class,
             Commands\MigrateCommand::class,
-            Commands\MigrateFreshCommand::class,
             Commands\MigrateRefreshCommand::class,
             Commands\MigrateResetCommand::class,
             Commands\MigrateRollbackCommand::class,
