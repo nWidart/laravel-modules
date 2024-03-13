@@ -89,6 +89,11 @@ abstract class Module
 
             if (is_array($files)) {
                 foreach ($files as $file) {
+                    // Ignore files which aren't entrypoints.
+                    if (empty($file['isEntry'])) {
+                        continue;
+                    }
+
                     if (isset($file['src'])) {
                         $paths[] = $file['src'];
                     }
