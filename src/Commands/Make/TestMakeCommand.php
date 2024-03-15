@@ -1,26 +1,32 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Make;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Commands\GeneratorCommand;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class ResourceMakeCommand extends GeneratorCommand
+class TestMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
-    protected $name = 'module:make-resource';
-    protected $description = 'Create a new resource class for the specified module.';
+    protected $name = 'module:make-test';
+    protected $description = 'Create a new test class for the specified module.';
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.resource.namespace')
-            ?? ltrim(config('modules.paths.generator.resource.path', 'Transformers'), config('modules.paths.app_folder', ''));
+        if ($this->option('feature')) {
+            return config('modules.paths.generator.test-feature.namespace')
+                ?? config('modules.paths.generator.test-feature.path', 'Tests/Feature');
+        }
+
+        return config('modules.paths.generator.test-unit.namespace')
+            ?? config('modules.paths.generator.test-unit.path', 'Tests/Unit');
     }
 
     /**
@@ -31,15 +37,20 @@ class ResourceMakeCommand extends GeneratorCommand
     protected function getArguments()
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the resource class.'],
+            ['name', InputArgument::REQUIRED, 'The name of the form request class.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
 
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
     protected function getOptions()
     {
         return [
-            ['collection', 'c', InputOption::VALUE_NONE, 'Create a resource collection.'],
+            ['feature', null, InputOption::VALUE_NONE, 'Create a feature test.'],
         ];
     }
 
@@ -49,8 +60,13 @@ class ResourceMakeCommand extends GeneratorCommand
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $stub = '/unit-test.stub';
 
-        return (new Stub($this->getStubName(), [
+        if ($this->option('feature')) {
+            $stub = '/feature-test.stub';
+        }
+
+        return (new Stub($stub, [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS'     => $this->getClass(),
         ]))->render();
@@ -63,9 +79,13 @@ class ResourceMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $resourcePath = GenerateConfigReader::read('resource');
+        if ($this->option('feature')) {
+            $testPath = GenerateConfigReader::read('test-feature');
+        } else {
+            $testPath = GenerateConfigReader::read('test');
+        }
 
-        return $path . $resourcePath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path . $testPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**
@@ -74,28 +94,5 @@ class ResourceMakeCommand extends GeneratorCommand
     private function getFileName()
     {
         return Str::studly($this->argument('name'));
-    }
-
-    /**
-     * Determine if the command is generating a resource collection.
-     *
-     * @return bool
-     */
-    protected function collection(): bool
-    {
-        return $this->option('collection') ||
-            Str::endsWith($this->argument('name'), 'Collection');
-    }
-
-    /**
-     * @return string
-     */
-    protected function getStubName(): string
-    {
-        if ($this->collection()) {
-            return '/resource-collection.stub';
-        }
-
-        return '/resource.stub';
     }
 }

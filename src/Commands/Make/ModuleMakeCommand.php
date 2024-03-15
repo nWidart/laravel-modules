@@ -1,6 +1,6 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Make;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;

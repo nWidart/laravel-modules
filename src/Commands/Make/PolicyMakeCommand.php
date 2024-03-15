@@ -1,15 +1,15 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Make;
 
-use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Commands\GeneratorCommand;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class ComponentViewMakeCommand extends GeneratorCommand
+class PolicyMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
@@ -25,14 +25,20 @@ class ComponentViewMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $name = 'module:make-component-view';
+    protected $name = 'module:make-policy';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new component-view for the specified module.';
+    protected $description = 'Create a new policy class for the specified module.';
+
+    public function getDefaultNamespace(): string
+    {
+        return config('modules.paths.generator.policies.namespace')
+            ?? ltrim(config('modules.paths.generator.policies.path', 'Policies'), config('modules.paths.app_folder', ''));
+    }
 
     /**
      * Get the console command arguments.
@@ -42,7 +48,7 @@ class ComponentViewMakeCommand extends GeneratorCommand
     protected function getArguments()
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the component.'],
+            ['name', InputArgument::REQUIRED, 'The name of the policy class.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
@@ -52,7 +58,12 @@ class ComponentViewMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        return (new Stub('/component-view.stub', ['QUOTE'=> Inspiring::quote()]))->render();
+        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+
+        return (new Stub('/policy.plain.stub', [
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS'     => $this->getClass(),
+        ]))->render();
     }
 
     /**
@@ -61,9 +72,10 @@ class ComponentViewMakeCommand extends GeneratorCommand
     protected function getDestinationFilePath()
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
-        $factoryPath = GenerateConfigReader::read('component-view');
 
-        return $path . $factoryPath->getPath() . '/' . $this->getFileName();
+        $policyPath = GenerateConfigReader::read('policies');
+
+        return $path . $policyPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**
@@ -71,6 +83,6 @@ class ComponentViewMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::lower($this->argument('name')) . '.blade.php';
+        return Str::studly($this->argument('name'));
     }
 }

@@ -1,42 +1,39 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Make;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Commands\GeneratorCommand;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
-class MiddlewareMakeCommand extends GeneratorCommand
+class JobMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
-
-    /**
-     * The name of argument name.
-     *
-     * @var string
-     */
-    protected $argumentName = 'name';
 
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'module:make-middleware';
+    protected $name = 'module:make-job';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new middleware class for the specified module.';
+    protected $description = 'Create a new job class for the specified module';
+
+    protected $argumentName = 'name';
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.filter.namespace')
-            ?? ltrim(config('modules.paths.generator.filter.path', 'Http/Middleware'), config('modules.paths.app_folder', ''));
+        return config('modules.paths.generator.jobs.namespace')
+            ?? ltrim(config('modules.paths.generator.jobs.path', 'Jobs'), config('modules.paths.app_folder', ''));
     }
 
     /**
@@ -47,34 +44,50 @@ class MiddlewareMakeCommand extends GeneratorCommand
     protected function getArguments()
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the command.'],
+            ['name', InputArgument::REQUIRED, 'The name of the job.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
 
     /**
-     * @return mixed
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            ['sync', null, InputOption::VALUE_NONE, 'Indicates that job should be synchronous.'],
+        ];
+    }
+
+    /**
+     * Get template contents.
+     *
+     * @return string
      */
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/middleware.stub', [
+        return (new Stub($this->getStubName(), [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS'     => $this->getClass(),
         ]))->render();
     }
 
     /**
-     * @return mixed
+     * Get the destination file path.
+     *
+     * @return string
      */
     protected function getDestinationFilePath()
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $middlewarePath = GenerateConfigReader::read('filter');
+        $jobPath = GenerateConfigReader::read('jobs');
 
-        return $path . $middlewarePath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path . $jobPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**
@@ -86,15 +99,14 @@ class MiddlewareMakeCommand extends GeneratorCommand
     }
 
     /**
-     * Run the command.
+     * @return string
      */
-    public function handle(): int
+    protected function getStubName(): string
     {
+        if ($this->option('sync')) {
+            return '/job.stub';
+        }
 
-        $this->components->info('Creating middleware...');
-
-        parent::handle();
-
-        return 0;
+        return '/job-queued.stub';
     }
 }

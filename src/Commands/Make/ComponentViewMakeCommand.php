@@ -1,14 +1,16 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Make;
 
+use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Commands\GeneratorCommand;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class RequestMakeCommand extends GeneratorCommand
+class ComponentViewMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
@@ -24,20 +26,14 @@ class RequestMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $name = 'module:make-request';
+    protected $name = 'module:make-component-view';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new form request class for the specified module.';
-
-    public function getDefaultNamespace(): string
-    {
-        return config('modules.paths.generator.request.namespace')
-            ?? ltrim(config('modules.paths.generator.request.path', 'Http/Requests'), config('modules.paths.app_folder', ''));
-    }
+    protected $description = 'Create a new component-view for the specified module.';
 
     /**
      * Get the console command arguments.
@@ -47,7 +43,7 @@ class RequestMakeCommand extends GeneratorCommand
     protected function getArguments()
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the form request class.'],
+            ['name', InputArgument::REQUIRED, 'The name of the component.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
@@ -57,12 +53,7 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
-
-        return (new Stub('/request.stub', [
-            'NAMESPACE' => $this->getClassNamespace($module),
-            'CLASS'     => $this->getClass(),
-        ]))->render();
+        return (new Stub('/component-view.stub', ['QUOTE'=> Inspiring::quote()]))->render();
     }
 
     /**
@@ -71,10 +62,9 @@ class RequestMakeCommand extends GeneratorCommand
     protected function getDestinationFilePath()
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $factoryPath = GenerateConfigReader::read('component-view');
 
-        $requestPath = GenerateConfigReader::read('request');
-
-        return $path . $requestPath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path . $factoryPath->getPath() . '/' . $this->getFileName();
     }
 
     /**
@@ -82,6 +72,6 @@ class RequestMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name'));
+        return Str::lower($this->argument('name')) . '.blade.php';
     }
 }

@@ -1,15 +1,15 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Make;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Commands\GeneratorCommand;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 
-class RuleMakeCommand extends GeneratorCommand
+class MiddlewareMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
@@ -25,19 +25,19 @@ class RuleMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $name = 'module:make-rule';
+    protected $name = 'module:make-middleware';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new validation rule for the specified module.';
+    protected $description = 'Create a new middleware class for the specified module.';
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.rules.namespace')
-            ?? ltrim(config('modules.paths.generator.rules.path', 'Rules'), config('modules.paths.app_folder', ''));
+        return config('modules.paths.generator.filter.namespace')
+            ?? ltrim(config('modules.paths.generator.filter.path', 'Http/Middleware'), config('modules.paths.app_folder', ''));
     }
 
     /**
@@ -48,20 +48,8 @@ class RuleMakeCommand extends GeneratorCommand
     protected function getArguments()
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the rule class.'],
+            ['name', InputArgument::REQUIRED, 'The name of the command.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
-        ];
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['implicit', 'i', InputOption::VALUE_NONE, 'Generate an implicit rule'],
         ];
     }
 
@@ -72,13 +60,9 @@ class RuleMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        $stub = $this->option('implicit')
-            ? '/rule.implicit.stub'
-            : '/rule.stub';
-
-        return (new Stub($stub, [
+        return (new Stub('/middleware.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
-            'CLASS'     => $this->getFileName(),
+            'CLASS'     => $this->getClass(),
         ]))->render();
     }
 
@@ -89,9 +73,9 @@ class RuleMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $rulePath = GenerateConfigReader::read('rules');
+        $middlewarePath = GenerateConfigReader::read('filter');
 
-        return $path . $rulePath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path . $middlewarePath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**
@@ -100,5 +84,18 @@ class RuleMakeCommand extends GeneratorCommand
     private function getFileName()
     {
         return Str::studly($this->argument('name'));
+    }
+
+    /**
+     * Run the command.
+     */
+    public function handle(): int
+    {
+
+        $this->components->info('Creating middleware...');
+
+        parent::handle();
+
+        return 0;
     }
 }

@@ -1,14 +1,15 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Make;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Commands\GeneratorCommand;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class MailMakeCommand extends GeneratorCommand
+final class ChannelMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
@@ -17,34 +18,21 @@ class MailMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $name = 'module:make-mail';
+    protected $name = 'module:make-channel';
+
+    protected $argumentName = 'name';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new email class for the specified module';
-
-    protected $argumentName = 'name';
+    protected $description = 'Create a new channel class for the specified module.';
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.emails.namespace')
-            ?? ltrim(config('modules.paths.generator.emails.path', 'Emails'), config('modules.paths.app_folder', ''));
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['name', InputArgument::REQUIRED, 'The name of the mailable.'],
-            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
-        ];
+        return config('modules.paths.generator.channels.namespace')
+            ?? ltrim(config('modules.paths.generator.channels.path', 'Broadcasting'), config('modules.paths.app_folder', ''));
     }
 
     /**
@@ -56,7 +44,7 @@ class MailMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/mail.stub', [
+        return (new Stub('/channel.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS'     => $this->getClass(),
         ]))->render();
@@ -71,9 +59,9 @@ class MailMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $mailPath = GenerateConfigReader::read('emails');
+        $channelPath = GenerateConfigReader::read('channels');
 
-        return $path . $mailPath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path . $channelPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**
@@ -82,5 +70,18 @@ class MailMakeCommand extends GeneratorCommand
     private function getFileName()
     {
         return Str::studly($this->argument('name'));
+    }
+
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            ['name', InputArgument::REQUIRED, 'The name of the channel class.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+        ];
     }
 }
