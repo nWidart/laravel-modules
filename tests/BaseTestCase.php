@@ -2,8 +2,8 @@
 
 namespace Nwidart\Modules\Tests;
 
-use Nwidart\Modules\Commands;
 use Nwidart\Modules\LaravelModulesServiceProvider;
+use Nwidart\Modules\Providers\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class BaseTestCase extends OrchestraTestCase
@@ -85,52 +85,7 @@ abstract class BaseTestCase extends OrchestraTestCase
 
         $app['config']->set('modules.composer-output', true);
 
-        $app['config']->set('modules.commands', [
-            Commands\Make\ChannelMakeCommand::class,
-            Commands\Make\CommandMakeCommand::class,
-            Commands\Make\ControllerMakeCommand::class,
-            Commands\Actions\DisableCommand::class,
-            Commands\Actions\DumpCommand::class,
-            Commands\Actions\EnableCommand::class,
-            Commands\Make\EventMakeCommand::class,
-            Commands\Make\JobMakeCommand::class,
-            Commands\Make\ListenerMakeCommand::class,
-            Commands\Make\MailMakeCommand::class,
-            Commands\Make\MiddlewareMakeCommand::class,
-            Commands\Make\NotificationMakeCommand::class,
-            Commands\Make\ProviderMakeCommand::class,
-            Commands\Make\RouteProviderMakeCommand::class,
-            Commands\Actions\InstallCommand::class,
-            Commands\Actions\ListCommand::class,
-            Commands\Actions\ModuleDeleteCommand::class,
-            Commands\Make\ModuleMakeCommand::class,
-            Commands\Make\FactoryMakeCommand::class,
-            Commands\Make\PolicyMakeCommand::class,
-            Commands\Make\RequestMakeCommand::class,
-            Commands\Make\RuleMakeCommand::class,
-            Commands\Database\MigrateCommand::class,
-            Commands\Database\MigrateRefreshCommand::class,
-            Commands\Database\MigrateResetCommand::class,
-            Commands\Database\MigrateRollbackCommand::class,
-            Commands\Database\MigrateStatusCommand::class,
-            Commands\Make\MigrationMakeCommand::class,
-            Commands\Make\ModelMakeCommand::class,
-            Commands\Publish\PublishCommand::class,
-            Commands\Publish\PublishConfigurationCommand::class,
-            Commands\Publish\PublishMigrationCommand::class,
-            Commands\Publish\PublishTranslationCommand::class,
-            Commands\Database\SeedCommand::class,
-            Commands\Make\SeedMakeCommand::class,
-            Commands\SetupCommand::class,
-            Commands\Actions\UnUseCommand::class,
-            Commands\Actions\UpdateCommand::class,
-            Commands\Actions\UseCommand::class,
-            Commands\Make\ResourceMakeCommand::class,
-            Commands\Make\TestMakeCommand::class,
-            Commands\LaravelModulesV6Migrator::class,
-            Commands\Make\ComponentClassMakeCommand::class,
-            Commands\Make\ComponentViewMakeCommand::class,
-        ]);
+        $app['config']->set('modules.commands', ConsoleServiceProvider::defaultCommands()->toArray());
     }
 
     protected function setUpDatabase()
