@@ -1,6 +1,6 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Actions;
 
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Database\Console\PruneCommand;

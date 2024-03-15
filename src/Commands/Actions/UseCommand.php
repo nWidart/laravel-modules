@@ -1,6 +1,8 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Actions;
+
+use Nwidart\Modules\Commands\BaseCommand;
 
 class UseCommand extends BaseCommand
 {

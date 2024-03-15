@@ -1,8 +1,9 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Actions;
 
 use Illuminate\Support\Collection;
+use Nwidart\Modules\Commands\BaseCommand;
 
 class CheckLangCommand extends BaseCommand
 {

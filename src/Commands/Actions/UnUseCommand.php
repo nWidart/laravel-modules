@@ -1,8 +1,8 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Actions;
 
-use Illuminate\Console\Command;
+use Nwidart\Modules\Commands\BaseCommand;
 
 class UnUseCommand extends BaseCommand
 {
