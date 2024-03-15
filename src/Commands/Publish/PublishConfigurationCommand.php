@@ -1,8 +1,9 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Publish;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Commands\BaseCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 class PublishConfigurationCommand extends BaseCommand

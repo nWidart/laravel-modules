@@ -1,7 +1,8 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Publish;
 
+use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Publishing\AssetPublisher;
 
 class PublishCommand extends BaseCommand

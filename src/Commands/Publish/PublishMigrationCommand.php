@@ -1,8 +1,8 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Publish;
 
-use Illuminate\Console\Command;
+use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Migrations\Migrator;
 use Nwidart\Modules\Publishing\MigrationPublisher;
 
