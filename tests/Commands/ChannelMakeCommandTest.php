@@ -9,6 +9,7 @@ use Spatie\Snapshots\MatchesSnapshots;
 class ChannelMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -21,9 +22,9 @@ class ChannelMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
@@ -59,7 +60,7 @@ class ChannelMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-channel', ['name' => 'WelcomeChannel', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/SuperChannel/WelcomeChannel.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/SuperChannel/WelcomeChannel.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

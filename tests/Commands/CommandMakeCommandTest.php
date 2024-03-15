@@ -9,6 +9,7 @@ use Spatie\Snapshots\MatchesSnapshots;
 class CommandMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -21,9 +22,9 @@ class CommandMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
@@ -69,11 +70,11 @@ class CommandMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_can_change_the_default_namespace()
     {
-        $this->app['config']->set('modules.paths.generator.command.path', 'Commands');
+        $this->app['config']->set('modules.paths.generator.command.path', 'app/CustomCommands');
 
         $code = $this->artisan('module:make-command', ['name' => 'AwesomeCommand', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Commands/AwesomeCommand.php');
+        $file = $this->finder->get($this->modulePath . '/CustomCommands/AwesomeCommand.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
