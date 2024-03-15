@@ -1,12 +1,13 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Database;
 
+use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Migrations\Migrator;
 use Nwidart\Modules\Traits\MigrationLoaderTrait;
 use Symfony\Component\Console\Input\InputOption;
 
-class MigrateResetCommand extends BaseCommand
+class MigrateRollbackCommand extends BaseCommand
 {
     use MigrationLoaderTrait;
 
@@ -15,20 +16,20 @@ class MigrateResetCommand extends BaseCommand
      *
      * @var string
      */
-    protected $name = 'module:migrate-reset';
+    protected $name = 'module:migrate-rollback';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Reset the modules migrations.';
+    protected $description = 'Rollback the modules migrations.';
 
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
 
-        $migrator = new Migrator($module, $this->getLaravel());
+        $migrator = new Migrator($module, $this->getLaravel(), $this->option('subpath'));
 
         $database = $this->option('database');
 
@@ -36,17 +37,18 @@ class MigrateResetCommand extends BaseCommand
             $migrator->setDatabase($database);
         }
 
-        $migrated = $migrator->reset();
+        $migrated = $migrator->rollback();
 
         if (count($migrated)) {
             foreach ($migrated as $migration) {
-                $this->line("Rollback: <info>{$migration}</info>");
+                $this->components->task("Rollback: <info>{$migration}</info>",);
             }
 
             return;
         }
 
         $this->components->warn("Nothing to rollback on module <fg=cyan;options=bold>{$module->getName()}</>");
+
     }
 
     public function getInfo(): string|null
@@ -66,6 +68,7 @@ class MigrateResetCommand extends BaseCommand
             ['database', NULL, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
             ['force', NULL, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
             ['pretend', NULL, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
+            ['subpath', NULL, InputOption::VALUE_OPTIONAL, 'Indicate a subpath for modules specific migration file'],
         ];
     }
 }

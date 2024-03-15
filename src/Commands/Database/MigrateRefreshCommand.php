@@ -1,7 +1,8 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Database;
 
+use Nwidart\Modules\Commands\BaseCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 class MigrateRefreshCommand extends BaseCommand

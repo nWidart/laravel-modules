@@ -1,7 +1,8 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Database;
 
+use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Migrations\Migrator;
 use Symfony\Component\Console\Input\InputOption;
 

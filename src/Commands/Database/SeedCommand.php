@@ -1,16 +1,16 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Database;
 
 use ErrorException;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use RuntimeException;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class SeedCommand extends BaseCommand
