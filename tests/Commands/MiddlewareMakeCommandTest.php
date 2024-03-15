@@ -21,9 +21,9 @@ class MiddlewareMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
@@ -59,7 +59,7 @@ class MiddlewareMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Middleware/SomeMiddleware.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/Middleware/SomeMiddleware.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

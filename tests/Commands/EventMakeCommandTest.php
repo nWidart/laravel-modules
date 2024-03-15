@@ -22,9 +22,9 @@ class EventMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
@@ -60,7 +60,7 @@ class EventMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/SuperEvents/PostWasCreated.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/SuperEvents/PostWasCreated.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
