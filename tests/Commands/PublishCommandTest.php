@@ -19,10 +19,10 @@ class PublishCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
+        $this->createModule();
+        $this->modulePath = $this->getModuleBasePath();
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
-        $this->finder->put($this->modulePath . '/Assets/script.js', 'assetfile');
+        $this->finder->put($this->modulePath . '/resources/assets/script.js', 'assetfile');
     }
 
     public function tearDown(): void

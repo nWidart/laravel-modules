@@ -21,9 +21,9 @@ class NotificationMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
@@ -59,7 +59,7 @@ class NotificationMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-notification', ['name' => 'WelcomeNotification', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/SuperNotifications/WelcomeNotification.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/SuperNotifications/WelcomeNotification.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

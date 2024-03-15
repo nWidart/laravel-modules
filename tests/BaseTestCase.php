@@ -43,10 +43,10 @@ abstract class BaseTestCase extends OrchestraTestCase
 
         // enable all generators
         array_walk($module_config['paths']['generator'], function (&$item) {
-            $item['generate'] = TRUE;
+            $item['generate'] = true;
         });
 
-        $app['config']->set('app.asset_url', NULL);
+        $app['config']->set('app.asset_url', null);
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
             'driver'   => 'sqlite',
@@ -62,7 +62,7 @@ abstract class BaseTestCase extends OrchestraTestCase
             'generator'  => $module_config['paths']['generator'],
         ]);
 
-        $app['config']->set('modules.composer-output', TRUE);
+        $app['config']->set('modules.composer-output', true);
 
         $app['config']->set('modules.commands', ConsoleServiceProvider::defaultCommands()->toArray());
     }
@@ -72,9 +72,9 @@ abstract class BaseTestCase extends OrchestraTestCase
         $this->resetDatabase();
     }
 
-    protected function createModule(string $moduleName = 'Blog'): void
+    protected function createModule(string $moduleName = 'Blog'): int
     {
-        $this->artisan('module:make', ['name' => [$moduleName]]);
+        return $this->artisan('module:make', ['name' => [$moduleName]]);
     }
 
     protected function getModuleAppPath(string $moduleName = 'Blog'): string

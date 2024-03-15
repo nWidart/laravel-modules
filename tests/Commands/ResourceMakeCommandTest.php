@@ -21,9 +21,9 @@ class ResourceMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
@@ -66,7 +66,7 @@ class ResourceMakeCommandTest extends BaseTestCase
     /** @test */
     public function it_can_change_the_default_namespace()
     {
-        $this->app['config']->set('modules.paths.generator.resource.path', 'Http/Resources');
+        $this->app['config']->set('modules.paths.generator.resource.path', 'app/Http/Resources');
 
         $code = $this->artisan('module:make-resource', ['name' => 'PostsTransformer', 'module' => 'Blog', '--collection' => true]);
 

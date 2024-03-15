@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Tests;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 
 class HelpersTest extends BaseTestCase
 {
@@ -18,14 +19,14 @@ class HelpersTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
     {
-        $this->finder->deleteDirectory($this->modulePath);
+        $this->app[RepositoryInterface::class]->delete('Blog');
         parent::tearDown();
     }
 

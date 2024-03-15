@@ -19,9 +19,9 @@ class PublishMigrationCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
         $this->artisan('module:make-migration', ['name' => 'create_posts_table', 'module' => 'Blog']);
     }
 
