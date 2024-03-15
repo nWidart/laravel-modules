@@ -125,7 +125,7 @@ return [
             'policies' => ['path' => 'app/Policies', 'generate' => false],
             'provider' => ['path' => 'app/Providers', 'generate' => true],
             'repository' => ['path' => 'app/Repositories', 'generate' => false],
-            'resource' => ['path' => 'app/resources', 'generate' => false],
+            'resource' => ['path' => 'app/Transformers', 'generate' => false],
             'rules' => ['path' => 'app/Rules', 'generate' => false],
             'component-class' => ['path' => 'app/View/Components', 'generate' => false],
             // app/HTTP folder
