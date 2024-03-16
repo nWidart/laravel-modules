@@ -9,6 +9,7 @@ use Spatie\Snapshots\MatchesSnapshots;
 class ControllerMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -21,9 +22,10 @@ class ControllerMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
+
     }
 
     public function tearDown(): void
@@ -77,8 +79,8 @@ class ControllerMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-controller', [
             'controller' => 'MyController',
-            'module' => 'Blog',
-            '--plain' => true,
+            'module'     => 'Blog',
+            '--plain'    => true,
         ]);
 
         $file = $this->finder->get($this->modulePath . '/Http/Controllers/MyController.php');
@@ -92,8 +94,8 @@ class ControllerMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-controller', [
             'controller' => 'MyController',
-            'module' => 'Blog',
-            '--api' => true,
+            'module'     => 'Blog',
+            '--api'      => true,
         ]);
 
         $file = $this->finder->get($this->modulePath . '/Http/Controllers/MyController.php');
@@ -109,7 +111,7 @@ class ControllerMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-controller', ['controller' => 'MyController', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Controllers/MyController.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/Controllers/MyController.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

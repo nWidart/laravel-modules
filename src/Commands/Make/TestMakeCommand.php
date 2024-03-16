@@ -21,11 +21,11 @@ class TestMakeCommand extends GeneratorCommand
     {
         if ($this->option('feature')) {
             return config('modules.paths.generator.test-feature.namespace')
-                ?? config('modules.paths.generator.test-feature.path', 'Tests/Feature');
+                ?? config('modules.paths.generator.test-feature.path', 'tests/Feature');
         }
 
         return config('modules.paths.generator.test-unit.namespace')
-            ?? config('modules.paths.generator.test-unit.path', 'Tests/Unit');
+            ?? config('modules.paths.generator.test-unit.path', 'tests/Unit');
     }
 
     /**
@@ -81,7 +81,7 @@ class TestMakeCommand extends GeneratorCommand
         if ($this->option('feature')) {
             $testPath = GenerateConfigReader::read('test-feature');
         } else {
-            $testPath = GenerateConfigReader::read('test');
+            $testPath = GenerateConfigReader::read('test-unit');
         }
 
         return $path . $testPath->getPath() . '/' . $this->getFileName() . '.php';

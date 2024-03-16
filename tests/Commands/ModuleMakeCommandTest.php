@@ -12,6 +12,7 @@ use Spatie\Snapshots\MatchesSnapshots;
 class ModuleMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -33,10 +34,10 @@ class ModuleMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
+        $this->modulePath = $this->getModuleBasePath();
+        $this->finder     = $this->app['files'];
         $this->repository = $this->app[RepositoryInterface::class];
-        $this->activator = $this->app[ActivatorInterface::class];
+        $this->activator  = $this->app[ActivatorInterface::class];
     }
 
     public function tearDown(): void
@@ -88,7 +89,7 @@ class ModuleMakeCommandTest extends BaseTestCase
     public function it_generates_web_route_file()
     {
         $files = $this->app['modules']->config('stubs.files');
-        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+        $code  = $this->artisan('module:make', ['name' => ['Blog']]);
 
         $path = $this->modulePath . '/' . $files['routes/web'];
 
@@ -100,7 +101,7 @@ class ModuleMakeCommandTest extends BaseTestCase
     public function it_generates_api_route_file()
     {
         $files = $this->app['modules']->config('stubs.files');
-        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+        $code  = $this->artisan('module:make', ['name' => ['Blog']]);
 
         $path = $this->modulePath . '/' . $files['routes/api'];
 
@@ -124,19 +125,19 @@ class ModuleMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
+        $path = $this->getModuleAppPath() . '/Providers/BlogServiceProvider.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
-        $path = base_path('modules/Blog') . '/Http/Controllers/BlogController.php';
+        $path = $this->getModuleAppPath() . '/Http/Controllers/BlogController.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
-        $path = base_path('modules/Blog') . '/Database/Seeders/BlogDatabaseSeeder.php';
+        $path = $this->getModuleBasePath() . '/database/seeders/BlogDatabaseSeeder.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
-        $path = base_path('modules/Blog') . '/Providers/RouteServiceProvider.php';
+        $path = $this->getModuleAppPath() . '/Providers/RouteServiceProvider.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
@@ -168,7 +169,7 @@ class ModuleMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make', ['name' => ['ModuleName']]);
 
-        $file = $this->finder->get(base_path('modules/ModuleName') . '/Providers/ModuleNameServiceProvider.php');
+        $file = $this->finder->get($this->getModuleAppPath('ModuleName') . '/Providers/ModuleNameServiceProvider.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -210,7 +211,7 @@ class ModuleMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make', ['name' => ['ModuleName'], '--plain' => true]);
 
-        $path = base_path('modules/ModuleName') . '/module.json';
+        $path    = base_path('modules/ModuleName') . '/module.json';
         $content = json_decode($this->finder->get($path));
 
         $this->assertCount(0, $content->providers);
@@ -223,7 +224,7 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['Blog']]);
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $output = Artisan::output();
+        $output   = Artisan::output();
         $expected = 'ERROR  Module [Blog] already exists!';
 
         $this->assertTrue(Str::contains($output, $expected));
@@ -250,29 +251,29 @@ class ModuleMakeCommandTest extends BaseTestCase
     public function it_can_generate_module_with_old_config_format()
     {
         $this->app['config']->set('modules.paths.generator', [
-            'assets' => 'Assets',
-            'config' => 'Config',
-            'command' => 'Console',
-            'event' => 'Events',
-            'listener' => 'Listeners',
-            'migration' => 'Database/Migrations',
-            'factory' => 'Database/factories',
-            'model' => 'Entities',
-            'repository' => 'Repositories',
-            'seeder' => 'Database/Seeders',
-            'controller' => 'Http/Controllers',
-            'filter' => 'Http/Middleware',
-            'request' => 'Http/Requests',
-            'provider' => 'Providers',
-            'lang' => 'Resources/lang',
-            'views' => 'Resources/views',
-            'policies' => false,
-            'rules' => false,
-            'test' => 'Tests',
-            'jobs' => 'Jobs',
-            'emails' => 'Emails',
+            'assets'        => 'Assets',
+            'config'        => 'Config',
+            'command'       => 'Console',
+            'event'         => 'Events',
+            'listener'      => 'Listeners',
+            'migration'     => 'Database/Migrations',
+            'factory'       => 'Database/factories',
+            'model'         => 'Entities',
+            'repository'    => 'Repositories',
+            'seeder'        => 'Database/Seeders',
+            'controller'    => 'Http/Controllers',
+            'filter'        => 'Http/Middleware',
+            'request'       => 'Http/Requests',
+            'provider'      => 'Providers',
+            'lang'          => 'Resources/lang',
+            'views'         => 'Resources/views',
+            'policies'      => false,
+            'rules'         => false,
+            'test'          => 'Tests',
+            'jobs'          => 'Jobs',
+            'emails'        => 'Emails',
             'notifications' => 'Notifications',
-            'resource' => false,
+            'resource'      => false,
         ]);
 
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
@@ -363,65 +364,67 @@ class ModuleMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make', ['name' => ['Blog'], '--web' => true]);
 
-        $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
+        $path = $this->getModuleAppPath() . '/Providers/BlogServiceProvider.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
-        $path = base_path('modules/Blog') . '/Http/Controllers/BlogController.php';
+        $path = $this->getModuleAppPath() . '/Http/Controllers/BlogController.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
-        $path = base_path('modules/Blog') . '/Database/Seeders/BlogDatabaseSeeder.php';
+        $path = $this->getModuleBasePath() . '/database/seeders/BlogDatabaseSeeder.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
-        $path = base_path('modules/Blog') . '/Providers/RouteServiceProvider.php';
+        $path = $this->getModuleAppPath() . '/Providers/RouteServiceProvider.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
         $this->assertSame(0, $code);
     }
+
     /** @test */
     public function it_generates_api_module_with_resources()
     {
         $code = $this->artisan('module:make', ['name' => ['Blog'], '--api' => true]);
 
-        $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
+        $path = $this->getModuleAppPath() . '/Providers/BlogServiceProvider.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
-        $path = base_path('modules/Blog') . '/Http/Controllers/BlogController.php';
+        $path = $this->getModuleAppPath() . '/Http/Controllers/BlogController.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
-        $path = base_path('modules/Blog') . '/Database/Seeders/BlogDatabaseSeeder.php';
+        $path = $this->getModuleBasePath() . '/database/seeders/BlogDatabaseSeeder.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
-        $path = base_path('modules/Blog') . '/Providers/RouteServiceProvider.php';
+        $path = $this->getModuleAppPath() . '/Providers/RouteServiceProvider.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
         $this->assertSame(0, $code);
     }
+
     /** @test */
     public function it_generates_web_module_with_resources_when_adding_more_than_one_option()
     {
-        $code = $this->artisan('module:make', ['name' => ['Blog'], '--api' => true,'--plain'=>true]);
+        $code = $this->artisan('module:make', ['name' => ['Blog'], '--api' => true, '--plain' => true]);
 
-        $path = base_path('modules/Blog') . '/Providers/BlogServiceProvider.php';
+        $path = $this->getModuleAppPath() . '/Providers/BlogServiceProvider.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
-        $path = base_path('modules/Blog') . '/Http/Controllers/BlogController.php';
+        $path = $this->getModuleAppPath() . '/Http/Controllers/BlogController.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
-        $path = base_path('modules/Blog') . '/Database/Seeders/BlogDatabaseSeeder.php';
+        $path = $this->getModuleBasePath() . '/database/seeders/BlogDatabaseSeeder.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
-        $path = base_path('modules/Blog') . '/Providers/RouteServiceProvider.php';
+        $path = $this->getModuleAppPath() . '/Providers/RouteServiceProvider.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 

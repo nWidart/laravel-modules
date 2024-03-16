@@ -22,9 +22,9 @@ class ListenerMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
@@ -139,7 +139,7 @@ class ListenerMakeCommandTest extends BaseTestCase
             ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog']
         );
 
-        $file = $this->finder->get($this->modulePath . '/Events/Handlers/NotifyUsersOfANewPost.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/Events/Handlers/NotifyUsersOfANewPost.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

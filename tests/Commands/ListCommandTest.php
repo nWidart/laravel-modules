@@ -2,16 +2,11 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class ListCommandTest extends BaseTestCase
 {
-    /**
-     * @var Filesystem
-     */
-    private $finder;
     /**
      * @var string
      */
@@ -20,9 +15,8 @@ class ListCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
-        $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void

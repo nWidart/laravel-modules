@@ -21,9 +21,9 @@ class MigrationMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleBasePath();
     }
 
     public function tearDown(): void
@@ -37,7 +37,7 @@ class MigrationMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-migration', ['name' => 'create_posts_table', 'module' => 'Blog']);
 
-        $files = $this->finder->allFiles($this->modulePath . '/Database/Migrations');
+        $files = $this->finder->allFiles($this->modulePath . '/database/migrations');
 
         $this->assertCount(1, $files);
         $this->assertSame(0, $code);
@@ -48,9 +48,9 @@ class MigrationMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-migration', ['name' => 'create_posts_table', 'module' => 'Blog']);
 
-        $migrations = $this->finder->allFiles($this->modulePath . '/Database/Migrations');
+        $migrations = $this->finder->allFiles($this->modulePath . '/database/migrations');
         $fileName = $migrations[0]->getRelativePathname();
-        $file = $this->finder->get($this->modulePath . '/Database/Migrations/' . $fileName);
+        $file = $this->finder->get($this->modulePath . '/database/migrations/' . $fileName);
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -61,9 +61,9 @@ class MigrationMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-migration', ['name' => 'add_something_to_posts_table', 'module' => 'Blog']);
 
-        $migrations = $this->finder->allFiles($this->modulePath . '/Database/Migrations');
+        $migrations = $this->finder->allFiles($this->modulePath . '/database/migrations');
         $fileName = $migrations[0]->getRelativePathname();
-        $file = $this->finder->get($this->modulePath . '/Database/Migrations/' . $fileName);
+        $file = $this->finder->get($this->modulePath . '/database/migrations/' . $fileName);
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -74,9 +74,9 @@ class MigrationMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-migration', ['name' => 'delete_something_from_posts_table', 'module' => 'Blog']);
 
-        $migrations = $this->finder->allFiles($this->modulePath . '/Database/Migrations');
+        $migrations = $this->finder->allFiles($this->modulePath . '/database/migrations');
         $fileName = $migrations[0]->getRelativePathname();
-        $file = $this->finder->get($this->modulePath . '/Database/Migrations/' . $fileName);
+        $file = $this->finder->get($this->modulePath . '/database/migrations/' . $fileName);
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -87,9 +87,9 @@ class MigrationMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-migration', ['name' => 'drop_posts_table', 'module' => 'Blog']);
 
-        $migrations = $this->finder->allFiles($this->modulePath . '/Database/Migrations');
+        $migrations = $this->finder->allFiles($this->modulePath . '/database/migrations');
         $fileName = $migrations[0]->getRelativePathname();
-        $file = $this->finder->get($this->modulePath . '/Database/Migrations/' . $fileName);
+        $file = $this->finder->get($this->modulePath . '/database/migrations/' . $fileName);
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -100,9 +100,9 @@ class MigrationMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-migration', ['name' => 'something_random_name', 'module' => 'Blog']);
 
-        $migrations = $this->finder->allFiles($this->modulePath . '/Database/Migrations');
+        $migrations = $this->finder->allFiles($this->modulePath . '/database/migrations');
         $fileName = $migrations[0]->getRelativePathname();
-        $file = $this->finder->get($this->modulePath . '/Database/Migrations/' . $fileName);
+        $file = $this->finder->get($this->modulePath . '/database/migrations/' . $fileName);
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -113,9 +113,9 @@ class MigrationMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-migration', ['name' => 'create_posts_table', 'module' => 'Blog', '--fields' => 'belongsTo:user:id:users']);
 
-        $migrations = $this->finder->allFiles($this->modulePath . '/Database/Migrations');
+        $migrations = $this->finder->allFiles($this->modulePath . '/database/migrations');
         $fileName = $migrations[0]->getRelativePathname();
-        $file = $this->finder->get($this->modulePath . '/Database/Migrations/' . $fileName);
+        $file = $this->finder->get($this->modulePath . '/database/migrations/' . $fileName);
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

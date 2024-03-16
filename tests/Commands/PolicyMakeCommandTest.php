@@ -21,9 +21,9 @@ class PolicyMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
@@ -51,7 +51,7 @@ class PolicyMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/SuperPolicies/PostPolicy.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/SuperPolicies/PostPolicy.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

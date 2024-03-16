@@ -8,17 +8,20 @@ use Nwidart\Modules\Tests\BaseTestCase;
 
 class EnableCommandTest extends BaseTestCase
 {
+    private RepositoryInterface $repository;
+
     public function setUp(): void
     {
         parent::setUp();
-        $this->artisan('module:make', ['name' => ['Blog']]);
-        $this->artisan('module:make', ['name' => ['Taxonomy']]);
+        $this->createModule('Blog');
+        $this->createModule('Taxonomy');
+        $this->repository = $this->app[RepositoryInterface::class];
     }
 
     public function tearDown(): void
     {
-        $this->app[RepositoryInterface::class]->delete('Blog');
-        $this->app[RepositoryInterface::class]->delete('Taxonomy');
+        $this->repository->delete('Blog');
+        $this->repository->delete('Taxonomy');
         parent::tearDown();
     }
 
@@ -26,7 +29,7 @@ class EnableCommandTest extends BaseTestCase
     public function it_enables_a_module()
     {
         /** @var Module $blogModule */
-        $blogModule = $this->app[RepositoryInterface::class]->find('Blog');
+        $blogModule = $this->repository->find('Blog');
         $blogModule->disable();
 
         $code = $this->artisan('module:enable', ['module' => 'Blog']);
@@ -36,14 +39,31 @@ class EnableCommandTest extends BaseTestCase
     }
 
     /** @test */
-    public function it_enables_all_modules()
+    public function it_enables_array_of_modules()
     {
         /** @var Module $blogModule */
-        $blogModule = $this->app[RepositoryInterface::class]->find('Blog');
+        $blogModule = $this->repository->find('Blog');
         $blogModule->disable();
 
         /** @var Module $taxonomyModule */
-        $taxonomyModule = $this->app[RepositoryInterface::class]->find('Taxonomy');
+        $taxonomyModule = $this->repository->find('Taxonomy');
+        $taxonomyModule->disable();
+
+        $code = $this->artisan('module:enable', ['module' => ['Blog', 'Taxonomy']]);
+
+        $this->assertTrue($blogModule->isEnabled() && $taxonomyModule->isEnabled());
+        $this->assertSame(0, $code);
+    }
+
+    /** @test */
+    public function it_enables_all_modules()
+    {
+        /** @var Module $blogModule */
+        $blogModule = $this->repository->find('Blog');
+        $blogModule->disable();
+
+        /** @var Module $taxonomyModule */
+        $taxonomyModule = $this->repository->find('Taxonomy');
         $taxonomyModule->disable();
 
         $code = $this->artisan('module:enable', ['--all' => true]);

@@ -2,7 +2,7 @@
 
 namespace Modules\Blog\Observers;
 
-use Modules\Blog\Entities\Post;
+use Modules\Blog\app\Models\Post;
 
 class PostObserver
 {

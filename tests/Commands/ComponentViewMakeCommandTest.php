@@ -9,6 +9,7 @@ use Spatie\Snapshots\MatchesSnapshots;
 class ComponentViewMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -21,9 +22,9 @@ class ComponentViewMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
@@ -36,14 +37,15 @@ class ComponentViewMakeCommandTest extends BaseTestCase
     public function it_generates_the_component_view()
     {
         $code = $this->artisan('module:make-component-view', ['name' => 'Blog', 'module' => 'Blog']);
-        $this->assertTrue(is_file($this->modulePath . '/Resources/views/components/blog.blade.php'));
+        $this->assertTrue(is_file($this->getModuleBasePath() . '/resources/views/components/blog.blade.php'));
         $this->assertSame(0, $code);
     }
+
     /** @test */
     public function it_generated_correct_file_with_content()
     {
         $code = $this->artisan('module:make-component-view', ['name' => 'Blog', 'module' => 'Blog']);
-        $file = $this->finder->get($this->modulePath . '/Resources/views/components/blog.blade.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/resources/views/components/blog.blade.php');
         $this->assertTrue(str_contains($file, '<div>'));
         $this->assertSame(0, $code);
     }
@@ -55,7 +57,7 @@ class ComponentViewMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-component-view', ['name' => 'Blog', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Resources/views/components/newDirectory/blog.blade.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/Resources/views/components/newDirectory/blog.blade.php');
 
         $this->assertTrue(str_contains($file, '<div>'));
         $this->assertSame(0, $code);

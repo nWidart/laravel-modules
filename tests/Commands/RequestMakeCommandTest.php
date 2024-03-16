@@ -21,9 +21,9 @@ class RequestMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
@@ -59,7 +59,7 @@ class RequestMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-request', ['name' => 'CreateBlogPostRequest', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/SuperRequests/CreateBlogPostRequest.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/SuperRequests/CreateBlogPostRequest.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

@@ -21,8 +21,8 @@ class ProviderMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
+        $this->modulePath = $this->getModuleAppPath();
         $this->artisan('module:make', ['name' => ['Blog'], '--plain' => true, ]);
     }
 
@@ -81,7 +81,7 @@ class ProviderMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
 
-        $file = $this->finder->get($this->modulePath . '/SuperProviders/BlogServiceProvider.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/SuperProviders/BlogServiceProvider.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

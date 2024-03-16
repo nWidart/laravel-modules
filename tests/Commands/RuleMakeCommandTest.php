@@ -21,9 +21,9 @@ class RuleMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
@@ -63,7 +63,7 @@ class RuleMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/SuperRules/UniqueRule.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/SuperRules/UniqueRule.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

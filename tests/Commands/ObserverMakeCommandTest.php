@@ -21,9 +21,9 @@ class ObserverMakeCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->modulePath = base_path('modules/Blog');
         $this->finder = $this->app['files'];
-        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->createModule();
+        $this->modulePath = $this->getModuleAppPath();
     }
 
     public function tearDown(): void
@@ -38,7 +38,6 @@ class ObserverMakeCommandTest extends BaseTestCase
         $code = $this->artisan('module:make-observer', ['name' => 'Post', 'module' => 'Blog']);
 
         $observerFile = $this->modulePath . '/Observers/PostObserver.php';
-        // dd($observerFile);
 
         $this->assertTrue(is_file($observerFile), 'Observer file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($observerFile));

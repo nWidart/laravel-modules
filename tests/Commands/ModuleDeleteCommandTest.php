@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands;
 
 use Nwidart\Modules\Activators\FileActivator;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -22,7 +23,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->finder = $this->app['files'];
+        $this->finder    = $this->app['files'];
         $this->activator = new FileActivator($this->app);
     }
 
@@ -35,6 +36,50 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $code = $this->artisan('module:delete', ['module' => 'WrongModule']);
         $this->assertFileDoesNotExist(base_path('modules/WrongModule'));
         $this->assertSame(0, $code);
+    }
+
+    /** @test */
+    public function it_can_delete_array_module_from_disk(): void
+    {
+        $modules = [
+            'Foo',
+            'Bar',
+            'Zoo',
+        ];
+
+        foreach ($modules as $module) {
+            $this->createModule($module);
+            $this->assertDirectoryExists($this->getModuleBasePath($module));
+        }
+
+        $code = $this->artisan('module:delete', ['module' => ['Foo', 'Bar']]);
+        $this->assertSame(0, $code);
+        $this->assertFileDoesNotExist($this->getModuleBasePath('Foo'));
+        $this->assertFileDoesNotExist($this->getModuleBasePath('Bar'));
+        $this->assertDirectoryExists($this->getModuleBasePath('Zoo'));
+
+        $this->app[RepositoryInterface::class]->delete('Zoo');
+    }
+
+    /** @test */
+    public function it_can_delete_all_module_from_disk(): void
+    {
+        $modules = [
+            'Foo',
+            'Bar',
+            'Zoo',
+        ];
+
+        foreach ($modules as $module) {
+            $this->createModule($module);
+            $this->assertDirectoryExists($this->getModuleBasePath($module));
+        }
+
+        $code = $this->artisan('module:delete', ['--all' => true]);
+        $this->assertSame(0, $code);
+        $this->assertFileDoesNotExist($this->getModuleBasePath('Foo'));
+        $this->assertFileDoesNotExist($this->getModuleBasePath('Bar'));
+        $this->assertFileDoesNotExist($this->getModuleBasePath('Zoo'));
     }
 
     /** @test */
