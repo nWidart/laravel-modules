@@ -31,6 +31,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\CommandMakeCommand::class,
             Commands\ComponentClassMakeCommand::class,
             Commands\ComponentViewMakeCommand::class,
+            Commands\ComposerUpdateCommand::class,
             Commands\ControllerMakeCommand::class,
             Commands\DisableCommand::class,
             Commands\DumpCommand::class,

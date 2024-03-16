@@ -93,6 +93,17 @@ return [
         */
 
         'migration' => base_path('database/migrations'),
+
+        /*
+        |--------------------------------------------------------------------------
+        | The app path
+        |--------------------------------------------------------------------------
+        |
+        | app folder name
+        | for example can change it to 'src' or 'App'
+        */
+        'app_folder' => 'app/',
+
         /*
         |--------------------------------------------------------------------------
         | Generator path
@@ -101,35 +112,49 @@ return [
         | Setting the generate key to false will not generate that folder
         */
         'generator' => [
+            // app folder
+            'channels' => ['path' => 'app/Broadcasting', 'generate' => false],
+            'command' => ['path' => 'app/Console', 'generate' => false],
+            'emails' => ['path' => 'app/Emails', 'generate' => false],
+            'event' => ['path' => 'app/Events', 'generate' => false],
+            'jobs' => ['path' => 'app/Jobs', 'generate' => false],
+            'listener' => ['path' => 'app/Listeners', 'generate' => false],
+            'model' => ['path' => 'app/Models', 'generate' => false],
+            'notifications' => ['path' => 'app/Notifications', 'generate' => false],
+            'observer' => ['path' => 'app/Observers', 'generate' => false],
+            'policies' => ['path' => 'app/Policies', 'generate' => false],
+            'provider' => ['path' => 'app/Providers', 'generate' => true],
+            'repository' => ['path' => 'app/Repositories', 'generate' => false],
+            'resource' => ['path' => 'app/resources', 'generate' => false],
+            'rules' => ['path' => 'app/Rules', 'generate' => false],
+            'component-class' => ['path' => 'app/View/Components', 'generate' => false],
+            // app/HTTP folder
+            'controller' => ['path' => 'app/Http/Controllers', 'generate' => true],
+            'filter' => ['path' => 'app/Http/Middleware', 'generate' => false],
+            'request' => ['path' => 'app/Http/Requests', 'generate' => false],
+
+            // config Folder
             'config' => ['path' => 'config', 'generate' => true],
-            'command' => ['path' => 'App/Console', 'generate' => false],
-            'channels' => ['path' => 'App/Broadcasting', 'generate' => false],
+
+            // Database
             'migration' => ['path' => 'database/migrations', 'generate' => false],
             'seeder' => ['path' => 'database/seeders', 'generate' => true],
             'factory' => ['path' => 'database/factories', 'generate' => false],
-            'model' => ['path' => 'App/Models', 'generate' => false],
-            'observer' => ['path' => 'App/Observers', 'generate' => false],
-            'routes' => ['path' => 'routes', 'generate' => true],
-            'controller' => ['path' => 'App/Http/Controllers', 'generate' => true],
-            'filter' => ['path' => 'App/Http/Middleware', 'generate' => false],
-            'request' => ['path' => 'App/Http/Requests', 'generate' => false],
-            'provider' => ['path' => 'App/Providers', 'generate' => true],
-            'assets' => ['path' => 'resources/assets', 'generate' => false],
+
+            // lang Folder
             'lang' => ['path' => 'lang', 'generate' => false],
+
+            // Resource Folder
+            'assets' => ['path' => 'resources/assets', 'generate' => false],
             'views' => ['path' => 'resources/views', 'generate' => true],
-            'test' => ['path' => 'tests/Unit', 'generate' => false],
-            'test-feature' => ['path' => 'tests/Feature', 'generate' => false],
-            'repository' => ['path' => 'App/Repositories', 'generate' => false],
-            'event' => ['path' => 'App/Events', 'generate' => false],
-            'listener' => ['path' => 'App/Listeners', 'generate' => false],
-            'policies' => ['path' => 'App/Policies', 'generate' => false],
-            'rules' => ['path' => 'App/Rules', 'generate' => false],
-            'jobs' => ['path' => 'App/Jobs', 'generate' => false],
-            'emails' => ['path' => 'App/Emails', 'generate' => false],
-            'notifications' => ['path' => 'App/Notifications', 'generate' => false],
-            'resource' => ['path' => 'App/resources', 'generate' => false],
             'component-view' => ['path' => 'resources/views/components', 'generate' => false],
-            'component-class' => ['path' => 'App/View/Components', 'generate' => false],
+
+            // Route Folder
+            'routes' => ['path' => 'routes', 'generate' => true],
+
+            // Test Folder
+            'test-unit' => ['path' => 'tests/Unit', 'generate' => false],
+            'test-feature' => ['path' => 'tests/Feature', 'generate' => false],
         ],
     ],
 

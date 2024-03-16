@@ -572,7 +572,7 @@ class ModuleGenerator extends Generator
      */
     private function getControllerNamespaceReplacement(): string
     {
-        return str_replace('/', '\\', $this->module->config('paths.generator.controller.namespace') ?: $this->module->config('paths.generator.controller.path', 'Controller'));
+        return str_replace('/', '\\', $this->module->config('paths.generator.controller.namespace') ?: ltrim($this->module->config('paths.generator.controller.path', 'Controller'),config('modules.paths.app_folder')));
     }
 
     /**
