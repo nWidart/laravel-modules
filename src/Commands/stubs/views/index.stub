@@ -1,4 +1,4 @@
-<x-app-layout :data="$head ?? []">
+<x-app-layout>
     <h1>Hello World</h1>
 
     <p>Module: {!! config('$LOWER_NAME$.name') !!}</p>
