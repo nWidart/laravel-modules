@@ -112,7 +112,7 @@ return [
         | Setting the generate key to false will not generate that folder
         */
         'generator' => [
-            // app folder
+            // app/
             'channels' => ['path' => 'app/Broadcasting', 'generate' => false],
             'command' => ['path' => 'app/Console', 'generate' => false],
             'emails' => ['path' => 'app/Emails', 'generate' => false],
@@ -128,31 +128,31 @@ return [
             'resource' => ['path' => 'app/Transformers', 'generate' => false],
             'rules' => ['path' => 'app/Rules', 'generate' => false],
             'component-class' => ['path' => 'app/View/Components', 'generate' => false],
-            // app/HTTP folder
+            // app/HTTP/
             'controller' => ['path' => 'app/Http/Controllers', 'generate' => true],
             'filter' => ['path' => 'app/Http/Middleware', 'generate' => false],
             'request' => ['path' => 'app/Http/Requests', 'generate' => false],
 
-            // config Folder
+            // config/
             'config' => ['path' => 'config', 'generate' => true],
 
-            // Database
+            // database/
             'migration' => ['path' => 'database/migrations', 'generate' => false],
-            'seeder' => ['path' => 'database/seeders', 'generate' => true],
+            'seeder' => ['path' => 'database/seeders', 'generate' => false],
             'factory' => ['path' => 'database/factories', 'generate' => false],
 
-            // lang Folder
+            // lang/
             'lang' => ['path' => 'lang', 'generate' => false],
 
-            // Resource Folder
+            // resource/
             'assets' => ['path' => 'resources/assets', 'generate' => false],
             'views' => ['path' => 'resources/views', 'generate' => true],
             'component-view' => ['path' => 'resources/views/components', 'generate' => false],
 
-            // Route Folder
+            // routes/
             'routes' => ['path' => 'routes', 'generate' => true],
 
-            // Test Folder
+            // tests/
             'test-unit' => ['path' => 'tests/Unit', 'generate' => false],
             'test-feature' => ['path' => 'tests/Feature', 'generate' => false],
         ],
