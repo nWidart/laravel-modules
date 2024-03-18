@@ -6,7 +6,6 @@ use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Translation\Translator;
@@ -175,6 +174,17 @@ abstract class Module
     }
 
     /**
+     * Get app path.
+     *
+     * @return string
+     */
+    public function getAppPath(): string
+    {
+        $app_path = rtrim($this->getExtraPath(config('modules.paths.app_folder', '')), '/');
+        return is_dir($app_path) ? $app_path : $this->getPath();
+    }
+
+    /**
      * Set path.
      *
      * @param string $path
@@ -289,6 +299,7 @@ abstract class Module
     {
         $this->app['events']->dispatch(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
     }
+
     /**
      * Register the aliases from this module.
      */
