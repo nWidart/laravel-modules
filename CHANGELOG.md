@@ -14,18 +14,18 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Changed
 
+- [@dcblogdev](https://github.com/dcblogdev) ensure class_exists for both Capital and lower case namespaces
+- [@dcblogdev](https://github.com/dcblogdev) create database folders by default
+- [@dcblogdev](https://github.com/dcblogdev) set route service provider to use blank namespace by default
+- [@dcblogdev](https://github.com/dcblogdev) updated tests for compatability with PhpUnit 12
+- [@dcblogdev](https://github.com/dcblogdev) added replacement placeholders in config for API stubs
+- [@dcblogdev](https://github.com/dcblogdev) updated vite to rename placeholder with module name
 - [@dcblogdev](https://github.com/dcblogdev) Added support for Laravel 11
 - [@solomon-ochepa](https://github.com/solomon-ochepa) updated API route stub to use controller
 - [@solomon-ochepa](https://github.com/solomon-ochepa) updated config comments
 - [@alissn](https://github.com/alissn) rearrange Command Classes into Folders and Update Namespace Structure
 - [@alissn](https://github.com/alissn) delete command module:migrate-fresh
 - [@alissn](https://github.com/alissn) Fixing Case of tests/Unit and tests/Feature
-
-## Updated
-
-- [@dcblogdev](https://github.com/dcblogdev) updated tests for compatability with PhpUnit 12
-- [@dcblogdev](https://github.com/dcblogdev) added replacement placeholders in config for API stubs
-- [@dcblogdev](https://github.com/dcblogdev) updated vite to rename placeholder with module name
 - [@alissn](https://github.com/alissn) Updated commands to use Laravel Prompt
 - [@dcblogdev](https://github.com/dcblogdev) updated event stub to include Dispatchable and InteractsWithSockets traits
 
