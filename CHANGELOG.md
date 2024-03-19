@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 11.0.0 - 2024-03-19
+
 ## Fixed
 
 - [@Subtixx](https://github.com/subtixx) Fix Issue #1752 - Hardcoded string + undefined variable
@@ -12,6 +14,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Changed
 
+- [@dcblogdev](https://github.com/dcblogdev) Added support for Laravel 11
 - [@solomon-ochepa](https://github.com/solomon-ochepa) updated API route stub to use controller
 - [@solomon-ochepa](https://github.com/solomon-ochepa) updated config comments
 - [@alissn](https://github.com/alissn) rearrange Command Classes into Folders and Update Namespace Structure
@@ -20,6 +23,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Updated
 
+- [@dcblogdev](https://github.com/dcblogdev) updated tests for compatability with PhpUnit 12
 - [@dcblogdev](https://github.com/dcblogdev) added replacement placeholders in config for API stubs
 - [@dcblogdev](https://github.com/dcblogdev) updated vite to rename placeholder with module name
 - [@alissn](https://github.com/alissn) Updated commands to use Laravel Prompt
