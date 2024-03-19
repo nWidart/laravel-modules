@@ -101,6 +101,7 @@ class SeedCommand extends BaseCommand
         $seeders = [];
         $name = $module->getName();
         $config = $module->get('migration');
+
         if (is_array($config) && array_key_exists('seeds', $config)) {
             foreach ((array)$config['seeds'] as $class) {
                 if (class_exists($class)) {
@@ -109,6 +110,9 @@ class SeedCommand extends BaseCommand
             }
         } else {
             $class = $this->getSeederName($name); //legacy support
+
+            $class = implode('\\', array_map('ucwords', explode('\\', $class)));
+
             if (class_exists($class)) {
                 $seeders[] = $class;
             } else {
