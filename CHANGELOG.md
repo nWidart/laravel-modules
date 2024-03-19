@@ -8,14 +8,19 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 - [@Subtixx](https://github.com/subtixx) Fix Issue #1752 - Hardcoded string + undefined variable
 - [@jaymeh](https://github.com/jaymeh) fix: Failed to load module script for static assets such as images
+- [@alissn](https://github.com/alissn) Fixing failing tests
 
 ## Changed
 
+- [@solomon-ochepa](https://github.com/solomon-ochepa) updated API route stub to use controller
+- [@solomon-ochepa](https://github.com/solomon-ochepa) updated config comments
+- [@alissn](https://github.com/alissn) rearrange Command Classes into Folders and Update Namespace Structure
 - [@alissn](https://github.com/alissn) delete command module:migrate-fresh
 - [@alissn](https://github.com/alissn) Fixing Case of tests/Unit and tests/Feature
 
 ## Updated
 
+- [@dcblogdev](https://github.com/dcblogdev) added replacement placeholders in config for API stubs
 - [@dcblogdev](https://github.com/dcblogdev) updated vite to rename placeholder with module name
 - [@alissn](https://github.com/alissn) Updated commands to use Laravel Prompt
 - [@dcblogdev](https://github.com/dcblogdev) updated event stub to include Dispatchable and InteractsWithSockets traits
