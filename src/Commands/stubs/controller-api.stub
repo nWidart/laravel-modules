@@ -3,60 +3,57 @@
 namespace $CLASS_NAMESPACE$;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class $CLASS$ extends Controller
 {
-    public array $data = [];
-
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index()
     {
         //
 
-        return response()->json($this->data);
+        return response()->json([]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         //
 
-        return response()->json($this->data);
+        return response()->json([]);
     }
 
     /**
      * Show the specified resource.
      */
-    public function show($id): JsonResponse
+    public function show($id)
     {
         //
 
-        return response()->json($this->data);
+        return response()->json([]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update(Request $request, $id)
     {
         //
 
-        return response()->json($this->data);
+        return response()->json([]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id): JsonResponse
+    public function destroy($id)
     {
         //
 
-        return response()->json($this->data);
+        return response()->json([]);
     }
 }
