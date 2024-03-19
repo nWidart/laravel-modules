@@ -128,7 +128,8 @@ return [
             'resource' => ['path' => 'app/Transformers', 'generate' => false],
             'rules' => ['path' => 'app/Rules', 'generate' => false],
             'component-class' => ['path' => 'app/View/Components', 'generate' => false],
-            // app/HTTP/
+
+            // app/Http/
             'controller' => ['path' => 'app/Http/Controllers', 'generate' => true],
             'filter' => ['path' => 'app/Http/Middleware', 'generate' => false],
             'request' => ['path' => 'app/Http/Requests', 'generate' => false],
@@ -137,15 +138,15 @@ return [
             'config' => ['path' => 'config', 'generate' => true],
 
             // database/
-            'migration' => ['path' => 'database/migrations', 'generate' => false],
-            'seeder' => ['path' => 'database/seeders', 'generate' => false],
-            'factory' => ['path' => 'database/factories', 'generate' => false],
+            'migration' => ['path' => 'database/migrations', 'generate' => true],
+            'seeder' => ['path' => 'database/seeders', 'generate' => true],
+            'factory' => ['path' => 'database/factories', 'generate' => true],
 
             // lang/
             'lang' => ['path' => 'lang', 'generate' => false],
 
             // resource/
-            'assets' => ['path' => 'resources/assets', 'generate' => false],
+            'assets' => ['path' => 'resources/assets', 'generate' => true],
             'views' => ['path' => 'resources/views', 'generate' => true],
             'component-view' => ['path' => 'resources/views/components', 'generate' => false],
 
