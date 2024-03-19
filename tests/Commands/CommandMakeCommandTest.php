@@ -33,8 +33,7 @@ class CommandMakeCommandTest extends BaseTestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_generates_a_new_console_command_class()
+    public function test_it_generates_a_new_console_command_class()
     {
         $code = $this->artisan('module:make-command', ['name' => 'MyAwesomeCommand', 'module' => 'Blog']);
 
@@ -42,8 +41,7 @@ class CommandMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_generated_correct_file_with_content()
+    public function test_it_generated_correct_file_with_content()
     {
         $code = $this->artisan('module:make-command', ['name' => 'MyAwesomeCommand', 'module' => 'Blog']);
 
@@ -53,8 +51,7 @@ class CommandMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_uses_set_command_name_in_class()
+    public function test_it_uses_set_command_name_in_class()
     {
         $code = $this->artisan(
             'module:make-command',
@@ -67,8 +64,7 @@ class CommandMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_change_the_default_namespace()
+    public function test_it_can_change_the_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.command.path', 'app/CustomCommands');
 
@@ -80,8 +76,7 @@ class CommandMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_change_the_default_namespace_specific()
+    public function test_it_can_change_the_default_namespace_specific()
     {
         $this->app['config']->set('modules.paths.generator.command.namespace', 'Commands');
 

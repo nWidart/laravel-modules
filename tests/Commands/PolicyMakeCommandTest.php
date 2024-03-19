@@ -32,8 +32,7 @@ class PolicyMakeCommandTest extends BaseTestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_makes_policy()
+    public function test_it_makes_policy()
     {
         $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
@@ -44,8 +43,7 @@ class PolicyMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_change_the_default_namespace()
+    public function test_it_can_change_the_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.policies.path', 'SuperPolicies');
 
@@ -57,8 +55,7 @@ class PolicyMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_change_the_default_namespace_specific()
+    public function test_it_can_change_the_default_namespace_specific()
     {
         $this->app['config']->set('modules.paths.generator.policies.namespace', 'SuperPolicies');
 

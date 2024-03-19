@@ -30,14 +30,12 @@ class HelpersTest extends BaseTestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_finds_the_module_path()
+    public function test_it_finds_the_module_path()
     {
         $this->assertTrue(Str::contains(module_path('Blog'), 'modules/Blog'));
     }
 
-    /** @test */
-    public function it_can_bind_a_relative_path_to_module_path()
+    public function test_it_can_bind_a_relative_path_to_module_path()
     {
         $this->assertTrue(Str::contains(module_path('Blog', 'config/config.php'), 'modules/Blog/config/config.php'));
     }

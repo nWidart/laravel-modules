@@ -7,8 +7,7 @@ use Nwidart\Modules\Tests\BaseTestCase;
 
 class CollectionTest extends BaseTestCase
 {
-    /** @test */
-    public function toArraySetsPathAttribute()
+    public function test_toArraySetsPathAttribute()
     {
         $moduleOnePath = __DIR__ . '/stubs/valid/Recipe';
         $moduleTwoPath = __DIR__ . '/stubs/valid/Requirement';
@@ -25,8 +24,7 @@ class CollectionTest extends BaseTestCase
         $this->assertEquals($moduleTwoPath, $collectionArray[1]['path']);
     }
 
-    /** @test */
-    public function getItemsReturnsTheCollectionItems()
+    public function test_getItemsReturnsTheCollectionItems()
     {
         $modules = [
             new Module($this->app, 'module-one', __DIR__ . '/stubs/valid/Recipe'),

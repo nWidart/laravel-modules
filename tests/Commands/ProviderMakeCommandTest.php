@@ -32,16 +32,14 @@ class ProviderMakeCommandTest extends BaseTestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_generates_a_service_provider()
+    public function test_it_generates_a_service_provider()
     {
         $code = $this->artisan('module:make-provider', ['name' => 'MyBlogServiceProvider', 'module' => 'Blog']);
 
         $this->assertTrue(is_file($this->modulePath . '/Providers/MyBlogServiceProvider.php'));
         $this->assertSame(0, $code);
     }
-    /** @test */
-    public function it_generated_correct_file_with_content()
+    public function test_it_generated_correct_file_with_content()
     {
         $code = $this->artisan('module:make-provider', ['name' => 'MyBlogServiceProvider', 'module' => 'Blog']);
 
@@ -51,8 +49,7 @@ class ProviderMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_generates_a_master_service_provider_with_resource_loading()
+    public function test_it_generates_a_master_service_provider_with_resource_loading()
     {
         $code = $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
 
@@ -62,8 +59,7 @@ class ProviderMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_have_custom_migration_resources_location_paths()
+    public function test_it_can_have_custom_migration_resources_location_paths()
     {
         $this->app['config']->set('modules.paths.generator.migration', 'migrations');
         $code = $this->artisan('module:make-provider', ['name' => 'BlogServiceProvider', 'module' => 'Blog', '--master' => true]);
@@ -74,8 +70,7 @@ class ProviderMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_change_the_default_namespace()
+    public function test_it_can_change_the_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.provider.path', 'SuperProviders');
 
@@ -87,8 +82,7 @@ class ProviderMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_change_the_default_namespace_specific()
+    public function test_it_can_change_the_default_namespace_specific()
     {
         $this->app['config']->set('modules.paths.generator.provider.namespace', 'SuperProviders');
 

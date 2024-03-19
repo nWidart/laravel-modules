@@ -32,8 +32,7 @@ class PublishMigrationCommandTest extends BaseTestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_publishes_module_migrations()
+    public function test_it_publishes_module_migrations()
     {
         $code = $this->artisan('module:publish-migration', ['module' => 'Blog']);
 

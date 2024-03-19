@@ -6,16 +6,14 @@ use Nwidart\Modules\Facades\Module;
 
 class ModuleFacadeTest extends BaseTestCase
 {
-    /** @test */
-    public function it_resolves_the_module_facade()
+    public function test_it_resolves_the_module_facade()
     {
         $modules = Module::all();
 
         $this->assertTrue(is_array($modules));
     }
 
-    /** @test */
-    public function it_creates_macros_via_facade()
+    public function test_it_creates_macros_via_facade()
     {
         $modules = Module::macro('testMacro', function () {
             return true;
@@ -24,8 +22,7 @@ class ModuleFacadeTest extends BaseTestCase
         $this->assertTrue(Module::hasMacro('testMacro'));
     }
 
-    /** @test */
-    public function it_calls_macros_via_facade()
+    public function test_it_calls_macros_via_facade()
     {
         $modules = Module::macro('testMacro', function () {
             return 'a value';

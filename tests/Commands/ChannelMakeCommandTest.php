@@ -33,8 +33,7 @@ class ChannelMakeCommandTest extends BaseTestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_generates_the_channel_class()
+    public function test_it_generates_the_channel_class()
     {
         $code = $this->artisan('module:make-channel', ['name' => 'WelcomeChannel', 'module' => 'Blog']);
 
@@ -42,8 +41,7 @@ class ChannelMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_generated_correct_file_with_content()
+    public function test_it_generated_correct_file_with_content()
     {
         $code = $this->artisan('module:make-channel', ['name' => 'WelcomeChannel', 'module' => 'Blog']);
 
@@ -53,8 +51,7 @@ class ChannelMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_change_the_default_namespace()
+    public function test_it_can_change_the_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.channels.path', 'SuperChannel');
 
@@ -66,8 +63,7 @@ class ChannelMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_change_the_default_namespace_specific()
+    public function test_it_can_change_the_default_namespace_specific()
     {
         $this->app['config']->set('modules.paths.generator.channels.namespace', 'SuperChannel');
 

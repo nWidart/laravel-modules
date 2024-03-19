@@ -32,8 +32,7 @@ class FactoryMakeCommandTest extends BaseTestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_makes_factory()
+    public function test_it_makes_factory()
     {
         $code = $this->artisan('module:make-factory', ['name' => 'Post', 'module' => 'Blog']);
 

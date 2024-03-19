@@ -32,8 +32,7 @@ class ObserverMakeCommandTest extends BaseTestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_makes_observer()
+    public function test_it_makes_observer()
     {
         $code = $this->artisan('module:make-observer', ['name' => 'Post', 'module' => 'Blog']);
 

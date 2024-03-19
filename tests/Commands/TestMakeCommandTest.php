@@ -40,8 +40,7 @@ class TestMakeCommandTest extends BaseTestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_generates_a_new_unit_test_class()
+    public function test_it_generates_a_new_unit_test_class()
     {
         $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
 
@@ -49,8 +48,7 @@ class TestMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_generates_a_new_feature_test_class()
+    public function test_it_generates_a_new_feature_test_class()
     {
         $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
 
@@ -58,8 +56,7 @@ class TestMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_generated_correct_unit_file_with_content()
+    public function test_it_generated_correct_unit_file_with_content()
     {
         $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
 
@@ -69,8 +66,7 @@ class TestMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_generated_correct_feature_file_with_content()
+    public function test_it_generated_correct_feature_file_with_content()
     {
         $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
 
@@ -80,8 +76,7 @@ class TestMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_change_the_default_unit_namespace()
+    public function test_it_can_change_the_default_unit_namespace()
     {
         $this->app['config']->set('modules.paths.generator.test-unit.path', 'SuperTests/Unit');
 
@@ -93,8 +88,7 @@ class TestMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_change_the_default_unit_namespace_specific()
+    public function test_it_can_change_the_default_unit_namespace_specific()
     {
         $this->app['config']->set('modules.paths.generator.test.namespace', 'SuperTests\\Unit');
 
@@ -106,8 +100,7 @@ class TestMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_change_the_default_feature_namespace()
+    public function test_it_can_change_the_default_feature_namespace()
     {
         $this->app['config']->set('modules.paths.generator.test-feature.path', 'SuperTests/Feature');
 
@@ -119,8 +112,7 @@ class TestMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_change_the_default_feature_namespace_specific()
+    public function test_it_can_change_the_default_feature_namespace_specific()
     {
         $this->app['config']->set('modules.paths.generator.test-feature.namespace', 'SuperTests\\Feature');
 

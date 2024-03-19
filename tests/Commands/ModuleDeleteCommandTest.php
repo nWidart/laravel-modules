@@ -27,8 +27,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->activator = new FileActivator($this->app);
     }
 
-    /** @test */
-    public function it_can_delete_a_module_from_disk(): void
+    public function test_it_can_delete_a_module_from_disk(): void
     {
         $this->artisan('module:make', ['name' => ['WrongModule']]);
         $this->assertDirectoryExists(base_path('modules/WrongModule'));
@@ -38,8 +37,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    /** @test */
-    public function it_can_delete_array_module_from_disk(): void
+    public function test_it_can_delete_array_module_from_disk(): void
     {
         $modules = [
             'Foo',
@@ -61,8 +59,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->app[RepositoryInterface::class]->delete('Zoo');
     }
 
-    /** @test */
-    public function it_can_delete_all_module_from_disk(): void
+    public function test_it_can_delete_all_module_from_disk(): void
     {
         $modules = [
             'Foo',
@@ -82,8 +79,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->assertFileDoesNotExist($this->getModuleBasePath('Zoo'));
     }
 
-    /** @test */
-    public function it_deletes_modules_from_status_file(): void
+    public function test_it_deletes_modules_from_status_file(): void
     {
         $this->artisan('module:make', ['name' => ['WrongModule']]);
         $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));

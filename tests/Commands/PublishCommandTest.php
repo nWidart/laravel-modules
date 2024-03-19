@@ -31,8 +31,7 @@ class PublishCommandTest extends BaseTestCase
         parent::tearDown();
     }
 
-    /** @test */
-    public function it_published_module_assets()
+    public function test_it_published_module_assets()
     {
         $code = $this->artisan('module:publish', ['module' => 'Blog']);
 
