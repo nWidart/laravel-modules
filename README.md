@@ -2,9 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/nwidart/laravel-modules.svg?style=flat-square)](https://packagist.org/packages/nwidart/laravel-modules)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/nWidart/laravel-modules/master.svg?style=flat-square)](https://travis-ci.org/nWidart/laravel-modules)
 [![Scrutinizer Coverage](https://img.shields.io/scrutinizer/coverage/g/nWidart/laravel-modules.svg?maxAge=86400&style=flat-square)](https://scrutinizer-ci.com/g/nWidart/laravel-modules/?branch=master)
-[![Quality Score](https://img.shields.io/scrutinizer/g/nWidart/laravel-modules.svg?style=flat-square)](https://scrutinizer-ci.com/g/nWidart/laravel-modules)
 [![Total Downloads](https://img.shields.io/packagist/dt/nwidart/laravel-modules.svg?style=flat-square)](https://packagist.org/packages/nwidart/laravel-modules)
 
 | **Laravel** | **laravel-modules** |
@@ -19,6 +17,7 @@
 | 8.0         | ^8.0                |
 | 9.0         | ^9.0                |
 | 10.0        | ^10.0               |
+| 11.0        | ^11.0               |
 
 `nwidart/laravel-modules` is a Laravel package which created to manage your large Laravel app using modules. Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 10.
 
@@ -43,17 +42,20 @@ php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProv
 ```
 
 ### Autoloading
-By default, module classes aren't loaded automatically. To autoload them using psr-4, add the following line to the end of the root composer.json file under the autoload section:
-``` json
-{
-  "autoload": {
-    "psr-4": {
-      "App\\": "app/",
-      "Database\\Factories\\": "database/factories/",
-      "Database\\Seeders\\": "database/seeders/",
-      "Modules\\": "Modules/"
-  }
-}
+
+By default the module classes are not loaded automatically. You can autoload your modules by adding merge-plugin to the extra section:
+
+```json
+"extra": {
+    "laravel": {
+        "dont-discover": []
+    },
+    "merge-plugin": {
+        "include": [
+            "Modules/*/composer.json"
+        ]
+    }
+},
 ```
 
 **Tip: don't forget to run `composer dump-autoload` afterwards.**
