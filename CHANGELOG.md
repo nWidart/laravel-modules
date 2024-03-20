@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Added
+
+- [@dcblogdev](https://github.com/dcblogdev) Added view:make command to generate views
+
 ## Changed
 
 - [@alissn](https://github.com/alissn) Run command php-cs-fixer fix
