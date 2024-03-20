@@ -154,8 +154,8 @@ return [
             'routes' => ['path' => 'routes', 'generate' => true],
 
             // tests/
-            'test-unit' => ['path' => 'tests/Unit', 'generate' => false],
-            'test-feature' => ['path' => 'tests/Feature', 'generate' => false],
+            'test-unit' => ['path' => 'tests/Unit', 'generate' => true],
+            'test-feature' => ['path' => 'tests/Feature', 'generate' => true],
         ],
     ],
 
