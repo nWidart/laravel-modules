@@ -48,7 +48,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
         ], 'stubs');
 
         $this->publishes([
-            __DIR__.'/../scripts/vite-module-loader.js' => base_path('vite-module-loader.js'),
+            __DIR__ . '/../scripts/vite-module-loader.js' => base_path('vite-module-loader.js'),
         ], 'vite');
     }
 

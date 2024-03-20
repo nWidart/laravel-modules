@@ -48,7 +48,6 @@ class ModuleGenerator extends Generator
      */
     protected $component;
 
-
     /**
      * The activator instance
      *
@@ -246,6 +245,7 @@ class ModuleGenerator extends Generator
     public function setComponent(\Illuminate\Console\View\Components\Factory $component): self
     {
         $this->component = $component;
+
         return $this;
     }
 
@@ -386,7 +386,7 @@ class ModuleGenerator extends Generator
         foreach ($this->getFiles() as $stub => $file) {
             $path = $this->module->getModulePath($this->getName()) . $file;
 
-            $this->component->task("Generating file {$path}",function () use ($stub, $path) {
+            $this->component->task("Generating file {$path}", function () use ($stub, $path) {
                 if (!$this->filesystem->isDirectory($dir = dirname($path))) {
                     $this->filesystem->makeDirectory($dir, 0775, true);
                 }
@@ -421,11 +421,11 @@ class ModuleGenerator extends Generator
         }
 
         if (GenerateConfigReader::read('controller')->generate() === true) {
-            $options = $this->type=='api' ? ['--api'=>true] : [];
+            $options = $this->type == 'api' ? ['--api' => true] : [];
             $this->console->call('module:make-controller', [
                 'controller' => $this->getName() . 'Controller',
                 'module' => $this->getName(),
-            ]+$options);
+            ] + $options);
         }
     }
 
@@ -444,8 +444,6 @@ class ModuleGenerator extends Generator
         )
         )->render();
     }
-
-
 
     /**
      * get the list for the replacements.
@@ -497,7 +495,7 @@ class ModuleGenerator extends Generator
     {
         $path = $this->module->getModulePath($this->getName()) . 'module.json';
 
-        $this->component->task("Generating file $path",function () use ($path) {
+        $this->component->task("Generating file $path", function () use ($path) {
             if (!$this->filesystem->isDirectory($dir = dirname($path))) {
                 $this->filesystem->makeDirectory($dir, 0775, true);
             }
@@ -572,7 +570,7 @@ class ModuleGenerator extends Generator
      */
     private function getControllerNamespaceReplacement(): string
     {
-        return str_replace('/', '\\', $this->module->config('paths.generator.controller.namespace') ?: ltrim($this->module->config('paths.generator.controller.path', 'Controller'),config('modules.paths.app_folder')));
+        return str_replace('/', '\\', $this->module->config('paths.generator.controller.namespace') ?: ltrim($this->module->config('paths.generator.controller.path', 'Controller'), config('modules.paths.app_folder')));
     }
 
     /**

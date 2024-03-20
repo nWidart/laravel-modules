@@ -3,7 +3,7 @@
 use Illuminate\Routing\Router;
 
 /** @var Router $router */
-$router->group(['prefix' =>'/recipe'], function (Router $router) {
+$router->group(['prefix' => '/recipe'], function (Router $router) {
     $router->bind('recipes', function ($id) {
         return app('Modules\Recipe\Repositories\RecipeRepository')->find($id);
     });

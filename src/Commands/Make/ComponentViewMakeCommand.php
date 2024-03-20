@@ -52,7 +52,7 @@ class ComponentViewMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        return (new Stub('/component-view.stub', ['QUOTE'=> Inspiring::quote()]))->render();
+        return (new Stub('/component-view.stub', ['QUOTE' => Inspiring::quote()]))->render();
     }
 
     /**

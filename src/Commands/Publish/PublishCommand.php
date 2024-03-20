@@ -21,7 +21,6 @@ class PublishCommand extends BaseCommand
      */
     protected $description = 'Publish a module\'s assets to the application';
 
-
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -35,7 +34,7 @@ class PublishCommand extends BaseCommand
 
     }
 
-    function getInfo(): string|null
+    public function getInfo(): string|null
     {
         return 'Publishing module asset files ...';
     }

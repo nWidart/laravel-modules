@@ -4,16 +4,17 @@ namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
-use Nwidart\Modules\Facades\Module;
+
+use function Laravel\Prompts\multiselect;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use function Laravel\Prompts\multiselect;
 
 abstract class BaseCommand extends Command implements PromptsForMissingInput
 {
-    const ALL = 'All';
+    public const ALL = 'All';
 
     /**
      * Create a new console command instance.
@@ -37,11 +38,11 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         ));
     }
 
-    abstract function executeAction($name);
+    abstract public function executeAction($name);
 
     public function getInfo(): string|null
     {
-        return NULL;
+        return null;
     }
 
     /**
@@ -66,6 +67,7 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
 
         if ($input->getOption(strtolower(self::ALL))) {
             $input->setArgument('module', $modules);
+
             return;
         }
 
@@ -82,7 +84,8 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
             required: 'You must select at least one module',
         );
 
-        $input->setArgument('module',
+        $input->setArgument(
+            'module',
             value: in_array(self::ALL, $selected_item)
                 ? $modules
                 : $selected_item

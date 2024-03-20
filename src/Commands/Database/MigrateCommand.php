@@ -22,7 +22,6 @@ class MigrateCommand extends BaseCommand
      */
     protected $description = 'Migrate the migrations from the specified module or from all modules.';
 
-
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -57,11 +56,11 @@ class MigrateCommand extends BaseCommand
     {
         return [
             ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'asc'],
-            ['database', NULL, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
-            ['pretend', NULL, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
-            ['force', NULL, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
-            ['seed', NULL, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'],
-            ['subpath', NULL, InputOption::VALUE_OPTIONAL, 'Indicate a subpath to run your migrations from'],
+            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
+            ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
+            ['seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'],
+            ['subpath', null, InputOption::VALUE_OPTIONAL, 'Indicate a subpath to run your migrations from'],
         ];
     }
 }
