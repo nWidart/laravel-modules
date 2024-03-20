@@ -108,8 +108,8 @@ class RouteProviderMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.provider.namespace' )
-            ?? ltrim(config('modules.paths.generator.provider.path','Providers'),config('modules.paths.app_folder',''));
+        return config('modules.paths.generator.provider.namespace')
+            ?? ltrim(config('modules.paths.generator.provider.path', 'Providers'), config('modules.paths.app_folder', ''));
     }
 
     /**

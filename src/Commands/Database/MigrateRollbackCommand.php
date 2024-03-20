@@ -41,7 +41,7 @@ class MigrateRollbackCommand extends BaseCommand
 
         if (count($migrated)) {
             foreach ($migrated as $migration) {
-                $this->components->task("Rollback: <info>{$migration}</info>",);
+                $this->components->task("Rollback: <info>{$migration}</info>", );
             }
 
             return;
@@ -53,7 +53,7 @@ class MigrateRollbackCommand extends BaseCommand
 
     public function getInfo(): string|null
     {
-        return NULL;
+        return null;
     }
 
     /**
@@ -65,10 +65,10 @@ class MigrateRollbackCommand extends BaseCommand
     {
         return [
             ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'desc'],
-            ['database', NULL, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
-            ['force', NULL, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
-            ['pretend', NULL, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
-            ['subpath', NULL, InputOption::VALUE_OPTIONAL, 'Indicate a subpath for modules specific migration file'],
+            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
+            ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
+            ['subpath', null, InputOption::VALUE_OPTIONAL, 'Indicate a subpath for modules specific migration file'],
         ];
     }
 }

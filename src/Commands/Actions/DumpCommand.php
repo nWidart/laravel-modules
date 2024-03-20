@@ -31,7 +31,7 @@ class DumpCommand extends BaseCommand
         });
     }
 
-    function getInfo(): string|null
+    public function getInfo(): string|null
     {
         return 'Generating optimized autoload modules';
     }

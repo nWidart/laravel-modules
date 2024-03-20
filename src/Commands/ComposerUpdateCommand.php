@@ -28,7 +28,7 @@ class ComposerUpdateCommand extends BaseCommand
 
             $composer_path = $module->getPath() . DIRECTORY_SEPARATOR . 'composer.json';
 
-            $composer = json_decode(File::get($composer_path), TRUE);
+            $composer = json_decode(File::get($composer_path), true);
 
             $autoload = data_get($composer, 'autoload.psr-4');
 
@@ -38,7 +38,7 @@ class ComposerUpdateCommand extends BaseCommand
 
             $key_name_with_app = sprintf('Modules\\%s\\App\\', $module->getStudlyName());
 
-            if (! array_key_exists($key_name_with_app, $autoload) ) {
+            if (! array_key_exists($key_name_with_app, $autoload)) {
                 return;
             }
 
@@ -53,7 +53,7 @@ class ComposerUpdateCommand extends BaseCommand
         });
     }
 
-    function getInfo(): string|null
+    public function getInfo(): string|null
     {
         return 'Updating Composer.json of modules...';
     }

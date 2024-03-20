@@ -19,7 +19,6 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     protected $name = 'module:make-observer';
 
-
     /**
      * The name of argument name.
      *
@@ -53,6 +52,7 @@ class ObserverMakeCommand extends GeneratorCommand
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+
         return (new Stub('/observer.stub', [
                 'NAMESPACE' => $this->getClassNamespace($module),
                 'NAME' => $this->getModelName(),
@@ -86,9 +86,9 @@ class ObserverMakeCommand extends GeneratorCommand
     /**
      *  @return mixed|string
      */
-    private function getModelVariable() : string
+    private function getModelVariable(): string
     {
-        return '$'.Str::lower($this->argument('name'));
+        return '$' . Str::lower($this->argument('name'));
     }
 
     /**
@@ -110,7 +110,6 @@ class ObserverMakeCommand extends GeneratorCommand
     {
         return Str::studly($this->argument('name')) . 'Observer.php';
     }
-
 
     public function handle(): int
     {
