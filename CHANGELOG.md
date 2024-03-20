@@ -4,6 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Changed
+
+- [@alissn](https://github.com/alissn) Run command php-cs-fixer fix
+- [@solomon-ochepa](https://github.com/solomon-ochepa) updated route-provider.stub to loose the optional namespace
+
 ## 11.0.0 - 2024-03-19
 
 ## Fixed
