@@ -6,6 +6,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Added
 
+- [@alissn](https://github.com/alissn) add RouteServiceProvider Configuration in Generator 
+- [@alissn](https://github.com/alissn) added Laravel Modules package version to command 'about'
 - [@dcblogdev](https://github.com/dcblogdev) Added view:make command to generate views
 
 ## Changed
