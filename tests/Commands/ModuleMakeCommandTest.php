@@ -4,7 +4,6 @@ namespace Nwidart\Modules\Tests\Commands;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
-use Modules\Bae\Providers\RouteServiceProvider;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
