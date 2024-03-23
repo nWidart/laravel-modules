@@ -2,6 +2,8 @@
 
 namespace Nwidart\Modules;
 
+use Composer\InstalledVersions;
+use Illuminate\Foundation\Console\AboutCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 use Nwidart\Modules\Support\Stub;
@@ -15,6 +17,10 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     {
         $this->registerNamespaces();
         $this->registerModules();
+
+        AboutCommand::add('Laravel-Modules', [
+            'Version' => fn () => InstalledVersions::getVersion('nwidart/laravel-modules'),
+        ]);
     }
 
     /**
