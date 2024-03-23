@@ -297,6 +297,7 @@ class ModuleMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.seeder', ['path' => 'Database/Seeders', 'generate' => false]);
         $this->app['config']->set('modules.paths.generator.provider', ['path' => 'Providers', 'generate' => false]);
+        $this->app['config']->set('modules.paths.generator.route-provider', ['path' => 'Providers', 'generate' => false]);
         $this->app['config']->set('modules.paths.generator.controller', ['path' => 'Http/Controllers', 'generate' => false]);
 
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
@@ -404,5 +405,63 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($this->finder->get($path));
 
         $this->assertSame(0, $code);
+    }
+
+    public function test_it_generate_module_when_provider_is_enable_and_route_provider_is_enable()
+    {
+        $this->app['config']->set('modules.paths.generator.provider.generate', true);
+        $this->app['config']->set('modules.paths.generator.route-provider.generate', true);
+
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $providerPath = $this->getModuleAppPath() . '/Providers/BlogServiceProvider.php';
+        $this->assertTrue($this->finder->exists($providerPath));
+        $this->assertMatchesSnapshot($this->finder->get($providerPath));
+
+        $RouteProviderPath = $this->getModuleAppPath() . '/Providers/RouteServiceProvider.php';
+        $this->assertTrue($this->finder->exists($RouteProviderPath));
+        $this->assertMatchesSnapshot($this->finder->get($RouteProviderPath));
+
+        $content = $this->finder->get($providerPath);
+
+        $this->assertStringContainsString('$this->app->register(RouteServiceProvider::class);', $content);
+        $this->assertStringNotContainsString('// $this->app->register(RouteServiceProvider::class);', $content);
+    }
+
+    public function test_it_generate_module_when_provider_is_enable_and_route_provider_is_disable()
+    {
+        $this->app['config']->set('modules.paths.generator.provider.generate', true);
+        $this->app['config']->set('modules.paths.generator.route-provider.generate', false);
+
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $providerPath = $this->getModuleAppPath() . '/Providers/BlogServiceProvider.php';
+        $this->assertTrue($this->finder->exists($providerPath));
+        $this->assertMatchesSnapshot($this->finder->get($providerPath));
+
+        $RouteProviderPath = $this->getModuleAppPath() . '/Providers/RouteServiceProvider.php';
+        $this->assertTrue(!$this->finder->exists($RouteProviderPath));
+
+        $content = $this->finder->get($providerPath);
+
+        $this->assertStringContainsString('// $this->app->register(RouteServiceProvider::class);', $content);
+    }
+
+    public function test_it_generate_module_when_provider_is_disable_and_route_provider_is_disable()
+    {
+        $this->app['config']->set('modules.paths.generator.provider.generate', false);
+        $this->app['config']->set('modules.paths.generator.route-provider.generate', false);
+
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $providerPath = $this->getModuleAppPath() . '/Providers/BlogServiceProvider.php';
+        $this->assertTrue(!$this->finder->exists($providerPath));
+
+        $RouteProviderPath = $this->getModuleAppPath() . '/Providers/RouteServiceProvider.php';
+        $this->assertTrue(!$this->finder->exists($RouteProviderPath));
+
+        $content = $this->finder->get($this->getModuleBasePath() . '/module.json');
+
+        $this->assertStringNotContainsString('Modules\Blog\Providers\BlogServiceProvider', $content);
     }
 }

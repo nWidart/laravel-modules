@@ -54,7 +54,7 @@ class ModuleMakeCommand extends Command
         // to discover new service providers
         Process::path(base_path())
             ->command('composer dump-autoload')
-            ->run();
+            ->run()->output();
 
         return $success ? 0 : E_ERROR;
     }
