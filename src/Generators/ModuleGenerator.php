@@ -409,15 +409,40 @@ class ModuleGenerator extends Generator
             ]);
         }
 
-        if (GenerateConfigReader::read('provider')->generate() === true) {
+        $providerGenerator = GenerateConfigReader::read('provider');
+        if ($providerGenerator->generate() === true) {
             $this->console->call('module:make-provider', [
                 'name' => $this->getName() . 'ServiceProvider',
                 'module' => $this->getName(),
                 '--master' => true,
             ]);
+        } else {
+            // delete register ServiceProvider on module.json
+            $path           = $this->module->getModulePath($this->getName()) . DIRECTORY_SEPARATOR . 'module.json';
+            $module_file  =   $this->filesystem->get($path);
+            $this->filesystem->put(
+                $path,
+                preg_replace('/"providers": \[.*?\],/s', '"providers": [ ],', $module_file)
+            );
+        }
+
+        $routeGeneratorConfig = GenerateConfigReader::read('route-provider');
+        if (
+            (is_null($routeGeneratorConfig->getPath()) && $providerGenerator->generate())
+            || (!is_null($routeGeneratorConfig->getPath()) && $routeGeneratorConfig->generate())
+        ) {
             $this->console->call('module:route-provider', [
                 'module' => $this->getName(),
             ]);
+        } else {
+            if ($providerGenerator->generate()) {
+                // comment register RouteServiceProvider
+                $this->filesystem->replaceInFile(
+                    '$this->app->register(Route',
+                    '// $this->app->register(Route',
+                    $this->module->getModulePath($this->getName()) . DIRECTORY_SEPARATOR . $providerGenerator->getPath() . DIRECTORY_SEPARATOR . sprintf('%sServiceProvider.php', $this->getName())
+                );
+            }
         }
 
         if (GenerateConfigReader::read('controller')->generate() === true) {
