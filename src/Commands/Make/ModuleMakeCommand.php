@@ -81,9 +81,9 @@ class ModuleMakeCommand extends Command
             ['web', null, InputOption::VALUE_NONE, 'Generate a web module.'],
             ['disabled', 'd', InputOption::VALUE_NONE, 'Do not enable the module at creation.'],
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when the module already exists.'],
-            ['author-name', 'an', InputOption::VALUE_OPTIONAL, 'Author name.'],
-            ['author-email', 'ae', InputOption::VALUE_OPTIONAL, 'Author email.'],
-            ['author-vendor', 'av', InputOption::VALUE_OPTIONAL, 'Author vendor.'],
+            ['author-name', null, InputOption::VALUE_OPTIONAL, 'Author name.'],
+            ['author-email', null, InputOption::VALUE_OPTIONAL, 'Author email.'],
+            ['author-vendor', null, InputOption::VALUE_OPTIONAL, 'Author vendor.'],
         ];
     }
 
