@@ -464,4 +464,17 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->assertStringNotContainsString('Modules\Blog\Providers\BlogServiceProvider', $content);
     }
+
+    public function test_it_can_set_author_details()
+    {
+        $code = $this->artisan('module:make', ['name' => ['Blog'], '--author-name' => 'Joe Blogs', '--author-email' => 'user@domain.com', '--author-vendor' => 'JoeBlogs']);
+
+        $content = $this->finder->get($this->getModuleBasePath() . '/composer.json');
+
+        $this->assertStringContainsString('Joe Blogs', $content);
+        $this->assertStringContainsString('user@domain.com', $content);
+        $this->assertStringContainsString('JoeBlogs', $content);
+
+        $this->assertSame(0, $code);
+    }
 }
