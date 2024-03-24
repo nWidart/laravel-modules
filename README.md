@@ -64,6 +64,12 @@ By default the module classes are not loaded automatically. You can autoload you
 
 You'll find installation instructions and full documentation on [https://laravelmodules.com/](https://laravelmodules.com/docs).
 
+## Demo
+
+You can see a demo using Laravel Breeze at https://github.com/laravel-modules-com/breeze-demo
+
+This is a complete application using Auth, Base and Profile modules.
+
 ## Community
 
 We also have a Discord community. [https://discord.gg/hkF7BRvRZK](https://discord.gg/hkF7BRvRZK) For quick help, ask questions in the appropriate channel.
