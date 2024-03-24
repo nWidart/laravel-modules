@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Added 
+
+- [@enterprime](https://github.com/enterprime) control the author through the .env configuration file.
+
 ## 11.0.2 - 2024-03-24
 
 ## Fixed 
