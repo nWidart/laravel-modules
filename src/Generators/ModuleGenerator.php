@@ -84,6 +84,22 @@ class ModuleGenerator extends Generator
     protected $isActive = false;
 
     /**
+     * Module author
+     *
+     * @var array
+     */
+    protected array $author = [
+        'name', 'email'
+    ];
+
+    /**
+     * Vendor name
+     *
+     * @var string
+     */
+    protected ?string $vendor = null;
+
+    /**
      * The constructor.
      * @param $name
      * @param FileRepository $module
@@ -269,6 +285,34 @@ class ModuleGenerator extends Generator
     public function setModule($module)
     {
         $this->module = $module;
+
+        return $this;
+    }
+
+    /**
+     * Setting the author from the command
+     *
+     * @param string|null $name
+     * @param string|null $email
+     * @return $this
+     */
+    function setAuthor(string $name = null, string $email = null)
+    {
+        $this->author['name'] = $name;
+        $this->author['email'] = $email;
+
+        return $this;
+    }
+
+    /**
+     * Installing vendor from the command
+     *
+     * @param string|null $vendor
+     * @return $this
+     */
+    function setVendor(string $vendor = null)
+    {
+        $this->vendor = $vendor;
 
         return $this;
     }
@@ -575,7 +619,7 @@ class ModuleGenerator extends Generator
      */
     protected function getVendorReplacement()
     {
-        return $this->module->config('composer.vendor');
+        return $this->vendor ?: $this->module->config('composer.vendor');
     }
 
     /**
@@ -605,7 +649,7 @@ class ModuleGenerator extends Generator
      */
     protected function getAuthorNameReplacement()
     {
-        return $this->module->config('composer.author.name');
+        return $this->author['name'] ?: $this->module->config('composer.author.name');
     }
 
     /**
@@ -615,7 +659,7 @@ class ModuleGenerator extends Generator
      */
     protected function getAuthorEmailReplacement()
     {
-        return $this->module->config('composer.author.email');
+        return $this->author['email'] ?: $this->module->config('composer.author.email');
     }
 
     protected function getProviderNamespaceReplacement(): string
