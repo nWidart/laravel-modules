@@ -4,6 +4,14 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 11.0.2 - 2024-03-24
+
+## Fixed 
+
+- [@enterprime](https://github.com/enterprime) fixed module:migrate-rollback command
+
+## 11.0.1 - 2024-03-23
+
 ## Added
 
 - [@alissn](https://github.com/alissn) add RouteServiceProvider Configuration in Generator 
