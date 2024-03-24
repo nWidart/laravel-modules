@@ -4,8 +4,11 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 11.0.3 - 2024-03-24
+
 ## Added 
 
+- [@enterprime](https://github.com/enterprime) Passing the values of vendor, author's name, and author's email in a line during module creation.
 - [@enterprime](https://github.com/enterprime) control the author through the .env configuration file.
 
 ## 11.0.2 - 2024-03-24
