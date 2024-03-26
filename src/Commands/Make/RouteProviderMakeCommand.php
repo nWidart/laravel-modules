@@ -95,7 +95,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
      */
     protected function getWebRoutesPath()
     {
-        return '/' . $this->laravel['modules']->config('stubs.files.routes/web', 'Routes/web.php');
+        return '/' . $this->laravel['modules']->config('stubs.files.routes/web', 'routes/web.php');
     }
 
     /**
@@ -103,13 +103,12 @@ class RouteProviderMakeCommand extends GeneratorCommand
      */
     protected function getApiRoutesPath()
     {
-        return '/' . $this->laravel['modules']->config('stubs.files.routes/api', 'Routes/api.php');
+        return '/' . $this->laravel['modules']->config('stubs.files.routes/api', 'routes/api.php');
     }
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.provider.namespace')
-            ?? ltrim(config('modules.paths.generator.provider.path', 'Providers'), config('modules.paths.app_folder', ''));
+        return config('modules.paths.generator.provider.namespace') ?? $this->pathNamespace(config('modules.paths.generator.provider.path', 'app/Providers'));
     }
 
     /**
@@ -117,8 +116,6 @@ class RouteProviderMakeCommand extends GeneratorCommand
      */
     private function getControllerNameSpace(): string
     {
-        $module = $this->laravel['modules'];
-
-        return str_replace('/', '\\', $module->config('paths.generator.controller.namespace') ?: $module->config('paths.generator.controller.path', 'Controller'));
+        return config('modules.paths.generator.controller.namespace') ?: $this->pathNamespace(config('modules.paths.generator.controller.path', 'app/Http/Controllers'));
     }
 }

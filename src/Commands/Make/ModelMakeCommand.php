@@ -233,12 +233,9 @@ class ModelMakeCommand extends GeneratorCommand
 
     /**
      * Get default namespace.
-     *
-     * @return string
      */
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.model.namespace')
-            ?? ltrim(config('modules.paths.generator.model.path', 'Models'), config('modules.paths.app_folder', ''));
+        return config('modules.paths.generator.model.namespace') ?? $this->pathNamespace(config('modules.paths.generator.model.path', 'app/Models'));
     }
 }

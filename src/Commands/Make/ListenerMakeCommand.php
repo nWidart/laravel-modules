@@ -70,8 +70,7 @@ class ListenerMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.listener.namespace')
-            ?? ltrim(config('modules.paths.generator.listener.path', 'Listeners'), config('modules.paths.app_folder', ''));
+        return config('modules.paths.generator.listener.namespace') ?? $this->pathNamespace(config('modules.paths.generator.listener.path', 'app/Listeners'));
     }
 
     protected function getEventName(Module $module)

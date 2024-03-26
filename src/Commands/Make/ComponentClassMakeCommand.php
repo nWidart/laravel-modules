@@ -49,13 +49,12 @@ class ComponentClassMakeCommand extends GeneratorCommand
      */
     protected function writeComponentViewTemplate()
     {
-        $this->call('module:make-component-view', ['name' => $this->argument('name') , 'module' => $this->argument('module')]);
+        $this->call('module:make-component-view', ['name' => $this->argument('name'), 'module' => $this->argument('module')]);
     }
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.component-class.namespace')
-            ?? ltrim(config('modules.paths.generator.component-class.path', 'View/Component'), config('modules.paths.app_folder', ''));
+        return config('modules.paths.generator.component-class.namespace') ?? $this->pathNamespace(config('modules.paths.generator.component-class.path', 'app/View/Component'));
     }
 
     /**

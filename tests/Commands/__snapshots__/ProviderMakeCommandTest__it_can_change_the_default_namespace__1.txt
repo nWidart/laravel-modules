@@ -4,6 +4,7 @@ namespace Modules\Blog\SuperProviders;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class BlogServiceProvider extends ServiceProvider
 {
@@ -88,7 +89,7 @@ class BlogServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
 
-        $componentNamespace = str_replace('/', '\\', config('modules.namespace').'\\'.$this->moduleName.'\\'.ltrim(config('modules.paths.generator.component-class.path'), config('modules.paths.app_folder','')));
+        $componentNamespace = Str::of(config('modules.namespace').'\\'.$this->moduleName.'\\'.config('modules.paths.generator.component-class.path'))->replace('/', '\\')->title();
         Blade::componentNamespace($componentNamespace, $this->moduleNameLower);
     }
 
