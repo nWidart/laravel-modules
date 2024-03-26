@@ -1,5 +1,5 @@
 <?php return '<?php
-namespace Modules\\Blog\\Database\\factories;
+namespace Modules\\Blog\\Database\\Factories;
 
 use Illuminate\\Database\\Eloquent\\Factories\\Factory;
 
