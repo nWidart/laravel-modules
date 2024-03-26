@@ -24,46 +24,28 @@ abstract class Module
 
     /**
      * The module name.
-     *
-     * @var
      */
-    protected $name;
+    protected string $name;
 
     /**
      * The module path.
-     *
-     * @var string
      */
-    protected $path;
+    protected string $path;
 
     /**
-     * @var array of cached Json objects, keyed by filename
+     * Array of cached Json objects, keyed by filename
      */
-    protected $moduleJson = [];
-    /**
-     * @var CacheManager
-     */
-    private $cache;
-    /**
-     * @var Filesystem
-     */
-    private $files;
-    /**
-     * @var Translator
-     */
-    private $translator;
-    /**
-     * @var ActivatorInterface
-     */
-    private $activator;
+    protected array $moduleJson = [];
 
-    /**
-     * The constructor.
-     * @param Container $app
-     * @param $name
-     * @param $path
-     */
-    public function __construct(Container $app, string $name, $path)
+    private CacheManager $cache;
+
+    private Filesystem $files;
+
+    private Translator $translator;
+
+    private ActivatorInterface $activator;
+
+    public function __construct(Container $app, string $name, string $path)
     {
         $this->name = $name;
         $this->path = $path;
@@ -76,8 +58,6 @@ abstract class Module
 
     /**
      * Returns an array of assets
-     *
-     * @return array
      */
     public static function getAssets(): array
     {
@@ -105,8 +85,6 @@ abstract class Module
 
     /**
      * Get name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -115,8 +93,6 @@ abstract class Module
 
     /**
      * Get name in lower case.
-     *
-     * @return string
      */
     public function getLowerName(): string
     {
@@ -125,8 +101,6 @@ abstract class Module
 
     /**
      * Get name in studly case.
-     *
-     * @return string
      */
     public function getStudlyName(): string
     {
@@ -135,8 +109,6 @@ abstract class Module
 
     /**
      * Get name in snake case.
-     *
-     * @return string
      */
     public function getSnakeName(): string
     {
@@ -145,8 +117,6 @@ abstract class Module
 
     /**
      * Get description.
-     *
-     * @return string
      */
     public function getDescription(): string
     {
@@ -155,8 +125,6 @@ abstract class Module
 
     /**
      * Get priority.
-     *
-     * @return string
      */
     public function getPriority(): string
     {
@@ -165,8 +133,6 @@ abstract class Module
 
     /**
      * Get path.
-     *
-     * @return string
      */
     public function getPath(): string
     {
@@ -175,8 +141,6 @@ abstract class Module
 
     /**
      * Get app path.
-     *
-     * @return string
      */
     public function getAppPath(): string
     {
@@ -187,12 +151,8 @@ abstract class Module
 
     /**
      * Set path.
-     *
-     * @param string $path
-     *
-     * @return $this
      */
-    public function setPath($path): Module
+    public function setPath(string $path): Module
     {
         $this->path = $path;
 
@@ -217,8 +177,6 @@ abstract class Module
 
     /**
      * Register module's translation.
-     *
-     * @return void
      */
     protected function registerTranslation(): void
     {
@@ -233,12 +191,8 @@ abstract class Module
 
     /**
      * Get json contents from the cache, setting as needed.
-     *
-     * @param string $file
-     *
-     * @return Json
      */
-    public function json($file = null): Json
+    public function json(?string $file = null): Json
     {
         if ($file === null) {
             $file = 'module.json';
@@ -251,26 +205,16 @@ abstract class Module
 
     /**
      * Get a specific data from json file by given the key.
-     *
-     * @param string $key
-     * @param null $default
-     *
-     * @return mixed
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, $default = null): mixed
     {
         return $this->json()->get($key, $default);
     }
 
     /**
      * Get a specific data from composer.json file by given the key.
-     *
-     * @param $key
-     * @param null $default
-     *
-     * @return mixed
      */
-    public function getComposerAttr($key, $default = null)
+    public function getComposerAttr($key, $default = null): mixed
     {
         return $this->json('composer.json')->get($key, $default);
     }
@@ -293,10 +237,8 @@ abstract class Module
 
     /**
      * Register the module event.
-     *
-     * @param string $event
      */
-    protected function fireEvent($event): void
+    protected function fireEvent(string $event): void
     {
         $this->app['events']->dispatch(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
     }
@@ -313,8 +255,6 @@ abstract class Module
 
     /**
      * Get the path to the cached *_module.php file.
-     *
-     * @return string
      */
     abstract public function getCachedServicesPath(): string;
 
@@ -330,20 +270,14 @@ abstract class Module
 
     /**
      * Handle call __toString.
-     *
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getStudlyName();
     }
 
     /**
      * Determine whether the given status same with the current module status.
-     *
-     * @param bool $status
-     *
-     * @return bool
      */
     public function isStatus(bool $status): bool
     {
@@ -352,8 +286,6 @@ abstract class Module
 
     /**
      * Determine whether the current module activated.
-     *
-     * @return bool
      */
     public function isEnabled(): bool
     {
@@ -362,8 +294,6 @@ abstract class Module
 
     /**
      *  Determine whether the current module not disabled.
-     *
-     * @return bool
      */
     public function isDisabled(): bool
     {
@@ -372,10 +302,6 @@ abstract class Module
 
     /**
      * Set active state for current module.
-     *
-     * @param bool $active
-     *
-     * @return void
      */
     public function setActive(bool $active): void
     {
@@ -410,8 +336,6 @@ abstract class Module
 
     /**
      * Delete the current module.
-     *
-     * @return bool
      */
     public function delete(): bool
     {
@@ -422,10 +346,6 @@ abstract class Module
 
     /**
      * Get extra path.
-     *
-     * @param string $path
-     *
-     * @return string
      */
     public function getExtraPath(string $path): string
     {
@@ -434,8 +354,6 @@ abstract class Module
 
     /**
      * Check if can load files of module on boot method.
-     *
-     * @return bool
      */
     protected function isLoadFilesOnBoot(): bool
     {
@@ -453,10 +371,6 @@ abstract class Module
 
     /**
      * Register a translation file namespace.
-     *
-     * @param  string  $path
-     * @param  string  $namespace
-     * @return void
      */
     private function loadTranslationsFrom(string $path, string $namespace): void
     {

@@ -36,8 +36,7 @@ class RuleMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.rules.namespace')
-            ?? ltrim(config('modules.paths.generator.rules.path', 'Rules'), config('modules.paths.app_folder', ''));
+        return config('modules.paths.generator.rules.namespace') ?? $this->pathNamespace(config('modules.paths.generator.rules.path', 'app/Rules'));
     }
 
     /**

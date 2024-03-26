@@ -79,7 +79,7 @@ abstract class BaseTestCase extends OrchestraTestCase
 
     protected function getModuleAppPath(string $moduleName = 'Blog'): string
     {
-        return base_path("modules/$moduleName/") . rtrim(config('modules.paths.app_folder'), '/');
+        return base_path("modules/$moduleName/app");
     }
 
     protected function getModuleBasePath(string $moduleName = 'Blog'): string

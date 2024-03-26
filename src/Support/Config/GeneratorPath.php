@@ -2,6 +2,8 @@
 
 namespace Nwidart\Modules\Support\Config;
 
+use Illuminate\Support\Str;
+
 class GeneratorPath
 {
     private $path;
@@ -13,10 +15,11 @@ class GeneratorPath
         if (is_array($config)) {
             $this->path      = $config['path'];
             $this->generate  = $config['generate'];
-            $this->namespace = $config['namespace'] ?? $this->convertPathToNamespace($config['path']);
+            $this->namespace = $config['namespace'] ?? $this->pathNamespace($config['path']);
 
             return;
         }
+
         $this->path      = $config;
         $this->generate  = (bool) $config;
         $this->namespace = $config;
@@ -37,8 +40,8 @@ class GeneratorPath
         return $this->namespace;
     }
 
-    private function convertPathToNamespace($path)
+    private function pathNamespace($path)
     {
-        return str_replace('/', '\\', ltrim($path, config('modules.paths.app_folder', '')));
+        return Str::of(trim($path, '/'))->replace('/', '\\')->title();
     }
 }

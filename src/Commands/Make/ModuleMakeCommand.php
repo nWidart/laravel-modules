@@ -30,10 +30,9 @@ class ModuleMakeCommand extends Command
      */
     public function handle(): int
     {
-        $names = $this->argument('name');
         $success = true;
 
-        foreach ($names as $name) {
+        foreach ($this->argument('name') as $name) {
             $code = with(new ModuleGenerator($name))
                 ->setFilesystem($this->laravel['files'])
                 ->setModule($this->laravel['modules'])
@@ -88,10 +87,10 @@ class ModuleMakeCommand extends Command
     }
 
     /**
-    * Get module type .
-    *
-    * @return string
-    */
+     * Get module type .
+     *
+     * @return string
+     */
     private function getModuleType()
     {
         $isPlain = $this->option('plain');
