@@ -202,8 +202,8 @@ return [
     'composer' => [
         'vendor' => env('MODULES_VENDOR', 'nwidart'),
         'author' => [
-            'name' => env('MODULES_NAME', 'Nicolas Widart'),
-            'email' => env('MODULES_EMAIL', 'n.widart@gmail.com'),
+            'name' => env('MODULES_VENDOR_NAME', 'Nicolas Widart'),
+            'email' => env('MODULES_VENDOR_EMAIL', 'n.widart@gmail.com'),
         ],
         'composer-output' => false,
     ],
