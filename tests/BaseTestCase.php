@@ -58,7 +58,6 @@ abstract class BaseTestCase extends OrchestraTestCase
             'modules'    => base_path('modules'),
             'assets'     => public_path('modules'),
             'migration'  => base_path('database/migrations'),
-            'app_folder' => $module_config['paths']['app_folder'],
             'generator'  => $module_config['paths']['generator'],
         ]);
 
