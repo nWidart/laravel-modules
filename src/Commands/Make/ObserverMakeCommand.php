@@ -54,11 +54,11 @@ class ObserverMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub('/observer.stub', [
-                'NAMESPACE' => $this->getClassNamespace($module),
-                'NAME' => $this->getModelName(),
-                'MODEL_NAMESPACE' => $this->getModelNamespace(),
-                'NAME_VARIABLE' => $this->getModelVariable(),
-            ]))->render();
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'NAME' => $this->getModelName(),
+            'MODEL_NAMESPACE' => $this->getModelNamespace(),
+            'NAME_VARIABLE' => $this->getModelVariable(),
+        ]))->render();
     }
 
     /**
@@ -68,11 +68,9 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     public function getModelNamespace(): string
     {
-        $path = $this->laravel['modules']->config('paths.generator.model.path', 'Entities');
+        $path = $this->laravel['modules']->config('paths.generator.model.path', 'app/Models');
 
-        $path = str_replace('/', '\\', $path);
-
-        return $this->laravel['modules']->config('namespace') . '\\' . $this->laravel['modules']->findOrFail($this->getModuleName()) . '\\' . $path;
+        return $this->getPathNamespace($this->laravel['modules']->config('namespace') . '\\' . $this->laravel['modules']->findOrFail($this->getModuleName()) . '\\' . $path);
     }
 
     /**
@@ -127,7 +125,6 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.observer.namespace')
-            ?? ltrim(config('modules.paths.generator.observer.path', 'Observers'), config('modules.paths.app_folder', ''));
+        return config('modules.paths.generator.observer.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.observer.path', 'app/Observers'));
     }
 }
