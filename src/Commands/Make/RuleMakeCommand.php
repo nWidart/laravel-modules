@@ -15,37 +15,28 @@ class RuleMakeCommand extends GeneratorCommand
 
     /**
      * The name of argument name.
-     *
-     * @var string
      */
     protected $argumentName = 'name';
 
     /**
      * The console command name.
-     *
-     * @var string
      */
     protected $name = 'module:make-rule';
 
     /**
      * The console command description.
-     *
-     * @var string
      */
     protected $description = 'Create a new validation rule for the specified module.';
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.rules.namespace')
-            ?? ltrim(config('modules.paths.generator.rules.path', 'Rules'), config('modules.paths.app_folder', ''));
+        return config('modules.paths.generator.rules.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.rules.path', 'app/Rules'));
     }
 
     /**
      * Get the console command arguments.
-     *
-     * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the rule class.'],
@@ -55,19 +46,14 @@ class RuleMakeCommand extends GeneratorCommand
 
     /**
      * Get the console command options.
-     *
-     * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['implicit', 'i', InputOption::VALUE_NONE, 'Generate an implicit rule'],
         ];
     }
 
-    /**
-     * @return mixed
-     */
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
@@ -82,9 +68,6 @@ class RuleMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-    /**
-     * @return mixed
-     */
     protected function getDestinationFilePath()
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
@@ -94,10 +77,7 @@ class RuleMakeCommand extends GeneratorCommand
         return $path . $rulePath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * @return string
-     */
-    private function getFileName()
+    private function getFileName(): string
     {
         return Str::studly($this->argument('name'));
     }
