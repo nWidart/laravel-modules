@@ -70,8 +70,7 @@ class ListenerMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.listener.namespace')
-            ?? ltrim(config('modules.paths.generator.listener.path', 'Listeners'), config('modules.paths.app_folder', ''));
+        return config('modules.paths.generator.listener.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.listener.path', 'app/Listeners'));
     }
 
     protected function getEventName(Module $module)
@@ -79,9 +78,7 @@ class ListenerMakeCommand extends GeneratorCommand
         $namespace = $this->laravel['modules']->config('namespace') . "\\" . $module->getStudlyName();
         $eventPath = GenerateConfigReader::read('event');
 
-        $eventName = $namespace . "\\" . $eventPath->getPath() . "\\" . $this->option('event');
-
-        return str_replace('/', '\\', $eventName);
+        return $this->getPathNamespace($namespace . "\\" . $eventPath->getPath() . "\\" . $this->option('event'));
     }
 
     protected function getShortEventName()
