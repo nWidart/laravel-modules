@@ -546,6 +546,7 @@ class ModuleGenerator extends Generator
                 $keys[] = 'PROVIDER_NAMESPACE';
             }
         }
+
         foreach ($keys as $key) {
             if (method_exists($this, $method = 'get' . ucfirst(Str::studly(strtolower($key))) . 'Replacement')) {
                 $replaces[$key] = $this->$method();
@@ -584,11 +585,14 @@ class ModuleGenerator extends Generator
         $content = $this->filesystem->get($path);
         $namespace = $this->getModuleNamespaceReplacement();
         $studlyName = $this->getStudlyNameReplacement();
+        $class = "{$studlyName}ServiceProvider";
 
-        $provider = '"' . $namespace . '\\\\' . $studlyName . '\\\\Providers\\\\' . $studlyName . 'ServiceProvider"';
+        $provider_namespace = str_replace('\\', '\\\\', config('modules.paths.generator.provider.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.provider.path', 'app/Providers')));
+        $provider = '"' . $namespace . '\\\\' . $studlyName . '\\\\' . $provider_namespace . '\\\\' . $class  . '"';
 
         $content = str_replace($provider, '', $content);
 
+        // dd($namespace);
         $this->filesystem->put($path, $content);
     }
 
@@ -665,5 +669,12 @@ class ModuleGenerator extends Generator
     protected function getProviderNamespaceReplacement(): string
     {
         return str_replace('\\', '\\\\', GenerateConfigReader::read('provider')->getNamespace());
+    }
+
+    public function getPathNamespace(string $path): string
+    {
+        $path = str_replace('/', '\\', collect(explode('/', $path))->map(fn ($dir) => Str::studly($dir))->implode('/'));
+
+        return $path;
     }
 }

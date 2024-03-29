@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands\Make;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 use Nwidart\Modules\Generators\FileGenerator;
 
@@ -47,7 +48,6 @@ abstract class GeneratorCommand extends Command
                 $overwriteFile = $this->hasOption('force') ? $this->option('force') : false;
                 (new FileGenerator($path, $contents))->withFileOverwrite($overwriteFile)->generate();
             });
-
         } catch (FileAlreadyExistException $e) {
             $this->components->error("File : {$path} already exists.");
 
@@ -101,5 +101,10 @@ abstract class GeneratorCommand extends Command
         $namespace = str_replace('/', '\\', $namespace);
 
         return trim($namespace, '\\');
+    }
+
+    public function getPathNamespace(string $path): string
+    {
+        return str_replace('/', '\\', collect(explode('/', $path))->map(fn ($dir) => Str::studly($dir))->implode('/'));
     }
 }
