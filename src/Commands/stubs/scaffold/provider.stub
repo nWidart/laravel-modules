@@ -4,6 +4,7 @@ namespace $NAMESPACE$;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class $CLASS$ extends ServiceProvider
 {
@@ -88,8 +89,9 @@ class $CLASS$ extends ServiceProvider
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
 
-        $componentNamespace = str_replace('/', '\\', config('modules.namespace').'\\'.$this->moduleName.'\\'.ltrim(config('modules.paths.generator.component-class.path'), config('modules.paths.app_folder','')));
-        Blade::componentNamespace($componentNamespace, $this->moduleNameLower);
+        $path = config('modules.namespace').'\\'.$this->moduleName.'\\'.config('modules.paths.generator.component-class.path');
+        $namespace = str_replace('/', '\\', collect(explode('/', $path))->map(fn ($dir) => Str::studly($dir))->implode('/'));
+        Blade::componentNamespace($namespace, $this->moduleNameLower);
     }
 
     /**
