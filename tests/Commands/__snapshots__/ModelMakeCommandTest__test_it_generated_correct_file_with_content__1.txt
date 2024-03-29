@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Models;
+namespace Modules\Blog\App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,8 +15,8 @@ class Post extends Model
      */
     protected $fillable = [];
 
-    protected static function newFactory(): PostFactory
+    protected static function newFactory()
     {
-        //return PostFactory::new();
+        // return PostFactory::new();
     }
 }
