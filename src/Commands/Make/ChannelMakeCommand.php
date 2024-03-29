@@ -14,32 +14,25 @@ final class ChannelMakeCommand extends GeneratorCommand
 
     /**
      * The console command name.
-     *
-     * @var string
      */
     protected $name = 'module:make-channel';
 
-    protected $argumentName = 'name';
-
     /**
      * The console command description.
-     *
-     * @var string
      */
     protected $description = 'Create a new channel class for the specified module.';
 
+    protected $argumentName = 'name';
+
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.channels.namespace')
-            ?? ltrim(config('modules.paths.generator.channels.path', 'Broadcasting'), config('modules.paths.app_folder', ''));
+        return config('modules.paths.generator.channels.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.channels.path', 'app/Broadcasting'));
     }
 
     /**
      * Get template contents.
-     *
-     * @return string
      */
-    protected function getTemplateContents()
+    protected function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -51,10 +44,8 @@ final class ChannelMakeCommand extends GeneratorCommand
 
     /**
      * Get the destination file path.
-     *
-     * @return string
      */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -63,20 +54,15 @@ final class ChannelMakeCommand extends GeneratorCommand
         return $path . $channelPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * @return string
-     */
-    private function getFileName()
+    private function getFileName(): string
     {
         return Str::studly($this->argument('name'));
     }
 
     /**
      * Get the console command arguments.
-     *
-     * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the channel class.'],
