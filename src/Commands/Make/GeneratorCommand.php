@@ -103,8 +103,27 @@ abstract class GeneratorCommand extends Command
         return trim($namespace, '\\');
     }
 
+    public function getStudly(string $string, $separator = '/'): string
+    {
+        return collect(explode($separator, Str::of($string)->replace("{$separator}{$separator}", $separator)->trim($separator)))->map(fn ($dir) => Str::studly($dir))->implode($separator);
+    }
+
+    public function getStudlyNamespace(string $namespace): string
+    {
+        return $this->getStudly($namespace, '\\');
+    }
+
     public function getPathNamespace(string $path): string
     {
-        return str_replace('/', '\\', collect(explode('/', $path))->map(fn ($dir) => Str::studly($dir))->implode('/'));
+        return Str::of($this->getStudly($path))->replace('/', '\\')->trim('\\');
+    }
+
+    public function getModuleNamespace(string $path = null, string $module = null): string
+    {
+        return $this->getStudlyNamespace(
+            $this->laravel['modules']->config('namespace') . '\\'
+                . ($module ?? $this->laravel['modules']->findOrFail($this->getModuleName())) . '\\'
+                . $this->getPathNamespace($path)
+        );
     }
 }
