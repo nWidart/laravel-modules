@@ -558,12 +558,11 @@ class ModuleGenerator extends Generator
         $studlyName = $this->getStudlyNameReplacement();
         $class = "{$studlyName}ServiceProvider";
 
-        $provider_namespace = str_replace('\\', '\\\\', config('modules.paths.generator.provider.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.provider.path', 'app/Providers')));
+        $provider_namespace = str_replace('\\', '\\\\', config('modules.paths.generator.provider.namespace', $this->getPathNamespace(config('modules.paths.generator.provider.path', 'app/Providers'))));
         $provider = '"' . $namespace . '\\\\' . $studlyName . '\\\\' . $provider_namespace . '\\\\' . $class  . '"';
 
         $content = str_replace($provider, '', $content);
 
-        // dd($namespace);
         $this->filesystem->put($path, $content);
     }
 

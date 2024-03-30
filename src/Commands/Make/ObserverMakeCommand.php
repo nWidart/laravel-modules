@@ -125,6 +125,6 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.observer.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.observer.path', 'app/Observers'));
+        return config('modules.paths.generator.observer.namespace', $this->getPathNamespace(config('modules.paths.generator.observer.path', 'app/Observers')));
     }
 }

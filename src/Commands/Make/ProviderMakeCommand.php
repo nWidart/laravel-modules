@@ -37,7 +37,7 @@ class ProviderMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.provider.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.provider.path', 'app/Providers'));
+        return config('modules.paths.generator.provider.namespace', $this->getPathNamespace(config('modules.paths.generator.provider.path', 'app/Providers')));
     }
 
     /**

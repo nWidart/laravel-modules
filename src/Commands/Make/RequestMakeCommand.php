@@ -35,7 +35,7 @@ class RequestMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.request.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.request.path', 'app/Http/Requests'));
+        return config('modules.paths.generator.request.namespace', $this->getPathNamespace(config('modules.paths.generator.request.path', 'app/Http/Requests')));
     }
 
     /**

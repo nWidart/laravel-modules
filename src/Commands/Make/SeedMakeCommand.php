@@ -97,6 +97,6 @@ class SeedMakeCommand extends GeneratorCommand
      */
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.seeder.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.seeder.path', 'database/seeders'));
+        return config('modules.paths.generator.seeder.namespace', $this->getPathNamespace(config('modules.paths.generator.seeder.path', 'database/seeders')));
     }
 }

@@ -108,7 +108,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.provider.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.provider.path', 'app/Providers'));
+        return config('modules.paths.generator.provider.namespace', $this->getPathNamespace(config('modules.paths.generator.provider.path', 'app/Providers')));
     }
 
     /**
@@ -116,6 +116,6 @@ class RouteProviderMakeCommand extends GeneratorCommand
      */
     private function getControllerNameSpace(): string
     {
-        return config('modules.paths.generator.controller.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.controller.path', 'app/Http/Controllers'));
+        return config('modules.paths.generator.controller.namespace', $this->getPathNamespace(config('modules.paths.generator.controller.path', 'app/Http/Controllers')));
     }
 }

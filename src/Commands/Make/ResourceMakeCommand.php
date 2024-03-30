@@ -19,7 +19,7 @@ class ResourceMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.resource.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.resource.path', 'app/Transformers'));
+        return config('modules.paths.generator.resource.namespace', $this->getPathNamespace(config('modules.paths.generator.resource.path', 'app/Transformers')));
     }
 
     /**

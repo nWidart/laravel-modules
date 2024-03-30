@@ -36,7 +36,7 @@ class CommandMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.command.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.command.path', 'app/Console'));
+        return config('modules.paths.generator.command.namespace', $this->getPathNamespace(config('modules.paths.generator.command.path', 'app/Console')));
     }
 
     /**

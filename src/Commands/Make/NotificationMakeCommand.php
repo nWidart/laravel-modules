@@ -30,7 +30,7 @@ final class NotificationMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.notifications.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.notifications.path', 'app/Notifications'));
+        return config('modules.paths.generator.notifications.namespace', $this->getPathNamespace(config('modules.paths.generator.notifications.path', 'app/Notifications')));
     }
 
     /**

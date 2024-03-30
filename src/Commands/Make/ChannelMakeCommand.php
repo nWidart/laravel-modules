@@ -26,7 +26,7 @@ final class ChannelMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.channels.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.channels.path', 'app/Broadcasting'));
+        return config('modules.paths.generator.channels.namespace', $this->getPathNamespace(config('modules.paths.generator.channels.path', 'app/Broadcasting')));
     }
 
     /**

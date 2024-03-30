@@ -35,7 +35,7 @@ class PolicyMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.policies.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.policies.path', 'app/Policies'));
+        return config('modules.paths.generator.policies.namespace', $this->getPathNamespace(config('modules.paths.generator.policies.path', 'app/Policies')));
     }
 
     /**

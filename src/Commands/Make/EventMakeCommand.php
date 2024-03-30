@@ -57,7 +57,7 @@ class EventMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.event.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.event.path', 'app/Events'));
+        return config('modules.paths.generator.event.namespace', $this->getPathNamespace(config('modules.paths.generator.event.path', 'app/Events')));
     }
 
     /**

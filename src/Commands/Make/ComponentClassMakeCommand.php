@@ -54,7 +54,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.component-class.namespace') ?? $this->getPathNamespace(config('modules.paths.generator.component-class.path', 'app/View/Components'));
+        return config('modules.paths.generator.component-class.namespace', $this->getPathNamespace(config('modules.paths.generator.component-class.path', 'app/View/Components')));
     }
 
     /**
