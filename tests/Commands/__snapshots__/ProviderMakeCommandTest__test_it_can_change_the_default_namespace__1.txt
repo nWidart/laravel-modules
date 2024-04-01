@@ -88,18 +88,23 @@ class BlogServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
 
-        $componentNamespace = str_replace('/', '\\', config('modules.namespace').'\\'.$this->moduleName.'\\'.ltrim(config('modules.paths.generator.component-class.path'), config('modules.paths.app_folder','')));
+        $componentNamespace = str_replace('/', '\\', config('modules.namespace').'\\'.$this->moduleName.'\\'.ltrim(config('modules.paths.generator.component-class.path'), config('modules.paths.app_folder', '')));
         Blade::componentNamespace($componentNamespace, $this->moduleNameLower);
     }
 
     /**
      * Get the services provided by the provider.
+     *
+     * @return array<string>
      */
     public function provides(): array
     {
         return [];
     }
 
+    /**
+     * @return array<string>
+     */
     private function getPublishableViewPaths(): array
     {
         $paths = [];
