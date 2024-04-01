@@ -4,6 +4,15 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Fixes
+
+- [@enterprime](https://github.com/enterprime) Corrected factories to Factories and added cache options to ENV
+
+## Added
+
+- [@dcblogdev](https://github.com/dcblogdev) Added return type array definition
+- [@dcblogdev](https://github.com/dcblogdev) Added test to confirm author details
+
 ## 11.0.3 - 2024-03-24
 
 ## Added 
