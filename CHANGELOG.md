@@ -4,8 +4,9 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
-## Fixes
+## Changes
 
+- [@solomon-ochepa](https://github.com/solomon-ochepa) Updated vendor / author keys for config/.env
 - [@enterprime](https://github.com/enterprime) Corrected factories to Factories and added cache options to ENV
 
 ## Added
