@@ -73,6 +73,62 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Generator path
+        |--------------------------------------------------------------------------
+        | Customise the paths where the folders will be generated.
+        | Setting the generate key to false will not generate that folder
+        */
+        'generator' => [
+            // app/
+            'channels' => ['path' => 'app/Broadcasting', 'generate' => false],
+            'class' => ['path' => 'app/Classes', 'generate' => false],
+            'command' => ['path' => 'app/Console', 'generate' => false],
+            'component-class' => ['path' => 'app/View/Components', 'generate' => false],
+            'emails' => ['path' => 'app/Emails', 'generate' => false],
+            'event' => ['path' => 'app/Events', 'generate' => false],
+            'jobs' => ['path' => 'app/Jobs', 'generate' => false],
+            'listener' => ['path' => 'app/Listeners', 'generate' => false],
+            'model' => ['path' => 'app/Models', 'generate' => false],
+            'notifications' => ['path' => 'app/Notifications', 'generate' => false],
+            'observer' => ['path' => 'app/Observers', 'generate' => false],
+            'policies' => ['path' => 'app/Policies', 'generate' => false],
+            'provider' => ['path' => 'app/Providers', 'generate' => true],
+            'route-provider' => ['path' => 'app/Providers', 'generate' => true],
+            'repository' => ['path' => 'app/Repositories', 'generate' => false],
+            'resource' => ['path' => 'app/Transformers', 'generate' => false],
+            'rules' => ['path' => 'app/Rules', 'generate' => false],
+
+            // app/Http/
+            'controller' => ['path' => 'app/Http/Controllers', 'generate' => true],
+            'filter' => ['path' => 'app/Http/Middleware', 'generate' => false],
+            'request' => ['path' => 'app/Http/Requests', 'generate' => false],
+
+            // config/
+            'config' => ['path' => 'config', 'generate' => true],
+
+            // database/
+            'factory' => ['path' => 'database/factories', 'namespace' => 'Database\Factories', 'generate' => true],
+            'migration' => ['path' => 'database/migrations', 'generate' => true],
+            'seeder' => ['path' => 'database/seeders', 'namespace' => 'Database\Seeders', 'generate' => true],
+
+            // lang/
+            'lang' => ['path' => 'lang', 'generate' => false],
+
+            // resource/
+            'assets' => ['path' => 'resources/assets', 'generate' => true],
+            'component-view' => ['path' => 'resources/views/components', 'generate' => false],
+            'views' => ['path' => 'resources/views', 'generate' => true],
+
+            // routes/
+            'routes' => ['path' => 'routes', 'generate' => true],
+
+            // tests/
+            'test-feature' => ['path' => 'tests/Feature', 'generate' => true],
+            'test-unit' => ['path' => 'tests/Unit', 'generate' => true],
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
         | Modules assets path
         |--------------------------------------------------------------------------
         |
@@ -101,62 +157,6 @@ return [
         | for example can change it to 'src' or 'App'
         */
         'app_folder' => 'app/',
-
-        /*
-        |--------------------------------------------------------------------------
-        | Generator path
-        |--------------------------------------------------------------------------
-        | Customise the paths where the folders will be generated.
-        | Setting the generate key to false will not generate that folder
-        */
-        'generator' => [
-            // app/
-            'channels' => ['path' => 'app/Broadcasting', 'generate' => false],
-            'command' => ['path' => 'app/Console', 'generate' => false],
-            'emails' => ['path' => 'app/Emails', 'generate' => false],
-            'event' => ['path' => 'app/Events', 'generate' => false],
-            'jobs' => ['path' => 'app/Jobs', 'generate' => false],
-            'listener' => ['path' => 'app/Listeners', 'generate' => false],
-            'model' => ['path' => 'app/Models', 'generate' => false],
-            'notifications' => ['path' => 'app/Notifications', 'generate' => false],
-            'observer' => ['path' => 'app/Observers', 'generate' => false],
-            'policies' => ['path' => 'app/Policies', 'generate' => false],
-            'provider' => ['path' => 'app/Providers', 'generate' => true],
-            'route-provider' => ['path' => 'app/Providers', 'generate' => true],
-            'repository' => ['path' => 'app/Repositories', 'generate' => false],
-            'resource' => ['path' => 'app/Transformers', 'generate' => false],
-            'rules' => ['path' => 'app/Rules', 'generate' => false],
-            'component-class' => ['path' => 'app/View/Components', 'generate' => false],
-            'service' => ['path' => 'app/Services', 'generate' => false],
-
-            // app/Http/
-            'controller' => ['path' => 'app/Http/Controllers', 'generate' => true],
-            'filter' => ['path' => 'app/Http/Middleware', 'generate' => false],
-            'request' => ['path' => 'app/Http/Requests', 'generate' => false],
-
-            // config/
-            'config' => ['path' => 'config', 'generate' => true],
-
-            // database/
-            'migration' => ['path' => 'database/migrations', 'generate' => true],
-            'seeder' => ['path' => 'database/seeders', 'namespace' => 'Database\Seeders', 'generate' => true],
-            'factory' => ['path' => 'database/factories', 'namespace' => 'Database\Factories', 'generate' => true],
-
-            // lang/
-            'lang' => ['path' => 'lang', 'generate' => false],
-
-            // resource/
-            'assets' => ['path' => 'resources/assets', 'generate' => true],
-            'views' => ['path' => 'resources/views', 'generate' => true],
-            'component-view' => ['path' => 'resources/views/components', 'generate' => false],
-
-            // routes/
-            'routes' => ['path' => 'routes', 'generate' => true],
-
-            // tests/
-            'test-unit' => ['path' => 'tests/Unit', 'generate' => true],
-            'test-feature' => ['path' => 'tests/Feature', 'generate' => true],
-        ],
     ],
 
     /*

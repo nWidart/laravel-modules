@@ -50,6 +50,7 @@ class ConsoleServiceProvider extends ServiceProvider
 
             // Make Commands
             Commands\Make\ChannelMakeCommand::class,
+            Commands\Make\ClassCommand::class,
             Commands\Make\CommandMakeCommand::class,
             Commands\Make\ComponentClassMakeCommand::class,
             Commands\Make\ComponentViewMakeCommand::class,
