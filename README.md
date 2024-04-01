@@ -19,11 +19,11 @@
 | 10.0        | ^10.0               |
 | 11.0        | ^11.0               |
 
-`nwidart/laravel-modules` is a Laravel package which created to manage your large Laravel app using modules. Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 10.
+`nwidart/laravel-modules` is a Laravel package created to manage your large Laravel app using modules. A Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 11.
 
 This package is a re-published, re-organised and maintained version of [pingpong/modules](https://github.com/pingpong-labs/modules), which isn't maintained anymore.
 
-With one big added bonus that the original package didn't have: **tests**.
+With one big bonus that the original package didn't have: **tests**.
 
 ## Install
 
@@ -43,7 +43,7 @@ php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProv
 
 ### Autoloading
 
-By default the module classes are not loaded automatically. You can autoload your modules by adding merge-plugin to the extra section:
+By default, the module classes are not loaded automatically. You can autoload your modules by adding merge-plugin to the extra section:
 
 ```json
 "extra": {
