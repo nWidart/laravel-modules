@@ -2,12 +2,14 @@
 
 namespace Nwidart\Modules\Commands\Actions;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 use Nwidart\Modules\Commands\BaseCommand;
 
 class CheckLangCommand extends BaseCommand
 {
-    private $langPath;
+    private string $langPath;
 
     /**
      * The console command name.
@@ -51,7 +53,7 @@ class CheckLangCommand extends BaseCommand
         return 'Checking languages ...';
     }
 
-    private function getLangFiles($module)
+    private function getLangFiles($module): array
     {
         $files = [];
         $path  = $module->getPath() . $this->langPath;
@@ -62,7 +64,7 @@ class CheckLangCommand extends BaseCommand
         return $files;
     }
 
-    private function getDirectories($module)
+    private function getDirectories($module): false|Collection
     {
         $moduleName = $module->getStudlyName();
         $path       = $module->getPath() . $this->langPath;
@@ -96,7 +98,7 @@ class CheckLangCommand extends BaseCommand
         return collect($directories);
     }
 
-    private function checkMissingFiles(Collection $directories)
+    private function checkMissingFiles(Collection $directories): void
     {
         //show missing files
         $missingFilesMessage = [];
@@ -133,7 +135,7 @@ class CheckLangCommand extends BaseCommand
 
     }
 
-    private function checkMissingKeys(Collection $directories)
+    private function checkMissingKeys(Collection $directories): void
     {
         //show missing keys
         $uniqeLangFiles  = $directories->pluck('files')->flatten()->unique();
@@ -157,7 +159,7 @@ class CheckLangCommand extends BaseCommand
 
                         $otherLangKeys = $this->getLangKeys($basePath . DIRECTORY_SEPARATOR . $file);
 
-                        if ($otherLangKeys == false) {
+                        if ($otherLangKeys === false) {
                             return;
                         }
 
@@ -189,12 +191,12 @@ class CheckLangCommand extends BaseCommand
         }
     }
 
-    private function getLangKeys($file)
+    private function getLangKeys($file): false|Collection
     {
-        if (\File::exists($file)) {
-            $lang = \File::getRequire($file);
+        if (File::exists($file)) {
+            $lang = File::getRequire($file);
 
-            return collect(\Arr::dot($lang))->keys();
+            return collect(Arr::dot($lang))->keys();
         } else {
             return false;
         }

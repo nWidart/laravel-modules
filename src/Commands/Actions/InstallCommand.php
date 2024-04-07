@@ -85,9 +85,9 @@ class InstallCommand extends Command
      * @param string $name
      * @param string $version
      * @param string $type
-     * @param bool   $tree
+     * @param bool $tree
      */
-    protected function install($name, $version = 'dev-master', $type = 'composer', $tree = false)
+    protected function install(string $name, string $version = 'dev-master', string $type = 'composer', bool $tree = false): void
     {
         $installer = new Installer(
             $name,
@@ -122,7 +122,7 @@ class InstallCommand extends Command
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::OPTIONAL, 'The name of module will be installed.'],
@@ -135,7 +135,7 @@ class InstallCommand extends Command
      *
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['timeout', null, InputOption::VALUE_OPTIONAL, 'The process timeout.', null],
