@@ -25,6 +25,9 @@ This package is a re-published, re-organised and maintained version of [pingpong
 
 With one big bonus that the original package didn't have: **tests**.
 
+## upgrade
+To upgrade to version V11 follow [Upgrade Guide](https://laravelmodules.com/docs/v11/upgrade) on official document.
+
 ## Install
 
 To install via Composer, run:
