@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 11.0.4 - 2024-04-08
+
 ## Changes
 
 - [@dcblogdev](https://github.com/dcblogdev) Updated config to use namespace and path for seeders and factories
