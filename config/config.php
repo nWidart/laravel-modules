@@ -137,8 +137,8 @@ return [
 
             // database/
             'migration' => ['path' => 'database/migrations', 'generate' => true],
-            'seeder' => ['path' => 'database/seeders', 'generate' => true],
-            'factory' => ['path' => 'database/factories', 'generate' => true],
+            'seeder' => ['path' => 'database/seeders', 'namespace' => 'Database\Seeders', 'generate' => true],
+            'factory' => ['path' => 'database/factories', 'namespace' => 'Database\Factories', 'generate' => true],
 
             // lang/
             'lang' => ['path' => 'lang', 'generate' => false],
