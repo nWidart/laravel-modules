@@ -6,6 +6,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Changes
 
+- [@dcblogdev](https://github.com/dcblogdev) Updated config to use namespace and path for seeders and factories
 - [@solomon-ochepa](https://github.com/solomon-ochepa) Updated vendor / author keys for config/.env
 - [@enterprime](https://github.com/enterprime) Corrected factories to Factories and added cache options to ENV
 
