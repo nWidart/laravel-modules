@@ -2,6 +2,9 @@
 
 namespace Nwidart\Modules;
 
+use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Lumen\LumenFileRepository;
 use Nwidart\Modules\Support\Stub;
 
 class LumenModulesServiceProvider extends ModulesServiceProvider
@@ -9,7 +12,7 @@ class LumenModulesServiceProvider extends ModulesServiceProvider
     /**
      * Booting the package.
      */
-    public function boot()
+    public function boot(): void
     {
         $this->setupStubPath();
     }
@@ -17,7 +20,7 @@ class LumenModulesServiceProvider extends ModulesServiceProvider
     /**
      * Register all modules.
      */
-    public function register()
+    public function register(): void
     {
         $this->registerNamespaces();
         $this->registerServices();
@@ -28,7 +31,7 @@ class LumenModulesServiceProvider extends ModulesServiceProvider
     /**
      * Setup stub path.
      */
-    public function setupStubPath()
+    public function setupStubPath(): void
     {
         Stub::setBasePath(__DIR__ . '/Commands/stubs');
 
@@ -40,19 +43,21 @@ class LumenModulesServiceProvider extends ModulesServiceProvider
     /**
      * {@inheritdoc}
      */
-    protected function registerServices()
+    protected function registerServices(): void
     {
-        $this->app->singleton(Contracts\RepositoryInterface::class, function ($app) {
+        $this->app->singleton(RepositoryInterface::class, function ($app) {
             $path = $app['config']->get('modules.paths.modules');
 
-            return new Lumen\LumenFileRepository($app, $path);
+            return new LumenFileRepository($app, $path);
         });
-        $this->app->singleton(Contracts\ActivatorInterface::class, function ($app) {
+
+        $this->app->singleton(ActivatorInterface::class, function ($app) {
             $activator = $app['config']->get('modules.activator');
             $class = $app['config']->get('modules.activators.' . $activator)['class'];
 
             return new $class($app);
         });
-        $this->app->alias(Contracts\RepositoryInterface::class, 'modules');
+
+        $this->app->alias(RepositoryInterface::class, 'modules');
     }
 }

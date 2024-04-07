@@ -4,8 +4,10 @@ namespace Nwidart\Modules;
 
 use Composer\InstalledVersions;
 use Illuminate\Foundation\Console\AboutCommand;
+use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
+use Nwidart\Modules\Laravel\LaravelFileRepository;
 use Nwidart\Modules\Support\Stub;
 
 class LaravelModulesServiceProvider extends ModulesServiceProvider
@@ -13,7 +15,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     /**
      * Booting the package.
      */
-    public function boot()
+    public function boot(): void
     {
         $this->registerNamespaces();
         $this->registerModules();
@@ -26,7 +28,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     /**
      * Register the service provider.
      */
-    public function register()
+    public function register(): void
     {
         $this->registerServices();
         $this->setupStubPath();
@@ -38,9 +40,10 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     /**
      * Setup stub path.
      */
-    public function setupStubPath()
+    public function setupStubPath(): void
     {
         $path = $this->app['config']->get('modules.stubs.path') ?? __DIR__ . '/Commands/stubs';
+
         Stub::setBasePath($path);
 
         $this->app->booted(function ($app) {
@@ -55,14 +58,15 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     /**
      * {@inheritdoc}
      */
-    protected function registerServices()
+    protected function registerServices(): void
     {
-        $this->app->singleton(Contracts\RepositoryInterface::class, function ($app) {
+        $this->app->singleton(RepositoryInterface::class, function ($app) {
             $path = $app['config']->get('modules.paths.modules');
 
-            return new Laravel\LaravelFileRepository($app, $path);
+            return new LaravelFileRepository($app, $path);
         });
-        $this->app->singleton(Contracts\ActivatorInterface::class, function ($app) {
+
+        $this->app->singleton(ActivatorInterface::class, function ($app) {
             $activator = $app['config']->get('modules.activator');
             $class = $app['config']->get('modules.activators.' . $activator)['class'];
 
@@ -72,6 +76,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
             return new $class($app);
         });
-        $this->app->alias(Contracts\RepositoryInterface::class, 'modules');
+
+        $this->app->alias(RepositoryInterface::class, 'modules');
     }
 }

@@ -18,52 +18,56 @@ abstract class Module
     /**
      * The laravel|lumen application instance.
      *
-     * @var \Illuminate\Contracts\Foundation\Application|\Laravel\Lumen\Application
+     * @var Container
      */
-    protected $app;
+    protected Container $app;
 
     /**
      * The module name.
      *
-     * @var
+     * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * The module path.
      *
      * @var string
      */
-    protected $path;
+    protected string $path;
 
     /**
      * @var array of cached Json objects, keyed by filename
      */
-    protected $moduleJson = [];
+    protected array $moduleJson = [];
+
     /**
      * @var CacheManager
      */
-    private $cache;
+    private mixed $cache;
+
     /**
      * @var Filesystem
      */
-    private $files;
+    private mixed $files;
+
     /**
      * @var Translator
      */
-    private $translator;
+    private mixed $translator;
+
     /**
      * @var ActivatorInterface
      */
-    private $activator;
+    private mixed $activator;
 
     /**
      * The constructor.
      * @param Container $app
-     * @param $name
-     * @param $path
+     * @param string $name
+     * @param string $path
      */
-    public function __construct(Container $app, string $name, $path)
+    public function __construct(Container $app, string $name, string $path)
     {
         $this->name = $name;
         $this->path = $path;
@@ -88,7 +92,7 @@ abstract class Module
 
             if (is_array($files)) {
                 foreach ($files as $file) {
-                    // Ignore files which aren't entrypoints.
+                    // Ignore files which aren't entry points.
                     if (empty($file['isEntry'])) {
                         continue;
                     }
@@ -192,7 +196,7 @@ abstract class Module
      *
      * @return $this
      */
-    public function setPath($path): Module
+    public function setPath(string $path): Module
     {
         $this->path = $path;
 
@@ -224,7 +228,7 @@ abstract class Module
     {
         $lowerName = $this->getLowerName();
 
-        $langPath = $this->getPath() . '/Resources/lang';
+        $langPath = $this->getPath() . '/resources/lang';
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $lowerName);
@@ -234,11 +238,11 @@ abstract class Module
     /**
      * Get json contents from the cache, setting as needed.
      *
-     * @param string $file
+     * @param string|null $file
      *
      * @return Json
      */
-    public function json($file = null): Json
+    public function json(string $file = null): Json
     {
         if ($file === null) {
             $file = 'module.json';
@@ -257,7 +261,7 @@ abstract class Module
      *
      * @return mixed
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, $default = null): mixed
     {
         return $this->json()->get($key, $default);
     }
@@ -270,7 +274,7 @@ abstract class Module
      *
      * @return mixed
      */
-    public function getComposerAttr($key, $default = null)
+    public function getComposerAttr($key, $default = null): mixed
     {
         return $this->json('composer.json')->get($key, $default);
     }
@@ -296,7 +300,7 @@ abstract class Module
      *
      * @param string $event
      */
-    protected function fireEvent($event): void
+    protected function fireEvent(string $event): void
     {
         $this->app['events']->dispatch(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
     }
@@ -433,7 +437,7 @@ abstract class Module
     }
 
     /**
-     * Check if can load files of module on boot method.
+     * Check can load files of module on boot method.
      *
      * @return bool
      */

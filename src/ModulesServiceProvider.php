@@ -26,7 +26,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
     /**
      * Register all modules.
      */
-    protected function registerModules()
+    protected function registerModules(): void
     {
         $this->app->register(BootstrapServiceProvider::class);
     }
@@ -34,7 +34,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
     /**
      * Register package's namespaces.
      */
-    protected function registerNamespaces()
+    protected function registerNamespaces(): void
     {
         $configPath = __DIR__ . '/../config/config.php';
         $stubsPath = dirname(__DIR__) . '/src/Commands/stubs';
@@ -62,7 +62,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
      *
      * @return array
      */
-    public function provides()
+    public function provides(): array
     {
         return [Contracts\RepositoryInterface::class, 'modules'];
     }
@@ -70,7 +70,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
     /**
      * Register providers.
      */
-    protected function registerProviders()
+    protected function registerProviders(): void
     {
         $this->app->register(ConsoleServiceProvider::class);
         $this->app->register(ContractsServiceProvider::class);
