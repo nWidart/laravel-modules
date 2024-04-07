@@ -228,7 +228,7 @@ abstract class Module
     {
         $lowerName = $this->getLowerName();
 
-        $langPath = $this->getPath() . '/resources/lang';
+        $langPath = $this->getPath() . '/Resources/lang';
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $lowerName);
