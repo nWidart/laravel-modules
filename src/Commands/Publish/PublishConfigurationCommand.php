@@ -36,11 +36,7 @@ class PublishConfigurationCommand extends BaseCommand
         return 'Publishing module config files ...';
     }
 
-    /**
-     * @param string $module
-     * @return string
-     */
-    private function getServiceProviderForModule($module): string
+    private function getServiceProviderForModule(string $module): string
     {
         $namespace  = $this->laravel['config']->get('modules.namespace');
         $studlyName = Str::studly($module);

@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands\Database;
 
 use ErrorException;
+use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Commands\BaseCommand;
@@ -12,6 +13,8 @@ use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 class SeedCommand extends BaseCommand
 {
@@ -79,7 +82,7 @@ class SeedCommand extends BaseCommand
      *
      * @return Module
      */
-    public function getModuleByName($name)
+    public function getModuleByName($name): Module
     {
         $modules = $this->getModuleRepository();
         if ($modules->has($name) === false) {
@@ -94,7 +97,7 @@ class SeedCommand extends BaseCommand
      *
      * @return void
      */
-    public function moduleSeed(Module $module)
+    public function moduleSeed(Module $module): void
     {
         $seeders = [];
         $name = $module->getName();
@@ -135,7 +138,7 @@ class SeedCommand extends BaseCommand
      *
      * @param string $className
      */
-    protected function dbSeed($className)
+    protected function dbSeed(string $className): void
     {
         if ($option = $this->option('class')) {
             $params['--class'] = Str::finish(substr($className, 0, strrpos($className, '\\')), '\\') . $option;
@@ -161,7 +164,7 @@ class SeedCommand extends BaseCommand
      *
      * @return string
      */
-    public function getSeederName($name)
+    public function getSeederName(string $name): string
     {
         $name = Str::studly($name);
 
@@ -179,7 +182,7 @@ class SeedCommand extends BaseCommand
      *
      * @return array $foundModules array containing namespace paths
      */
-    public function getSeederNames($name)
+    public function getSeederNames(string $name): array
     {
         $name = Str::studly($name);
 
@@ -198,11 +201,11 @@ class SeedCommand extends BaseCommand
     /**
      * Report the exception to the exception handler.
      *
-     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
-     * @param  \Throwable  $e
+     * @param OutputInterface $output
+     * @param Exception $e
      * @return void
      */
-    protected function renderException($output, \Exception $e)
+    protected function renderException(OutputInterface $output, Exception $e): void
     {
         $this->laravel[ExceptionHandler::class]->renderForConsole($output, $e);
     }
@@ -210,10 +213,11 @@ class SeedCommand extends BaseCommand
     /**
      * Report the exception to the exception handler.
      *
-     * @param  \Throwable  $e
+     * @param Exception $e
      * @return void
+     * @throws Throwable
      */
-    protected function reportException(\Exception $e)
+    protected function reportException(Exception $e): void
     {
         $this->laravel[ExceptionHandler::class]->report($e);
     }
@@ -223,7 +227,7 @@ class SeedCommand extends BaseCommand
      *
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['class', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder.'],

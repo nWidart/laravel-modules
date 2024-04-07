@@ -33,7 +33,7 @@ class SetupCommand extends Command
     /**
      * Generate the modules folder.
      */
-    public function generateModulesFolder()
+    public function generateModulesFolder(): int
     {
         return $this->generateDirectory(
             $this->laravel['modules']->config('paths.modules'),
@@ -43,9 +43,9 @@ class SetupCommand extends Command
     }
 
     /**
-     * Generate the assets folder.
+     * Generate the asset's folder.
      */
-    public function generateAssetsFolder()
+    public function generateAssetsFolder(): int
     {
         return $this->generateDirectory(
             $this->laravel['modules']->config('paths.assets'),

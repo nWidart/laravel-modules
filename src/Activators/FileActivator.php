@@ -17,46 +17,49 @@ class FileActivator implements ActivatorInterface
      *
      * @var CacheManager
      */
-    private $cache;
+    private mixed $cache;
 
     /**
      * Laravel Filesystem instance
      *
      * @var Filesystem
      */
-    private $files;
+    private mixed $files;
 
     /**
      * Laravel config instance
      *
      * @var Config
      */
-    private $config;
+    private mixed $config;
 
     /**
      * @var string
      */
-    private $cacheKey;
+    private mixed $cacheKey;
 
     /**
      * @var string
      */
-    private $cacheLifetime;
+    private mixed $cacheLifetime;
 
     /**
      * Array of modules activation statuses
      *
      * @var array
      */
-    private $modulesStatuses;
+    private array $modulesStatuses;
 
     /**
      * File used to store activation statuses
      *
      * @var string
      */
-    private $statusesFile;
+    private mixed $statusesFile;
 
+    /**
+     * @throws FileNotFoundException
+     */
     public function __construct(Container $app)
     {
         $this->cache = $app['cache'];
@@ -129,9 +132,9 @@ class FileActivator implements ActivatorInterface
     /**
      * @inheritDoc
      */
-    public function setActiveByName(string $name, bool $status): void
+    public function setActiveByName(string $name, bool $active): void
     {
-        $this->modulesStatuses[$name] = $status;
+        $this->modulesStatuses[$name] = $active;
         $this->writeJson();
         $this->flushCache();
     }
@@ -192,12 +195,11 @@ class FileActivator implements ActivatorInterface
      * Reads a config parameter under the 'activators.file' key
      *
      * @param  string $key
-     * @param  $default
      * @return mixed
      */
-    private function config(string $key, $default = null)
+    private function config(string $key): mixed
     {
-        return $this->config->get('modules.activators.file.' . $key, $default);
+        return $this->config->get('modules.activators.file.' . $key, null);
     }
 
     /**
