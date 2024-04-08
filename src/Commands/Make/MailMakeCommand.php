@@ -26,7 +26,7 @@ class MailMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new email class for the specified module';
 
-    protected $argumentName = 'name';
+    protected string $argumentName = 'name';
 
     public function getDefaultNamespace(): string
     {
@@ -39,7 +39,7 @@ class MailMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the mailable.'],
@@ -52,7 +52,7 @@ class MailMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function getTemplateContents()
+    protected function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -67,7 +67,7 @@ class MailMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -76,10 +76,7 @@ class MailMakeCommand extends GeneratorCommand
         return $path . $mailPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * @return string
-     */
-    private function getFileName()
+    private function getFileName(): string
     {
         return Str::studly($this->argument('name'));
     }

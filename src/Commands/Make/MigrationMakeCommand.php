@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands\Make;
 
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Migrations\NameParser;
 use Nwidart\Modules\Support\Migrations\SchemaParser;
@@ -34,7 +35,7 @@ class MigrationMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::REQUIRED, 'The migration name will be created.'],
@@ -47,7 +48,7 @@ class MigrationMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['fields', null, InputOption::VALUE_OPTIONAL, 'The specified fields table.', null],
@@ -60,17 +61,17 @@ class MigrationMakeCommand extends GeneratorCommand
      *
      * @return SchemaParser
      */
-    public function getSchemaParser()
+    public function getSchemaParser(): SchemaParser
     {
         return new SchemaParser($this->option('fields'));
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
-     * @return mixed
+     * @return string
      */
-    protected function getTemplateContents()
+    protected function getTemplateContents(): string
     {
         $parser = new NameParser($this->argument('name'));
 
@@ -107,10 +108,7 @@ class MigrationMakeCommand extends GeneratorCommand
         ]);
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -119,51 +117,35 @@ class MigrationMakeCommand extends GeneratorCommand
         return $path . $generatorPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * @return string
-     */
-    private function getFileName()
+    private function getFileName(): string
     {
         return date('Y_m_d_His_') . $this->getSchemaName();
     }
 
-    /**
-     * @return array|string
-     */
-    private function getSchemaName()
+    private function getSchemaName(): bool|array|string|null
     {
         return $this->argument('name');
     }
 
-    /**
-     * @return string
-     */
-    private function getClassName()
+    private function getClassName(): string
     {
         return Str::studly($this->argument('name'));
     }
 
-    public function getClass()
+    public function getClass(): string
     {
         return $this->getClassName();
     }
 
-    /**
-     * Run the command.
-     */
     public function handle(): int
     {
-
         $this->components->info('Creating migration...');
 
         if (parent::handle() === E_ERROR) {
             return E_ERROR;
         }
 
-        if (app()->environment() === 'testing') {
-            return 0;
-        }
-
         return 0;
+
     }
 }

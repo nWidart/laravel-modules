@@ -66,14 +66,14 @@ class ModuleMakeCommand extends Command
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::IS_ARRAY, 'The names of modules will be created.'],
         ];
     }
 
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['plain', 'p', InputOption::VALUE_NONE, 'Generate a plain module (without some resources).'],
@@ -92,7 +92,7 @@ class ModuleMakeCommand extends Command
     *
     * @return string
     */
-    private function getModuleType()
+    private function getModuleType(): string
     {
         $isPlain = $this->option('plain');
         $isApi = $this->option('api');

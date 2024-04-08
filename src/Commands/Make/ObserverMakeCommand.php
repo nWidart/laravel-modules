@@ -24,7 +24,7 @@ class ObserverMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $argumentName = 'name';
+    protected string $argumentName = 'name';
 
     /**
      * The console command description.
@@ -38,7 +38,7 @@ class ObserverMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::REQUIRED, 'The observer name will be created.'],
@@ -46,10 +46,7 @@ class ObserverMakeCommand extends GeneratorCommand
         ];
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getTemplateContents()
+    protected function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -75,26 +72,17 @@ class ObserverMakeCommand extends GeneratorCommand
         return $this->laravel['modules']->config('namespace') . '\\' . $this->laravel['modules']->findOrFail($this->getModuleName()) . '\\' . $path;
     }
 
-    /**
-     * @return mixed|string
-     */
-    private function getModelName()
+    private function getModelName(): string
     {
         return Str::studly($this->argument('name'));
     }
 
-    /**
-     *  @return mixed|string
-     */
     private function getModelVariable(): string
     {
         return '$' . Str::lower($this->argument('name'));
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -103,10 +91,7 @@ class ObserverMakeCommand extends GeneratorCommand
         return $path . $observerPath->getPath() . '/' . $this->getFileName();
     }
 
-    /**
-     * @return string
-     */
-    private function getFileName()
+    private function getFileName(): string
     {
         return Str::studly($this->argument('name')) . 'Observer.php';
     }

@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Commands\Make;
 use Illuminate\Console\Command;
 use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 use Nwidart\Modules\Generators\FileGenerator;
+use Nwidart\Modules\Module;
 
 abstract class GeneratorCommand extends Command
 {
@@ -13,21 +14,21 @@ abstract class GeneratorCommand extends Command
      *
      * @var string
      */
-    protected $argumentName = '';
+    protected string $argumentName = '';
 
     /**
      * Get template contents.
      *
      * @return string
      */
-    abstract protected function getTemplateContents();
+    abstract protected function getTemplateContents(): string;
 
     /**
      * Get the destination file path.
      *
      * @return string
      */
-    abstract protected function getDestinationFilePath();
+    abstract protected function getDestinationFilePath(): string;
 
     /**
      * Execute the console command.
@@ -62,7 +63,7 @@ abstract class GeneratorCommand extends Command
      *
      * @return string
      */
-    public function getClass()
+    public function getClass(): string
     {
         return class_basename($this->argument($this->argumentName));
     }
@@ -80,11 +81,11 @@ abstract class GeneratorCommand extends Command
     /**
      * Get class namespace.
      *
-     * @param \Nwidart\Modules\Module $module
+     * @param Module $module
      *
      * @return string
      */
-    public function getClassNamespace($module)
+    public function getClassNamespace(Module $module): string
     {
         $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
 

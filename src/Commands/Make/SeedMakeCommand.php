@@ -15,7 +15,7 @@ class SeedMakeCommand extends GeneratorCommand
     use CanClearModulesCache;
     use ModuleCommandTrait;
 
-    protected $argumentName = 'name';
+    protected string $argumentName = 'name';
 
     /**
      * The console command name.
@@ -53,7 +53,7 @@ class SeedMakeCommand extends GeneratorCommand
         ];
     }
 
-    protected function getTemplateContents(): mixed
+    protected function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -65,7 +65,7 @@ class SeedMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-    protected function getDestinationFilePath(): mixed
+    protected function getDestinationFilePath(): string
     {
         $this->clearCache();
 
@@ -85,7 +85,7 @@ class SeedMakeCommand extends GeneratorCommand
         $string .= $this->option('master') ? 'Database' : '';
         $suffix = 'Seeder';
 
-        if (strpos($string, $suffix) === false) {
+        if (!str_contains($string, $suffix)) {
             $string .= $suffix;
         }
 

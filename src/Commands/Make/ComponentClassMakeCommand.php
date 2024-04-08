@@ -17,7 +17,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $argumentName = 'name';
+    protected string $argumentName = 'name';
 
     /**
      * The console command name.
@@ -47,7 +47,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
      *
      * @return void
      */
-    protected function writeComponentViewTemplate()
+    protected function writeComponentViewTemplate(): void
     {
         $this->call('module:make-component-view', ['name' => $this->argument('name') , 'module' => $this->argument('module')]);
     }
@@ -63,7 +63,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the component.'],
@@ -71,9 +71,9 @@ class ComponentClassMakeCommand extends GeneratorCommand
         ];
     }
     /**
-     * @return mixed
+     * @return string
      */
-    protected function getTemplateContents()
+    protected function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -85,10 +85,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
         $factoryPath = GenerateConfigReader::read('component-class');
@@ -96,10 +93,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
         return $path . $factoryPath->getPath() . '/' . $this->getFileName();
     }
 
-    /**
-     * @return string
-     */
-    private function getFileName()
+    private function getFileName(): string
     {
         return Str::studly($this->argument('name')) . '.php';
     }

@@ -12,7 +12,7 @@ class EventMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
-    protected $argumentName = 'name';
+    protected string $argumentName = 'name';
 
     /**
      * The console command name.
@@ -28,7 +28,7 @@ class EventMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new event class for the specified module';
 
-    public function getTemplateContents()
+    public function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -38,7 +38,7 @@ class EventMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-    public function getDestinationFilePath()
+    public function getDestinationFilePath(): string
     {
         $path       = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -47,10 +47,7 @@ class EventMakeCommand extends GeneratorCommand
         return $path . $eventPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * @return string
-     */
-    protected function getFileName()
+    protected function getFileName(): string
     {
         return Str::studly($this->argument('name'));
     }
@@ -66,7 +63,7 @@ class EventMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the event.'],

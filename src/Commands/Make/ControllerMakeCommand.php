@@ -18,7 +18,7 @@ class ControllerMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $argumentName = 'controller';
+    protected string $argumentName = 'controller';
 
     /**
      * The console command name.
@@ -39,7 +39,7 @@ class ControllerMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    public function getDestinationFilePath()
+    public function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -48,10 +48,7 @@ class ControllerMakeCommand extends GeneratorCommand
         return $path . $controllerPath->getPath() . '/' . $this->getControllerName() . '.php';
     }
 
-    /**
-     * @return string
-     */
-    protected function getTemplateContents()
+    protected function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -74,7 +71,7 @@ class ControllerMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['controller', InputArgument::REQUIRED, 'The name of the controller class.'],
@@ -82,10 +79,7 @@ class ControllerMakeCommand extends GeneratorCommand
         ];
     }
 
-    /**
-     * @return array
-     */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['plain', 'p', InputOption::VALUE_NONE, 'Generate a plain controller', null],
@@ -93,10 +87,7 @@ class ControllerMakeCommand extends GeneratorCommand
         ];
     }
 
-    /**
-     * @return array|string
-     */
-    protected function getControllerName()
+    protected function getControllerName(): string
     {
         $controller = Str::studly($this->argument('controller'));
 
@@ -107,10 +98,7 @@ class ControllerMakeCommand extends GeneratorCommand
         return $controller;
     }
 
-    /**
-     * @return array|string
-     */
-    private function getControllerNameWithoutNamespace()
+    private function getControllerNameWithoutNamespace(): string
     {
         return class_basename($this->getControllerName());
     }
@@ -125,7 +113,7 @@ class ControllerMakeCommand extends GeneratorCommand
      * Get the stub file name based on the options
      * @return string
      */
-    protected function getStubName()
+    protected function getStubName(): string
     {
         if ($this->option('plain') === true) {
             $stub = '/controller-plain.stub';

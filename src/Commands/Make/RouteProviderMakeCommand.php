@@ -12,7 +12,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
-    protected $argumentName = 'module';
+    protected string $argumentName = 'module';
 
     /**
      * The command name.
@@ -33,14 +33,14 @@ class RouteProviderMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
 
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when the file already exists.'],
@@ -52,7 +52,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function getTemplateContents()
+    protected function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -68,10 +68,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-    /**
-     * @return string
-     */
-    private function getFileName()
+    private function getFileName(): string
     {
         return 'RouteServiceProvider';
     }
@@ -81,7 +78,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -90,18 +87,12 @@ class RouteProviderMakeCommand extends GeneratorCommand
         return $path . $generatorPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getWebRoutesPath()
+    protected function getWebRoutesPath(): string
     {
         return '/' . $this->laravel['modules']->config('stubs.files.routes/web', 'Routes/web.php');
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getApiRoutesPath()
+    protected function getApiRoutesPath(): string
     {
         return '/' . $this->laravel['modules']->config('stubs.files.routes/api', 'Routes/api.php');
     }
@@ -112,9 +103,6 @@ class RouteProviderMakeCommand extends GeneratorCommand
             ?? ltrim(config('modules.paths.generator.provider.path', 'Providers'), config('modules.paths.app_folder', ''));
     }
 
-    /**
-     * @return string
-     */
     private function getControllerNameSpace(): string
     {
         $module = $this->laravel['modules'];

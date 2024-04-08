@@ -13,7 +13,7 @@ class ResourceMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
-    protected $argumentName = 'name';
+    protected string $argumentName = 'name';
     protected $name = 'module:make-resource';
     protected $description = 'Create a new resource class for the specified module.';
 
@@ -28,7 +28,7 @@ class ResourceMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the resource class.'],
@@ -36,17 +36,14 @@ class ResourceMakeCommand extends GeneratorCommand
         ];
     }
 
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['collection', 'c', InputOption::VALUE_NONE, 'Create a resource collection.'],
         ];
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getTemplateContents()
+    protected function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -56,10 +53,7 @@ class ResourceMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -68,10 +62,7 @@ class ResourceMakeCommand extends GeneratorCommand
         return $path . $resourcePath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * @return string
-     */
-    private function getFileName()
+    private function getFileName(): string
     {
         return Str::studly($this->argument('name'));
     }

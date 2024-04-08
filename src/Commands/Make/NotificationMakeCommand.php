@@ -19,7 +19,7 @@ final class NotificationMakeCommand extends GeneratorCommand
      */
     protected $name = 'module:make-notification';
 
-    protected $argumentName = 'name';
+    protected string $argumentName = 'name';
 
     /**
      * The console command description.
@@ -39,7 +39,7 @@ final class NotificationMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function getTemplateContents()
+    protected function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -54,7 +54,7 @@ final class NotificationMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -63,10 +63,7 @@ final class NotificationMakeCommand extends GeneratorCommand
         return $path . $notificationPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * @return string
-     */
-    private function getFileName()
+    private function getFileName(): string
     {
         return Str::studly($this->argument('name'));
     }
@@ -76,7 +73,7 @@ final class NotificationMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the notification class.'],

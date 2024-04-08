@@ -14,7 +14,7 @@ class ListenerMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
-    protected $argumentName = 'name';
+    protected string $argumentName = 'name';
 
     /**
      * The console command name.
@@ -35,7 +35,7 @@ class ListenerMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the command.'],
@@ -48,7 +48,7 @@ class ListenerMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['event', 'e', InputOption::VALUE_OPTIONAL, 'The event class being listened for.'],
@@ -56,7 +56,7 @@ class ListenerMakeCommand extends GeneratorCommand
         ];
     }
 
-    protected function getTemplateContents()
+    protected function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -74,7 +74,7 @@ class ListenerMakeCommand extends GeneratorCommand
             ?? ltrim(config('modules.paths.generator.listener.path', 'Listeners'), config('modules.paths.app_folder', ''));
     }
 
-    protected function getEventName(Module $module)
+    protected function getEventName(Module $module): array|string
     {
         $namespace = $this->laravel['modules']->config('namespace') . "\\" . $module->getStudlyName();
         $eventPath = GenerateConfigReader::read('event');
@@ -84,12 +84,12 @@ class ListenerMakeCommand extends GeneratorCommand
         return str_replace('/', '\\', $eventName);
     }
 
-    protected function getShortEventName()
+    protected function getShortEventName(): string
     {
         return class_basename($this->option('event'));
     }
 
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -98,17 +98,11 @@ class ListenerMakeCommand extends GeneratorCommand
         return $path . $listenerPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
-    /**
-     * @return string
-     */
-    protected function getFileName()
+    protected function getFileName(): string
     {
         return Str::studly($this->argument('name'));
     }
 
-    /**
-     * @return string
-     */
     protected function getStubName(): string
     {
         if ($this->option('queued')) {

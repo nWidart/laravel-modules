@@ -13,7 +13,7 @@ class ViewMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
-    protected $argumentName = 'name';
+    protected string $argumentName = 'name';
     protected $name = 'module:make-view';
     protected $description = 'Create a new view for the specified module.';
 
@@ -38,9 +38,6 @@ class ViewMakeCommand extends GeneratorCommand
         return $path . $factoryPath->getPath() . '/' . $this->getFileName();
     }
 
-    /**
-     * @return string
-     */
     private function getFileName(): string
     {
         return Str::lower($this->argument('name')) . '.blade.php';
