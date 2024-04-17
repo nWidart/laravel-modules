@@ -4,6 +4,13 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 11.0.5 - 2024-04-17
+
+## Changes
+
+- [@alissn](https://github.com/alissn) check command has direction option, load module with 'priority' 
+
+
 ## 11.0.4 - 2024-04-08
 
 ## Changes
