@@ -8,3 +8,6 @@ coverage
 .phpunit.result.cache
 .idea
 .php-cs-fixer.cache
+.DS_Store
+src/.DS_Store
+tests/.DS_Store
