@@ -4,7 +4,7 @@ namespace Modules\Blog\Services\Api;
 
 class MyService
 {
-    public function __invoke()
+    public function __construct()
     {
         //
     }
