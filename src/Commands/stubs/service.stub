@@ -4,7 +4,7 @@ namespace $CLASS_NAMESPACE$;
 
 class $CLASS$
 {
-    public function __invoke()
+    public function __construct()
     {
         //
     }
