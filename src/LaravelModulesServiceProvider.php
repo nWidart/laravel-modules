@@ -19,7 +19,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->registerModules();
 
         AboutCommand::add('Laravel-Modules', [
-            'Version' => fn () => InstalledVersions::getVersion('nwidart/laravel-modules'),
+            'Version' => fn () => InstalledVersions::getPrettyVersion('nwidart/laravel-modules'),
         ]);
     }
 
