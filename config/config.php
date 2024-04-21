@@ -54,6 +54,7 @@ return [
                 'AUTHOR_EMAIL',
                 'MODULE_NAMESPACE',
                 'PROVIDER_NAMESPACE',
+                'APP_FOLDER_NAME',
             ],
         ],
         'gitkeep' => true,
