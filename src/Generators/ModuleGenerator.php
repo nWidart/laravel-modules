@@ -662,6 +662,16 @@ class ModuleGenerator extends Generator
         return $this->author['email'] ?: $this->module->config('composer.author.email');
     }
 
+    /**
+     * Get replacement for $APP_FOLDER_NAME$.
+     *
+     * @return string
+     */
+    protected function getAppFolderNameReplacement()
+    {
+        return  $this->module->config('paths.app_folder');
+    }
+
     protected function getProviderNamespaceReplacement(): string
     {
         return str_replace('\\', '\\\\', GenerateConfigReader::read('provider')->getNamespace());
