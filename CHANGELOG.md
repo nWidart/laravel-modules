@@ -6,6 +6,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## 11.0.5 - 2024-04-17
 
+- [@alissn](https://github.com/alissn) change package version to Pretty on php artisan about
+- [@alissn](https://github.com/alissn) fix stubs composer for app_folder
+- [@dcblogdev](https://github.com/dcblogdev) added make-service command
+
 ## Changes
 
 - [@alissn](https://github.com/alissn) check command has direction option, load module with 'priority' 
