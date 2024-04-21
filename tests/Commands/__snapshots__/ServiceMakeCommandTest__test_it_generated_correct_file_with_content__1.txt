@@ -1,0 +1,11 @@
+<?php
+
+namespace Modules\Blog\Services;
+
+class MyService
+{
+    public function __construct()
+    {
+        //
+    }
+}

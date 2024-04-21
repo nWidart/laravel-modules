@@ -127,6 +127,7 @@ return [
             'resource' => ['path' => 'app/Transformers', 'generate' => false],
             'rules' => ['path' => 'app/Rules', 'generate' => false],
             'component-class' => ['path' => 'app/View/Components', 'generate' => false],
+            'service' => ['path' => 'app/Services', 'generate' => false],
 
             // app/Http/
             'controller' => ['path' => 'app/Http/Controllers', 'generate' => true],
