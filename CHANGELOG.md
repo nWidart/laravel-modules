@@ -6,6 +6,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Changes
 
+- [@dcblogdev](https://github.com/dcblogdev) Restrict fresh migration to module scope
 - [@kowston](https://github.com/kowston) Changed wording for command descriptions to be consistent 
 
 ## 11.0.6 - 2024-04-21
