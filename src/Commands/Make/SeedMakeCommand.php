@@ -25,7 +25,7 @@ class SeedMakeCommand extends GeneratorCommand
     /**
      * The console command description.
      */
-    protected $description = 'Generate new seeder for the specified module.';
+    protected $description = 'Create a new seeder for the specified module.';
 
     /**
      * Get the console command arguments.

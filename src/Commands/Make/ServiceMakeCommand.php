@@ -14,7 +14,7 @@ class ServiceMakeCommand extends GeneratorCommand
 
     protected $argumentName = 'name';
     protected $name = 'module:make-service';
-    protected $description = 'Generate a service class for the specified module.';
+    protected $description = 'Create a new service class for the specified module.';
 
     public function getDestinationFilePath(): string
     {
