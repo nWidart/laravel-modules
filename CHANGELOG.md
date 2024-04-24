@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## Changes
+
+- [@kowston](https://github.com/kowston) Changed wording for command descriptions to be consistent 
+
 ## 11.0.6 - 2024-04-21
 
 - [@alissn](https://github.com/alissn) change package version to Pretty on php artisan about
