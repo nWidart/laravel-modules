@@ -1,6 +1,6 @@
 <?php
 
-namespace Nwidart\Modules\Commands;
+namespace Nwidart\Modules\Commands\Database;
 
 use Illuminate\Console\Command;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -23,7 +23,7 @@ class MigrateFreshCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Drop all database tables and re-run all migrations';
+    protected $description = 'Reset all database tables and re-run the modules migrations.';
 
     /**
      * Execute the console command.
@@ -38,9 +38,7 @@ class MigrateFreshCommand extends Command
             return E_ERROR;
         }
 
-        $this->call('migrate:fresh');
-
-        $this->call('module:migrate', [
+        $this->call('module:migrate-refresh', [
             'module' => $this->getModuleName(),
             '--database' => $this->option('database'),
             '--force' => $this->option('force'),
@@ -55,7 +53,7 @@ class MigrateFreshCommand extends Command
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
@@ -67,7 +65,7 @@ class MigrateFreshCommand extends Command
      *
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
