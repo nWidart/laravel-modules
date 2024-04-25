@@ -15,7 +15,7 @@ class ClassCommand extends GeneratorCommand
      * The name and signature of the console command.
      */
     protected $signature = 'module:make-class
-        {--t|type=service : The type of class, e.g. class, service, repository, contract, etc.}
+        {--t|type=class : The type of class, e.g. class, service, repository, contract, etc.}
         {--p|plain : Create the class without suffix (type)}
         {--i|invokable : Generate a single method, invokable class}
         {--f|force : Create the class even if the class already exists}
@@ -35,14 +35,6 @@ class ClassCommand extends GeneratorCommand
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS' => $this->getClass(),
         ]))->render();
-    }
-
-    /**
-     * Get class namespace.
-     */
-    public function getClassNamespace($module): string
-    {
-        return $this->getModuleNamespace($this->getDefaultNamespace());
     }
 
     public function getDestinationFilePath()
@@ -90,6 +82,25 @@ class ClassCommand extends GeneratorCommand
     {
         $type = $this->option('type');
 
-        return config("modules.paths.generator.{$type}.namespace", $this->getPathNamespace(config("modules.paths.generator.{$type}.path", $this->typePath('app/Classes'))));
+        return config("modules.paths.generator.{$type}.namespace", $this->path_namespace(config("modules.paths.generator.{$type}.path", $this->typePath('app/Classes'))));
+    }
+
+    /**
+     * Get a well-formatted StudlyCase representation of path components.
+     */
+    public function studly_path(string $path, $directory_separator = '/'): string
+    {
+        return collect(explode($directory_separator, Str::of($path)
+            ->replace("{$directory_separator}{$directory_separator}", $directory_separator)->trim($directory_separator)))
+            ->map(fn ($path) => Str::studly($path))
+            ->implode($directory_separator);
+    }
+
+    /**
+     * Get a well-formatted namespace from a given path.
+     */
+    public function path_namespace(string $path): string
+    {
+        return Str::of($this->studly_path($path))->replace('/', '\\')->trim('\\');
     }
 }
