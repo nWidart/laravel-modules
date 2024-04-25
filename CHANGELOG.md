@@ -6,6 +6,9 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Changes
 
+- [@solomon-ochepa](https://github.com/solomon-ochepa) Path Namespace - generate a well-formatted StudlyCase namespace from paths
+- [@korridor](https://github.com/korridor) Fixed public path for octane setup
+- [@dcblogdev](https://github.com/dcblogdev) added invokable and force options into make-service command
 - [@dcblogdev](https://github.com/dcblogdev) Restrict fresh migration to module scope
 - [@kowston](https://github.com/kowston) Changed wording for command descriptions to be consistent 
 
