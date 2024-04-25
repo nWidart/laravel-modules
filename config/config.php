@@ -73,6 +73,37 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Modules assets path
+        |--------------------------------------------------------------------------
+        |
+        | Here you may update the modules' assets path.
+        |
+        */
+        'assets' => public_path('modules'),
+
+        /*
+        |--------------------------------------------------------------------------
+        | The migrations' path
+        |--------------------------------------------------------------------------
+        |
+        | Where you run the 'module:publish-migration' command, where do you publish the
+        | the migration files?
+        |
+        */
+        'migration' => base_path('database/migrations'),
+
+        /*
+        |--------------------------------------------------------------------------
+        | The app path
+        |--------------------------------------------------------------------------
+        |
+        | app folder name
+        | for example can change it to 'src' or 'App'
+        */
+        'app_folder' => 'app/',
+
+        /*
+        |--------------------------------------------------------------------------
         | Generator path
         |--------------------------------------------------------------------------
         | Customise the paths where the folders will be generated.
@@ -126,37 +157,6 @@ return [
             'test-feature' => ['path' => 'tests/Feature', 'generate' => true],
             'test-unit' => ['path' => 'tests/Unit', 'generate' => true],
         ],
-
-        /*
-        |--------------------------------------------------------------------------
-        | Modules assets path
-        |--------------------------------------------------------------------------
-        |
-        | Here you may update the modules' assets path.
-        |
-        */
-        'assets' => public_path('modules'),
-
-        /*
-        |--------------------------------------------------------------------------
-        | The migrations' path
-        |--------------------------------------------------------------------------
-        |
-        | Where you run the 'module:publish-migration' command, where do you publish the
-        | the migration files?
-        |
-        */
-        'migration' => base_path('database/migrations'),
-
-        /*
-        |--------------------------------------------------------------------------
-        | The app path
-        |--------------------------------------------------------------------------
-        |
-        | app folder name
-        | for example can change it to 'src' or 'App'
-        */
-        'app_folder' => 'app/',
     ],
 
     /*
