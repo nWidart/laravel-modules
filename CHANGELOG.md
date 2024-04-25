@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 11.0.7 - 2024-04-25
+
 ## Changes
 
 - [@dcblogdev](https://github.com/dcblogdev) Force the config replacement option for composer 'APP_FOLDER_NAME', to be handled even when its not present.
