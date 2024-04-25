@@ -83,8 +83,8 @@ abstract class Module
     {
         $paths = [];
 
-        if (file_exists('build/manifest.json')) {
-            $files = json_decode(file_get_contents('build/manifest.json'), true);
+        if (file_exists(public_path('build/manifest.json'))) {
+            $files = json_decode(file_get_contents(public_path('build/manifest.json')), true);
 
             if (is_array($files)) {
                 foreach ($files as $file) {
