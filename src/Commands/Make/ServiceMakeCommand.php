@@ -7,6 +7,7 @@ use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class ServiceMakeCommand extends GeneratorCommand
 {
@@ -20,9 +21,9 @@ class ServiceMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $servicePath = GenerateConfigReader::read('service');
+        $servicePath = GenerateConfigReader::read('service')->getPath() ?? config('modules.paths.app_folder').'Services';
 
-        return $path . $servicePath->getPath() . '/' . $this->getServiceName() . '.php';
+        return $path . $servicePath . '/' . $this->getServiceName() . '.php';
     }
 
     protected function getTemplateContents(): string
@@ -43,6 +44,17 @@ class ServiceMakeCommand extends GeneratorCommand
         ];
     }
 
+    /**
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            ['invokable', 'i', InputOption::VALUE_NONE, 'Generate an invokable class', null],
+            ['force', 'f', InputOption::VALUE_NONE, 'su.'],
+        ];
+    }
+
     protected function getServiceName(): array|string
     {
         return Str::studly($this->argument('name'));
@@ -55,12 +67,11 @@ class ServiceMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.service.namespace')
-            ?? ltrim(config('modules.paths.generator.service.path', 'Services'), config('modules.paths.app_folder'));
+        return config('modules.paths.generator.service.namespace', 'Services');
     }
 
     protected function getStubName(): string
     {
-        return '/service.stub';
+        return $this->option('invokable') === true ? '/service-invoke.stub' : '/service.stub';
     }
 }

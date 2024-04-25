@@ -42,6 +42,23 @@ class ServiceMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_generates_a_new_service_class_can_override_with_force_option()
+    {
+        $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog']);
+        $code = $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog', '--force' => true]);
+
+        $this->assertTrue(is_file($this->modulePath . '/Services/MyService.php'));
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_generates_a_new_service_class_can_use_invoke_option()
+    {
+        $code = $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog', '--invokable' => true]);
+
+        $this->assertTrue(is_file($this->modulePath . '/Services/MyService.php'));
+        $this->assertSame(0, $code);
+    }
+
     public function test_it_generated_correct_file_with_content()
     {
         $code = $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog']);
