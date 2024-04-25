@@ -86,7 +86,7 @@ abstract class GeneratorCommand extends Command
      */
     public function getClassNamespace($module)
     {
-        $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
+        $extra = $this->argumentName ? str_replace($this->getClass(), '', $this->argument($this->argumentName)) : '';
 
         $extra = str_replace('/', '\\', $extra);
 
@@ -96,7 +96,7 @@ abstract class GeneratorCommand extends Command
 
         $namespace .= '\\' . $this->getDefaultNamespace();
 
-        $namespace .= '\\' . $extra;
+        $namespace .= $extra ? '\\' . $extra : '';
 
         $namespace = str_replace('/', '\\', $namespace);
 
