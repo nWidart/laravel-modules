@@ -92,7 +92,7 @@ class ModuleGenerator extends Generator
      * @var array
      */
     protected array $author = [
-        'name', 'email'
+        'name', 'email',
     ];
 
     /**
@@ -299,7 +299,7 @@ class ModuleGenerator extends Generator
      * @param string|null $email
      * @return $this
      */
-    function setAuthor(string $name = null, string $email = null)
+    public function setAuthor(string $name = null, string $email = null)
     {
         $this->author['name'] = $name;
         $this->author['email'] = $email;
@@ -313,7 +313,7 @@ class ModuleGenerator extends Generator
      * @param string|null $vendor
      * @return $this
      */
-    function setVendor(string $vendor = null)
+    public function setVendor(string $vendor = null)
     {
         $this->vendor = $vendor;
 
@@ -535,6 +535,10 @@ class ModuleGenerator extends Generator
     protected function getReplacement($stub)
     {
         $replacements = $this->module->config('stubs.replacements');
+
+        if (!isset($replacements['composer']['APP_FOLDER_NAME'])) {
+            $replacements['composer'][] = 'APP_FOLDER_NAME';
+        }
 
         if (!isset($replacements[$stub])) {
             return [];
