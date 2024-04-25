@@ -38,7 +38,7 @@ trait PathNamespace
      */
     public function module_namespace(string $module, string $path = null): string
     {
-        $module_namespace = config('modules.namespace') . '\\' . ($module);
+        $module_namespace = config('modules.namespace', $this->path_namespace(config('modules.paths.modules'))) . '\\' . ($module);
         $module_namespace .= strlen($path) ? '\\' . $this->path_namespace($path) : '';
 
         return $this->studly_namespace($module_namespace);
