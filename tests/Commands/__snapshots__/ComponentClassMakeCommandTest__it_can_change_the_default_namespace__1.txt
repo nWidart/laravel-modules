@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\View\Components\newDirectory;
+namespace Modules\Blog\View\Components\NewDirectory;
 
 use Illuminate\View\Component;
 use Illuminate\View\View;

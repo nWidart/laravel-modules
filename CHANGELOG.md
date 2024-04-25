@@ -4,8 +4,14 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 11.0.7 - 2024-04-25
+
 ## Changes
 
+- [@dcblogdev](https://github.com/dcblogdev) Force the config replacement option for composer 'APP_FOLDER_NAME', to be handled even when its not present.
+- [@solomon-ochepa](https://github.com/solomon-ochepa) Path Namespace - generate a well-formatted StudlyCase namespace from paths
+- [@korridor](https://github.com/korridor) Fixed public path for octane setup
+- [@dcblogdev](https://github.com/dcblogdev) added invokable and force options into make-service command
 - [@dcblogdev](https://github.com/dcblogdev) Restrict fresh migration to module scope
 - [@kowston](https://github.com/kowston) Changed wording for command descriptions to be consistent 
 
