@@ -27,6 +27,8 @@ class ClassCommand extends GeneratorCommand
      */
     protected $description = 'Create a new class';
 
+    protected $argumentName = "name";
+
     public function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
@@ -41,7 +43,7 @@ class ClassCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
         $config = GenerateConfigReader::read('class');
-        $path .= $this->typePath($config->getPath()) . '/' . $this->getFileName() . '.php';
+        $path .= $this->type_path($config->getPath()) . '/' . $this->getFileName() . '.php';
 
         return $path;
     }
@@ -65,7 +67,7 @@ class ClassCommand extends GeneratorCommand
         return Str::studly($this->option('type'));
     }
 
-    protected function typePath(string $path)
+    protected function type_path(string $path)
     {
         return ($this->option('type') === 'class') ? $path : Str::of($path)->replaceLast('Classes', Str::pluralStudly($this->type()));
     }
@@ -82,7 +84,7 @@ class ClassCommand extends GeneratorCommand
     {
         $type = $this->option('type');
 
-        return config("modules.paths.generator.{$type}.namespace", $this->path_namespace(config("modules.paths.generator.{$type}.path", $this->typePath('app/Classes'))));
+        return config("modules.paths.generator.{$type}.namespace", $this->path_namespace(config("modules.paths.generator.{$type}.path", $this->type_path('app/Classes'))));
     }
 
     /**
