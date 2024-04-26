@@ -113,6 +113,7 @@ return [
             // app/
             'channels' => ['path' => 'app/Broadcasting', 'generate' => false],
             'command' => ['path' => 'app/Console', 'generate' => false],
+            'component-class' => ['path' => 'app/View/Components', 'generate' => false],
             'emails' => ['path' => 'app/Emails', 'generate' => false],
             'event' => ['path' => 'app/Events', 'generate' => false],
             'jobs' => ['path' => 'app/Jobs', 'generate' => false],
@@ -122,11 +123,10 @@ return [
             'observer' => ['path' => 'app/Observers', 'generate' => false],
             'policies' => ['path' => 'app/Policies', 'generate' => false],
             'provider' => ['path' => 'app/Providers', 'generate' => true],
-            'route-provider' => ['path' => 'app/Providers', 'generate' => true],
             'repository' => ['path' => 'app/Repositories', 'generate' => false],
             'resource' => ['path' => 'app/Transformers', 'generate' => false],
+            'route-provider' => ['path' => 'app/Providers', 'generate' => true],
             'rules' => ['path' => 'app/Rules', 'generate' => false],
-            'component-class' => ['path' => 'app/View/Components', 'generate' => false],
             'service' => ['path' => 'app/Services', 'generate' => false],
 
             // app/Http/
@@ -138,24 +138,24 @@ return [
             'config' => ['path' => 'config', 'generate' => true],
 
             // database/
+            'factory' => ['path' => 'database/factories', 'generate' => true],
             'migration' => ['path' => 'database/migrations', 'generate' => true],
-            'seeder' => ['path' => 'database/seeders', 'namespace' => 'Database\Seeders', 'generate' => true],
-            'factory' => ['path' => 'database/factories', 'namespace' => 'Database\Factories', 'generate' => true],
+            'seeder' => ['path' => 'database/seeders', 'generate' => true],
 
             // lang/
             'lang' => ['path' => 'lang', 'generate' => false],
 
             // resource/
             'assets' => ['path' => 'resources/assets', 'generate' => true],
-            'views' => ['path' => 'resources/views', 'generate' => true],
             'component-view' => ['path' => 'resources/views/components', 'generate' => false],
+            'views' => ['path' => 'resources/views', 'generate' => true],
 
             // routes/
             'routes' => ['path' => 'routes', 'generate' => true],
 
             // tests/
-            'test-unit' => ['path' => 'tests/Unit', 'generate' => true],
             'test-feature' => ['path' => 'tests/Feature', 'generate' => true],
+            'test-unit' => ['path' => 'tests/Unit', 'generate' => true],
         ],
     ],
 
