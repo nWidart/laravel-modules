@@ -50,6 +50,7 @@ abstract class GeneratorCommand extends Command
                 $overwriteFile = $this->hasOption('force') ? $this->option('force') : false;
                 (new FileGenerator($path, $contents))->withFileOverwrite($overwriteFile)->generate();
             });
+
         } catch (FileAlreadyExistException $e) {
             $this->components->error("File : {$path} already exists.");
 
