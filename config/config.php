@@ -129,9 +129,9 @@ return [
             'observer' => ['path' => 'app/Observers', 'generate' => false],
             'policies' => ['path' => 'app/Policies', 'generate' => false],
             'provider' => ['path' => 'app/Providers', 'generate' => true],
-            'route-provider' => ['path' => 'app/Providers', 'generate' => true],
             'repository' => ['path' => 'app/Repositories', 'generate' => false],
             'resource' => ['path' => 'app/Transformers', 'generate' => false],
+            'route-provider' => ['path' => 'app/Providers', 'generate' => true],
             'rules' => ['path' => 'app/Rules', 'generate' => false],
             'services' => ['path' => 'app/Services', 'generate' => false],
             'scopes' => ['path' => 'app/Models/Scopes', 'generate' => false],
@@ -146,24 +146,24 @@ return [
             'config' => ['path' => 'config', 'generate' => true],
 
             // database/
+            'factory' => ['path' => 'database/factories', 'generate' => true],
             'migration' => ['path' => 'database/migrations', 'generate' => true],
-            'seeder' => ['path' => 'database/seeders', 'namespace' => 'Database\Seeders', 'generate' => true],
-            'factory' => ['path' => 'database/factories', 'namespace' => 'Database\Factories', 'generate' => true],
+            'seeder' => ['path' => 'database/seeders', 'generate' => true],
 
             // lang/
             'lang' => ['path' => 'lang', 'generate' => false],
 
             // resource/
             'assets' => ['path' => 'resources/assets', 'generate' => true],
-            'views' => ['path' => 'resources/views', 'generate' => true],
             'component-view' => ['path' => 'resources/views/components', 'generate' => false],
+            'views' => ['path' => 'resources/views', 'generate' => true],
 
             // routes/
             'routes' => ['path' => 'routes', 'generate' => true],
 
             // tests/
-            'test-unit' => ['path' => 'tests/Unit', 'generate' => true],
             'test-feature' => ['path' => 'tests/Feature', 'generate' => true],
+            'test-unit' => ['path' => 'tests/Unit', 'generate' => true],
         ],
     ],
 
