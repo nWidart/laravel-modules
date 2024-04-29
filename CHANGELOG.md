@@ -7,6 +7,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - [@dcblogdev](https://github.com/dcblogdev) added make-action command
 - [@dcblogdev](https://github.com/dcblogdev) added make-cast command
 - [@dcblogdev](https://github.com/dcblogdev) added make-enum command
+- [@dcblogdev](https://github.com/dcblogdev) added make-exception command
 - [@dcblogdev](https://github.com/dcblogdev) added make-helper command
 - [@dcblogdev](https://github.com/dcblogdev) added make-trait command
 - [@dcblogdev](https://github.com/dcblogdev) added missing return type for make-service command

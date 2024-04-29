@@ -1,0 +1,10 @@
+<?php
+
+namespace $CLASS_NAMESPACE$;
+
+use Exception;
+
+class $CLASS$ extends Exception
+{
+    //
+}
