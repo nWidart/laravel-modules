@@ -112,6 +112,7 @@ return [
         'generator' => [
             // app/
             'actions' => ['path' => 'app/Actions', 'generate' => false],
+            'casts' => ['path' => 'app/Casts', 'generate' => false],
             'channels' => ['path' => 'app/Broadcasting', 'generate' => false],
             'command' => ['path' => 'app/Console', 'generate' => false],
             'emails' => ['path' => 'app/Emails', 'generate' => false],
