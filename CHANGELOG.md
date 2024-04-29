@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+- [@dcblogdev](https://github.com/dcblogdev) added make-event-provider command, modules come with event as default now
+
 ## 11.0.8 - 2024-04-29
 
 - [@solomon-ochepa](https://github.com/solomon-ochepa) Remove custom namespaces from generator [factory and seeder]
