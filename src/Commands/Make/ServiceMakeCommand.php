@@ -21,7 +21,7 @@ class ServiceMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $servicePath = GenerateConfigReader::read('service')->getPath() ?? config('modules.paths.app_folder').'Services';
+        $servicePath = GenerateConfigReader::read('service')->getPath() ?? config('modules.paths.app_folder') . 'Services';
 
         return $path . $servicePath . '/' . $this->getServiceName() . '.php';
     }
@@ -47,7 +47,7 @@ class ServiceMakeCommand extends GeneratorCommand
     /**
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['invokable', 'i', InputOption::VALUE_NONE, 'Generate an invokable class', null],
