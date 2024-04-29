@@ -4,6 +4,17 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+- [@dcblogdev](https://github.com/dcblogdev) added make-action command
+- [@dcblogdev](https://github.com/dcblogdev) added make-cast command
+- [@dcblogdev](https://github.com/dcblogdev) added make-enum command
+- [@dcblogdev](https://github.com/dcblogdev) added make-exception command
+- [@dcblogdev](https://github.com/dcblogdev) added make-helper command
+- [@dcblogdev](https://github.com/dcblogdev) added make-interface command
+- [@dcblogdev](https://github.com/dcblogdev) added make-scope command
+- [@dcblogdev](https://github.com/dcblogdev) added make-trait command
+- [@dcblogdev](https://github.com/dcblogdev) added missing return type for make-service command
+- [@dcblogdev](https://github.com/dcblogdev) updated config
+
 ## 11.0.7 - 2024-04-25
 
 ## Changes

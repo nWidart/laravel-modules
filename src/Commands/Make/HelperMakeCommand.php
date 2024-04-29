@@ -9,21 +9,21 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class ServiceMakeCommand extends GeneratorCommand
+class HelperMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
-    protected $name = 'module:make-service';
-    protected $description = 'Create a new service class for the specified module.';
+    protected $name = 'module:make-helper';
+    protected $description = 'Create a new helper class for the specified module.';
 
     public function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('services')->getPath() ?? config('modules.paths.app_folder') . 'Services';
+        $filePath = GenerateConfigReader::read('helpers')->getPath() ?? config('modules.paths.app_folder') . 'Helpers';
 
-        return $path . $filePath . '/' . $this->getServiceName() . '.php';
+        return $path . $filePath . '/' . $this->getHelperName() . '.php';
     }
 
     protected function getTemplateContents(): string
@@ -39,7 +39,7 @@ class ServiceMakeCommand extends GeneratorCommand
     protected function getArguments(): array
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the service class.'],
+            ['name', InputArgument::REQUIRED, 'The name of the helper class.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
@@ -55,23 +55,23 @@ class ServiceMakeCommand extends GeneratorCommand
         ];
     }
 
-    protected function getServiceName(): array|string
+    protected function getHelperName(): array|string
     {
         return Str::studly($this->argument('name'));
     }
 
     private function getClassNameWithoutNamespace(): array|string
     {
-        return class_basename($this->getServiceName());
+        return class_basename($this->getHelperName());
     }
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.services.namespace', 'Services');
+        return config('modules.paths.generator.helpers.namespace', 'Helpers');
     }
 
     protected function getStubName(): string
     {
-        return $this->option('invokable') === true ? '/service-invoke.stub' : '/service.stub';
+        return $this->option('invokable') === true ? '/helper-invoke.stub' : '/helper.stub';
     }
 }

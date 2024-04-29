@@ -9,21 +9,21 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class ServiceMakeCommand extends GeneratorCommand
+class ScopeMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
-    protected $name = 'module:make-service';
-    protected $description = 'Create a new service class for the specified module.';
+    protected $name = 'module:make-scope';
+    protected $description = 'Create a new scope class for the specified module.';
 
     public function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('services')->getPath() ?? config('modules.paths.app_folder') . 'Services';
+        $filePath = GenerateConfigReader::read('scopes')->getPath() ?? config('modules.paths.generator.model.path') . '/Scopes';
 
-        return $path . $filePath . '/' . $this->getServiceName() . '.php';
+        return $path . $filePath . '/' . $this->getScopeName() . '.php';
     }
 
     protected function getTemplateContents(): string
@@ -39,7 +39,7 @@ class ServiceMakeCommand extends GeneratorCommand
     protected function getArguments(): array
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the service class.'],
+            ['name', InputArgument::REQUIRED, 'The name of the scope class.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
@@ -50,28 +50,32 @@ class ServiceMakeCommand extends GeneratorCommand
     protected function getOptions(): array
     {
         return [
-            ['invokable', 'i', InputOption::VALUE_NONE, 'Generate an invokable class', null],
             ['force', 'f', InputOption::VALUE_NONE, 'su.'],
         ];
     }
 
-    protected function getServiceName(): array|string
+    protected function getScopeName(): array|string
     {
         return Str::studly($this->argument('name'));
     }
 
     private function getClassNameWithoutNamespace(): array|string
     {
-        return class_basename($this->getServiceName());
+        return class_basename($this->getScopeName());
     }
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.services.namespace', 'Services');
+        $namespace = config('modules.paths.generator.model.path');
+
+        $parts = explode("/", $namespace);
+        $models = end($parts);
+
+        return $models.'\Scopes';
     }
 
     protected function getStubName(): string
     {
-        return $this->option('invokable') === true ? '/service-invoke.stub' : '/service.stub';
+        return '/scope.stub';
     }
 }

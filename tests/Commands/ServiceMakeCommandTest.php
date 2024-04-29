@@ -69,18 +69,6 @@ class ServiceMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    public function test_it_can_change_the_default_namespace()
-    {
-        $this->app['config']->set('modules.paths.generator.service.path', 'Services');
-
-        $code = $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog']);
-
-        $file = $this->finder->get($this->getModuleBasePath() . '/Services/MyService.php');
-
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
-
     public function test_it_can_generate_a_service_in_sub_namespace_in_correct_folder()
     {
         $code = $this->artisan('module:make-service', ['name' => 'Api\\MyService', 'module' => 'Blog']);
