@@ -122,15 +122,19 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
+        $path = $this->getModuleAppPath() . '/Providers/EventServiceProvider.php';
+        $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
+
+        $path = $this->getModuleAppPath() . '/Providers/RouteServiceProvider.php';
+        $this->assertTrue($this->finder->exists($path));
+        $this->assertMatchesSnapshot($this->finder->get($path));
+
         $path = $this->getModuleAppPath() . '/Http/Controllers/BlogController.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 
         $path = $this->getModuleBasePath() . '/database/seeders/BlogDatabaseSeeder.php';
-        $this->assertTrue($this->finder->exists($path));
-        $this->assertMatchesSnapshot($this->finder->get($path));
-
-        $path = $this->getModuleAppPath() . '/Providers/RouteServiceProvider.php';
         $this->assertTrue($this->finder->exists($path));
         $this->assertMatchesSnapshot($this->finder->get($path));
 

@@ -57,6 +57,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\Make\ComponentViewMakeCommand::class,
             Commands\Make\ControllerMakeCommand::class,
             Commands\Make\EventMakeCommand::class,
+            Commands\Make\EventProviderMakeCommand::class,
             Commands\Make\EnumMakeCommand::class,
             Commands\Make\ExceptionMakeCommand::class,
             Commands\Make\FactoryMakeCommand::class,
