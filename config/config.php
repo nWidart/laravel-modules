@@ -111,11 +111,14 @@ return [
         */
         'generator' => [
             // app/
+            'actions' => ['path' => 'app/Actions', 'generate' => false],
             'channels' => ['path' => 'app/Broadcasting', 'generate' => false],
             'command' => ['path' => 'app/Console', 'generate' => false],
             'emails' => ['path' => 'app/Emails', 'generate' => false],
             'event' => ['path' => 'app/Events', 'generate' => false],
+            'enums' => ['path' => 'app/Enums', 'generate' => false],
             'jobs' => ['path' => 'app/Jobs', 'generate' => false],
+            'helpers' => ['path' => 'app/Helpers', 'generate' => false],
             'listener' => ['path' => 'app/Listeners', 'generate' => false],
             'model' => ['path' => 'app/Models', 'generate' => false],
             'notifications' => ['path' => 'app/Notifications', 'generate' => false],
@@ -127,7 +130,7 @@ return [
             'resource' => ['path' => 'app/Transformers', 'generate' => false],
             'rules' => ['path' => 'app/Rules', 'generate' => false],
             'component-class' => ['path' => 'app/View/Components', 'generate' => false],
-            'service' => ['path' => 'app/Services', 'generate' => false],
+            'services' => ['path' => 'app/Services', 'generate' => false],
 
             // app/Http/
             'controller' => ['path' => 'app/Http/Controllers', 'generate' => true],

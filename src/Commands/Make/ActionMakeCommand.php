@@ -21,7 +21,7 @@ class ActionMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('action')->getPath() ?? config('modules.paths.app_folder') . 'Actions';
+        $filePath = GenerateConfigReader::read('actions')->getPath() ?? config('modules.paths.app_folder') . 'Actions';
 
         return $path . $filePath . '/' . $this->getActionName() . '.php';
     }
