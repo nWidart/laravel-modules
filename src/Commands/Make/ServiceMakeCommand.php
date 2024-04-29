@@ -21,9 +21,9 @@ class ServiceMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $servicePath = GenerateConfigReader::read('service')->getPath() ?? config('modules.paths.app_folder') . 'Services';
+        $filePath = GenerateConfigReader::read('service')->getPath() ?? config('modules.paths.app_folder') . 'Services';
 
-        return $path . $servicePath . '/' . $this->getServiceName() . '.php';
+        return $path . $filePath . '/' . $this->getServiceName() . '.php';
     }
 
     protected function getTemplateContents(): string
