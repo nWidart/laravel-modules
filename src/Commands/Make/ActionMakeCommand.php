@@ -67,7 +67,7 @@ class ActionMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.action.namespace', 'Actions');
+        return config('modules.paths.generator.actions.namespace', 'Actions');
     }
 
     protected function getStubName(): string
