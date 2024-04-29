@@ -60,6 +60,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\Make\EnumMakeCommand::class,
             Commands\Make\ExceptionMakeCommand::class,
             Commands\Make\FactoryMakeCommand::class,
+            Commands\Make\InterfaceMakeCommand::class,
             Commands\Make\HelperMakeCommand::class,
             Commands\Make\JobMakeCommand::class,
             Commands\Make\ListenerMakeCommand::class,
