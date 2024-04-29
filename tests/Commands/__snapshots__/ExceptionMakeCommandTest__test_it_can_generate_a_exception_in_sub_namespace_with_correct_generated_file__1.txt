@@ -1,0 +1,10 @@
+<?php
+
+namespace Modules\Blog\Exceptions\Api;
+
+use Exception;
+
+class MyException extends Exception
+{
+    //
+}
