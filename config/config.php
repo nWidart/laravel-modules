@@ -131,6 +131,7 @@ return [
             'rules' => ['path' => 'app/Rules', 'generate' => false],
             'component-class' => ['path' => 'app/View/Components', 'generate' => false],
             'services' => ['path' => 'app/Services', 'generate' => false],
+            'traits' => ['path' => 'app/Traits', 'generate' => false],
 
             // app/Http/
             'controller' => ['path' => 'app/Http/Controllers', 'generate' => true],

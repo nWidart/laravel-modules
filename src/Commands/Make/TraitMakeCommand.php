@@ -9,21 +9,21 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class HelperMakeCommand extends GeneratorCommand
+class TraitMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
-    protected $name = 'module:make-helper';
-    protected $description = 'Create a new helper class for the specified module.';
+    protected $name = 'module:make-trait';
+    protected $description = 'Create a new trait class for the specified module.';
 
     public function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('helpers')->getPath() ?? config('modules.paths.app_folder') . 'Helpers';
+        $filePath = GenerateConfigReader::read('traits')->getPath() ?? config('modules.paths.app_folder') . 'Traits';
 
-        return $path . $filePath . '/' . $this->getHelperName() . '.php';
+        return $path . $filePath . '/' . $this->getTraitName() . '.php';
     }
 
     protected function getTemplateContents(): string
@@ -39,7 +39,7 @@ class HelperMakeCommand extends GeneratorCommand
     protected function getArguments(): array
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the helper class.'],
+            ['name', InputArgument::REQUIRED, 'The name of the trait class.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
@@ -50,28 +50,27 @@ class HelperMakeCommand extends GeneratorCommand
     protected function getOptions(): array
     {
         return [
-            ['invokable', 'i', InputOption::VALUE_NONE, 'Generate an invokable class', null],
             ['force', 'f', InputOption::VALUE_NONE, 'su.'],
         ];
     }
 
-    protected function getHelperName(): array|string
+    protected function getTraitName(): array|string
     {
         return Str::studly($this->argument('name'));
     }
 
     private function getClassNameWithoutNamespace(): array|string
     {
-        return class_basename($this->getHelperName());
+        return class_basename($this->getTraitName());
     }
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.helpers.namespace', 'Helpers');
+        return config('modules.paths.generator.traits.namespace', 'Traits');
     }
 
     protected function getStubName(): string
     {
-        return $this->option('invokable') === true ? '/helper-invoke.stub' : '/helper.stub';
+        return '/trait.stub';
     }
 }

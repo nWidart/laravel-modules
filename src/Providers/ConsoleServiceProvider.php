@@ -76,6 +76,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\Make\RuleMakeCommand::class,
             Commands\Make\SeedMakeCommand::class,
             Commands\Make\ServiceMakeCommand::class,
+            Commands\Make\TraitMakeCommand::class,
             Commands\Make\TestMakeCommand::class,
             Commands\Make\ViewMakeCommand::class,
 

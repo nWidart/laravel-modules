@@ -66,7 +66,7 @@ class EnumMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.enum.namespace', 'Enums');
+        return config('modules.paths.generator.enums.namespace', 'Enums');
     }
 
     protected function getStubName(): string
