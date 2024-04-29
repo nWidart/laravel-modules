@@ -57,6 +57,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\Make\ControllerMakeCommand::class,
             Commands\Make\EventMakeCommand::class,
             Commands\Make\FactoryMakeCommand::class,
+            Commands\Make\HelperMakeCommand::class,
             Commands\Make\JobMakeCommand::class,
             Commands\Make\ListenerMakeCommand::class,
             Commands\Make\MailMakeCommand::class,
