@@ -4,6 +4,9 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 11.0.8 - 2024-04-29
+
+- [@solomon-ochepa](https://github.com/solomon-ochepa) Remove custom namespaces from generator [factory and seeder]
 - [@dcblogdev](https://github.com/dcblogdev) added make-action command
 - [@dcblogdev](https://github.com/dcblogdev) added make-cast command
 - [@dcblogdev](https://github.com/dcblogdev) added make-enum command
