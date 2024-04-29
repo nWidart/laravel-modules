@@ -115,6 +115,7 @@ return [
             'casts' => ['path' => 'app/Casts', 'generate' => false],
             'channels' => ['path' => 'app/Broadcasting', 'generate' => false],
             'command' => ['path' => 'app/Console', 'generate' => false],
+            'component-class' => ['path' => 'app/View/Components', 'generate' => false],
             'emails' => ['path' => 'app/Emails', 'generate' => false],
             'event' => ['path' => 'app/Events', 'generate' => false],
             'enums' => ['path' => 'app/Enums', 'generate' => false],
@@ -132,8 +133,8 @@ return [
             'repository' => ['path' => 'app/Repositories', 'generate' => false],
             'resource' => ['path' => 'app/Transformers', 'generate' => false],
             'rules' => ['path' => 'app/Rules', 'generate' => false],
-            'component-class' => ['path' => 'app/View/Components', 'generate' => false],
             'services' => ['path' => 'app/Services', 'generate' => false],
+            'scopes' => ['path' => 'app/Models/Scopes', 'generate' => false],
             'traits' => ['path' => 'app/Traits', 'generate' => false],
 
             // app/Http/

@@ -10,6 +10,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 - [@dcblogdev](https://github.com/dcblogdev) added make-exception command
 - [@dcblogdev](https://github.com/dcblogdev) added make-helper command
 - [@dcblogdev](https://github.com/dcblogdev) added make-interface command
+- [@dcblogdev](https://github.com/dcblogdev) added make-scope command
 - [@dcblogdev](https://github.com/dcblogdev) added make-trait command
 - [@dcblogdev](https://github.com/dcblogdev) added missing return type for make-service command
 - [@dcblogdev](https://github.com/dcblogdev) updated config
