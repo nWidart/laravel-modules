@@ -226,6 +226,7 @@ class SeedCommand extends BaseCommand
     protected function getOptions()
     {
         return [
+            ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'asc'],
             ['class', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder.'],
             ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to seed.'],
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
