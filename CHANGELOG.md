@@ -4,6 +4,7 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+- [@dcblogdev](https://github.com/dcblogdev) Updated vite-module-loader.js to handle case when a modules does not have a vite.config.js file
 - [@alissn](https://github.com/alissn) Added direction option to command module:seed
 
 ## 11.0.9 - 2024-04-30
