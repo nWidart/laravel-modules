@@ -23,15 +23,17 @@ async function collectModuleAssetsPaths(paths, modulesPath) {
       // Check if the module is enabled (status is true)
       if (moduleStatuses[moduleDir] === true) {
         const viteConfigPath = path.join(modulesPath, moduleDir, 'vite.config.js');
-        const stat = await fs.stat(viteConfigPath);
 
-        if (stat.isFile()) {
+        try {
+          await fs.access(viteConfigPath);
           // Import the module-specific Vite configuration
           const moduleConfig = await import(viteConfigPath);
 
           if (moduleConfig.paths && Array.isArray(moduleConfig.paths)) {
             paths.push(...moduleConfig.paths);
           }
+        } catch (error) {
+          // vite.config.js does not exist, skip this module
         }
       }
     }
