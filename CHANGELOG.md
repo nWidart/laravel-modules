@@ -4,6 +4,8 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+- [@alissn](https://github.com/alissn) Added direction option to command module:seed
+
 ## 11.0.9 - 2024-04-30
 
 - [@dcblogdev](https://github.com/dcblogdev) added make-event-provider command, modules come with event as default now
