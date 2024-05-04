@@ -50,7 +50,6 @@ abstract class GeneratorCommand extends Command
                 $overwriteFile = $this->hasOption('force') ? $this->option('force') : false;
                 (new FileGenerator($path, $contents))->withFileOverwrite($overwriteFile)->generate();
             });
-
         } catch (FileAlreadyExistException $e) {
             $this->components->error("File : {$path} already exists.");
 
@@ -92,5 +91,13 @@ abstract class GeneratorCommand extends Command
         $path_namespace = $this->path_namespace(str_replace($this->getClass(), '', $this->argument($this->argumentName)));
 
         return $this->module_namespace($module->getStudlyName(), $this->getDefaultNamespace() . ($path_namespace ? '\\' . $path_namespace : ''));
+    }
+
+    /**
+     * Get the module root path + extra $path
+     */
+    public function path(?string $path = null): string
+    {
+        return $this->clean_path($this->laravel['modules']->getModulePath($this->getModuleName()) . (strlen($path) ? '/' . $path : ''));
     }
 }
