@@ -77,7 +77,7 @@ class ClassCommand extends GeneratorCommand
      */
     public function getClass(): string
     {
-        return $this->getFileName();
+        return Str::of($this->getFileName())->remove('.php')->studly();
     }
 
     public function getDefaultNamespace(): string
@@ -85,24 +85,5 @@ class ClassCommand extends GeneratorCommand
         $type = $this->option('type');
 
         return config("modules.paths.generator.{$type}.namespace") ?? $this->path_namespace(config("modules.paths.generator.{$type}.path") ?? $this->type_path($this->app_path('Classes')));
-    }
-
-    /**
-     * Get a well-formatted StudlyCase representation of path components.
-     */
-    public function studly_path(string $path, $directory_separator = '/'): string
-    {
-        return collect(explode($directory_separator, Str::of($path)
-            ->replace("{$directory_separator}{$directory_separator}", $directory_separator)->trim($directory_separator)))
-            ->map(fn ($path) => Str::studly($path))
-            ->implode($directory_separator);
-    }
-
-    /**
-     * Get a well-formatted namespace from a given path.
-     */
-    public function path_namespace(string $path): string
-    {
-        return Str::of($this->studly_path($path))->replace('/', '\\')->trim('\\');
     }
 }
