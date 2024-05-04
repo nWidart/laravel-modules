@@ -48,4 +48,16 @@ trait PathNamespace
     {
         return Str::of($path)->explode($ds)->reject(empty($path))->implode($ds);
     }
+
+    /**
+     * Get the app path basename.
+     */
+    public function app_path(?string $path = null): string
+    {
+        $config_path = config('modules.paths.app_folder');
+        $app_path = strlen($config_path) ? trim($config_path, '/') : 'app';
+        $app_path .= ($path) ? '/' . $path : '';
+
+        return $this->clean_path($app_path);
+    }
 }
