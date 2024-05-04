@@ -16,7 +16,7 @@ class ClassCommand extends GeneratorCommand
      */
     protected $signature = 'module:make-class
         {--t|type=class : The type of class, e.g. class, service, repository, contract, etc.}
-        {--p|plain : Create the class without suffix (type)}
+        {--p|plain : Create the class without the type suffix}
         {--i|invokable : Generate a single method, invokable class}
         {--f|force : Create the class even if the class already exists}
         {name : The name of the class}
@@ -39,37 +39,37 @@ class ClassCommand extends GeneratorCommand
         ]))->render();
     }
 
-    public function getDestinationFilePath()
+    public function getDestinationFilePath(): string
     {
         $app_path = GenerateConfigReader::read('class')->getPath() ?? $this->app_path('Classes');
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
-        $path .= $this->type_path($app_path) . '/' . $this->getFileName();
+        $path .= $this->type_path($app_path) . '/' . $this->getFileName() . '.php';
 
         return $path;
     }
 
-    protected function getFileName()
+    protected function getFileName(): string
     {
         $file = Str::studly($this->argument('name'));
 
-        if ($this->option('plain') === false and $this->option('type') !== 'class') {
-            $file .= $this->type();
+        if ($this->option('plain') === false and $this->type() != 'class') {
+            $file .= Str::of($this->type())->studly();
         }
 
-        return $file . '.php';
+        return $file;
     }
 
     /**
-     * Get the type of class e.g. Class, Services, Repository, etc.
+     * Get the type of class e.g. class, service, repository, etc.
      */
-    protected function type()
+    protected function type(): string
     {
-        return Str::studly($this->option('type'));
+        return Str::of($this->option('type'))->remove('=')->singular();
     }
 
-    protected function type_path(string $path)
+    protected function type_path(string $path): string
     {
-        return ($this->option('type') === 'class') ? $path : Str::of($path)->replaceLast('Classes', Str::pluralStudly($this->type()));
+        return ($this->type() == 'class') ? $path : Str::of($path)->replaceLast('Classes', Str::of($this->type())->plural()->studly());
     }
 
     /**
@@ -77,12 +77,12 @@ class ClassCommand extends GeneratorCommand
      */
     public function getClass(): string
     {
-        return Str::of($this->getFileName())->remove('.php')->studly();
+        return Str::of($this->getFileName())->basename()->studly();
     }
 
     public function getDefaultNamespace(): string
     {
-        $type = $this->option('type');
+        $type = $this->type();
 
         return config("modules.paths.generator.{$type}.namespace") ?? $this->path_namespace(config("modules.paths.generator.{$type}.path") ?? $this->type_path($this->app_path('Classes')));
     }
