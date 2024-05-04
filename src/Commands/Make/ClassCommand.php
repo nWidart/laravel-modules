@@ -42,10 +42,8 @@ class ClassCommand extends GeneratorCommand
     public function getDestinationFilePath(): string
     {
         $app_path = GenerateConfigReader::read('class')->getPath() ?? $this->app_path('Classes');
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
-        $path .= $this->type_path($app_path) . '/' . $this->getFileName() . '.php';
 
-        return $path;
+        return $this->path($this->type_path($app_path) . '/' . $this->getFileName() . '.php');
     }
 
     protected function getFileName(): string
