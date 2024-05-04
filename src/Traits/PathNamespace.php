@@ -56,7 +56,7 @@ trait PathNamespace
     {
         $config_path = config('modules.paths.app_folder');
         $app_path = strlen($config_path) ? trim($config_path, '/') : 'app';
-        $app_path .= ($path) ? '/' . $path : '';
+        $app_path .= strlen($path) ? '/' . $path : '';
 
         return $this->clean_path($app_path);
     }
