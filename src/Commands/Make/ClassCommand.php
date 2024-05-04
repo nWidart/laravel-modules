@@ -27,7 +27,7 @@ class ClassCommand extends GeneratorCommand
      */
     protected $description = 'Create a new class';
 
-    protected $argumentName = "name";
+    protected $argumentName = 'name';
 
     public function getTemplateContents()
     {
@@ -41,9 +41,9 @@ class ClassCommand extends GeneratorCommand
 
     public function getDestinationFilePath()
     {
+        $app_path = GenerateConfigReader::read('class')->getPath() ?? $this->app_path('Classes');
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
-        $config = GenerateConfigReader::read('class');
-        $path .= $this->type_path($config->getPath()) . '/' . $this->getFileName() . '.php';
+        $path .= $this->type_path($app_path) . '/' . $this->getFileName();
 
         return $path;
     }
@@ -56,7 +56,7 @@ class ClassCommand extends GeneratorCommand
             $file .= $this->type();
         }
 
-        return $file;
+        return $file . '.php';
     }
 
     /**
@@ -84,7 +84,7 @@ class ClassCommand extends GeneratorCommand
     {
         $type = $this->option('type');
 
-        return config("modules.paths.generator.{$type}.namespace", $this->path_namespace(config("modules.paths.generator.{$type}.path", $this->type_path('app/Classes'))));
+        return config("modules.paths.generator.{$type}.namespace") ?? $this->path_namespace(config("modules.paths.generator.{$type}.path") ?? $this->type_path($this->app_path('Classes')));
     }
 
     /**
