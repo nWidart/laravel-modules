@@ -35,7 +35,7 @@ class ClassCommand extends GeneratorCommand
 
         return (new Stub('/app/Classes/Class.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
-            'CLASS' => $this->getClass(),
+            'CLASS' => $this->type_class(),
         ]))->render();
     }
 
@@ -70,10 +70,7 @@ class ClassCommand extends GeneratorCommand
         return ($this->type() == 'class') ? $path : Str::of($path)->replaceLast('Classes', Str::of($this->type())->plural()->studly());
     }
 
-    /**
-     * Get class name.
-     */
-    public function getClass(): string
+    public function type_class(): string
     {
         return Str::of($this->getFileName())->basename()->studly();
     }
