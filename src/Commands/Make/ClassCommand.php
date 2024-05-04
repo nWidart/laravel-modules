@@ -50,7 +50,9 @@ class ClassCommand extends GeneratorCommand
     {
         $file = Str::studly($this->argument('name'));
 
-        if ($this->option('plain') === false and $this->type() != 'class') {
+        if ($this->option('plain') == false and $this->type() != 'class') {
+            $names = [Str::plural($this->type()), Str::singular($this->type())];
+            $file = Str::of($file)->remove($names, false);
             $file .= Str::of($this->type())->studly();
         }
 
