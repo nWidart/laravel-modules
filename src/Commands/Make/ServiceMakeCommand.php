@@ -50,7 +50,7 @@ class ServiceMakeCommand extends GeneratorCommand
     protected function getOptions(): array
     {
         return [
-            ['invokable', 'i', InputOption::VALUE_NONE, 'Generate an invokable class', null],
+            ['invokable', 'i', InputOption::VALUE_NONE, 'Generate an invokable service class', null],
             ['force', 'f', InputOption::VALUE_NONE, 'su.'],
         ];
     }
