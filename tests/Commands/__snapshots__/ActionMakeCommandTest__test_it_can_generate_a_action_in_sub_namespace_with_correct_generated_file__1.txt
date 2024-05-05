@@ -4,7 +4,7 @@ namespace Modules\Blog\Actions\Api;
 
 class MyAction
 {
-    public function __construct()
+    public function handle()
     {
         //
     }

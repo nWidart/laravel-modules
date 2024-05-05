@@ -1,0 +1,18 @@
+<?php
+
+namespace {{ namespace }};
+
+namespace Modules\Blog\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+
+class MyController extends Controller
+{
+    /**
+     * Handle the incoming request.
+     */
+    public function __invoke(Request $request)
+    {
+        //
+    }
+}

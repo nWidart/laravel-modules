@@ -4,7 +4,7 @@ namespace $CLASS_NAMESPACE$;
 
 class $CLASS$
 {
-    public function __invokable()
+    public function __invoke()
     {
         //
     }
