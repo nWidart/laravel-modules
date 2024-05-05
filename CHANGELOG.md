@@ -2,6 +2,8 @@
 
 All Notable changes to `laravel-modules` will be documented in this file.
 
+## 11.0.10 - 2024-05-05
+
 ## Next
 
 - [@dcblogdev](https://github.com/dcblogdev) Update controller, service, helper, and action methods
