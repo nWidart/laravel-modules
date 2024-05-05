@@ -4,7 +4,7 @@ namespace Modules\Blog\Helpers\Api;
 
 class MyHelper
 {
-    public function __construct()
+    public function handle()
     {
         //
     }
