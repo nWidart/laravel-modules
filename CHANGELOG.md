@@ -4,6 +4,10 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+- [@dcblogdev](https://github.com/dcblogdev) Update controller, service, helper, and action methods
+- [@omerbaflah](https://github.com/omerbaflah) Update service stubs
+- [@omerbaflah](https://github.com/omerbaflah) Update action stubs
+- [@AbdulkarimOmer](https://github.com/AbdulkarimOmer) Added invokable option into make-controller command
 - [@dcblogdev](https://github.com/dcblogdev) Updated vite-module-loader.js to handle case when a modules does not have a vite.config.js file
 - [@alissn](https://github.com/alissn) Added direction option to command module:seed
 
