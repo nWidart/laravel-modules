@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Commands\Make;
 use Illuminate\Console\Command;
 use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 use Nwidart\Modules\Generators\FileGenerator;
+use Nwidart\Modules\Module;
 use Nwidart\Modules\Traits\PathNamespace;
 
 abstract class GeneratorCommand extends Command
@@ -99,5 +100,10 @@ abstract class GeneratorCommand extends Command
     public function path(?string $path = null): string
     {
         return $this->clean_path($this->laravel['modules']->getModulePath($this->getModuleName()) . (strlen($path) ? '/' . $path : ''));
+    }
+
+    public function module(?string $name = null): Module
+    {
+        return $this->laravel['modules']->findOrFail($name ?? $this->getModuleName());
     }
 }

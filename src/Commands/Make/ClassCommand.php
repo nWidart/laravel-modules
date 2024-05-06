@@ -31,10 +31,8 @@ class ClassCommand extends GeneratorCommand
 
     public function getTemplateContents()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
-
         return (new Stub($this->stub(), [
-            'NAMESPACE' => $this->getClassNamespace($module),
+            'NAMESPACE' => $this->getClassNamespace($this->module()),
             'CLASS' => $this->type_class(),
         ]))->render();
     }
