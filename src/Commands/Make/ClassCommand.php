@@ -33,10 +33,15 @@ class ClassCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/app/Classes/Class.stub', [
+        return (new Stub($this->stub(), [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS' => $this->type_class(),
         ]))->render();
+    }
+
+    public function stub()
+    {
+        return $this->option('invokable') ? '/class-invoke.stub' : '/class.stub';
     }
 
     public function getDestinationFilePath(): string
