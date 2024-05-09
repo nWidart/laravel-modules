@@ -1,10 +1,9 @@
 <?php
 
-namespace {{ namespace }};
-
 namespace Modules\Blog\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class MyController extends Controller
 {
@@ -13,6 +12,6 @@ class MyController extends Controller
      */
     public function __invoke(Request $request)
     {
-        //
+        return response()->json([]);
     }
 }
