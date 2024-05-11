@@ -92,8 +92,11 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\Publish\PublishMigrationCommand::class,
             Commands\Publish\PublishTranslationCommand::class,
 
-            // Other Commands
+            // Composer Commands
+            Commands\Composer\AutoloadCommand::class,
             Commands\ComposerUpdateCommand::class,
+
+            // Other Commands
             Commands\LaravelModulesV6Migrator::class,
             Commands\SetupCommand::class,
 
