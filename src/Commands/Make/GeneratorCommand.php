@@ -94,14 +94,6 @@ abstract class GeneratorCommand extends Command
         return $this->module_namespace($module->getStudlyName(), $this->getDefaultNamespace() . ($path_namespace ? '\\' . $path_namespace : ''));
     }
 
-    /**
-     * Get the module root path + extra $path
-     */
-    public function path(?string $path = null): string
-    {
-        return $this->clean_path($this->laravel['modules']->getModulePath($this->getModuleName()) . (strlen($path) ? '/' . $path : ''));
-    }
-
     public function module(?string $name = null): Module
     {
         return $this->laravel['modules']->findOrFail($name ?? $this->getModuleName());

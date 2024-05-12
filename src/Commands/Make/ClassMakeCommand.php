@@ -7,7 +7,7 @@ use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 
-class ClassCommand extends GeneratorCommand
+class ClassMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
@@ -16,7 +16,7 @@ class ClassCommand extends GeneratorCommand
      */
     protected $signature = 'module:make-class
         {--t|type=class : The type of class, e.g. class, service, repository, contract, etc.}
-        {--p|plain : Create the class without the type suffix}
+        {--s|suffix : Create the class without the type suffix}
         {--i|invokable : Generate a single method, invokable class}
         {--f|force : Create the class even if the class already exists}
         {name : The name of the class}
@@ -29,31 +29,33 @@ class ClassCommand extends GeneratorCommand
 
     protected $argumentName = 'name';
 
-    public function getTemplateContents()
+    public function getTemplateContents(): string
     {
         return (new Stub($this->stub(), [
             'NAMESPACE' => $this->getClassNamespace($this->module()),
-            'CLASS' => $this->type_class(),
+            'CLASS' => $this->typeClass(),
         ]))->render();
     }
 
-    public function stub()
+    public function stub(): string
     {
         return $this->option('invokable') ? '/class-invoke.stub' : '/class.stub';
     }
 
     public function getDestinationFilePath(): string
     {
-        $app_path = GenerateConfigReader::read('class')->getPath() ?? $this->app_path('Classes');
+        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        return $this->path($this->type_path($app_path) . '/' . $this->getFileName() . '.php');
+        $filePath = GenerateConfigReader::read('class')->getPath() ?? config('modules.paths.app_folder') . 'Classes';
+
+        return $this->typePath($path . $filePath . '/' . $this->getFileName() . '.php');
     }
 
     protected function getFileName(): string
     {
         $file = Str::studly($this->argument('name'));
 
-        if ($this->option('plain') == false and $this->type() != 'class') {
+        if ($this->option('suffix') === true) {
             $names = [Str::plural($this->type()), Str::singular($this->type())];
             $file = Str::of($file)->remove($names, false);
             $file .= Str::of($this->type())->studly();
@@ -70,12 +72,12 @@ class ClassCommand extends GeneratorCommand
         return Str::of($this->option('type'))->remove('=')->singular();
     }
 
-    protected function type_path(string $path): string
+    protected function typePath(string $path): string
     {
-        return ($this->type() == 'class') ? $path : Str::of($path)->replaceLast('Classes', Str::of($this->type())->plural()->studly());
+        return ($this->type() === 'class') ? $path : Str::of($path)->replaceLast('Classes', Str::of($this->type())->plural()->studly());
     }
 
-    public function type_class(): string
+    public function typeClass(): string
     {
         return Str::of($this->getFileName())->basename()->studly();
     }
@@ -84,6 +86,6 @@ class ClassCommand extends GeneratorCommand
     {
         $type = $this->type();
 
-        return config("modules.paths.generator.{$type}.namespace") ?? $this->path_namespace(config("modules.paths.generator.{$type}.path") ?? $this->type_path($this->app_path('Classes')));
+        return config("modules.paths.generator.{$type}.namespace", 'Classes');
     }
 }
