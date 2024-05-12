@@ -4,9 +4,6 @@ namespace $NAMESPACE$;
 
 class $CLASS$
 {
-    /**
-     * Create a new class instance.
-     */
     public function __construct()
     {
         //
