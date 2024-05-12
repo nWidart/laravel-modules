@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Commands\Make;
 use Illuminate\Console\Command;
 use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 use Nwidart\Modules\Generators\FileGenerator;
+use Nwidart\Modules\Module;
 use Nwidart\Modules\Traits\PathNamespace;
 
 abstract class GeneratorCommand extends Command
@@ -50,7 +51,6 @@ abstract class GeneratorCommand extends Command
                 $overwriteFile = $this->hasOption('force') ? $this->option('force') : false;
                 (new FileGenerator($path, $contents))->withFileOverwrite($overwriteFile)->generate();
             });
-
         } catch (FileAlreadyExistException $e) {
             $this->components->error("File : {$path} already exists.");
 
@@ -92,5 +92,10 @@ abstract class GeneratorCommand extends Command
         $path_namespace = $this->path_namespace(str_replace($this->getClass(), '', $this->argument($this->argumentName)));
 
         return $this->module_namespace($module->getStudlyName(), $this->getDefaultNamespace() . ($path_namespace ? '\\' . $path_namespace : ''));
+    }
+
+    public function module(?string $name = null): Module
+    {
+        return $this->laravel['modules']->findOrFail($name ?? $this->getModuleName());
     }
 }

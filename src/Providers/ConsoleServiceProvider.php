@@ -52,6 +52,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\Make\ActionMakeCommand::class,
             Commands\Make\CastMakeCommand::class,
             Commands\Make\ChannelMakeCommand::class,
+            Commands\Make\ClassMakeCommand::class,
             Commands\Make\CommandMakeCommand::class,
             Commands\Make\ComponentClassMakeCommand::class,
             Commands\Make\ComponentViewMakeCommand::class,
