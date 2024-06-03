@@ -32,7 +32,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['WrongModule']]);
         $this->assertDirectoryExists(base_path('modules/WrongModule'));
 
-        $code = $this->artisan('module:delete', ['module' => 'WrongModule']);
+        $code = $this->artisan('module:delete', ['module' => 'WrongModule','--force' => true]);
         $this->assertFileDoesNotExist(base_path('modules/WrongModule'));
         $this->assertSame(0, $code);
     }
@@ -50,7 +50,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
             $this->assertDirectoryExists($this->getModuleBasePath($module));
         }
 
-        $code = $this->artisan('module:delete', ['module' => ['Foo', 'Bar']]);
+        $code = $this->artisan('module:delete', ['module' => ['Foo', 'Bar'], '--force' => true]);
         $this->assertSame(0, $code);
         $this->assertFileDoesNotExist($this->getModuleBasePath('Foo'));
         $this->assertFileDoesNotExist($this->getModuleBasePath('Bar'));
@@ -72,7 +72,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
             $this->assertDirectoryExists($this->getModuleBasePath($module));
         }
 
-        $code = $this->artisan('module:delete', ['--all' => true]);
+        $code = $this->artisan('module:delete', ['--all' => true, '--force' => true]);
         $this->assertSame(0, $code);
         $this->assertFileDoesNotExist($this->getModuleBasePath('Foo'));
         $this->assertFileDoesNotExist($this->getModuleBasePath('Bar'));
@@ -84,7 +84,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['WrongModule']]);
         $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));
 
-        $code = $this->artisan('module:delete', ['module' => 'WrongModule']);
+        $code = $this->artisan('module:delete', ['module' => 'WrongModule', '--force' => true]);
         $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));
         $this->assertSame(0, $code);
     }
