@@ -3,8 +3,9 @@
 namespace Nwidart\Modules\Commands\Actions;
 
 use Nwidart\Modules\Commands\BaseCommand;
+use Nwidart\Modules\Contracts\ConfirmableCommandInterface;
 
-class ModuleDeleteCommand extends BaseCommand
+class ModuleDeleteCommand extends BaseCommand implements ConfirmableCommandInterface
 {
     protected $name        = 'module:delete';
     protected $description = 'Delete a module from the application';
@@ -22,4 +23,8 @@ class ModuleDeleteCommand extends BaseCommand
         return 'deleting module ...';
     }
 
+    public function getConfirmLabel(): string
+    {
+        return 'Do you want delete module?';
+    }
 }
