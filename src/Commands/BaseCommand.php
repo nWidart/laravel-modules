@@ -5,8 +5,11 @@ namespace Nwidart\Modules\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 
+use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\multiselect;
 
+use Nwidart\Modules\Contracts\ConfirmableCommandInterface;
+use Nwidart\Modules\Exceptions\CancelCommandException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -36,6 +39,10 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
             InputArgument::IS_ARRAY,
             'The name of module will be used.',
         ));
+
+        if ($this instanceof ConfirmableCommandInterface) {
+            $this->configureConfirmable();
+        }
     }
 
     abstract public function executeAction($name);
@@ -50,6 +57,14 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
      */
     public function handle()
     {
+        try {
+            $this->confirmCommand();
+        } catch (CancelCommandException $exception) {
+            $this->components->info('command canceled!');
+
+            return;
+        }
+
         if (! is_null($info = $this->getInfo())) {
             $this->components->info($info);
         }
@@ -99,6 +114,45 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         return $name instanceof \Nwidart\Modules\Module
             ? $name
             : $this->laravel['modules']->findOrFail($name);
+    }
+
+    public function getConfirmLabel(): string
+    {
+        return 'Do you want execute this action?';
+    }
+
+    private function confirmCommand(): void
+    {
+        if (! $this instanceof ConfirmableCommandInterface) {
+            return;
+        }
+
+        if ($this->option('force') !== false) {
+            return;
+        }
+
+        $confirmed = confirm(
+            label  : $this->getConfirmLabel(),
+            default: false,
+            yes    : 'Yes',
+            no     : 'No!',
+            hint   : ''
+        );
+
+        throw_unless($confirmed, CancelCommandException::class);
+
+    }
+
+    private function configureConfirmable(): void
+    {
+        $this->getDefinition()
+            ->addOption(new InputOption(
+                'force',
+                'f',
+                InputOption::VALUE_OPTIONAL,
+                'Execute the command without confirmation prompt.',
+                false
+            ));
     }
 
 }
