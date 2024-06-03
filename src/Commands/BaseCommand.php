@@ -7,6 +7,7 @@ use Illuminate\Contracts\Console\PromptsForMissingInput;
 
 use function Laravel\Prompts\multiselect;
 
+use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -36,6 +37,10 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
             InputArgument::IS_ARRAY,
             'The name of module will be used.',
         ));
+
+        if ($this instanceof ConfirmableCommand) {
+            $this->configureConfirmable();
+        }
     }
 
     abstract public function executeAction($name);
@@ -99,6 +104,17 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         return $name instanceof \Nwidart\Modules\Module
             ? $name
             : $this->laravel['modules']->findOrFail($name);
+    }
+
+    private function configureConfirmable(): void
+    {
+        $this->getDefinition()
+            ->addOption(new InputOption(
+                'force',
+                null,
+                InputOption::VALUE_NONE,
+                'Force the operation to run without confirmation.',
+            ));
     }
 
 }
