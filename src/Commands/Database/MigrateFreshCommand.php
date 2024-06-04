@@ -2,15 +2,13 @@
 
 namespace Nwidart\Modules\Commands\Database;
 
-use Illuminate\Console\Command;
-use Nwidart\Modules\Traits\ModuleCommandTrait;
-use Symfony\Component\Console\Input\InputArgument;
+use Illuminate\Database\Migrations\Migrator;
+use Illuminate\Support\Collection;
+use Nwidart\Modules\Commands\BaseCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-class MigrateFreshCommand extends Command
+class MigrateFreshCommand extends BaseCommand
 {
-    use ModuleCommandTrait;
-
     /**
      * The console command name.
      *
@@ -26,38 +24,66 @@ class MigrateFreshCommand extends Command
     protected $description = 'Reset all database tables and re-run the modules migrations.';
 
     /**
-     * Execute the console command.
+     * The migrator instance.
+     *
+     * @var Migrator
      */
-    public function handle(): int
+    protected Migrator $migrator;
+
+    protected Collection $migration_paths;
+
+    public function __construct()
     {
-        $module = $this->argument('module');
+        parent::__construct();
 
-        if ($module && !$this->getModuleName()) {
-            $this->error("Module [$module] does not exists.");
-
-            return E_ERROR;
-        }
-
-        $this->call('module:migrate-refresh', [
-            'module' => $this->getModuleName(),
-            '--database' => $this->option('database'),
-            '--force' => $this->option('force'),
-            '--seed' => $this->option('seed'),
-        ]);
-
-        return 0;
+        $this->migrator       = app('migrator');
+        $this->migration_paths = collect($this->migrator->paths());
     }
 
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments(): array
+    public function handle(): void
     {
-        return [
-            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
-        ];
+        // drop tables
+        $this->components->task('Dropping all tables', fn () => $this->callSilent('db:wipe', array_filter([
+                '--database'   => $this->option('database'),
+                '--drop-views' => $this->option('drop-views'),
+                '--drop-types' => $this->option('drop-types'),
+                '--force'      => true,
+            ])) == 0);
+
+        // create migration table
+        $this->call('migrate:install', array_filter([
+            '--database' => $this->option('database'),
+        ])) == 0;
+
+        // run migration of root
+        $root_paths = $this->migration_paths
+            ->reject(fn (string $path) => str_starts_with($path, config('modules.paths.modules')));
+
+        if ($root_paths->count() > 0) {
+            $this->components->twoColumnDetail("Running Migration of <fg=cyan;options=bold>Root</>");
+
+            $this->call('migrate', array_filter([
+                '--path'     => $root_paths->toArray(),
+                '--database' => $this->option('database'),
+                '--pretend'  => $this->option('pretend'),
+                '--force'    => $this->option('force'),
+                '--realpath' => true,
+            ]));
+        }
+
+        parent::handle();
+    }
+
+    public function executeAction($name): void
+    {
+        $module = $this->getModuleModel($name);
+
+        $this->call('module:migrate', array_filter([
+            'module'     => $module->getStudlyName(),
+            '--database' => $this->option('database'),
+            '--force'    => $this->option('force'),
+            '--seed'     => $this->option('seed'),
+        ]));
     }
 
     /**
@@ -68,22 +94,13 @@ class MigrateFreshCommand extends Command
     protected function getOptions(): array
     {
         return [
+            ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'asc'],
             ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
             ['seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'],
+            ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
+            ['drop-views', null, InputOption::VALUE_NONE, 'Drop all tables and views'],
+            ['drop-types', null, InputOption::VALUE_NONE, 'Drop all tables and types (Postgres only)'],
         ];
-    }
-
-    public function getModuleName()
-    {
-        $module = $this->argument('module');
-
-        if (!$module) {
-            return null;
-        }
-
-        $module = app('modules')->find($module);
-
-        return $module ? $module->getStudlyName() : null;
     }
 }
