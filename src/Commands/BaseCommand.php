@@ -3,6 +3,8 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Console\ConfirmableTrait;
+use Illuminate\Console\Prohibitable;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 
 use function Laravel\Prompts\multiselect;
@@ -15,6 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class BaseCommand extends Command implements PromptsForMissingInput
 {
+    use ConfirmableTrait;
+    use Prohibitable;
+
     public const ALL = 'All';
 
     /**
@@ -50,11 +55,23 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         return null;
     }
 
+    public function getConfirmableLabel(): string|null
+    {
+        return 'Warning';
+    }
+
     /**
      * Execute the console command.
      */
     public function handle()
     {
+        if ($this instanceof ConfirmableCommand) {
+            if ($this->isProhibited() ||
+                ! $this->confirmToProceed($this->getConfirmableLabel(), fn () => true)) {
+                return 1;
+            }
+        }
+
         if (! is_null($info = $this->getInfo())) {
             $this->components->info($info);
         }
