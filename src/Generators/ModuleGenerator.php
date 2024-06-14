@@ -473,6 +473,25 @@ class ModuleGenerator extends Generator
             );
         }
 
+        $eventGeneratorConfig = GenerateConfigReader::read('event-provider');
+        if (
+            (is_null($eventGeneratorConfig->getPath()) && $providerGenerator->generate())
+            || (!is_null($eventGeneratorConfig->getPath()) && $eventGeneratorConfig->generate())
+        ) {
+            $this->console->call('module:make-event-provider', [
+                'module' => $this->getName(),
+            ]);
+        } else {
+            if ($providerGenerator->generate()) {
+                // comment register EventServiceProvider
+                $this->filesystem->replaceInFile(
+                    '$this->app->register(Event',
+                    '// $this->app->register(Event',
+                    $this->module->getModulePath($this->getName()) . DIRECTORY_SEPARATOR . $providerGenerator->getPath() . DIRECTORY_SEPARATOR . sprintf('%sServiceProvider.php', $this->getName())
+                );
+            }
+        }
+
         $routeGeneratorConfig = GenerateConfigReader::read('route-provider');
         if (
             (is_null($routeGeneratorConfig->getPath()) && $providerGenerator->generate())

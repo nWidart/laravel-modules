@@ -2,7 +2,34 @@
 
 All Notable changes to `laravel-modules` will be documented in this file.
 
+## 11.0.10 - 2024-05-05
+
 ## Next
+
+- [@dcblogdev](https://github.com/dcblogdev) Update controller, service, helper, and action methods
+- [@omerbaflah](https://github.com/omerbaflah) Update service stubs
+- [@omerbaflah](https://github.com/omerbaflah) Update action stubs
+- [@AbdulkarimOmer](https://github.com/AbdulkarimOmer) Added invokable option into make-controller command
+- [@dcblogdev](https://github.com/dcblogdev) Updated vite-module-loader.js to handle case when a modules does not have a vite.config.js file
+- [@alissn](https://github.com/alissn) Added direction option to command module:seed
+
+## 11.0.9 - 2024-04-30
+
+- [@dcblogdev](https://github.com/dcblogdev) added make-event-provider command, modules come with event as default now
+
+## 11.0.8 - 2024-04-29
+
+- [@solomon-ochepa](https://github.com/solomon-ochepa) Remove custom namespaces from generator [factory and seeder]
+- [@dcblogdev](https://github.com/dcblogdev) added make-action command
+- [@dcblogdev](https://github.com/dcblogdev) added make-cast command
+- [@dcblogdev](https://github.com/dcblogdev) added make-enum command
+- [@dcblogdev](https://github.com/dcblogdev) added make-exception command
+- [@dcblogdev](https://github.com/dcblogdev) added make-helper command
+- [@dcblogdev](https://github.com/dcblogdev) added make-interface command
+- [@dcblogdev](https://github.com/dcblogdev) added make-scope command
+- [@dcblogdev](https://github.com/dcblogdev) added make-trait command
+- [@dcblogdev](https://github.com/dcblogdev) added missing return type for make-service command
+- [@dcblogdev](https://github.com/dcblogdev) updated config
 
 ## 11.0.7 - 2024-04-25
 

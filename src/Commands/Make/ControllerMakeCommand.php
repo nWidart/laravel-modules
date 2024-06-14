@@ -90,6 +90,7 @@ class ControllerMakeCommand extends GeneratorCommand
         return [
             ['plain', 'p', InputOption::VALUE_NONE, 'Generate a plain controller', null],
             ['api', null, InputOption::VALUE_NONE, 'Exclude the create and edit methods from the controller.'],
+            ['invokable', 'i', InputOption::VALUE_NONE, 'Generate a single method, invokable controller class'],
         ];
     }
 
@@ -131,6 +132,8 @@ class ControllerMakeCommand extends GeneratorCommand
             $stub = '/controller-plain.stub';
         } elseif ($this->option('api') === true) {
             $stub = '/controller-api.stub';
+        } elseif ($this->option('invokable') === true) {
+            $stub = '/controller.invokable.stub';
         } else {
             $stub = '/controller.stub';
         }

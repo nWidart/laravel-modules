@@ -3,10 +3,13 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Console\ConfirmableTrait;
+use Illuminate\Console\Prohibitable;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 
 use function Laravel\Prompts\multiselect;
 
+use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -14,6 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class BaseCommand extends Command implements PromptsForMissingInput
 {
+    use ConfirmableTrait;
+    use Prohibitable;
+
     public const ALL = 'All';
 
     /**
@@ -36,6 +42,10 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
             InputArgument::IS_ARRAY,
             'The name of module will be used.',
         ));
+
+        if ($this instanceof ConfirmableCommand) {
+            $this->configureConfirmable();
+        }
     }
 
     abstract public function executeAction($name);
@@ -45,11 +55,23 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         return null;
     }
 
+    public function getConfirmableLabel(): string|null
+    {
+        return 'Warning';
+    }
+
     /**
      * Execute the console command.
      */
     public function handle()
     {
+        if ($this instanceof ConfirmableCommand) {
+            if ($this->isProhibited() ||
+                ! $this->confirmToProceed($this->getConfirmableLabel(), fn () => true)) {
+                return 1;
+            }
+        }
+
         if (! is_null($info = $this->getInfo())) {
             $this->components->info($info);
         }
@@ -99,6 +121,17 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         return $name instanceof \Nwidart\Modules\Module
             ? $name
             : $this->laravel['modules']->findOrFail($name);
+    }
+
+    private function configureConfirmable(): void
+    {
+        $this->getDefinition()
+            ->addOption(new InputOption(
+                'force',
+                null,
+                InputOption::VALUE_NONE,
+                'Force the operation to run without confirmation.',
+            ));
     }
 
 }
