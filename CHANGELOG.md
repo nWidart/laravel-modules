@@ -2,9 +2,12 @@
 
 All Notable changes to `laravel-modules` will be documented in this file.
 
-## 11.0.10 - 2024-05-05
-
 ## Next
+
+- [@omerbaflah](https://github.com/omerbaflah) Fixes Invokable Controller Stub
+- [@solomon-ochepa](https://github.com/solomon-ochepa) Added create module:make-class command
+
+## 11.0.10 - 2024-05-05
 
 - [@dcblogdev](https://github.com/dcblogdev) Update controller, service, helper, and action methods
 - [@omerbaflah](https://github.com/omerbaflah) Update service stubs
