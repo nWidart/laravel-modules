@@ -1,0 +1,8 @@
+<?php
+
+namespace Modules\Blog\Traits;
+
+trait MyTrait
+{
+    //
+}
