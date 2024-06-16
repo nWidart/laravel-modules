@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Translation\Translator;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Symfony\Component\Console\Application;
 
 abstract class Module
 {
@@ -18,51 +19,51 @@ abstract class Module
     /**
      * The laravel|lumen application instance.
      *
-     * @var \Illuminate\Contracts\Foundation\Application|\Laravel\Lumen\Application
+     * @var Application|Container
      */
-    protected $app;
+    protected Container|Application $app;
 
     /**
      * The module name.
      */
-    protected $name;
+    protected string $name;
 
     /**
      * The module path.
      *
      * @var string
      */
-    protected $path;
+    protected string $path;
 
     /**
      * @var array of cached Json objects, keyed by filename
      */
-    protected $moduleJson = [];
+    protected array $moduleJson = [];
 
     /**
      * @var CacheManager
      */
-    private $cache;
+    private CacheManager $cache;
 
     /**
      * @var Filesystem
      */
-    private $files;
+    private Filesystem $files;
 
     /**
      * @var Translator
      */
-    private $translator;
+    private Translator $translator;
 
     /**
      * @var ActivatorInterface
      */
-    private $activator;
+    private ActivatorInterface $activator;
 
     /**
      * The constructor.
      */
-    public function __construct(Container $app, string $name, $path)
+    public function __construct(Container $app, string $name, string $path)
     {
         $this->name = $name;
         $this->path = $path;
@@ -172,7 +173,7 @@ abstract class Module
      * @param  string  $path
      * @return $this
      */
-    public function setPath($path): Module
+    public function setPath(string $path): self
     {
         $this->path = $path;
 
@@ -212,9 +213,9 @@ abstract class Module
     /**
      * Get json contents from the cache, setting as needed.
      *
-     * @param  string  $file
+     * @param string|null $file
      */
-    public function json($file = null): Json
+    public function json(string $file = null): Json
     {
         if ($file === null) {
             $file = 'module.json';
@@ -228,10 +229,11 @@ abstract class Module
     /**
      * Get a specific data from json file by given the key.
      *
-     * @param  null  $default
+     * @param string $key
+     * @param string|null $default
      * @return mixed
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, ?string $default = null): mixed
     {
         return $this->json()->get($key, $default);
     }
@@ -239,10 +241,11 @@ abstract class Module
     /**
      * Get a specific data from composer.json file by given the key.
      *
-     * @param  null  $default
+     * @param string $key
+     * @param string|null $default
      * @return mixed
      */
-    public function getComposerAttr($key, $default = null)
+    public function getComposerAttr(string $key, ?string $default = null): mixed
     {
         return $this->json('composer.json')->get($key, $default);
     }
@@ -268,7 +271,7 @@ abstract class Module
      *
      * @param  string  $event
      */
-    protected function fireEvent($event): void
+    protected function fireEvent(string $event): void
     {
         $this->app['events']->dispatch(sprintf('modules.%s.'.$event, $this->getLowerName()), [$this]);
     }
@@ -293,7 +296,7 @@ abstract class Module
      */
     protected function registerFiles(): void
     {
-        foreach ($this->get('files', []) as $file) {
+        foreach ($this->get('files') as $file) {
             include $this->path.'/'.$file;
         }
     }

@@ -9,9 +9,9 @@ class Updater extends Runner
     /**
      * Update the dependencies for the specified module by given the module name.
      *
-     * @param  string  $module
+     * @param  Module  $module
      */
-    public function update($module)
+    public function update(Module $module): void
     {
         $module = $this->module->findOrFail($module);
 
@@ -27,14 +27,14 @@ class Updater extends Runner
      *
      * @return string
      */
-    private function isComposerSilenced()
+    private function isComposerSilenced(): string
     {
         return config('modules.composer.composer-output') === false ? ' --quiet' : '';
     }
 
-    private function installRequires(Module $module)
+    private function installRequires(Module $module): void
     {
-        $packages = $module->getComposerAttr('require', []);
+        $packages = $module->getComposerAttr('require');
 
         $concatenatedPackages = '';
         foreach ($packages as $name => $version) {
@@ -46,9 +46,9 @@ class Updater extends Runner
         }
     }
 
-    private function installDevRequires(Module $module)
+    private function installDevRequires(Module $module): void
     {
-        $devPackages = $module->getComposerAttr('require-dev', []);
+        $devPackages = $module->getComposerAttr('require-dev');
 
         $concatenatedPackages = '';
         foreach ($devPackages as $name => $version) {
@@ -60,9 +60,9 @@ class Updater extends Runner
         }
     }
 
-    private function copyScriptsToMainComposerJson(Module $module)
+    private function copyScriptsToMainComposerJson(Module $module): void
     {
-        $scripts = $module->getComposerAttr('scripts', []);
+        $scripts = $module->getComposerAttr('scripts');
 
         $composer = json_decode(file_get_contents(base_path('composer.json')), true);
 

@@ -30,7 +30,7 @@ class Module extends BaseModule
     public function registerProviders(): void
     {
         (new ProviderRepository($this->app, new Filesystem(), $this->getCachedServicesPath()))
-            ->load($this->get('providers', []));
+            ->load($this->get('providers'));
     }
 
     /**
@@ -39,7 +39,7 @@ class Module extends BaseModule
     public function registerAliases(): void
     {
         $loader = AliasLoader::getInstance();
-        foreach ($this->get('aliases', []) as $aliasName => $aliasClass) {
+        foreach ($this->get('aliases') as $aliasName => $aliasClass) {
             $loader->alias($aliasName, $aliasClass);
         }
     }
