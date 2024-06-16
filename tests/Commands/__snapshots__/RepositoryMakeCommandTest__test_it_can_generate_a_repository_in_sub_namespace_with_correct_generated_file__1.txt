@@ -1,0 +1,11 @@
+<?php
+
+namespace Modules\Blog\Repositories\Api;
+
+class MyRepository
+{
+    public function handle()
+    {
+        //
+    }
+}
