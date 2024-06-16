@@ -75,7 +75,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\Make\ObserverMakeCommand::class,
             Commands\Make\PolicyMakeCommand::class,
             Commands\Make\ProviderMakeCommand::class,
-            Commands\Make\RepositoryCommand::class,
+            Commands\Make\RepositoryMakeCommand::class,
             Commands\Make\RequestMakeCommand::class,
             Commands\Make\ResourceMakeCommand::class,
             Commands\Make\RouteProviderMakeCommand::class,
