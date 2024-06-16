@@ -14,16 +14,18 @@ class InterfaceMakeCommand extends GeneratorCommand
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
+
     protected $name = 'module:make-interface';
+
     protected $description = 'Create a new interface class for the specified module.';
 
     public function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('interfaces')->getPath() ?? config('modules.paths.app_folder') . 'Interfaces';
+        $filePath = GenerateConfigReader::read('interfaces')->getPath() ?? config('modules.paths.app_folder').'Interfaces';
 
-        return $path . $filePath . '/' . $this->getInterfaceName() . '.php';
+        return $path.$filePath.'/'.$this->getInterfaceName().'.php';
     }
 
     protected function getTemplateContents(): string
@@ -31,8 +33,8 @@ class InterfaceMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
-            'CLASS_NAMESPACE'   => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClassNameWithoutNamespace(),
+            'CLASS_NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS' => $this->getClassNameWithoutNamespace(),
         ]))->render();
     }
 
@@ -44,9 +46,6 @@ class InterfaceMakeCommand extends GeneratorCommand
         ];
     }
 
-    /**
-     * @return array
-     */
     protected function getOptions(): array
     {
         return [

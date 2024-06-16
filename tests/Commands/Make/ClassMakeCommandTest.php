@@ -14,6 +14,7 @@ class ClassMakeCommandTest extends BaseTestCase
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -38,7 +39,7 @@ class ClassMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Classes/Demo.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Classes/Demo.php'));
         $this->assertSame(0, $code);
     }
 
@@ -47,7 +48,7 @@ class ClassMakeCommandTest extends BaseTestCase
         $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog']);
         $code = $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog', '--force' => true]);
 
-        $this->assertTrue(is_file($this->modulePath . '/Classes/Demo.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Classes/Demo.php'));
         $this->assertSame(0, $code);
     }
 
@@ -55,7 +56,7 @@ class ClassMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog', '--invokable' => true]);
 
-        $this->assertTrue(is_file($this->modulePath . '/Classes/Demo.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Classes/Demo.php'));
         $this->assertSame(0, $code);
     }
 
@@ -63,7 +64,7 @@ class ClassMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog', '--suffix' => true]);
 
-        $this->assertTrue(is_file($this->modulePath . '/Classes/DemoClass.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Classes/DemoClass.php'));
         $this->assertSame(0, $code);
     }
 
@@ -71,7 +72,7 @@ class ClassMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog', '--type' => 'contract']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Contracts/Demo.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Contracts/Demo.php'));
         $this->assertSame(0, $code);
     }
 
@@ -79,7 +80,7 @@ class ClassMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Classes/Demo.php');
+        $file = $this->finder->get($this->modulePath.'/Classes/Demo.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -89,7 +90,7 @@ class ClassMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-class', ['name' => 'Api\\Demo', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Classes/Api/Demo.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Classes/Api/Demo.php'));
         $this->assertSame(0, $code);
     }
 
@@ -97,7 +98,7 @@ class ClassMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-class', ['name' => 'Api\\Demo', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Classes/Api/Demo.php');
+        $file = $this->finder->get($this->modulePath.'/Classes/Api/Demo.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

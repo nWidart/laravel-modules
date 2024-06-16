@@ -14,6 +14,7 @@ class HelperMakeCommandTest extends BaseTestCase
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -38,7 +39,7 @@ class HelperMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-helper', ['name' => 'MyHelper', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Helpers/MyHelper.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Helpers/MyHelper.php'));
         $this->assertSame(0, $code);
     }
 
@@ -47,7 +48,7 @@ class HelperMakeCommandTest extends BaseTestCase
         $this->artisan('module:make-helper', ['name' => 'MyHelper', 'module' => 'Blog']);
         $code = $this->artisan('module:make-helper', ['name' => 'MyHelper', 'module' => 'Blog', '--force' => true]);
 
-        $this->assertTrue(is_file($this->modulePath . '/Helpers/MyHelper.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Helpers/MyHelper.php'));
         $this->assertSame(0, $code);
     }
 
@@ -55,7 +56,7 @@ class HelperMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-helper', ['name' => 'MyHelper', 'module' => 'Blog', '--invokable' => true]);
 
-        $this->assertTrue(is_file($this->modulePath . '/Helpers/MyHelper.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Helpers/MyHelper.php'));
         $this->assertSame(0, $code);
     }
 
@@ -63,7 +64,7 @@ class HelperMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-helper', ['name' => 'MyHelper', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Helpers/MyHelper.php');
+        $file = $this->finder->get($this->modulePath.'/Helpers/MyHelper.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -73,7 +74,7 @@ class HelperMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-helper', ['name' => 'Api\\MyHelper', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Helpers/Api/MyHelper.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Helpers/Api/MyHelper.php'));
         $this->assertSame(0, $code);
     }
 
@@ -81,7 +82,7 @@ class HelperMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-helper', ['name' => 'Api\\MyHelper', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Helpers/Api/MyHelper.php');
+        $file = $this->finder->get($this->modulePath.'/Helpers/Api/MyHelper.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

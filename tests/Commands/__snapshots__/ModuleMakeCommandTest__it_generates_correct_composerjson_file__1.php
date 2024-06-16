@@ -1,4 +1,6 @@
-<?php return '{
+<?php
+
+return '{
     "name": "nwidart/blog",
     "description": "",
     "authors": [

@@ -14,7 +14,9 @@ class TestMakeCommand extends GeneratorCommand
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
+
     protected $name = 'module:make-test';
+
     protected $description = 'Create a new test class for the specified module.';
 
     public function getDefaultNamespace(): string
@@ -67,7 +69,7 @@ class TestMakeCommand extends GeneratorCommand
 
         return (new Stub($stub, [
             'NAMESPACE' => $this->getClassNamespace($module),
-            'CLASS'     => $this->getClass(),
+            'CLASS' => $this->getClass(),
         ]))->render();
     }
 
@@ -84,7 +86,7 @@ class TestMakeCommand extends GeneratorCommand
             $testPath = GenerateConfigReader::read('test-unit');
         }
 
-        return $path . $testPath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path.$testPath->getPath().'/'.$this->getFileName().'.php';
     }
 
     /**

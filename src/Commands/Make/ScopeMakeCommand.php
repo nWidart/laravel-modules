@@ -14,16 +14,18 @@ class ScopeMakeCommand extends GeneratorCommand
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
+
     protected $name = 'module:make-scope';
+
     protected $description = 'Create a new scope class for the specified module.';
 
     public function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('scopes')->getPath() ?? config('modules.paths.generator.model.path') . '/Scopes';
+        $filePath = GenerateConfigReader::read('scopes')->getPath() ?? config('modules.paths.generator.model.path').'/Scopes';
 
-        return $path . $filePath . '/' . $this->getScopeName() . '.php';
+        return $path.$filePath.'/'.$this->getScopeName().'.php';
     }
 
     protected function getTemplateContents(): string
@@ -31,8 +33,8 @@ class ScopeMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
-            'CLASS_NAMESPACE'   => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClassNameWithoutNamespace(),
+            'CLASS_NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS' => $this->getClassNameWithoutNamespace(),
         ]))->render();
     }
 
@@ -44,9 +46,6 @@ class ScopeMakeCommand extends GeneratorCommand
         ];
     }
 
-    /**
-     * @return array
-     */
     protected function getOptions(): array
     {
         return [
@@ -68,7 +67,7 @@ class ScopeMakeCommand extends GeneratorCommand
     {
         $namespace = config('modules.paths.generator.model.path');
 
-        $parts = explode("/", $namespace);
+        $parts = explode('/', $namespace);
         $models = end($parts);
 
         return $models.'\Scopes';

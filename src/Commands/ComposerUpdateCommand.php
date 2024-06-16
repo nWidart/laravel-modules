@@ -26,7 +26,7 @@ class ComposerUpdateCommand extends BaseCommand
 
         $this->components->task("Updating Composer.json <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
 
-            $composer_path = $module->getPath() . DIRECTORY_SEPARATOR . 'composer.json';
+            $composer_path = $module->getPath().DIRECTORY_SEPARATOR.'composer.json';
 
             $composer = json_decode(File::get($composer_path), true);
 
@@ -43,7 +43,7 @@ class ComposerUpdateCommand extends BaseCommand
             }
 
             unset($autoload[$key_name_with_app]);
-            $key_name_with_out_app            = sprintf('Modules\\%s\\', $module->getStudlyName());
+            $key_name_with_out_app = sprintf('Modules\\%s\\', $module->getStudlyName());
             $autoload[$key_name_with_out_app] = 'app/';
 
             data_set($composer, 'autoload.psr-4', $autoload);
@@ -53,7 +53,7 @@ class ComposerUpdateCommand extends BaseCommand
         });
     }
 
-    public function getInfo(): string|null
+    public function getInfo(): ?string
     {
         return 'Updating Composer.json of modules...';
     }

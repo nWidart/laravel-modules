@@ -14,6 +14,7 @@ class CastMakeCommandTest extends BaseTestCase
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -38,7 +39,7 @@ class CastMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-cast', ['name' => 'MyCast', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Casts/MyCast.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Casts/MyCast.php'));
         $this->assertSame(0, $code);
     }
 
@@ -47,7 +48,7 @@ class CastMakeCommandTest extends BaseTestCase
         $this->artisan('module:make-cast', ['name' => 'MyCast', 'module' => 'Blog']);
         $code = $this->artisan('module:make-cast', ['name' => 'MyCast', 'module' => 'Blog', '--force' => true]);
 
-        $this->assertTrue(is_file($this->modulePath . '/Casts/MyCast.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Casts/MyCast.php'));
         $this->assertSame(0, $code);
     }
 
@@ -55,7 +56,7 @@ class CastMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-cast', ['name' => 'MyCast', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Casts/MyCast.php');
+        $file = $this->finder->get($this->modulePath.'/Casts/MyCast.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -65,7 +66,7 @@ class CastMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-cast', ['name' => 'Api\\MyCast', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Casts/Api/MyCast.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Casts/Api/MyCast.php'));
         $this->assertSame(0, $code);
     }
 
@@ -73,7 +74,7 @@ class CastMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-cast', ['name' => 'Api\\MyCast', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Casts/Api/MyCast.php');
+        $file = $this->finder->get($this->modulePath.'/Casts/Api/MyCast.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

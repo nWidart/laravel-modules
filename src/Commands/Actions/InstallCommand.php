@@ -56,7 +56,7 @@ class InstallCommand extends Command
      */
     protected function installFromFile(): int
     {
-        if (!file_exists($path = base_path('modules.json'))) {
+        if (! file_exists($path = base_path('modules.json'))) {
             $this->error("File 'modules.json' does not exist in your project root.");
 
             return E_ERROR;
@@ -82,10 +82,10 @@ class InstallCommand extends Command
     /**
      * Install the specified module.
      *
-     * @param string $name
-     * @param string $version
-     * @param string $type
-     * @param bool   $tree
+     * @param  string  $name
+     * @param  string  $version
+     * @param  string  $type
+     * @param  bool  $tree
      */
     protected function install($name, $version = 'dev-master', $type = 'composer', $tree = false)
     {
@@ -110,7 +110,7 @@ class InstallCommand extends Command
 
         $installer->run();
 
-        if (!$this->option('no-update')) {
+        if (! $this->option('no-update')) {
             $this->call('module:update', [
                 'module' => $installer->getModuleName(),
             ]);

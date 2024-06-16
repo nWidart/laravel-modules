@@ -35,11 +35,11 @@ abstract class BaseTestCase extends OrchestraTestCase
     /**
      * Set up the environment.
      *
-     * @param \Illuminate\Foundation\Application $app
+     * @param  \Illuminate\Foundation\Application  $app
      */
     protected function getEnvironmentSetUp($app)
     {
-        $module_config = require __DIR__ . '/../config/config.php';
+        $module_config = require __DIR__.'/../config/config.php';
 
         // enable all generators
         array_walk($module_config['paths']['generator'], function (&$item) {
@@ -49,17 +49,17 @@ abstract class BaseTestCase extends OrchestraTestCase
         $app['config']->set('app.asset_url', null);
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
+            'prefix' => '',
         ]);
         $app['config']->set('modules.paths.modules', base_path('modules'));
         $app['config']->set('modules.paths', [
-            'modules'    => base_path('modules'),
-            'assets'     => public_path('modules'),
-            'migration'  => base_path('database/migrations'),
+            'modules' => base_path('modules'),
+            'assets' => public_path('modules'),
+            'migration' => base_path('database/migrations'),
             'app_folder' => $module_config['paths']['app_folder'],
-            'generator'  => $module_config['paths']['generator'],
+            'generator' => $module_config['paths']['generator'],
         ]);
 
         $app['config']->set('modules.composer-output', true);
@@ -79,7 +79,7 @@ abstract class BaseTestCase extends OrchestraTestCase
 
     protected function getModuleAppPath(string $moduleName = 'Blog'): string
     {
-        return base_path("modules/$moduleName/") . rtrim(config('modules.paths.app_folder'), '/');
+        return base_path("modules/$moduleName/").rtrim(config('modules.paths.app_folder'), '/');
     }
 
     protected function getModuleBasePath(string $moduleName = 'Blog'): string

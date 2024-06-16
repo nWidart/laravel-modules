@@ -9,10 +9,12 @@ use Spatie\Snapshots\MatchesSnapshots;
 class MiddlewareMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -36,7 +38,7 @@ class MiddlewareMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Http/Middleware/SomeMiddleware.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Http/Middleware/SomeMiddleware.php'));
         $this->assertSame(0, $code);
     }
 
@@ -44,7 +46,7 @@ class MiddlewareMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Http/Middleware/SomeMiddleware.php');
+        $file = $this->finder->get($this->modulePath.'/Http/Middleware/SomeMiddleware.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -56,7 +58,7 @@ class MiddlewareMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->getModuleBasePath() . '/Middleware/SomeMiddleware.php');
+        $file = $this->finder->get($this->getModuleBasePath().'/Middleware/SomeMiddleware.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -68,7 +70,7 @@ class MiddlewareMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-middleware', ['name' => 'SomeMiddleware', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Http/Middleware/SomeMiddleware.php');
+        $file = $this->finder->get($this->modulePath.'/Http/Middleware/SomeMiddleware.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

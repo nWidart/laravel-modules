@@ -66,9 +66,9 @@ class MigrationMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @throws \InvalidArgumentException
-     *
      * @return mixed
+     *
+     * @throws \InvalidArgumentException
      */
     protected function getTemplateContents()
     {
@@ -116,7 +116,7 @@ class MigrationMakeCommand extends GeneratorCommand
 
         $generatorPath = GenerateConfigReader::read('migration');
 
-        return $path . $generatorPath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path.$generatorPath->getPath().'/'.$this->getFileName().'.php';
     }
 
     /**
@@ -124,7 +124,7 @@ class MigrationMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return date('Y_m_d_His_') . $this->getSchemaName();
+        return date('Y_m_d_His_').$this->getSchemaName();
     }
 
     /**

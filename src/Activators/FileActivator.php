@@ -70,8 +70,6 @@ class FileActivator implements ActivatorInterface
 
     /**
      * Get the path of the file where statuses are stored
-     *
-     * @return string
      */
     public function getStatusesFilePath(): string
     {
@@ -79,7 +77,7 @@ class FileActivator implements ActivatorInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function reset(): void
     {
@@ -91,7 +89,7 @@ class FileActivator implements ActivatorInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function enable(Module $module): void
     {
@@ -99,7 +97,7 @@ class FileActivator implements ActivatorInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function disable(Module $module): void
     {
@@ -107,11 +105,11 @@ class FileActivator implements ActivatorInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function hasStatus(Module $module, bool $status): bool
     {
-        if (!isset($this->modulesStatuses[$module->getName()])) {
+        if (! isset($this->modulesStatuses[$module->getName()])) {
             return $status === false;
         }
 
@@ -119,7 +117,7 @@ class FileActivator implements ActivatorInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function setActive(Module $module, bool $active): void
     {
@@ -127,7 +125,7 @@ class FileActivator implements ActivatorInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function setActiveByName(string $name, bool $status): void
     {
@@ -137,11 +135,11 @@ class FileActivator implements ActivatorInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function delete(Module $module): void
     {
-        if (!isset($this->modulesStatuses[$module->getName()])) {
+        if (! isset($this->modulesStatuses[$module->getName()])) {
             return;
         }
         unset($this->modulesStatuses[$module->getName()]);
@@ -159,12 +157,12 @@ class FileActivator implements ActivatorInterface
 
     /**
      * Reads the json file that contains the activation statuses.
-     * @return array
+     *
      * @throws FileNotFoundException
      */
     private function readJson(): array
     {
-        if (!$this->files->exists($this->statusesFile)) {
+        if (! $this->files->exists($this->statusesFile)) {
             return [];
         }
 
@@ -174,12 +172,12 @@ class FileActivator implements ActivatorInterface
     /**
      * Get modules statuses, either from the cache or from
      * the json statuses file if the cache is disabled.
-     * @return array
+     *
      * @throws FileNotFoundException
      */
     private function getModulesStatuses(): array
     {
-        if (!$this->config->get('modules.cache.enabled')) {
+        if (! $this->config->get('modules.cache.enabled')) {
             return $this->readJson();
         }
 
@@ -191,13 +189,11 @@ class FileActivator implements ActivatorInterface
     /**
      * Reads a config parameter under the 'activators.file' key
      *
-     * @param  string $key
-     * @param  $default
      * @return mixed
      */
     private function config(string $key, $default = null)
     {
-        return $this->config->get('modules.activators.file.' . $key, $default);
+        return $this->config->get('modules.activators.file.'.$key, $default);
     }
 
     /**

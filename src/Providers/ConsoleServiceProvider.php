@@ -20,8 +20,6 @@ class ConsoleServiceProvider extends ServiceProvider
 
     /**
      * Get the package default commands.
-     *
-     * @return Collection
      */
     public static function defaultCommands(): Collection
     {

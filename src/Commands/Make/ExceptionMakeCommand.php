@@ -14,16 +14,18 @@ class ExceptionMakeCommand extends GeneratorCommand
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
+
     protected $name = 'module:make-exception';
+
     protected $description = 'Create a new exception class for the specified module.';
 
     public function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('exceptions')->getPath() ?? config('modules.paths.app_folder') . 'Exceptions';
+        $filePath = GenerateConfigReader::read('exceptions')->getPath() ?? config('modules.paths.app_folder').'Exceptions';
 
-        return $path . $filePath . '/' . $this->getExceptionName() . '.php';
+        return $path.$filePath.'/'.$this->getExceptionName().'.php';
     }
 
     protected function getTemplateContents(): string
@@ -31,8 +33,8 @@ class ExceptionMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
-            'CLASS_NAMESPACE'   => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClassNameWithoutNamespace(),
+            'CLASS_NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS' => $this->getClassNameWithoutNamespace(),
         ]))->render();
     }
 
@@ -44,9 +46,6 @@ class ExceptionMakeCommand extends GeneratorCommand
         ];
     }
 
-    /**
-     * @return array
-     */
     protected function getOptions(): array
     {
         return [

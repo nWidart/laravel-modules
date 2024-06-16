@@ -1,4 +1,6 @@
-<?php return '{
+<?php
+
+return '{
     "name": "Blog",
     "alias": "blog",
     "description": "",

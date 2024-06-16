@@ -1,3 +1,5 @@
-<?php return '{
+<?php
+
+return '{
     "WrongModule": true
 }';

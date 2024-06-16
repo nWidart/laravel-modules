@@ -7,7 +7,8 @@ use Nwidart\Modules\Contracts\ConfirmableCommand;
 
 class ModuleDeleteCommand extends BaseCommand implements ConfirmableCommand
 {
-    protected $name        = 'module:delete';
+    protected $name = 'module:delete';
+
     protected $description = 'Delete a module from the application';
 
     public function executeAction($name): void
@@ -18,7 +19,7 @@ class ModuleDeleteCommand extends BaseCommand implements ConfirmableCommand
         });
     }
 
-    public function getInfo(): string|null
+    public function getInfo(): ?string
     {
         return 'deleting module ...';
     }

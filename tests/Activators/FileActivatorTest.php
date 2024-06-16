@@ -28,7 +28,7 @@ class FileActivatorTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->module = new TestModule($this->app, 'Recipe', __DIR__ . '/stubs/valid/Recipe');
+        $this->module = new TestModule($this->app, 'Recipe', __DIR__.'/stubs/valid/Recipe');
         $this->finder = $this->app['files'];
         $this->activator = new FileActivator($this->app);
     }

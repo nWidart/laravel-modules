@@ -16,9 +16,6 @@ class ViewMakeCommandTest extends BaseTestCase
      */
     private mixed $finder;
 
-    /**
-     * @var string
-     */
     private string $modulePath;
 
     public function setUp(): void
@@ -38,14 +35,14 @@ class ViewMakeCommandTest extends BaseTestCase
     public function test_it_generates_the_view()
     {
         $code = $this->artisan('module:make-view', ['name' => 'Blog', 'module' => 'Blog']);
-        $this->assertTrue(is_file($this->getModuleBasePath() . '/resources/views/blog.blade.php'));
+        $this->assertTrue(is_file($this->getModuleBasePath().'/resources/views/blog.blade.php'));
         $this->assertSame(0, $code);
     }
 
     public function test_it_generated_correct_file_with_content()
     {
         $code = $this->artisan('module:make-view', ['name' => 'Blog', 'module' => 'Blog']);
-        $file = $this->finder->get($this->getModuleBasePath() . '/resources/views/blog.blade.php');
+        $file = $this->finder->get($this->getModuleBasePath().'/resources/views/blog.blade.php');
         $this->assertTrue(str_contains($file, '<div>'));
         $this->assertSame(0, $code);
     }
@@ -56,7 +53,7 @@ class ViewMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-view', ['name' => 'Blog', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->getModuleBasePath() . '/resources/views/blog.blade.php');
+        $file = $this->finder->get($this->getModuleBasePath().'/resources/views/blog.blade.php');
 
         $this->assertTrue(str_contains($file, '<div>'));
         $this->assertSame(0, $code);

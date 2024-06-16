@@ -19,7 +19,7 @@ class DeferredServiceProvider extends ServiceProvider implements DeferrableProvi
         });
 
         app()->bind('deferred', function () {
-            return;
+
         });
     }
 

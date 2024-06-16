@@ -14,16 +14,18 @@ class EnumMakeCommand extends GeneratorCommand
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
+
     protected $name = 'module:make-enum';
+
     protected $description = 'Create a new enum class for the specified module.';
 
     public function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('enums')->getPath() ?? config('modules.paths.app_folder') . 'Enums';
+        $filePath = GenerateConfigReader::read('enums')->getPath() ?? config('modules.paths.app_folder').'Enums';
 
-        return $path . $filePath . '/' . $this->getEnumName() . '.php';
+        return $path.$filePath.'/'.$this->getEnumName().'.php';
     }
 
     protected function getTemplateContents(): string
@@ -31,8 +33,8 @@ class EnumMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
-            'CLASS_NAMESPACE'   => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClassNameWithoutNamespace(),
+            'CLASS_NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS' => $this->getClassNameWithoutNamespace(),
         ]))->render();
     }
 
@@ -44,9 +46,6 @@ class EnumMakeCommand extends GeneratorCommand
         ];
     }
 
-    /**
-     * @return array
-     */
     protected function getOptions(): array
     {
         return [

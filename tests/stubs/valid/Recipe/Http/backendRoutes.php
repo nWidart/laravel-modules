@@ -8,12 +8,12 @@ $router->group(['prefix' => '/recipe'], function (Router $router) {
         return app('Modules\Recipe\Repositories\RecipeRepository')->find($id);
     });
     $router->resource('recipes', 'RecipeController', ['except' => ['show'], 'names' => [
-            'index' => 'admin.recipe.recipe.index',
-            'create' => 'admin.recipe.recipe.create',
-            'store' => 'admin.recipe.recipe.store',
-            'edit' => 'admin.recipe.recipe.edit',
-            'update' => 'admin.recipe.recipe.update',
-            'destroy' => 'admin.recipe.recipe.destroy',
-        ]]);
+        'index' => 'admin.recipe.recipe.index',
+        'create' => 'admin.recipe.recipe.create',
+        'store' => 'admin.recipe.recipe.store',
+        'edit' => 'admin.recipe.recipe.edit',
+        'update' => 'admin.recipe.recipe.update',
+        'destroy' => 'admin.recipe.recipe.destroy',
+    ]]);
     // append
 });

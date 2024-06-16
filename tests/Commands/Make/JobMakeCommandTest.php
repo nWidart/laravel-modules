@@ -9,10 +9,12 @@ use Spatie\Snapshots\MatchesSnapshots;
 class JobMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -36,7 +38,7 @@ class JobMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Jobs/SomeJob.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Jobs/SomeJob.php'));
         $this->assertSame(0, $code);
     }
 
@@ -44,7 +46,7 @@ class JobMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
+        $file = $this->finder->get($this->modulePath.'/Jobs/SomeJob.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -54,7 +56,7 @@ class JobMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog', '--sync' => true]);
 
-        $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
+        $file = $this->finder->get($this->modulePath.'/Jobs/SomeJob.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -66,7 +68,7 @@ class JobMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->getModuleBasePath() . '/SuperJobs/SomeJob.php');
+        $file = $this->finder->get($this->getModuleBasePath().'/SuperJobs/SomeJob.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -78,7 +80,7 @@ class JobMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-job', ['name' => 'SomeJob', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Jobs/SomeJob.php');
+        $file = $this->finder->get($this->modulePath.'/Jobs/SomeJob.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

@@ -1,4 +1,6 @@
-<?php return '<?php
+<?php
+
+return '<?php
 namespace Modules\\Blog\\View\\Component;
 use Illuminate\\View\\Component;
 class Blog extends Component

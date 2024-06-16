@@ -9,10 +9,12 @@ use Spatie\Snapshots\MatchesSnapshots;
 class ResourceMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -36,7 +38,7 @@ class ResourceMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-resource', ['name' => 'PostsTransformer', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Transformers/PostsTransformer.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Transformers/PostsTransformer.php'));
         $this->assertSame(0, $code);
     }
 
@@ -44,7 +46,7 @@ class ResourceMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-resource', ['name' => 'PostsTransformer', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Transformers/PostsTransformer.php');
+        $file = $this->finder->get($this->modulePath.'/Transformers/PostsTransformer.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -54,7 +56,7 @@ class ResourceMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-resource', ['name' => 'PostsTransformer', 'module' => 'Blog', '--collection' => true]);
 
-        $file = $this->finder->get($this->modulePath . '/Transformers/PostsTransformer.php');
+        $file = $this->finder->get($this->modulePath.'/Transformers/PostsTransformer.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -66,7 +68,7 @@ class ResourceMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-resource', ['name' => 'PostsTransformer', 'module' => 'Blog', '--collection' => true]);
 
-        $file = $this->finder->get($this->modulePath . '/Http/Resources/PostsTransformer.php');
+        $file = $this->finder->get($this->modulePath.'/Http/Resources/PostsTransformer.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -78,7 +80,7 @@ class ResourceMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-resource', ['name' => 'PostsTransformer', 'module' => 'Blog', '--collection' => true]);
 
-        $file = $this->finder->get($this->modulePath . '/Transformers/PostsTransformer.php');
+        $file = $this->finder->get($this->modulePath.'/Transformers/PostsTransformer.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

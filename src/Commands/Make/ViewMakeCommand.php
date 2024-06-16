@@ -14,7 +14,9 @@ class ViewMakeCommand extends GeneratorCommand
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
+
     protected $name = 'module:make-view';
+
     protected $description = 'Create a new view for the specified module.';
 
     protected function getArguments(): array
@@ -35,14 +37,11 @@ class ViewMakeCommand extends GeneratorCommand
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
         $factoryPath = GenerateConfigReader::read('views');
 
-        return $path . $factoryPath->getPath() . '/' . $this->getFileName();
+        return $path.$factoryPath->getPath().'/'.$this->getFileName();
     }
 
-    /**
-     * @return string
-     */
     private function getFileName(): string
     {
-        return Str::lower($this->argument('name')) . '.blade.php';
+        return Str::lower($this->argument('name')).'.blade.php';
     }
 }
