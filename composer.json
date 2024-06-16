@@ -30,7 +30,8 @@
     "friendsofphp/php-cs-fixer": "^v3.52",
     "laravel/framework": "^v11.0",
     "spatie/phpunit-snapshot-assertions": "^5.0",
-    "phpstan/phpstan": "^1.4"
+    "phpstan/phpstan": "^1.4",
+    "larastan/larastan": "^2.9"
   },
   "autoload": {
     "psr-4": {
