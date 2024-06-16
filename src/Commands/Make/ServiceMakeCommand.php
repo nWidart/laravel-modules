@@ -14,16 +14,18 @@ class ServiceMakeCommand extends GeneratorCommand
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
+
     protected $name = 'module:make-service';
+
     protected $description = 'Create a new service class for the specified module.';
 
     public function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('services')->getPath() ?? config('modules.paths.app_folder') . 'Services';
+        $filePath = GenerateConfigReader::read('services')->getPath() ?? config('modules.paths.app_folder').'Services';
 
-        return $path . $filePath . '/' . $this->getServiceName() . '.php';
+        return $path.$filePath.'/'.$this->getServiceName().'.php';
     }
 
     protected function getTemplateContents(): string
@@ -31,8 +33,8 @@ class ServiceMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
-            'CLASS_NAMESPACE'   => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClassNameWithoutNamespace(),
+            'CLASS_NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS' => $this->getClassNameWithoutNamespace(),
         ]))->render();
     }
 
@@ -44,9 +46,6 @@ class ServiceMakeCommand extends GeneratorCommand
         ];
     }
 
-    /**
-     * @return array
-     */
     protected function getOptions(): array
     {
         return [

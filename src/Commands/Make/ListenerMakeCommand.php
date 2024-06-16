@@ -76,10 +76,10 @@ class ListenerMakeCommand extends GeneratorCommand
 
     protected function getEventName(Module $module)
     {
-        $namespace = $this->laravel['modules']->config('namespace') . "\\" . $module->getStudlyName();
+        $namespace = $this->laravel['modules']->config('namespace').'\\'.$module->getStudlyName();
         $eventPath = GenerateConfigReader::read('event');
 
-        $eventName = $namespace . "\\" . $eventPath->getPath() . "\\" . $this->option('event');
+        $eventName = $namespace.'\\'.$eventPath->getPath().'\\'.$this->option('event');
 
         return str_replace('/', '\\', $eventName);
     }
@@ -95,7 +95,7 @@ class ListenerMakeCommand extends GeneratorCommand
 
         $listenerPath = GenerateConfigReader::read('listener');
 
-        return $path . $listenerPath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path.$listenerPath->getPath().'/'.$this->getFileName().'.php';
     }
 
     /**
@@ -106,9 +106,6 @@ class ListenerMakeCommand extends GeneratorCommand
         return Str::studly($this->argument('name'));
     }
 
-    /**
-     * @return string
-     */
     protected function getStubName(): string
     {
         if ($this->option('queued')) {

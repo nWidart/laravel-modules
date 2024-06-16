@@ -41,7 +41,7 @@ class MigrateRollbackCommand extends BaseCommand
 
         if (count($migrated)) {
             foreach ($migrated as $migration) {
-                $this->components->task("Rollback: <info>{$migration}</info>", );
+                $this->components->task("Rollback: <info>{$migration}</info>");
             }
 
             return;
@@ -51,7 +51,7 @@ class MigrateRollbackCommand extends BaseCommand
 
     }
 
-    public function getInfo(): string|null
+    public function getInfo(): ?string
     {
         return null;
     }

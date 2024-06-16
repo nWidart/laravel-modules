@@ -71,7 +71,7 @@ class JobMakeCommand extends GeneratorCommand
 
         return (new Stub($this->getStubName(), [
             'NAMESPACE' => $this->getClassNamespace($module),
-            'CLASS'     => $this->getClass(),
+            'CLASS' => $this->getClass(),
         ]))->render();
     }
 
@@ -86,7 +86,7 @@ class JobMakeCommand extends GeneratorCommand
 
         $jobPath = GenerateConfigReader::read('jobs');
 
-        return $path . $jobPath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path.$jobPath->getPath().'/'.$this->getFileName().'.php';
     }
 
     /**
@@ -97,9 +97,6 @@ class JobMakeCommand extends GeneratorCommand
         return Str::studly($this->argument('name'));
     }
 
-    /**
-     * @return string
-     */
     protected function getStubName(): string
     {
         if ($this->option('sync')) {

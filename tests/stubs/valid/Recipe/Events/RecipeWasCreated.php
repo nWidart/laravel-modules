@@ -6,13 +6,8 @@ use Modules\Media\Contracts\StoringMedia;
 
 class RecipeWasCreated implements StoringMedia
 {
-    /**
-     * @var
-     */
     private $recipe;
-    /**
-     * @var
-     */
+
     private $data;
 
     public function __construct($recipe, $data)
@@ -23,6 +18,7 @@ class RecipeWasCreated implements StoringMedia
 
     /**
      * Return the entity
+     *
      * @return \Illuminate\Database\Eloquent\Model
      */
     public function getEntity()
@@ -32,6 +28,7 @@ class RecipeWasCreated implements StoringMedia
 
     /**
      * Return the ALL data sent
+     *
      * @return array
      */
     public function getSubmissionData()

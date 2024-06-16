@@ -14,6 +14,7 @@ class RecipeController extends AdminBaseController
      * @var RecipeRepository
      */
     private $recipe;
+
     /**
      * @var FileRepository
      */
@@ -52,7 +53,6 @@ class RecipeController extends AdminBaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Request $request
      * @return Response
      */
     public function store(Request $request)
@@ -67,7 +67,6 @@ class RecipeController extends AdminBaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  Recipe $recipe
      * @return Response
      */
     public function edit(Recipe $recipe)
@@ -81,8 +80,6 @@ class RecipeController extends AdminBaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param  Recipe $recipe
-     * @param  Request $request
      * @return Response
      */
     public function update(Recipe $recipe, Request $request)
@@ -97,7 +94,6 @@ class RecipeController extends AdminBaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Recipe $recipe
      * @return Response
      */
     public function destroy(Recipe $recipe)

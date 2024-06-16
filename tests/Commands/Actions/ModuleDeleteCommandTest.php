@@ -15,6 +15,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var FileActivator
      */
@@ -23,7 +24,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->finder    = $this->app['files'];
+        $this->finder = $this->app['files'];
         $this->activator = new FileActivator($this->app);
     }
 
@@ -32,7 +33,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->artisan('module:make', ['name' => ['WrongModule']]);
         $this->assertDirectoryExists(base_path('modules/WrongModule'));
 
-        $code = $this->artisan('module:delete', ['module' => 'WrongModule','--force' => true]);
+        $code = $this->artisan('module:delete', ['module' => 'WrongModule', '--force' => true]);
         $this->assertFileDoesNotExist(base_path('modules/WrongModule'));
         $this->assertSame(0, $code);
     }

@@ -14,6 +14,7 @@ class EnumMakeCommandTest extends BaseTestCase
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -38,7 +39,7 @@ class EnumMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-enum', ['name' => 'MyEnum', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Enums/MyEnum.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Enums/MyEnum.php'));
         $this->assertSame(0, $code);
     }
 
@@ -47,7 +48,7 @@ class EnumMakeCommandTest extends BaseTestCase
         $this->artisan('module:make-enum', ['name' => 'MyEnum', 'module' => 'Blog']);
         $code = $this->artisan('module:make-enum', ['name' => 'MyEnum', 'module' => 'Blog', '--force' => true]);
 
-        $this->assertTrue(is_file($this->modulePath . '/Enums/MyEnum.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Enums/MyEnum.php'));
         $this->assertSame(0, $code);
     }
 
@@ -55,7 +56,7 @@ class EnumMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-enum', ['name' => 'MyEnum', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Enums/MyEnum.php');
+        $file = $this->finder->get($this->modulePath.'/Enums/MyEnum.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -65,7 +66,7 @@ class EnumMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-enum', ['name' => 'Api\\MyEnum', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Enums/Api/MyEnum.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Enums/Api/MyEnum.php'));
         $this->assertSame(0, $code);
     }
 
@@ -73,7 +74,7 @@ class EnumMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-enum', ['name' => 'Api\\MyEnum', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Enums/Api/MyEnum.php');
+        $file = $this->finder->get($this->modulePath.'/Enums/Api/MyEnum.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

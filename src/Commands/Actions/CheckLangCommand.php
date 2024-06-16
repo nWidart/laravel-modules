@@ -27,7 +27,7 @@ class CheckLangCommand extends BaseCommand
     {
         parent::__construct();
 
-        $this->langPath = DIRECTORY_SEPARATOR . config('modules.paths.generator.lang.path', 'Resources/lang');
+        $this->langPath = DIRECTORY_SEPARATOR.config('modules.paths.generator.lang.path', 'Resources/lang');
     }
 
     public function executeAction($name): void
@@ -46,7 +46,7 @@ class CheckLangCommand extends BaseCommand
 
     }
 
-    public function getInfo(): string|null
+    public function getInfo(): ?string
     {
         return 'Checking languages ...';
     }
@@ -54,7 +54,7 @@ class CheckLangCommand extends BaseCommand
     private function getLangFiles($module)
     {
         $files = [];
-        $path  = $module->getPath() . $this->langPath;
+        $path = $module->getPath().$this->langPath;
         if (is_dir($path)) {
             $files = array_merge($files, $this->laravel['files']->all($path));
         }
@@ -65,18 +65,18 @@ class CheckLangCommand extends BaseCommand
     private function getDirectories($module)
     {
         $moduleName = $module->getStudlyName();
-        $path       = $module->getPath() . $this->langPath;
+        $path = $module->getPath().$this->langPath;
         $directories = [];
         if (is_dir($path)) {
             $directories = $this->laravel['files']->directories($path);
             $directories = array_map(function ($directory) use ($moduleName) {
                 return [
-                    'name'   => basename($directory),
+                    'name' => basename($directory),
                     'module' => $moduleName,
-                    'path'   => $directory,
-                    'files'  => array_map(function ($file) {
+                    'path' => $directory,
+                    'files' => array_map(function ($file) {
                         return basename($file);
-                    }, \File::glob($directory . DIRECTORY_SEPARATOR . "*")),
+                    }, \File::glob($directory.DIRECTORY_SEPARATOR.'*')),
                 ];
             }, $directories);
         }
@@ -136,14 +136,14 @@ class CheckLangCommand extends BaseCommand
     private function checkMissingKeys(Collection $directories)
     {
         //show missing keys
-        $uniqeLangFiles  = $directories->pluck('files')->flatten()->unique();
+        $uniqeLangFiles = $directories->pluck('files')->flatten()->unique();
         $langDirectories = $directories->pluck('name');
 
         $missingKeysMessage = [];
         $directories->each(function ($directory) use ($uniqeLangFiles, $langDirectories, &$missingKeysMessage) {
 
             $uniqeLangFiles->each(function ($file) use ($directory, $langDirectories, &$missingKeysMessage) {
-                $langKeys = $this->getLangKeys($directory['path'] . DIRECTORY_SEPARATOR . $file);
+                $langKeys = $this->getLangKeys($directory['path'].DIRECTORY_SEPARATOR.$file);
 
                 if ($langKeys == false) {
                     return;
@@ -155,7 +155,7 @@ class CheckLangCommand extends BaseCommand
 
                         $basePath = str_replace($directory['name'], $langDirectory, $directory['path']);
 
-                        $otherLangKeys = $this->getLangKeys($basePath . DIRECTORY_SEPARATOR . $file);
+                        $otherLangKeys = $this->getLangKeys($basePath.DIRECTORY_SEPARATOR.$file);
 
                         if ($otherLangKeys == false) {
                             return;

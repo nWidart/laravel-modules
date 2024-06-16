@@ -45,7 +45,7 @@ final class ChannelMakeCommand extends GeneratorCommand
 
         return (new Stub('/channel.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
-            'CLASS'     => $this->getClass(),
+            'CLASS' => $this->getClass(),
         ]))->render();
     }
 
@@ -60,7 +60,7 @@ final class ChannelMakeCommand extends GeneratorCommand
 
         $channelPath = GenerateConfigReader::read('channels');
 
-        return $path . $channelPath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path.$channelPath->getPath().'/'.$this->getFileName().'.php';
     }
 
     /**

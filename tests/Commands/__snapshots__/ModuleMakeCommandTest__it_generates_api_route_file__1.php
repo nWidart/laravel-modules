@@ -1,4 +1,6 @@
-<?php return '<?php
+<?php
+
+return '<?php
 
 use Illuminate\\Http\\Request;
 

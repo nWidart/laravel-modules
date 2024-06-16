@@ -50,7 +50,7 @@ class MigrateResetCommand extends BaseCommand
         $this->components->warn("Nothing to rollback on module <fg=cyan;options=bold>{$module->getName()}</>");
     }
 
-    public function getInfo(): string|null
+    public function getInfo(): ?string
     {
         return null;
     }

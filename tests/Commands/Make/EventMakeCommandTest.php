@@ -9,6 +9,7 @@ use Spatie\Snapshots\MatchesSnapshots;
 class EventMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
+
     /**
      * @var \Illuminate\Filesystem\Filesystem
      */
@@ -37,7 +38,7 @@ class EventMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Events/PostWasCreated.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Events/PostWasCreated.php'));
         $this->assertSame(0, $code);
     }
 
@@ -45,7 +46,7 @@ class EventMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Events/PostWasCreated.php');
+        $file = $this->finder->get($this->modulePath.'/Events/PostWasCreated.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -57,7 +58,7 @@ class EventMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->getModuleBasePath() . '/SuperEvents/PostWasCreated.php');
+        $file = $this->finder->get($this->getModuleBasePath().'/SuperEvents/PostWasCreated.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -69,7 +70,7 @@ class EventMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Events/PostWasCreated.php');
+        $file = $this->finder->get($this->modulePath.'/Events/PostWasCreated.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

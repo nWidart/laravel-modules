@@ -25,8 +25,6 @@ class MigrateCommand extends BaseCommand
 
     /**
      * The migrator instance.
-     *
-     * @var Migrator
      */
     protected Migrator $migrator;
 
@@ -36,7 +34,7 @@ class MigrateCommand extends BaseCommand
     {
         parent::__construct();
 
-        $this->migrator       = app('migrator');
+        $this->migrator = app('migrator');
         $this->migration_list = collect($this->migrator->paths());
     }
 
@@ -52,10 +50,10 @@ class MigrateCommand extends BaseCommand
             ->filter(fn ($path) => str_starts_with($path, $module_path));
 
         $this->call('migrate', array_filter([
-            '--path'     => $paths->toArray(),
+            '--path' => $paths->toArray(),
             '--database' => $this->option('database'),
-            '--pretend'  => $this->option('pretend'),
-            '--force'    => $this->option('force'),
+            '--pretend' => $this->option('pretend'),
+            '--force' => $this->option('force'),
             '--realpath' => true,
         ]));
 

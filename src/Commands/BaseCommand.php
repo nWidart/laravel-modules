@@ -6,14 +6,13 @@ use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Console\Prohibitable;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
-
-use function Laravel\Prompts\multiselect;
-
 use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use function Laravel\Prompts\multiselect;
 
 abstract class BaseCommand extends Command implements PromptsForMissingInput
 {
@@ -50,12 +49,12 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
 
     abstract public function executeAction($name);
 
-    public function getInfo(): string|null
+    public function getInfo(): ?string
     {
         return null;
     }
 
-    public function getConfirmableLabel(): string|null
+    public function getConfirmableLabel(): ?string
     {
         return 'Warning';
     }
@@ -133,5 +132,4 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
                 'Force the operation to run without confirmation.',
             ));
     }
-
 }

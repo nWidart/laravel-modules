@@ -25,8 +25,6 @@ class MigrateFreshCommand extends BaseCommand
 
     /**
      * The migrator instance.
-     *
-     * @var Migrator
      */
     protected Migrator $migrator;
 
@@ -36,7 +34,7 @@ class MigrateFreshCommand extends BaseCommand
     {
         parent::__construct();
 
-        $this->migrator       = app('migrator');
+        $this->migrator = app('migrator');
         $this->migration_paths = collect($this->migrator->paths());
     }
 
@@ -44,11 +42,11 @@ class MigrateFreshCommand extends BaseCommand
     {
         // drop tables
         $this->components->task('Dropping all tables', fn () => $this->callSilent('db:wipe', array_filter([
-                '--database'   => $this->option('database'),
-                '--drop-views' => $this->option('drop-views'),
-                '--drop-types' => $this->option('drop-types'),
-                '--force'      => true,
-            ])) == 0);
+            '--database' => $this->option('database'),
+            '--drop-views' => $this->option('drop-views'),
+            '--drop-types' => $this->option('drop-types'),
+            '--force' => true,
+        ])) == 0);
 
         // create migration table
         $this->call('migrate:install', array_filter([
@@ -60,13 +58,13 @@ class MigrateFreshCommand extends BaseCommand
             ->reject(fn (string $path) => str_starts_with($path, config('modules.paths.modules')));
 
         if ($root_paths->count() > 0) {
-            $this->components->twoColumnDetail("Running Migration of <fg=cyan;options=bold>Root</>");
+            $this->components->twoColumnDetail('Running Migration of <fg=cyan;options=bold>Root</>');
 
             $this->call('migrate', array_filter([
-                '--path'     => $root_paths->toArray(),
+                '--path' => $root_paths->toArray(),
                 '--database' => $this->option('database'),
-                '--pretend'  => $this->option('pretend'),
-                '--force'    => $this->option('force'),
+                '--pretend' => $this->option('pretend'),
+                '--force' => $this->option('force'),
                 '--realpath' => true,
             ]));
         }
@@ -79,17 +77,15 @@ class MigrateFreshCommand extends BaseCommand
         $module = $this->getModuleModel($name);
 
         $this->call('module:migrate', array_filter([
-            'module'     => $module->getStudlyName(),
+            'module' => $module->getStudlyName(),
             '--database' => $this->option('database'),
-            '--force'    => $this->option('force'),
-            '--seed'     => $this->option('seed'),
+            '--force' => $this->option('force'),
+            '--seed' => $this->option('seed'),
         ]));
     }
 
     /**
      * Get the console command options.
-     *
-     * @return array
      */
     protected function getOptions(): array
     {

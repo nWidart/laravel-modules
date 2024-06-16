@@ -14,7 +14,9 @@ class EventProviderMakeCommand extends GeneratorCommand
     use ModuleCommandTrait;
 
     protected $argumentName = 'module';
+
     protected $name = 'module:make-event-provider';
+
     protected $description = 'Create a new event service provider class for the specified module.';
 
     public function getDestinationFilePath(): string
@@ -23,7 +25,7 @@ class EventProviderMakeCommand extends GeneratorCommand
 
         $filePath = GenerateConfigReader::read('provider')->getPath();
 
-        return $path . $filePath . '/' . $this->getEventServiceProviderName() . '.php';
+        return $path.$filePath.'/'.$this->getEventServiceProviderName().'.php';
     }
 
     protected function getTemplateContents(): string
@@ -31,8 +33,8 @@ class EventProviderMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
-            'NAMESPACE'         => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClassNameWithoutNamespace(),
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS' => $this->getClassNameWithoutNamespace(),
         ]))->render();
     }
 
@@ -43,9 +45,6 @@ class EventProviderMakeCommand extends GeneratorCommand
         ];
     }
 
-    /**
-     * @return array
-     */
     protected function getOptions(): array
     {
         return [

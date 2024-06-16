@@ -14,6 +14,7 @@ class ScopeMakeCommandTest extends BaseTestCase
      * @var \Illuminate\Filesystem\Filesystem
      */
     private $finder;
+
     /**
      * @var string
      */
@@ -38,7 +39,7 @@ class ScopeMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-scope', ['name' => 'MyScope', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Models/Scopes/MyScope.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Models/Scopes/MyScope.php'));
         $this->assertSame(0, $code);
     }
 
@@ -47,7 +48,7 @@ class ScopeMakeCommandTest extends BaseTestCase
         $this->artisan('module:make-scope', ['name' => 'MyScope', 'module' => 'Blog']);
         $code = $this->artisan('module:make-scope', ['name' => 'MyScope', 'module' => 'Blog', '--force' => true]);
 
-        $this->assertTrue(is_file($this->modulePath . '/Models/Scopes/MyScope.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Models/Scopes/MyScope.php'));
         $this->assertSame(0, $code);
     }
 
@@ -55,7 +56,7 @@ class ScopeMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-scope', ['name' => 'MyScope', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Models/Scopes/MyScope.php');
+        $file = $this->finder->get($this->modulePath.'/Models/Scopes/MyScope.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -65,7 +66,7 @@ class ScopeMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-scope', ['name' => 'Api\\MyScope', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath . '/Models/Scopes/Api/MyScope.php'));
+        $this->assertTrue(is_file($this->modulePath.'/Models/Scopes/Api/MyScope.php'));
         $this->assertSame(0, $code);
     }
 
@@ -73,7 +74,7 @@ class ScopeMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-scope', ['name' => 'Api\\MyScope', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath . '/Models/Scopes/Api/MyScope.php');
+        $file = $this->finder->get($this->modulePath.'/Models/Scopes/Api/MyScope.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

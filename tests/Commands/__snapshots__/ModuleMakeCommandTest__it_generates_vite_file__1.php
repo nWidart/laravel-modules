@@ -1,4 +1,5 @@
 <?php
+
 return 'const dotenvExpand = require(\'dotenv-expand\');
 dotenvExpand(require(\'dotenv\').config({ path: \'../../.env\'/*, debug: true*/}));
 
@@ -24,4 +25,3 @@ export default defineConfig({
     ],
 });
 ';
-

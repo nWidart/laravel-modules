@@ -14,16 +14,18 @@ class TraitMakeCommand extends GeneratorCommand
     use ModuleCommandTrait;
 
     protected $argumentName = 'name';
+
     protected $name = 'module:make-trait';
+
     protected $description = 'Create a new trait class for the specified module.';
 
     public function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('traits')->getPath() ?? config('modules.paths.app_folder') . 'Traits';
+        $filePath = GenerateConfigReader::read('traits')->getPath() ?? config('modules.paths.app_folder').'Traits';
 
-        return $path . $filePath . '/' . $this->getTraitName() . '.php';
+        return $path.$filePath.'/'.$this->getTraitName().'.php';
     }
 
     protected function getTemplateContents(): string
@@ -31,8 +33,8 @@ class TraitMakeCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
-            'CLASS_NAMESPACE'   => $this->getClassNamespace($module),
-            'CLASS'             => $this->getClassNameWithoutNamespace(),
+            'CLASS_NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS' => $this->getClassNameWithoutNamespace(),
         ]))->render();
     }
 
@@ -44,9 +46,6 @@ class TraitMakeCommand extends GeneratorCommand
         ];
     }
 
-    /**
-     * @return array
-     */
     protected function getOptions(): array
     {
         return [

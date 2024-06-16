@@ -1,4 +1,6 @@
-<?php return '<?php
+<?php
+
+return '<?php
 namespace Modules\\Blog\\Database\\factories;
 
 use Illuminate\\Database\\Eloquent\\Factories\\Factory;

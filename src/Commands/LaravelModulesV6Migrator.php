@@ -11,6 +11,7 @@ use Nwidart\Modules\Module;
 class LaravelModulesV6Migrator extends Command
 {
     protected $name = 'module:v6:migrate';
+
     protected $description = 'Migrate laravel-modules v5 modules statuses to v6.';
 
     public function handle(): int

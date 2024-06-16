@@ -40,11 +40,11 @@ class EventMakeCommand extends GeneratorCommand
 
     public function getDestinationFilePath()
     {
-        $path       = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
         $eventPath = GenerateConfigReader::read('event');
 
-        return $path . $eventPath->getPath() . '/' . $this->getFileName() . '.php';
+        return $path.$eventPath->getPath().'/'.$this->getFileName().'.php';
     }
 
     /**
