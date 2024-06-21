@@ -95,6 +95,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\ComposerUpdateCommand::class,
             Commands\LaravelModulesV6Migrator::class,
             Commands\SetupCommand::class,
+            Commands\ModuleDiscoverCommand::class,
 
             Commands\Database\MigrateFreshCommand::class,
         ]);
