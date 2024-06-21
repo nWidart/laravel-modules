@@ -11,14 +11,14 @@ class LangPublisher extends Publisher
      *
      * @var bool
      */
-    protected $showMessage = false;
+    protected bool $showMessage = false;
 
     /**
      * Get destination path.
      *
      * @return string
      */
-    public function getDestinationPath()
+    public function getDestinationPath(): string
     {
         $name = $this->module->getLowerName();
 
@@ -30,7 +30,7 @@ class LangPublisher extends Publisher
      *
      * @return string
      */
-    public function getSourcePath()
+    public function getSourcePath(): string
     {
         return $this->getModule()->getExtraPath(
             GenerateConfigReader::read('lang')->getPath()

@@ -20,7 +20,7 @@ class Module extends BaseModule
      */
     public function registerProviders(): void
     {
-        foreach ($this->get('providers', []) as $provider) {
+        foreach ($this->get('providers') as $provider) {
             $this->app->register($provider);
         }
     }

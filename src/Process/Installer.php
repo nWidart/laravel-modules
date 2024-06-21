@@ -14,52 +14,52 @@ class Installer
      *
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * The version of module being installed.
      *
      * @var string
      */
-    protected $version;
+    protected string $version;
 
     /**
      * The module repository instance.
      *
-     * @var \Nwidart\Modules\Contracts\RepositoryInterface
+     * @var RepositoryInterface
      */
-    protected $repository;
+    protected RepositoryInterface $repository;
 
     /**
      * The console command instance.
      *
-     * @var \Illuminate\Console\Command
+     * @var Command
      */
-    protected $console;
+    protected Command $console;
 
     /**
-     * The destionation path.
+     * The destination path.
      *
      * @var string
      */
-    protected $path;
+    protected string $path;
 
     /**
      * The process timeout.
      *
      * @var int
      */
-    protected $timeout = 3360;
+    protected int $timeout = 3360;
 
     /**
-     * @var null|string
+     * @var string
      */
-    private $type;
+    private string $type = '';
 
     /**
      * @var bool
      */
-    private $tree;
+    private bool $tree = false;
 
     /**
      * The constructor.
@@ -69,7 +69,7 @@ class Installer
      * @param  string  $type
      * @param  bool  $tree
      */
-    public function __construct($name, $version = null, $type = null, $tree = false)
+    public function __construct(string $name, string $version = '', string $type = '', bool $tree = false)
     {
         $this->name = $name;
         $this->version = $version;
@@ -83,7 +83,7 @@ class Installer
      * @param  string  $path
      * @return $this
      */
-    public function setPath($path)
+    public function setPath(string $path): self
     {
         $this->path = $path;
 
@@ -95,7 +95,7 @@ class Installer
      *
      * @return $this
      */
-    public function setRepository(RepositoryInterface $repository)
+    public function setRepository(RepositoryInterface $repository): self
     {
         $this->repository = $repository;
 
@@ -108,7 +108,7 @@ class Installer
      *
      * @return $this
      */
-    public function setConsole(Command $console)
+    public function setConsole(Command $console): self
     {
         $this->console = $console;
 
@@ -121,7 +121,7 @@ class Installer
      * @param  int  $timeout
      * @return $this
      */
-    public function setTimeout($timeout)
+    public function setTimeout(int $timeout): self
     {
         $this->timeout = $timeout;
 
@@ -131,19 +131,17 @@ class Installer
     /**
      * Run the installation process.
      *
-     * @return \Symfony\Component\Process\Process
+     * @return Process
      */
-    public function run()
+    public function run(): Process
     {
         $process = $this->getProcess();
 
         $process->setTimeout($this->timeout);
 
-        if ($this->console instanceof Command) {
-            $process->run(function ($type, $line) {
-                $this->console->line($line);
-            });
-        }
+        $process->run(function ($type, $line) {
+            $this->console->line($line);
+        });
 
         return $process;
     }
@@ -151,9 +149,9 @@ class Installer
     /**
      * Get process instance.
      *
-     * @return \Symfony\Component\Process\Process
+     * @return Process
      */
-    public function getProcess()
+    public function getProcess(): Process
     {
         if ($this->type) {
             if ($this->tree) {
@@ -171,7 +169,7 @@ class Installer
      *
      * @return string
      */
-    public function getDestinationPath()
+    public function getDestinationPath(): string
     {
         if ($this->path) {
             return $this->path;
@@ -183,9 +181,9 @@ class Installer
     /**
      * Get git repo url.
      *
-     * @return string|null
+     * @return string
      */
-    public function getRepoUrl()
+    public function getRepoUrl(): string
     {
         switch ($this->type) {
             case 'github':
@@ -196,8 +194,6 @@ class Installer
 
             case 'gitlab':
                 return "git@gitlab.com:{$this->name}.git";
-
-                break;
 
             case 'bitbucket':
                 return "git@bitbucket.org:{$this->name}.git";
@@ -214,9 +210,7 @@ class Installer
                     return "{$this->type}:{$this->name}.git";
                 }
 
-                return;
-
-                break;
+                return '';
         }
     }
 
@@ -225,9 +219,9 @@ class Installer
      *
      * @return string
      */
-    public function getBranch()
+    public function getBranch(): string
     {
-        return is_null($this->version) ? 'master' : $this->version;
+        return $this->version === '' ? 'master' : $this->version;
     }
 
     /**
@@ -235,7 +229,7 @@ class Installer
      *
      * @return string
      */
-    public function getModuleName()
+    public function getModuleName(): string
     {
         $parts = explode('/', $this->name);
 
@@ -247,9 +241,9 @@ class Installer
      *
      * @return string
      */
-    public function getPackageName()
+    public function getPackageName(): string
     {
-        if (is_null($this->version)) {
+        if ($this->version === '') {
             return $this->name.':dev-master';
         }
 
@@ -259,9 +253,9 @@ class Installer
     /**
      * Install the module via git.
      *
-     * @return \Symfony\Component\Process\Process
+     * @return Process
      */
-    public function installViaGit()
+    public function installViaGit(): Process
     {
         return Process::fromShellCommandline(sprintf(
             'cd %s && git clone %s %s && cd %s && git checkout %s',
@@ -276,9 +270,9 @@ class Installer
     /**
      * Install the module via git subtree.
      *
-     * @return \Symfony\Component\Process\Process
+     * @return Process
      */
-    public function installViaSubtree()
+    public function installViaSubtree(): Process
     {
         return Process::fromShellCommandline(sprintf(
             'cd %s && git remote add %s %s && git subtree add --prefix=%s --squash %s %s',
@@ -294,9 +288,9 @@ class Installer
     /**
      * Install the module via composer.
      *
-     * @return \Symfony\Component\Process\Process
+     * @return Process
      */
-    public function installViaComposer()
+    public function installViaComposer(): Process
     {
         return Process::fromShellCommandline(sprintf(
             'cd %s && composer require %s',

@@ -12,7 +12,7 @@ class Runner implements RunableInterface
      *
      * @var RepositoryInterface
      */
-    protected $module;
+    protected RepositoryInterface $module;
 
     public function __construct(RepositoryInterface $module)
     {
@@ -24,7 +24,7 @@ class Runner implements RunableInterface
      *
      * @param  string  $command
      */
-    public function run($command)
+    public function run($command): void
     {
         passthru($command);
     }

@@ -9,21 +9,21 @@ class NameParser
      *
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * The array data.
      *
      * @var array
      */
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * The available schema actions.
      *
      * @var array
      */
-    protected $actions = [
+    protected array $actions = [
         'create' => [
             'create',
             'make',
@@ -49,7 +49,7 @@ class NameParser
      *
      * @param  string  $name
      */
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
         $this->data = $this->fetchData();
@@ -60,7 +60,7 @@ class NameParser
      *
      * @return string
      */
-    public function getOriginalName()
+    public function getOriginalName(): string
     {
         return $this->name;
     }
@@ -70,7 +70,7 @@ class NameParser
      *
      * @return string
      */
-    public function getAction()
+    public function getAction(): string
     {
         return head($this->data);
     }
@@ -80,7 +80,7 @@ class NameParser
      *
      * @return string
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         $matches = array_reverse($this->getMatches());
 
@@ -92,7 +92,7 @@ class NameParser
      *
      * @return array
      */
-    public function getMatches()
+    public function getMatches(): array
     {
         preg_match($this->getPattern(), $this->name, $matches);
 
@@ -104,29 +104,13 @@ class NameParser
      *
      * @return string
      */
-    public function getPattern()
+    public function getPattern(): string
     {
-        switch ($action = $this->getAction()) {
-            case 'add':
-            case 'append':
-            case 'update':
-            case 'insert':
-                return "/{$action}_(.*)_to_(.*)_table/";
-
-                break;
-
-            case 'delete':
-            case 'remove':
-            case 'alter':
-                return "/{$action}_(.*)_from_(.*)_table/";
-
-                break;
-
-            default:
-                return "/{$action}_(.*)_table/";
-
-                break;
-        }
+        return match ($action = $this->getAction()) {
+            'add', 'append', 'update', 'insert' => "/{$action}_(.*)_to_(.*)_table/",
+            'delete', 'remove', 'alter' => "/{$action}_(.*)_from_(.*)_table/",
+            default => "/{$action}_(.*)_table/",
+        };
     }
 
     /**
@@ -134,7 +118,7 @@ class NameParser
      *
      * @return array
      */
-    protected function fetchData()
+    protected function fetchData(): array
     {
         return explode('_', $this->name);
     }
@@ -144,7 +128,7 @@ class NameParser
      *
      * @return array
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->data;
     }
@@ -153,19 +137,20 @@ class NameParser
      * Determine whether the given type is same with the current schema action or type.
      *
      *
+     * @param string $type
      * @return bool
      */
-    public function is($type)
+    public function is(string $type): bool
     {
         return $type === $this->getAction();
     }
 
     /**
-     * Determine whether the current schema action is a adding action.
+     * Determine whether the current schema action is an adding action.
      *
      * @return bool
      */
-    public function isAdd()
+    public function isAdd(): bool
     {
         return in_array($this->getAction(), $this->actions['add']);
     }
@@ -175,7 +160,7 @@ class NameParser
      *
      * @return bool
      */
-    public function isDelete()
+    public function isDelete(): bool
     {
         return in_array($this->getAction(), $this->actions['delete']);
     }
@@ -185,7 +170,7 @@ class NameParser
      *
      * @return bool
      */
-    public function isCreate()
+    public function isCreate(): bool
     {
         return in_array($this->getAction(), $this->actions['create']);
     }
@@ -195,7 +180,7 @@ class NameParser
      *
      * @return bool
      */
-    public function isDrop()
+    public function isDrop(): bool
     {
         return in_array($this->getAction(), $this->actions['drop']);
     }
