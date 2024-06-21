@@ -3,6 +3,7 @@
 namespace Nwidart\Modules;
 
 use Composer\InstalledVersions;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\AboutCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
@@ -16,6 +17,16 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     public function boot()
     {
         $this->registerNamespaces();
+
+        $this->app->singleton(
+            ModuleManifest::class,
+            fn () => new ModuleManifest(
+                new Filesystem(),
+                app(Contracts\RepositoryInterface::class)->getScanPaths(),
+                $this->getCachedModulePath()
+            )
+        );
+
         $this->registerModules();
 
         AboutCommand::add('Laravel-Modules', [
