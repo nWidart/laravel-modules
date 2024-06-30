@@ -5,8 +5,11 @@ namespace Nwidart\Modules\Generators;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Console\Command as Console;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Facades\Module;
 use Nwidart\Modules\FileRepository;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
@@ -365,6 +368,8 @@ class ModuleGenerator extends Generator
 
         $this->component->info("Module [{$name}] created successfully.");
 
+        $this->fireEvent(ModuleEvent::CREATE);
+
         return 0;
     }
 
@@ -675,5 +680,17 @@ class ModuleGenerator extends Generator
     protected function getProviderNamespaceReplacement(): string
     {
         return str_replace('\\', '\\\\', GenerateConfigReader::read('provider')->getNamespace());
+    }
+
+    /**
+     * fire the module event.
+     *
+     * @param string $event
+     */
+    protected function fireEvent(string $event): void
+    {
+        $module = $this->module->find($this->name);
+
+        $module->fireEvent($event);
     }
 }
