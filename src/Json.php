@@ -116,7 +116,7 @@ class Json
      */
     public function decodeContents()
     {
-        $attributes = json_decode($this->getContents(), 1);
+        $attributes = $this->filesystem->json($this->getPath());
 
         // any JSON parsing errors should throw an exception
         if (json_last_error() > 0) {
@@ -136,13 +136,7 @@ class Json
      */
     public function getAttributes()
     {
-        if (config('modules.cache.enabled') === false) {
-            return $this->decodeContents();
-        }
-
-        return app('cache')->store(config('modules.cache.driver'))->remember($this->getPath(), config('modules.cache.lifetime'), function () {
-            return $this->decodeContents();
-        });
+        return $this->decodeContents();
     }
 
     /**
