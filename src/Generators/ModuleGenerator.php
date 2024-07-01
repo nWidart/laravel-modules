@@ -51,7 +51,8 @@ class ModuleGenerator extends Generator
     /**
      * The module instance.
      */
-    protected ?Module $module = null;
+    /*?Module*/
+    protected mixed $module = null;
 
     /**
      * Force status.
