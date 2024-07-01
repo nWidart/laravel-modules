@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Generators;
 
 use Illuminate\Config\Repository as Config;
 use Illuminate\Console\Command as Console;
+use Illuminate\Console\View\Components\Factory;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Contracts\ActivatorInterface;
@@ -19,73 +20,53 @@ class ModuleGenerator extends Generator
 
     /**
      * The module name will created.
-     *
-     * @var string
      */
-    protected $name;
+    protected ?string $name = null;
 
     /**
      * The laravel config instance.
-     *
-     * @var Config
      */
-    protected $config;
+    protected ?Config $config = null;
 
     /**
      * The laravel filesystem instance.
-     *
-     * @var Filesystem
      */
-    protected $filesystem;
+    protected ?Filesystem $filesystem = null;
 
     /**
      * The laravel console instance.
-     *
-     * @var Console
      */
-    protected $console;
+    protected ?Console $console = null;
 
     /**
      * The laravel component Factory instance.
-     *
-     * @var \Illuminate\Console\View\Components\Factory
      */
-    protected $component;
+    protected ?Factory $component = null;
 
     /**
      * The activator instance
-     *
-     * @var ActivatorInterface
      */
-    protected $activator;
+    protected ?ActivatorInterface $activator = null;
 
     /**
      * The module instance.
-     *
-     * @var \Nwidart\Modules\Module
      */
-    protected $module;
+    protected ?Module $module = null;
 
     /**
      * Force status.
-     *
-     * @var bool
      */
-    protected $force = false;
+    protected bool $force = false;
 
     /**
      * set default module type.
-     *
-     * @var string
      */
-    protected $type = 'web';
+    protected string $type = 'web';
 
     /**
      * Enables the module.
-     *
-     * @var bool
      */
-    protected $isActive = false;
+    protected bool $isActive = false;
 
     /**
      * Module author
@@ -139,7 +120,7 @@ class ModuleGenerator extends Generator
     }
 
     /**
-     * Get the name of module will created. By default in studly case.
+     * Get the name of module that will be created (in StudlyCase).
      */
     public function getName(): string
     {
