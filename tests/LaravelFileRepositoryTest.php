@@ -32,6 +32,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     public function tearDown(): void
     {
         $this->activator->reset();
+        $this->artisan('module:delete', ['--all' => true, '--force' => true]);
         parent::tearDown();
     }
 
