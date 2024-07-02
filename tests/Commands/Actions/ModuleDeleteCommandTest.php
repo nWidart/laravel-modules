@@ -104,7 +104,8 @@ class ModuleDeleteCommandTest extends BaseTestCase
 
         $this->assertSame(0, $code);
 
-        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DELETE, strtolower($module_name)));
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DELETING, strtolower($module_name)));
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DELETED, strtolower($module_name)));
     }
 
     public function test_it_fires_events_when_multi_module_deleted()
@@ -126,7 +127,8 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
 
         foreach ($modules as $module) {
-            Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DELETE, strtolower($module)));
+            Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DELETING, strtolower($module)));
+            Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DELETED, strtolower($module)));
         }
     }
 }

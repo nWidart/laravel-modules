@@ -495,7 +495,8 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->assertSame(0, $code);
 
-        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATE, strtolower($module_name)));
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATING, strtolower($module_name)));
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATED, strtolower($module_name)));
     }
 
     public function test_it_fires_events_when_multi_module_created()
@@ -513,7 +514,8 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
 
         foreach ($modules as $module) {
-            Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATE, strtolower($module)));
+            Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATING, strtolower($module)));
+            Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATED, strtolower($module)));
         }
 
     }
