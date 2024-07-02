@@ -269,7 +269,7 @@ abstract class Module
      */
     public function fireEvent(string $event): void
     {
-        $this->app['events']->dispatch(sprintf('modules.%s.'.$event, $this->getLowerName()), [$this]);
+        $this->app['events']->dispatch(sprintf('modules.%s.%s', $this->getLowerName(), $event), [$this]);
     }
 
     /**
