@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
-use Nwidart\Modules\Facades\Module;
 use Nwidart\Modules\FileRepository;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
@@ -336,9 +335,9 @@ class ModuleGenerator extends Generator
      */
     public function generate(): int
     {
-        $this->fireEvent(ModuleEvent::CREATING);
-
         $name = $this->getName();
+
+        Event::dispatch(sprintf('modules.%s.%s', strtolower($name), ModuleEvent::CREATING));
 
         if ($this->module->has($name)) {
             if ($this->force) {
@@ -686,8 +685,6 @@ class ModuleGenerator extends Generator
 
     /**
      * fire the module event.
-     *
-     * @param string $event
      */
     protected function fireEvent(string $event): void
     {
