@@ -16,9 +16,13 @@ class ModuleEvent
 
     const ENABLED = 'enabled';
 
-    const CREATE = 'create';
+    const CREATING = 'creating';
 
-    const DELETE = 'delete';
+    const CREATED = 'created';
+
+    const DELETING = 'deleting';
+
+    const DELETED = 'deleted';
 
     const USED = 'used';
 

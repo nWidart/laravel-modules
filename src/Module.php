@@ -370,11 +370,13 @@ abstract class Module
      */
     public function delete(): bool
     {
+        $this->fireEvent(ModuleEvent::DELETING);
+
         $this->activator->delete($this);
 
         $result = $this->json()->getFilesystem()->deleteDirectory($this->getPath());
 
-        $this->fireEvent(ModuleEvent::DELETE);
+        $this->fireEvent(ModuleEvent::DELETED);
 
         return $result;
     }

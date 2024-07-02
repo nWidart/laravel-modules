@@ -336,6 +336,8 @@ class ModuleGenerator extends Generator
      */
     public function generate(): int
     {
+        $this->fireEvent(ModuleEvent::CREATING);
+
         $name = $this->getName();
 
         if ($this->module->has($name)) {
@@ -368,7 +370,7 @@ class ModuleGenerator extends Generator
 
         $this->component->info("Module [{$name}] created successfully.");
 
-        $this->fireEvent(ModuleEvent::CREATE);
+        $this->fireEvent(ModuleEvent::CREATED);
 
         return 0;
     }
