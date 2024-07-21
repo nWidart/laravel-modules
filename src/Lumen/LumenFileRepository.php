@@ -9,7 +9,7 @@ class LumenFileRepository extends FileRepository
     /**
      * {@inheritdoc}
      */
-    protected function createModule(...$args)
+    protected function module(...$args): Module
     {
         return new Module(...$args);
     }
