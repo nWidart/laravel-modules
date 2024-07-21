@@ -231,7 +231,27 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function has($name): bool
     {
-        return array_key_exists($name, $this->all());
+        return in_array(Str::studly($name), $this->modules());
+    }
+
+    /**
+     * Get list of modules.
+     *
+     * - $enabled = null: Get all modules,
+     * - $enabled = true: Get all enabled modules,
+     * - $enabled = false: Get all disabled modules,
+     */
+    public function modules(?bool $enabled = null): array
+    {
+        if (is_bool($enabled)) {
+            if ($enabled) {
+                return array_keys($this->allEnabled());
+            }
+
+            return array_keys($this->allDisabled());
+        }
+
+        return array_keys($this->all());
     }
 
     /**
