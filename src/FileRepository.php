@@ -10,6 +10,7 @@ use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
+use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidAssetPath;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
@@ -410,6 +411,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
         $module = $this->findOrFail($name);
 
         $this->getFiles()->put($this->getUsedStoragePath(), $module);
+
+        $module->fireEvent(ModuleEvent::USED);
     }
 
     /**

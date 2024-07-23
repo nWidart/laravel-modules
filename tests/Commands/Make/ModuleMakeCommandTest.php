@@ -3,7 +3,9 @@
 namespace Nwidart\Modules\Tests\Commands\Make;
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
@@ -482,5 +484,39 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertStringContainsString('JoeBlogs', $content);
 
         $this->assertSame(0, $code);
+    }
+
+    public function test_it_fires_events_when_module_created()
+    {
+        $module_name = 'Blog';
+        Event::fake();
+
+        $code = $this->createModule($module_name);
+
+        $this->assertSame(0, $code);
+
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATING, strtolower($module_name)));
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATED, strtolower($module_name)));
+    }
+
+    public function test_it_fires_events_when_multi_module_created()
+    {
+        Event::fake();
+
+        $modules = [
+            'Foo',
+            'Bar',
+            'Zoo',
+        ];
+
+        $code = $this->artisan('module:make', ['name' => $modules]);
+
+        $this->assertSame(0, $code);
+
+        foreach ($modules as $module) {
+            Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATING, strtolower($module)));
+            Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATED, strtolower($module)));
+        }
+
     }
 }
