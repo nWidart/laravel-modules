@@ -525,11 +525,8 @@ class ModuleGenerator extends Generator
 
     /**
      * Get array replacement for the specified stub.
-     *
-     *
-     * @return array
      */
-    protected function getReplacement($stub)
+    protected function getReplacement($stub): array
     {
         $replacements = $this->module->config('stubs.replacements');
 
@@ -550,6 +547,7 @@ class ModuleGenerator extends Generator
                 $keys[] = 'PROVIDER_NAMESPACE';
             }
         }
+
         foreach ($keys as $key) {
             if (method_exists($this, $method = 'get'.ucfirst(Str::studly(strtolower($key))).'Replacement')) {
                 $replaces[$key] = $this->$method();
@@ -598,22 +596,34 @@ class ModuleGenerator extends Generator
 
     /**
      * Get the module name in lower case.
-     *
-     * @return string
      */
-    protected function getLowerNameReplacement()
+    protected function getLowerNameReplacement(): string
     {
-        return strtolower($this->getName());
+        return Str::of($this->getName())->lower();
+    }
+
+    /**
+     * Get the module name in plural lower case.
+     */
+    protected function getPluralLowerNameReplacement(): string
+    {
+        return Str::of($this->getName())->lower()->plural();
     }
 
     /**
      * Get the module name in studly case.
-     *
-     * @return string
      */
-    protected function getStudlyNameReplacement()
+    protected function getStudlyNameReplacement(): string
     {
         return $this->getName();
+    }
+
+    /**
+     * Get the module name in plural studly case.
+     */
+    protected function getPluralStudlyNameReplacement(): string
+    {
+        return Str::of($this->getName())->pluralStudly();
     }
 
     /**
