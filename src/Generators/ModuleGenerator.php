@@ -483,6 +483,7 @@ class ModuleGenerator extends Generator
                 $keys[] = 'PROVIDER_NAMESPACE';
             }
         }
+
         foreach ($keys as $key) {
             if (method_exists($this, $method = 'get'.ucfirst(Str::studly(strtolower($key))).'Replacement')) {
                 $replaces[$key] = $this->$method();
@@ -534,7 +535,15 @@ class ModuleGenerator extends Generator
      */
     protected function getLowerNameReplacement(): string
     {
-        return strtolower($this->getName());
+        return Str::of($this->getName())->lower();
+    }
+
+    /**
+     * Get the module name in plural lower case.
+     */
+    protected function getPluralLowerNameReplacement(): string
+    {
+        return Str::of($this->getName())->lower()->plural();
     }
 
     /**
@@ -543,6 +552,14 @@ class ModuleGenerator extends Generator
     protected function getStudlyNameReplacement(): string
     {
         return $this->getName();
+    }
+
+    /**
+     * Get the module name in plural studly case.
+     */
+    protected function getPluralStudlyNameReplacement(): string
+    {
+        return Str::of($this->getName())->pluralStudly();
     }
 
     /**
