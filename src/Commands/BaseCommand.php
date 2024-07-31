@@ -111,7 +111,7 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
                     ...$modules,
                 ])->when(strlen($search_value) > 0, function (Collection &$modules) use ($search_value) {
                     return $modules->filter(fn ($item) => str_contains(strtolower($item), strtolower($search_value)));
-                })->toArray();
+                })->values()->toArray();
             },
             required: 'You must select at least one module',
         );
