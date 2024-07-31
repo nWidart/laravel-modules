@@ -6,13 +6,14 @@ use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Console\Prohibitable;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
+use Illuminate\Support\Collection;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function Laravel\Prompts\multiselect;
+use function Laravel\Prompts\multisearch;
 
 abstract class BaseCommand extends Command implements PromptsForMissingInput
 {
@@ -98,12 +99,16 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
             return;
         }
 
-        $selected_item = multiselect(
-            label   : 'Select Modules',
-            options : [
-                self::ALL,
-                ...$modules,
-            ],
+        $selected_item = multisearch(
+            label: 'Select Modules',
+            options: function (string $search_value) use ($modules) {
+                return collect([
+                    self::ALL,
+                    ...$modules,
+                ])->when(strlen($search_value) > 0, function (Collection &$modules) use ($search_value) {
+                    return $modules->filter(fn ($item) => str_contains(strtolower($item), strtolower($search_value)));
+                })->toArray();
+            },
             required: 'You must select at least one module',
         );
 
