@@ -6,6 +6,9 @@ use Composer\InstalledVersions;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\AboutCommand;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Event;
+use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 use Nwidart\Modules\Support\Stub;
@@ -30,6 +33,8 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
         $this->registerModules();
 
+        $this->registerEvents();
+
         AboutCommand::add('Laravel-Modules', [
             'Version' => fn () => InstalledVersions::getPrettyVersion('nwidart/laravel-modules'),
         ]);
@@ -46,7 +51,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
         $this->registerMigrations();
 
-        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'modules');
+        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'modules');
     }
 
     /**
@@ -54,13 +59,13 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
      */
     public function setupStubPath()
     {
-        $path = $this->app['config']->get('modules.stubs.path') ?? __DIR__ . '/Commands/stubs';
+        $path = $this->app['config']->get('modules.stubs.path') ?? __DIR__.'/Commands/stubs';
         Stub::setBasePath($path);
 
         $this->app->booted(function ($app) {
             /** @var RepositoryInterface $moduleRepository */
             $moduleRepository = $app[RepositoryInterface::class];
-            if ($moduleRepository->config('stubs.enabled') === TRUE) {
+            if ($moduleRepository->config('stubs.enabled') === true) {
                 Stub::setBasePath($moduleRepository->config('stubs.path'));
             }
         });
@@ -78,9 +83,9 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         });
         $this->app->singleton(Contracts\ActivatorInterface::class, function ($app) {
             $activator = $app['config']->get('modules.activator');
-            $class     = $app['config']->get('modules.activators.' . $activator)['class'];
+            $class = $app['config']->get('modules.activators.'.$activator)['class'];
 
-            if ($class === NULL) {
+            if ($class === null) {
                 throw InvalidActivatorClass::missingConfig();
             }
 
@@ -91,12 +96,11 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
     protected function registerMigrations(): void
     {
-        if (! $this->app['config']->get('modules.auto-discover.migrations', TRUE)) {
+        if (! $this->app['config']->get('modules.auto-discover.migrations', true)) {
             return;
         }
 
         $this->app->resolving(Migrator::class, function (Migrator $migrator) {
-
             $path = implode(DIRECTORY_SEPARATOR, [
                 $this->app['config']->get('modules.paths.modules'),
                 '*',
@@ -109,6 +113,18 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
                     $migrator->path($path);
                 });
         });
+    }
 
+    private function registerEvents(): void
+    {
+        Event::listen(
+            [
+                'modules.*.'.ModuleEvent::DELETED,
+                'modules.*.'.ModuleEvent::CREATED,
+                'modules.*.'.ModuleEvent::DISABLED,
+                'modules.*.'.ModuleEvent::ENABLED,
+            ],
+            fn () => Artisan::call('module:clear-compiled')
+        );
     }
 }
