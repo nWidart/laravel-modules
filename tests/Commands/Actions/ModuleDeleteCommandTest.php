@@ -2,7 +2,9 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Illuminate\Support\Facades\Event;
 use Nwidart\Modules\Activators\FileActivator;
+use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
@@ -88,5 +90,45 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $code = $this->artisan('module:delete', ['module' => 'WrongModule', '--force' => true]);
         $this->assertMatchesSnapshot($this->finder->get($this->activator->getStatusesFilePath()));
         $this->assertSame(0, $code);
+    }
+
+    public function test_it_fires_events_when_module_deleted()
+    {
+        $module_name = 'Blog';
+
+        $this->createModule($module_name);
+
+        Event::fake();
+
+        $code = $this->artisan('module:delete', ['module' => [$module_name], '--force' => true]);
+
+        $this->assertSame(0, $code);
+
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DELETING, strtolower($module_name)));
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DELETED, strtolower($module_name)));
+    }
+
+    public function test_it_fires_events_when_multi_module_deleted()
+    {
+        $modules = [
+            'Foo',
+            'Bar',
+            'Zoo',
+        ];
+
+        foreach ($modules as $module) {
+            $this->createModule($module);
+        }
+
+        Event::fake();
+
+        $code = $this->artisan('module:delete', ['--all' => true, '--force' => true]);
+
+        $this->assertSame(0, $code);
+
+        foreach ($modules as $module) {
+            Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DELETING, strtolower($module)));
+            Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DELETED, strtolower($module)));
+        }
     }
 }

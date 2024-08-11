@@ -3,6 +3,7 @@
 namespace Nwidart\Modules;
 
 use Composer\InstalledVersions;
+use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\AboutCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
@@ -43,7 +44,9 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->setupStubPath();
         $this->registerProviders();
 
-        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'modules');
+        $this->registerMigrations();
+
+        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'modules');
     }
 
     /**
@@ -51,13 +54,13 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
      */
     public function setupStubPath()
     {
-        $path = $this->app['config']->get('modules.stubs.path') ?? __DIR__.'/Commands/stubs';
+        $path = $this->app['config']->get('modules.stubs.path') ?? __DIR__ . '/Commands/stubs';
         Stub::setBasePath($path);
 
         $this->app->booted(function ($app) {
             /** @var RepositoryInterface $moduleRepository */
             $moduleRepository = $app[RepositoryInterface::class];
-            if ($moduleRepository->config('stubs.enabled') === true) {
+            if ($moduleRepository->config('stubs.enabled') === TRUE) {
                 Stub::setBasePath($moduleRepository->config('stubs.path'));
             }
         });
@@ -75,14 +78,37 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         });
         $this->app->singleton(Contracts\ActivatorInterface::class, function ($app) {
             $activator = $app['config']->get('modules.activator');
-            $class = $app['config']->get('modules.activators.'.$activator)['class'];
+            $class     = $app['config']->get('modules.activators.' . $activator)['class'];
 
-            if ($class === null) {
+            if ($class === NULL) {
                 throw InvalidActivatorClass::missingConfig();
             }
 
             return new $class($app);
         });
         $this->app->alias(Contracts\RepositoryInterface::class, 'modules');
+    }
+
+    protected function registerMigrations(): void
+    {
+        if (! $this->app['config']->get('modules.auto-discover.migrations', TRUE)) {
+            return;
+        }
+
+        $this->app->resolving(Migrator::class, function (Migrator $migrator) {
+
+            $path = implode(DIRECTORY_SEPARATOR, [
+                $this->app['config']->get('modules.paths.modules'),
+                '*',
+                '[Dd]atabase',
+                'migrations',
+            ]);
+
+            collect(glob($path, GLOB_ONLYDIR))
+                ->each(function (string $path) use ($migrator) {
+                    $migrator->path($path);
+                });
+        });
+
     }
 }
