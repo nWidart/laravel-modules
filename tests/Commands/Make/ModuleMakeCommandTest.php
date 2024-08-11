@@ -46,10 +46,8 @@ class ModuleMakeCommandTest extends BaseTestCase
 
     public function tearDown(): void
     {
-        $this->finder->deleteDirectory($this->modulePath);
-        if ($this->finder->isDirectory(base_path('modules/ModuleName'))) {
-            $this->finder->deleteDirectory(base_path('modules/ModuleName'));
-        }
+        $this->artisan('module:delete', ['--all' => true, '--force' => true]);
+
         $this->activator->reset();
         parent::tearDown();
     }
