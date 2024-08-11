@@ -226,16 +226,15 @@ class ModuleMakeCommandTest extends BaseTestCase
 
     public function test_it_still_generates_module_if_it_exists_using_force_flag()
     {
+        Event::fake();
+
         $this->artisan('module:make', ['name' => ['Blog']]);
         $code = $this->artisan('module:make', ['name' => ['Blog'], '--force' => true]);
-
-        $output = Artisan::output();
-
-        $notExpected = 'Module [Blog] already exist!
-';
-        $this->assertNotEquals($notExpected, $output);
-        $this->assertTrue(Str::contains($output, 'Module [Blog] created successfully.'));
         $this->assertSame(0, $code);
+
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DELETING, strtolower('Blog')));
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DELETED, strtolower('Blog')));
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATED, strtolower('Blog')));
     }
 
     public function test_it_can_generate_module_with_old_config_format()
@@ -301,10 +300,15 @@ class ModuleMakeCommandTest extends BaseTestCase
 
     public function test_it_can_ignore_resource_folders_to_generate()
     {
-        $this->app['config']->set('modules.paths.generator.seeder', ['path' => 'Database/Seeders', 'generate' => false]);
+        $this->app['config']->set('modules.paths.generator.seeder', ['path' => 'Database/Seeders', 'generate' => false]
+        );
         $this->app['config']->set('modules.paths.generator.provider', ['path' => 'Providers', 'generate' => false]);
-        $this->app['config']->set('modules.paths.generator.route-provider', ['path' => 'Providers', 'generate' => false]);
-        $this->app['config']->set('modules.paths.generator.controller', ['path' => 'Http/Controllers', 'generate' => false]);
+        $this->app['config']->set('modules.paths.generator.route-provider', ['path' => 'Providers', 'generate' => false]
+        );
+        $this->app['config']->set(
+            'modules.paths.generator.controller',
+            ['path' => 'Http/Controllers', 'generate' => false]
+        );
 
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
@@ -473,7 +477,15 @@ class ModuleMakeCommandTest extends BaseTestCase
 
     public function test_it_can_set_author_details()
     {
-        $code = $this->artisan('module:make', ['name' => ['Blog'], '--author-name' => 'Joe Blogs', '--author-email' => 'user@domain.com', '--author-vendor' => 'JoeBlogs']);
+        $code = $this->artisan(
+            'module:make',
+            [
+                'name' => ['Blog'],
+                '--author-name' => 'Joe Blogs',
+                '--author-email' => 'user@domain.com',
+                '--author-vendor' => 'JoeBlogs'
+            ]
+        );
 
         $content = $this->finder->get($this->getModuleBasePath().'/composer.json');
 
@@ -515,6 +527,5 @@ class ModuleMakeCommandTest extends BaseTestCase
             Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATING, strtolower($module)));
             Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATED, strtolower($module)));
         }
-
     }
 }
