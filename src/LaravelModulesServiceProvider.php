@@ -12,6 +12,7 @@ use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 use Nwidart\Modules\Support\Stub;
+use Symfony\Component\Console\Output\NullOutput;
 
 class LaravelModulesServiceProvider extends ModulesServiceProvider
 {
@@ -124,7 +125,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
                 'modules.*.'.ModuleEvent::DISABLED,
                 'modules.*.'.ModuleEvent::ENABLED,
             ],
-            fn () => Artisan::call('module:clear-compiled')
+            fn () => Artisan::call('module:clear-compiled', outputBuffer: new NullOutput)
         );
     }
 }
