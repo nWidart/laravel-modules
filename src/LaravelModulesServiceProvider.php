@@ -124,7 +124,6 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         if (! $this->app['config']->get('modules.auto-discover.translations', true)) {
             return;
         }
-
         $this->callAfterResolving('translator', function (TranslatorContract $translator) {
             if (! $translator instanceof Translator) {
                 return;
@@ -138,8 +137,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
             collect(glob($path, GLOB_ONLYDIR))
                 ->each(function (string $path) use ($translator) {
-                    preg_match('/Modules\/([^\/]+)/', $path, $matches);
-
+                    preg_match('/\/([^\/]+)\/lang/', $path, $matches);
                     $translator->addNamespace(strtolower($matches[1]), $path);
                     $translator->addJsonPath($path);
                 });
