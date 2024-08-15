@@ -136,7 +136,7 @@ class Json
      */
     public function getAttributes()
     {
-        return $this->decodeContents();
+        return $this->attributes ?? $this->decodeContents();
     }
 
     /**
