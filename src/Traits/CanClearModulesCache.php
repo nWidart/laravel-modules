@@ -12,5 +12,7 @@ trait CanClearModulesCache
         if (config('modules.cache.enabled') === true) {
             app('cache')->forget(config('modules.cache.key'));
         }
+
+        $this->laravel['modules']->resetModules();
     }
 }
