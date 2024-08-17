@@ -414,14 +414,6 @@ abstract class FileRepository implements Countable, RepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function has(string $name): bool
-    {
-        return array_key_exists($name, $this->all());
-    }
-
-    /**
      * Enabling a specific module.
      *
      * @throws \Nwidart\Modules\Exceptions\ModuleNotFoundException
