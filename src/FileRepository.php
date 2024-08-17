@@ -406,11 +406,11 @@ abstract class FileRepository implements Countable, RepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get count from all modules.
      */
-    public function count(?bool $enabled = null): int
+    public function count(): int
     {
-        return $this->all()[strtolower($name)] ?? null;
+        return count($this->all());
     }
 
     /**
