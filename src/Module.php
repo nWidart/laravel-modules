@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Translation\Translator;
+use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 
 abstract class Module
@@ -192,7 +193,7 @@ abstract class Module
             $this->registerFiles();
         }
 
-        $this->fireEvent('boot');
+        $this->fireEvent(ModuleEvent::BOOT);
     }
 
     /**
@@ -260,17 +261,15 @@ abstract class Module
             $this->registerFiles();
         }
 
-        $this->fireEvent('register');
+        $this->fireEvent(ModuleEvent::REGISTER);
     }
 
     /**
-     * Register the module event.
-     *
-     * @param  string  $event
+     * fire the module event.
      */
-    protected function fireEvent($event): void
+    public function fireEvent(string $event): void
     {
-        $this->app['events']->dispatch(sprintf('modules.%s.'.$event, $this->getLowerName()), [$this]);
+        $this->app['events']->dispatch(sprintf('modules.%s.%s', $this->getLowerName(), $event), [$this]);
     }
 
     /**
@@ -345,12 +344,12 @@ abstract class Module
      */
     public function disable(): void
     {
-        $this->fireEvent('disabling');
+        $this->fireEvent(ModuleEvent::DISABLING);
 
         $this->activator->disable($this);
         $this->flushCache();
 
-        $this->fireEvent('disabled');
+        $this->fireEvent(ModuleEvent::DISABLED);
     }
 
     /**
@@ -358,12 +357,12 @@ abstract class Module
      */
     public function enable(): void
     {
-        $this->fireEvent('enabling');
+        $this->fireEvent(ModuleEvent::ENABLING);
 
         $this->activator->enable($this);
         $this->flushCache();
 
-        $this->fireEvent('enabled');
+        $this->fireEvent(ModuleEvent::ENABLED);
     }
 
     /**
@@ -371,9 +370,15 @@ abstract class Module
      */
     public function delete(): bool
     {
+        $this->fireEvent(ModuleEvent::DELETING);
+
         $this->activator->delete($this);
 
-        return $this->json()->getFilesystem()->deleteDirectory($this->getPath());
+        $result = $this->json()->getFilesystem()->deleteDirectory($this->getPath());
+
+        $this->fireEvent(ModuleEvent::DELETED);
+
+        return $result;
     }
 
     /**

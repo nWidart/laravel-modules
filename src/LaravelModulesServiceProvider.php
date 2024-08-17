@@ -3,10 +3,18 @@
 namespace Nwidart\Modules;
 
 use Composer\InstalledVersions;
+use Illuminate\Contracts\Translation\Translator as TranslatorContract;
+use Illuminate\Database\Migrations\Migrator;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\AboutCommand;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Translation\Translator;
+use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 use Nwidart\Modules\Support\Stub;
+use Symfony\Component\Console\Output\NullOutput;
 
 class LaravelModulesServiceProvider extends ModulesServiceProvider
 {
@@ -16,7 +24,19 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     public function boot()
     {
         $this->registerNamespaces();
+
+        $this->app->singleton(
+            ModuleManifest::class,
+            fn () => new ModuleManifest(
+                new Filesystem(),
+                app(Contracts\RepositoryInterface::class)->getScanPaths(),
+                $this->getCachedModulePath()
+            )
+        );
+
         $this->registerModules();
+
+        $this->registerEvents();
 
         AboutCommand::add('Laravel-Modules', [
             'Version' => fn () => InstalledVersions::getPrettyVersion('nwidart/laravel-modules'),
@@ -31,6 +51,9 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->registerServices();
         $this->setupStubPath();
         $this->registerProviders();
+
+        $this->registerMigrations();
+        $this->registerTransactions();
 
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'modules');
     }
@@ -73,5 +96,65 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
             return new $class($app);
         });
         $this->app->alias(Contracts\RepositoryInterface::class, 'modules');
+    }
+
+    protected function registerMigrations(): void
+    {
+        if (! $this->app['config']->get('modules.auto-discover.migrations', true)) {
+            return;
+        }
+
+        $this->app->resolving(Migrator::class, function (Migrator $migrator) {
+            $path = implode(DIRECTORY_SEPARATOR, [
+                $this->app['config']->get('modules.paths.modules'),
+                '*',
+                '[Dd]atabase',
+                'migrations',
+            ]);
+
+            collect(glob($path, GLOB_ONLYDIR))
+                ->each(function (string $path) use ($migrator) {
+                    $migrator->path($path);
+                });
+        });
+    }
+
+    protected function registerTransactions(): void
+    {
+        if (! $this->app['config']->get('modules.auto-discover.translations', true)) {
+            return;
+        }
+        $this->callAfterResolving('translator', function (TranslatorContract $translator) {
+            if (! $translator instanceof Translator) {
+                return;
+            }
+
+            $path = implode(DIRECTORY_SEPARATOR, [
+                $this->app['config']->get('modules.paths.modules'),
+                '*',
+                'lang',
+            ]);
+
+            collect(glob($path, GLOB_ONLYDIR))
+                ->each(function (string $path) use ($translator) {
+                    preg_match('/\/([^\/]+)\/lang/', $path, $matches);
+                    $translator->addNamespace(strtolower($matches[1]), $path);
+                    $translator->addJsonPath($path);
+                });
+        });
+    }
+
+
+    private function registerEvents(): void
+    {
+        Event::listen(
+            [
+                'modules.*.'.ModuleEvent::DELETED,
+                'modules.*.'.ModuleEvent::CREATED,
+                'modules.*.'.ModuleEvent::DISABLED,
+                'modules.*.'.ModuleEvent::ENABLED,
+            ],
+            fn () => Artisan::call('module:clear-compiled', outputBuffer: new NullOutput)
+        );
     }
 }

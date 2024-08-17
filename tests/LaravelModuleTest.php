@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Tests;
 use Illuminate\Support\Facades\Event;
 use Modules\Recipe\Providers\DeferredServiceProvider;
 use Modules\Recipe\Providers\RecipeServiceProvider;
+use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Json;
 
@@ -147,8 +148,8 @@ class LaravelModuleTest extends BaseTestCase
 
         $this->module->enable();
 
-        Event::assertDispatched(sprintf('modules.%s.enabling', $this->module->getLowerName()));
-        Event::assertDispatched(sprintf('modules.%s.enabled', $this->module->getLowerName()));
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::ENABLING, $this->module->getLowerName()));
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::ENABLED, $this->module->getLowerName()));
     }
 
     public function test_it_fires_events_when_module_is_disabled()
@@ -157,8 +158,8 @@ class LaravelModuleTest extends BaseTestCase
 
         $this->module->disable();
 
-        Event::assertDispatched(sprintf('modules.%s.disabling', $this->module->getLowerName()));
-        Event::assertDispatched(sprintf('modules.%s.disabled', $this->module->getLowerName()));
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DISABLING, $this->module->getLowerName()));
+        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DISABLED, $this->module->getLowerName()));
     }
 
     public function test_it_has_a_good_providers_manifest_path()
