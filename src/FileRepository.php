@@ -228,7 +228,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     }
 
     /**
-     * Determine whether the given module exist.
+     * Determine whether the given module exist
      */
     public function has($name): bool
     {
