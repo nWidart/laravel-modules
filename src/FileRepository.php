@@ -67,8 +67,6 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     private $cache;
 
-    private static $modules = [];
-
     /**
      * The constructor.
      *
@@ -126,6 +124,16 @@ abstract class FileRepository implements Countable, RepositoryInterface
     }
 
     /**
+     * Creates a new Module instance
+     *
+     * @param  Container  $app
+     * @param  string  $args
+     * @param  string  $path
+     * @return \Nwidart\Modules\Module
+     */
+    abstract protected function createModule(...$args);
+
+    /**
      * Get & scan all modules.
      *
      * @return array
@@ -142,16 +150,13 @@ abstract class FileRepository implements Countable, RepositoryInterface
             is_array($manifests) || $manifests = [];
 
             foreach ($manifests as $manifest) {
-                $json = Json::make($manifest);
-                $name = $json->get('name');
+                $name = Json::make($manifest)->get('name');
 
-                $modules[strtolower($name)] = $this->createModule($this->app, $name, dirname($manifest));
+                $modules[$name] = $this->createModule($this->app, $name, dirname($manifest));
             }
         }
 
-        self::$modules = $modules;
-
-        return self::$modules;
+        return $modules;
     }
 
     /**
@@ -192,13 +197,9 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function getCached()
     {
-        return $this->cache->store($this->config->get('modules.cache.driver'))->remember(
-            key: $this->config('cache.key'),
-            ttl: $this->config('cache.lifetime'),
-            callback: function () {
-                return $this->toCollection()->toArray();
-            }
-        );
+        return $this->cache->store($this->config->get('modules.cache.driver'))->remember($this->config('cache.key'), $this->config('cache.lifetime'), function () {
+            return $this->toCollection()->toArray();
+        });
     }
 
     /**
@@ -231,9 +232,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function has($name): bool
     {
-        return array_key_exists(strtolower($name), $this->all());
+        return array_key_exists($name, $this->all());
     }
-
 
     /**
      * Get list of enabled modules.
@@ -312,15 +312,18 @@ abstract class FileRepository implements Countable, RepositoryInterface
     }
 
     /**
-     * Get count from all modules.
+     * {@inheritDoc}
      */
-    public function count(): int
+    public function find(string $name)
     {
-        return count($this->all());
+        foreach ($this->all() as $module) {
+            if ($module->getLowerName() === strtolower($name)) {
+                return $module;
+            }
+        }
+
     }
 
-    /**
-     * Enabling a specific module.
     /**
      * Find a specific module, if there return that, otherwise throw exception.
      *
@@ -572,13 +575,6 @@ abstract class FileRepository implements Countable, RepositoryInterface
     public function setStubPath($stubPath)
     {
         $this->stubPath = $stubPath;
-
-        return $this;
-    }
-
-    public function resetModules(): static
-    {
-        self::$modules = [];
 
         return $this;
     }
