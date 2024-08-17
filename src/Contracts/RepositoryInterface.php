@@ -15,13 +15,6 @@ interface RepositoryInterface
     public function all();
 
     /**
-     * Get cached modules.
-     *
-     * @return array
-     */
-    public function getCached();
-
-    /**
      * Scan & get all available modules.
      *
      * @return array

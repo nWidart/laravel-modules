@@ -173,46 +173,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function all(): array
     {
-        if (! $this->config('cache.enabled')) {
-            return $this->scan();
-        }
-
-        return $this->formatCached($this->getCached());
-    }
-
-    /**
-     * Format the cached data as array of modules.
-     *
-     * @param  array  $cached
-     * @return array
-     */
-    protected function formatCached($cached)
-    {
-        $modules = [];
-
-        foreach ($cached as $name => $module) {
-            $path = $module['path'];
-
-            $modules[$name] = $this->createModule($this->app, $name, $path);
-        }
-
-        return $modules;
-    }
-
-    /**
-     * Get cached modules.
-     *
-     * @return array
-     */
-    public function getCached()
-    {
-        return $this->cache->store($this->config->get('modules.cache.driver'))->remember(
-            key: $this->config('cache.key'),
-            ttl: $this->config('cache.lifetime'),
-            callback: function () {
-                return $this->toCollection()->toArray();
-            }
-        );
+        return $this->scan();
     }
 
     /**
