@@ -126,25 +126,6 @@ abstract class FileRepository implements Countable, RepositoryInterface
     }
 
     /**
-     * Creates a new Module instance
-     *
-     * @param  Container  $app
-     * @param  string  $args
-     * @param  string  $path
-     * @return \Nwidart\Modules\Module
-     */
-    public function getByStatus($status): array
-    {
-        if (! empty(self::$modules) && ! $this->app->runningUnitTests()) {
-            return self::$modules;
-        }
-
-        $paths = $this->getScanPaths();
-
-        return $this->status($status);
-    }
-
-    /**
      * Get & scan all modules.
      *
      * @return array
