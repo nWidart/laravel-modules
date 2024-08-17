@@ -3,13 +3,11 @@
 namespace Nwidart\Modules;
 
 use Composer\InstalledVersions;
-use Illuminate\Contracts\Translation\Translator as TranslatorContract;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Translation\Translator;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
@@ -53,7 +51,6 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->registerProviders();
 
         $this->registerMigrations();
-        $this->registerTransactions();
 
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'modules');
     }
@@ -118,32 +115,6 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
                 });
         });
     }
-
-    protected function registerTransactions(): void
-    {
-        if (! $this->app['config']->get('modules.auto-discover.translations', true)) {
-            return;
-        }
-        $this->callAfterResolving('translator', function (TranslatorContract $translator) {
-            if (! $translator instanceof Translator) {
-                return;
-            }
-
-            $path = implode(DIRECTORY_SEPARATOR, [
-                $this->app['config']->get('modules.paths.modules'),
-                '*',
-                'lang',
-            ]);
-
-            collect(glob($path, GLOB_ONLYDIR))
-                ->each(function (string $path) use ($translator) {
-                    preg_match('/\/([^\/]+)\/lang/', $path, $matches);
-                    $translator->addNamespace(strtolower($matches[1]), $path);
-                    $translator->addJsonPath($path);
-                });
-        });
-    }
-
 
     private function registerEvents(): void
     {
