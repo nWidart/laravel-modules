@@ -3,6 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use $MODULE_NAMESPACE$\$STUDLY_NAME$\$CONTROLLER_NAMESPACE$\$STUDLY_NAME$Controller;
 
-Route::group([], function () {
-    Route::resource('$PLURAL_LOWER_NAME$', $STUDLY_NAME$Controller::class);
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('$PLURAL_LOWER_NAME$', $STUDLY_NAME$Controller::class)->names('$PLURAL_LOWER_NAME$');
 });
