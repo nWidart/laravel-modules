@@ -61,11 +61,7 @@ class TestMakeCommand extends GeneratorCommand
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
-        $stub = '/unit-test.stub';
-
-        if ($this->option('feature')) {
-            $stub = '/feature-test.stub';
-        }
+        $stub = '/tests/'.(($this->option('feature')) ? 'feature' : 'unit').'.stub';
 
         return (new Stub($stub, [
             'NAMESPACE' => $this->getClassNamespace($module),
