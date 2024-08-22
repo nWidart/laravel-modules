@@ -3,15 +3,13 @@
 namespace $NAMESPACE$;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class $CLASS$ extends TestCase
 {
     /**
-     * A basic feature test example.
+     * A basic test example.
      */
-    public function testExample(): void
+    public function test_the_application_returns_a_successful_response(): void
     {
         $response = $this->get('/');
 
