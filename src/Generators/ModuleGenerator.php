@@ -278,8 +278,6 @@ class ModuleGenerator extends Generator
     {
         $name = $this->getName();
 
-        Event::dispatch(sprintf('modules.%s.%s', strtolower($name), ModuleEvent::CREATING));
-
         if ($this->module->has($name)) {
             if ($this->force) {
                 $this->module->delete($name);
@@ -289,6 +287,9 @@ class ModuleGenerator extends Generator
                 return E_ERROR;
             }
         }
+
+        Event::dispatch(sprintf('modules.%s.%s', strtolower($name), ModuleEvent::CREATING));
+
         $this->component->info("Creating module: [$name]");
 
         $this->generateFolders();

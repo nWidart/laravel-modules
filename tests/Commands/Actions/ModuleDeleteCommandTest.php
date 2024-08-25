@@ -30,6 +30,14 @@ class ModuleDeleteCommandTest extends BaseTestCase
         $this->activator = new FileActivator($this->app);
     }
 
+    public function tearDown(): void
+    {
+        $this->artisan('module:delete', ['--all' => true, '--force' => true]);
+
+        $this->activator->reset();
+        parent::tearDown();
+    }
+
     public function test_it_can_delete_a_module_from_disk(): void
     {
         $this->artisan('module:make', ['name' => ['WrongModule']]);
