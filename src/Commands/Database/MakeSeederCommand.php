@@ -1,8 +1,9 @@
 <?php
 
-namespace Nwidart\Modules\Commands\Make;
+namespace Nwidart\Modules\Commands\Database;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Commands\Make\GeneratorCommand;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\CanClearModulesCache;
@@ -10,7 +11,7 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class SeedMakeCommand extends GeneratorCommand
+class MakeSeederCommand extends GeneratorCommand
 {
     use CanClearModulesCache;
     use ModuleCommandTrait;
@@ -57,11 +58,10 @@ class SeedMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/seeder.stub', [
+        return (new Stub('/database/seeders/seeder.stub', [
             'NAME' => $this->getSeederName(),
             'MODULE' => $this->getModuleName(),
             'NAMESPACE' => $this->getClassNamespace($module),
-
         ]))->render();
     }
 
