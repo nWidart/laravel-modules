@@ -4,15 +4,16 @@ namespace $NAMESPACE$;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Nwidart\Modules\Traits\PathNamespace;
 
 class $CLASS$ extends ServiceProvider
 {
     use PathNamespace;
 
-    protected string $moduleName = '$MODULE$';
+    protected string $name = '$MODULE$';
 
-    protected string $moduleNameLower = '$LOWER_NAME$';
+    protected string $name_lower = '$LOWER_NAME$';
 
     /**
      * Boot the application events.
@@ -24,7 +25,7 @@ class $CLASS$ extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(module_path($this->moduleName, '$MIGRATIONS_PATH$'));
+        $this->loadMigrationsFrom(module_path($this->name, '$MIGRATIONS_PATH$'));
     }
 
     /**
@@ -60,14 +61,14 @@ class $CLASS$ extends ServiceProvider
      */
     public function registerTranslations(): void
     {
-        $langPath = resource_path('lang/modules/'.$this->moduleNameLower);
+        $langPath = resource_path('lang/modules/'.$this->name_lower);
 
         if (is_dir($langPath)) {
-            $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
+            $this->loadTranslationsFrom($langPath, $this->name_lower);
             $this->loadJsonTranslationsFrom($langPath);
         } else {
-            $this->loadTranslationsFrom(module_path($this->moduleName, '$PATH_LANG$'), $this->moduleNameLower);
-            $this->loadJsonTranslationsFrom(module_path($this->moduleName, '$PATH_LANG$'));
+            $this->loadTranslationsFrom(module_path($this->name, '$PATH_LANG$'), $this->name_lower);
+            $this->loadJsonTranslationsFrom(module_path($this->name, '$PATH_LANG$'));
         }
     }
 
@@ -76,8 +77,14 @@ class $CLASS$ extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $this->publishes([module_path($this->moduleName, '$PATH_CONFIG$/config.php') => config_path($this->moduleNameLower.'.php')], 'config');
-        $this->mergeConfigFrom(module_path($this->moduleName, '$PATH_CONFIG$/config.php'), $this->moduleNameLower);
+        $configs = glob(module_path($this->name, '$PATH_CONFIG$/*.php'));
+        foreach ($configs as $config) {
+            $filename = Str::of($config)->after(module_path($this->name, '$PATH_CONFIG$/'))->remove('.php')->toString();
+            $name = ($filename == 'config') ? $this->name_lower : $filename; // could be removed if the config file is named after the module [modules/Blog => config/blog.php].
+
+            $this->publishes([module_path($this->name, "$PATH_CONFIG$/{$filename}.php") => config_path($name . '.php')], 'config');
+            $this->mergeConfigFrom(module_path($this->name, "$PATH_CONFIG$/{$filename}.php"), $name);
+        }
     }
 
     /**
@@ -85,36 +92,31 @@ class $CLASS$ extends ServiceProvider
      */
     public function registerViews(): void
     {
-        $viewPath = resource_path('views/modules/'.$this->moduleNameLower);
-        $sourcePath = module_path($this->moduleName, '$PATH_VIEWS$');
+        $viewPath = resource_path('views/modules/'.$this->name_lower);
+        $sourcePath = module_path($this->name, '$PATH_VIEWS$');
 
-        $this->publishes([$sourcePath => $viewPath], ['views', $this->moduleNameLower.'-module-views']);
+        $this->publishes([$sourcePath => $viewPath], ['views', $this->name_lower.'-module-views']);
 
-        $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
+        $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->name_lower);
 
-        $componentNamespace = $this->module_namespace($this->moduleName, $this->app_path(config('modules.paths.generator.component-class.path')));
-        Blade::componentNamespace($componentNamespace, $this->moduleNameLower);
+        $componentNamespace = $this->module_namespace($this->name, $this->app_path(config('modules.paths.generator.component-class.path')));
+        Blade::componentNamespace($componentNamespace, $this->name_lower);
     }
 
     /**
      * Get the services provided by the provider.
-     *
-     * @return array<string>
      */
     public function provides(): array
     {
         return [];
     }
 
-    /**
-     * @return array<string>
-     */
     private function getPublishableViewPaths(): array
     {
         $paths = [];
         foreach (config('view.paths') as $path) {
-            if (is_dir($path.'/modules/'.$this->moduleNameLower)) {
-                $paths[] = $path.'/modules/'.$this->moduleNameLower;
+            if (is_dir($path.'/modules/'.$this->name_lower)) {
+                $paths[] = $path.'/modules/'.$this->name_lower;
             }
         }
 
