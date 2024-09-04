@@ -10,22 +10,16 @@ class $CLASS$ extends Command
 {
     /**
      * The name and signature of the console command.
-     *
-     * @var string
      */
-    protected $name = '$COMMAND_NAME$';
+    protected $signature = '$COMMAND_NAME$';
 
     /**
      * The console command description.
-     *
-     * @var string
      */
     protected $description = 'Command description.';
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -34,8 +28,6 @@ class $CLASS$ extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
     public function handle()
     {
@@ -44,10 +36,8 @@ class $CLASS$ extends Command
 
     /**
      * Get the console command arguments.
-     *
-     * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['example', InputArgument::REQUIRED, 'An example argument.'],
@@ -56,10 +46,8 @@ class $CLASS$ extends Command
 
     /**
      * Get the console command options.
-     *
-     * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['example', null, InputOption::VALUE_OPTIONAL, 'An example option.', null],

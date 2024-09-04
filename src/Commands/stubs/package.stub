@@ -1,16 +1,15 @@
 {
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build"
   },
   "devDependencies": {
-    "axios": "^0.21.4",
-    "dotenv": "^10.0.0",
-    "dotenv-expand": "^5.1.0",
-    "laravel-vite-plugin": "^0.6.0",
-    "lodash": "^4.17.21",
+    "axios": "^1.1.2",
+    "laravel-vite-plugin": "^0.7.5",
+    "sass": "^1.69.5",
     "postcss": "^8.3.7",
-    "vite": "^3.0.9"
+    "vite": "^4.0.0"
   }
 }

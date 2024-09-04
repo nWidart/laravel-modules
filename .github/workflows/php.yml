@@ -10,12 +10,12 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        php-versions: ['8.1']
+        php-versions: ['8.2', '8.3']
 
     name: PHP ${{ matrix.php-versions }}
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
 
     - name: Setup PHP
       uses: shivammathur/setup-php@master

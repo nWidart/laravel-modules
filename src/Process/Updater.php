@@ -9,7 +9,7 @@ class Updater extends Runner
     /**
      * Update the dependencies for the specified module by given the module name.
      *
-     * @param string $module
+     * @param  string  $module
      */
     public function update($module)
     {
@@ -32,9 +32,6 @@ class Updater extends Runner
         return config('modules.composer.composer-output') === false ? ' --quiet' : '';
     }
 
-    /**
-     * @param Module $module
-     */
     private function installRequires(Module $module)
     {
         $packages = $module->getComposerAttr('require', []);
@@ -44,14 +41,11 @@ class Updater extends Runner
             $concatenatedPackages .= "\"{$name}:{$version}\" ";
         }
 
-        if (!empty($concatenatedPackages)) {
+        if (! empty($concatenatedPackages)) {
             $this->run("composer require {$concatenatedPackages}{$this->isComposerSilenced()}");
         }
     }
 
-    /**
-     * @param Module $module
-     */
     private function installDevRequires(Module $module)
     {
         $devPackages = $module->getComposerAttr('require-dev', []);
@@ -61,14 +55,11 @@ class Updater extends Runner
             $concatenatedPackages .= "\"{$name}:{$version}\" ";
         }
 
-        if (!empty($concatenatedPackages)) {
+        if (! empty($concatenatedPackages)) {
             $this->run("composer require --dev {$concatenatedPackages}{$this->isComposerSilenced()}");
         }
     }
 
-    /**
-     * @param Module $module
-     */
     private function copyScriptsToMainComposerJson(Module $module)
     {
         $scripts = $module->getComposerAttr('scripts', []);

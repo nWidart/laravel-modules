@@ -1,0 +1,11 @@
+<?php
+
+namespace Modules\Blog\Classes;
+
+class Demo
+{
+    public function __construct()
+    {
+        //
+    }
+}

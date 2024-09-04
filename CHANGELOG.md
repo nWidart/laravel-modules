@@ -4,7 +4,192 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
-## 10.0 - 2023-02-14
+- [@omerbaflah](https://github.com/omerbaflah) Fixes Invokable Controller Stub
+- [@solomon-ochepa](https://github.com/solomon-ochepa) Added create module:make-class command
+
+## 11.0.10 - 2024-05-05
+
+- [@dcblogdev](https://github.com/dcblogdev) Update controller, service, helper, and action methods
+- [@omerbaflah](https://github.com/omerbaflah) Update service stubs
+- [@omerbaflah](https://github.com/omerbaflah) Update action stubs
+- [@AbdulkarimOmer](https://github.com/AbdulkarimOmer) Added invokable option into make-controller command
+- [@dcblogdev](https://github.com/dcblogdev) Updated vite-module-loader.js to handle case when a modules does not have a vite.config.js file
+- [@alissn](https://github.com/alissn) Added direction option to command module:seed
+
+## 11.0.9 - 2024-04-30
+
+- [@dcblogdev](https://github.com/dcblogdev) added make-event-provider command, modules come with event as default now
+
+## 11.0.8 - 2024-04-29
+
+- [@solomon-ochepa](https://github.com/solomon-ochepa) Remove custom namespaces from generator [factory and seeder]
+- [@dcblogdev](https://github.com/dcblogdev) added make-action command
+- [@dcblogdev](https://github.com/dcblogdev) added make-cast command
+- [@dcblogdev](https://github.com/dcblogdev) added make-enum command
+- [@dcblogdev](https://github.com/dcblogdev) added make-exception command
+- [@dcblogdev](https://github.com/dcblogdev) added make-helper command
+- [@dcblogdev](https://github.com/dcblogdev) added make-interface command
+- [@dcblogdev](https://github.com/dcblogdev) added make-scope command
+- [@dcblogdev](https://github.com/dcblogdev) added make-trait command
+- [@dcblogdev](https://github.com/dcblogdev) added missing return type for make-service command
+- [@dcblogdev](https://github.com/dcblogdev) updated config
+
+## 11.0.7 - 2024-04-25
+
+## Changes
+
+- [@dcblogdev](https://github.com/dcblogdev) Force the config replacement option for composer 'APP_FOLDER_NAME', to be handled even when its not present.
+- [@solomon-ochepa](https://github.com/solomon-ochepa) Path Namespace - generate a well-formatted StudlyCase namespace from paths
+- [@korridor](https://github.com/korridor) Fixed public path for octane setup
+- [@dcblogdev](https://github.com/dcblogdev) added invokable and force options into make-service command
+- [@dcblogdev](https://github.com/dcblogdev) Restrict fresh migration to module scope
+- [@kowston](https://github.com/kowston) Changed wording for command descriptions to be consistent 
+
+## 11.0.6 - 2024-04-21
+
+- [@alissn](https://github.com/alissn) change package version to Pretty on php artisan about
+- [@alissn](https://github.com/alissn) fix stubs composer for app_folder
+- [@dcblogdev](https://github.com/dcblogdev) added make-service command
+
+## 11.0.5 - 2024-04-17
+
+## Changes
+
+- [@alissn](https://github.com/alissn) check command has direction option, load module with 'priority' 
+
+
+## 11.0.4 - 2024-04-08
+
+## Changes
+
+- [@dcblogdev](https://github.com/dcblogdev) Updated config to use namespace and path for seeders and factories
+- [@solomon-ochepa](https://github.com/solomon-ochepa) Updated vendor / author keys for config/.env
+- [@enterprime](https://github.com/enterprime) Corrected factories to Factories and added cache options to ENV
+
+## Added
+
+- [@dcblogdev](https://github.com/dcblogdev) Added return type array definition
+- [@dcblogdev](https://github.com/dcblogdev) Added test to confirm author details
+
+## 11.0.3 - 2024-03-24
+
+## Added 
+
+- [@enterprime](https://github.com/enterprime) Passing the values of vendor, author's name, and author's email in a line during module creation.
+- [@enterprime](https://github.com/enterprime) control the author through the .env configuration file.
+
+## 11.0.2 - 2024-03-24
+
+## Fixed 
+
+- [@enterprime](https://github.com/enterprime) fixed module:migrate-rollback command
+
+## 11.0.1 - 2024-03-23
+
+## Added
+
+- [@alissn](https://github.com/alissn) add RouteServiceProvider Configuration in Generator 
+- [@alissn](https://github.com/alissn) added Laravel Modules package version to command 'about'
+- [@dcblogdev](https://github.com/dcblogdev) Added view:make command to generate views
+
+## Changed
+
+- [@alissn](https://github.com/alissn) Run command php-cs-fixer fix
+- [@solomon-ochepa](https://github.com/solomon-ochepa) updated route-provider.stub to loose the optional namespace
+
+## 11.0.0 - 2024-03-19
+
+## Fixed
+
+- [@Subtixx](https://github.com/subtixx) Fix Issue #1752 - Hardcoded string + undefined variable
+- [@jaymeh](https://github.com/jaymeh) fix: Failed to load module script for static assets such as images
+- [@alissn](https://github.com/alissn) Fixing failing tests
+
+## Changed
+
+- [@dcblogdev](https://github.com/dcblogdev) ensure class_exists for both Capital and lower case namespaces
+- [@dcblogdev](https://github.com/dcblogdev) create database folders by default
+- [@dcblogdev](https://github.com/dcblogdev) set route service provider to use blank namespace by default
+- [@dcblogdev](https://github.com/dcblogdev) updated tests for compatability with PhpUnit 12
+- [@dcblogdev](https://github.com/dcblogdev) added replacement placeholders in config for API stubs
+- [@dcblogdev](https://github.com/dcblogdev) updated vite to rename placeholder with module name
+- [@dcblogdev](https://github.com/dcblogdev) Added support for Laravel 11
+- [@solomon-ochepa](https://github.com/solomon-ochepa) updated API route stub to use controller
+- [@solomon-ochepa](https://github.com/solomon-ochepa) updated config comments
+- [@alissn](https://github.com/alissn) rearrange Command Classes into Folders and Update Namespace Structure
+- [@alissn](https://github.com/alissn) delete command module:migrate-fresh
+- [@alissn](https://github.com/alissn) Fixing Case of tests/Unit and tests/Feature
+- [@alissn](https://github.com/alissn) Updated commands to use Laravel Prompt
+- [@dcblogdev](https://github.com/dcblogdev) updated event stub to include Dispatchable and InteractsWithSockets traits
+
+## 10.0.6 - 2024-01-28
+
+## Added
+
+- [@alissn](https://github.com/alissn) Add command module prune
+
+## 10.0.5 - 2024-01-22
+
+## Added
+
+- [@azim-kordpour](https://github.com/azim-kordpour) Add PHPDoc static to all methods in Module facade
+
+## Changed
+
+- [@dcblogdev](https://github.com/dcblogdev) Reverted config to use `App` and `Database` namespace / folders by default
+- [@alissn](https://github.com/alissn) Command Synchronization and Alphabetical Sorting in ConsoleServiceProvider
+- [@fpermana](https://github.com/fpermana) Update ObserverMakeCommand.php
+
+## Fixed
+
+- [@alissn](https://github.com/alissn) revert extend class to ShowModelCommand
+- [@benjaminniess](https://github.com/benjaminniess) Fix ModelShowCommand extends property
+
+
+## 10.0.4 - 2023-11-13
+
+## Changed
+- [@dcblogdev](https://github.com/dcblogdev) updated module:publish-config to a dynamic path to the service provider
+
+## 10.0.3 - 2023-10-02
+
+## Changed
+
+- [@solomon-ochepa](https://github.com/solomon-ochepa) updated multiple & config stubs to follow modern laravel standards
+- [@dcblogdev](https://github.com/dcblogdev) updated enabled `$MODULE_NAMESPACE$` & `$CONTROLLER_NAMESPACE$` placeholders to be used inside stubs
+- [@hungthai1401](https://github.com/hungthai1401) updated rule stub
+
+## Added
+
+- [@dcblogdev](https://github.com/dcblogdev) added support for using modules inside the main `vite.config.js` file https://github.com/nWidart/laravel-modules/pull/1682
+- [@dcblogdev](https://github.com/dcblogdev) added option to generate a factory by using the flag `-f` when generating a model
+- [@hungthai1401](https://github.com/hungthai1401 ) added implicit rule https://github.com/nWidart/laravel-modules/pull/1664
+
+
+## 10.0.2 - 2023-09-18
+
+## Changed
+
+- reordered config commands and added missing observer command
+
+## 10.0.1 - 2023-09-18
+
+## Added
+ 
+- [@JaberWiki](https://github.com/JaberWiki) Added Include an optional flag `subpath` for rolling back a module's specific migration file [#1626](https://github.com/nWidart/laravel-modules/pull/1626)
+- [@sergiy-petrov](https://github.com/sergiy-petrov) Added support for testing GitHub actions against PHP versions 8.2 and 8.3. [#1624](https://github.com/nWidart/laravel-modules/pull/1624)
+- [@hanieas](https://github.com/hanieas) Added make Observer command. [#1623](https://github.com/nWidart/laravel-modules/pull/1623)
+- [@alissn](https://github.com/alissn) Add phpdoc to Module facade class for IDE auto-completion. [#1589](https://github.com/nWidart/laravel-modules/pull/1589)
+- [@aryala7](https://github.com/aryala7) Add command to create broadcasting channel [#1599](https://github.com/nWidart/laravel-modules/pull/1599)
+
+## Changed
+
+- [@Rattone](https://github.com/Rattone) Updated stubs for command from `name` to `signature` [#1625](https://github.com/nWidart/laravel-modules/pull/1625)
+- [@moeen-basra](https://github.com/moeen-basra) Remove the unused Factory import [#1596](https://github.com/nWidart/laravel-modules/pull/1596)
+- [@moeen-basra](https://github.com/moeen-basra) Replace the \Config::get with config function [#1596](https://github.com/nWidart/laravel-modules/pull/1596)
+- [@aryala7](https://github.com/aryala7) Changed disable module Command to accept array of modules instead of single module to disable [#1591](https://github.com/nWidart/laravel-modules/pull/1591)
+
+## 10.0.0 - 2023-02-14
 
 ### Changed
 

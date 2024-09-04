@@ -28,30 +28,27 @@ class StubTest extends BaseTestCase
         ]);
     }
 
-    /** @test */
-    public function it_initialises_a_stub_instance()
+    public function test_it_initialises_a_stub_instance()
     {
         $stub = new Stub('/model.stub', [
             'NAME' => 'Name',
         ]);
 
         $this->assertTrue(Str::contains($stub->getPath(), 'src/Commands/stubs/model.stub'));
-        $this->assertEquals(['NAME' => 'Name', ], $stub->getReplaces());
+        $this->assertEquals(['NAME' => 'Name'], $stub->getReplaces());
     }
 
-    /** @test */
-    public function it_sets_new_replaces_array()
+    public function test_it_sets_new_replaces_array()
     {
         $stub = new Stub('/model.stub', [
             'NAME' => 'Name',
         ]);
 
-        $stub->replace(['VENDOR' => 'MyVendor', ]);
-        $this->assertEquals(['VENDOR' => 'MyVendor', ], $stub->getReplaces());
+        $stub->replace(['VENDOR' => 'MyVendor']);
+        $this->assertEquals(['VENDOR' => 'MyVendor'], $stub->getReplaces());
     }
 
-    /** @test */
-    public function it_stores_stub_to_specific_path()
+    public function test_it_stores_stub_to_specific_path()
     {
         $stub = new Stub('/command.stub', [
             'COMMAND_NAME' => 'my:command',
@@ -64,8 +61,7 @@ class StubTest extends BaseTestCase
         $this->assertTrue($this->finder->exists(base_path('my-command.php')));
     }
 
-    /** @test */
-    public function it_sets_new_path()
+    public function test_it_sets_new_path()
     {
         $stub = new Stub('/model.stub', [
             'NAME' => 'Name',
@@ -76,8 +72,7 @@ class StubTest extends BaseTestCase
         $this->assertTrue(Str::contains($stub->getPath(), 'Commands/stubs/new-path/'));
     }
 
-    /** @test */
-    public function use_default_stub_if_override_not_exists()
+    public function test_use_default_stub_if_override_not_exists()
     {
         $stub = new Stub('/command.stub', [
             'COMMAND_NAME' => 'my:command',
@@ -85,21 +80,20 @@ class StubTest extends BaseTestCase
             'CLASS' => 'MyCommand',
         ]);
 
-        $stub->setBasePath(__DIR__ . '/stubs');
+        $stub->setBasePath(__DIR__.'/stubs');
 
         $stub->saveTo(base_path(), 'stub-override-not-exists.php');
 
         $this->assertTrue($this->finder->exists(base_path('stub-override-not-exists.php')));
     }
 
-    /** @test */
-    public function use_override_stub_if_exists()
+    public function test_use_override_stub_if_exists()
     {
         $stub = new Stub('/model.stub', [
             'NAME' => 'Name',
         ]);
 
-        $stub->setBasePath(__DIR__ . '/stubs');
+        $stub->setBasePath(__DIR__.'/stubs');
 
         $stub->saveTo(base_path(), 'stub-override-exists.php');
 

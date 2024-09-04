@@ -1,17 +1,16 @@
 <?php
 
-namespace Nwidart\Modules;
+namespace Nwidart\Modules\Tests;
 
+use Nwidart\Modules\Collection;
 use Nwidart\Modules\Laravel\Module;
-use Nwidart\Modules\Tests\BaseTestCase;
 
 class CollectionTest extends BaseTestCase
 {
-    /** @test */
-    public function toArraySetsPathAttribute()
+    public function test_toArraySetsPathAttribute()
     {
-        $moduleOnePath = __DIR__ . '/stubs/valid/Recipe';
-        $moduleTwoPath = __DIR__ . '/stubs/valid/Requirement';
+        $moduleOnePath = __DIR__.'/stubs/valid/Recipe';
+        $moduleTwoPath = __DIR__.'/stubs/valid/Requirement';
         $modules = [
             new Module($this->app, 'module-one', $moduleOnePath),
             new Module($this->app, 'module-two', $moduleTwoPath),
@@ -25,12 +24,11 @@ class CollectionTest extends BaseTestCase
         $this->assertEquals($moduleTwoPath, $collectionArray[1]['path']);
     }
 
-    /** @test */
-    public function getItemsReturnsTheCollectionItems()
+    public function test_getItemsReturnsTheCollectionItems()
     {
         $modules = [
-            new Module($this->app, 'module-one', __DIR__ . '/stubs/valid/Recipe'),
-            new Module($this->app, 'module-two', __DIR__ . '/stubs/valid/Requirement'),
+            new Module($this->app, 'module-one', __DIR__.'/stubs/valid/Recipe'),
+            new Module($this->app, 'module-two', __DIR__.'/stubs/valid/Requirement'),
         ];
         $collection = new Collection($modules);
         $items = $collection->getItems();
