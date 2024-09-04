@@ -3,7 +3,11 @@
 namespace Nwidart\Modules\Commands\Actions;
 
 use Illuminate\Database\Console\ShowModelCommand;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
+
+use function Laravel\Prompts\select;
 
 #[AsCommand('module:model-show', 'Show information about an Eloquent model in modules')]
 class ModelShowCommand extends ShowModelCommand
@@ -43,17 +47,37 @@ class ModelShowCommand extends ShowModelCommand
             return $model;
         }
 
-        $rootNamespace = config('modules.namespace');
+        $pattern = sprintf(
+            '%s/*/%s/%s.php',
+            config('modules.paths.modules'),
+            config('modules.paths.generator.model.path'),
+            $model
+        );
 
-        $modelPath = glob($rootNamespace.DIRECTORY_SEPARATOR.
-            '*'.DIRECTORY_SEPARATOR.
-            config('modules.paths.generator.model.path').DIRECTORY_SEPARATOR.
-            "$model.php");
+        $modelPaths = collect(File::glob($pattern))
+            ->map($this->formatModuleNamespace(...));
 
-        if (! count($modelPath)) {
+        if ($modelPaths->count() == 0) {
             return $model;
+        } elseif ($modelPaths->count() == 1) {
+            return $this->formatModuleNamespace($modelPaths->first());
         }
 
-        return str_replace(['/', '.php'], ['\\', ''], $modelPath[0]);
+        return select(
+            label: 'Select Model',
+            options: $modelPaths,
+            required: 'You must select at least one model',
+        );
+    }
+
+    private function formatModuleNamespace(string $path): string
+    {
+        return
+            Str::of($path)
+                ->after(base_path().DIRECTORY_SEPARATOR)
+                ->replace(
+                    [config('modules.paths.app_folder'), '/', '.php'],
+                    ['', '\\', ''],
+                )->toString();
     }
 }
