@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Blog\SuperTests\Unit;
+namespace $NAMESPACE$;
 
 use Tests\TestCase;
 
-class EloquentPostRepositoryTest extends TestCase
+class $CLASS$ extends TestCase
 {
     /**
      * A basic test example.
