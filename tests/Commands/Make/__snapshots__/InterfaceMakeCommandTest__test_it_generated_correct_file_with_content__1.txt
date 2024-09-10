@@ -2,7 +2,7 @@
 
 namespace Modules\Blog\Interfaces;
 
-class MyInterface
+interface MyInterface
 {
 
 }
