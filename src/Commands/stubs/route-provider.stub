@@ -7,6 +7,8 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 
 class $CLASS$ extends ServiceProvider
 {
+    protected string $name = '$MODULE$';
+
     /**
      * Called before routes are registered.
      *
@@ -23,7 +25,6 @@ class $CLASS$ extends ServiceProvider
     public function map(): void
     {
         $this->mapApiRoutes();
-
         $this->mapWebRoutes();
     }
 
@@ -34,7 +35,7 @@ class $CLASS$ extends ServiceProvider
      */
     protected function mapWebRoutes(): void
     {
-        Route::middleware('web')->group(module_path('$MODULE$', '$WEB_ROUTES_PATH$'));
+        Route::middleware('web')->group(module_path($this->name, '$WEB_ROUTES_PATH$'));
     }
 
     /**
@@ -44,6 +45,6 @@ class $CLASS$ extends ServiceProvider
      */
     protected function mapApiRoutes(): void
     {
-        Route::middleware('api')->prefix('api')->name('api.')->group(module_path('$MODULE$', '$API_ROUTES_PATH$'));
+        Route::middleware('api')->prefix('api')->name('api.')->group(module_path($this->name, '$API_ROUTES_PATH$'));
     }
 }
