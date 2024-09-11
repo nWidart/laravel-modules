@@ -6,9 +6,14 @@ use Illuminate\Support\Facades\Vite as ViteFacade;
 if (! function_exists('module_path')) {
     function module_path($name, $path = '')
     {
+        static $cache = [];
+        $cacheKey = $name.$path;
+        if(isset($cache[$cacheKey])){
+            return $cache[$cacheKey];
+        }
         $module = app('modules')->find($name);
-
-        return $module->getPath().($path ? DIRECTORY_SEPARATOR.$path : $path);
+        $cache[$cacheKey] = $module->getPath().($path ? DIRECTORY_SEPARATOR.$path : $path);
+        return $cache[$cacheKey];
     }
 }
 
