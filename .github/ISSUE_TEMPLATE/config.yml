@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+    - name: 🙋🏼‍♂️ Support Questions & Other
+      url: https://github.com/nWidart/laravel-modules/discussions/new
+      about: 'I need assistance or clarification on usage of this library.'
