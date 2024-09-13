@@ -53,7 +53,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->registerProviders();
 
         $this->registerMigrations();
-        $this->registerTransactions();
+        $this->registerTranslations();
 
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'modules');
     }
@@ -119,7 +119,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         });
     }
 
-    protected function registerTransactions(): void
+    protected function registerTranslations(): void
     {
         if (! $this->app['config']->get('modules.auto-discover.translations', true)) {
             return;
