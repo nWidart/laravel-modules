@@ -188,6 +188,16 @@ return [
         */
         'migrations' => true,
 
+        /*
+        |--------------------------------------------------------------------------
+        | Translations
+        |--------------------------------------------------------------------------
+        |
+        | This option for register lang file automatically.
+        |
+        */
+        'translations' => false,
+
     ],
 
     /*
