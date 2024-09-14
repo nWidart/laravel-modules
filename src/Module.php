@@ -347,7 +347,6 @@ abstract class Module
         $this->fireEvent(ModuleEvent::DISABLING);
 
         $this->activator->disable($this);
-        $this->flushCache();
 
         $this->fireEvent(ModuleEvent::DISABLED);
     }
@@ -360,7 +359,6 @@ abstract class Module
         $this->fireEvent(ModuleEvent::ENABLING);
 
         $this->activator->enable($this);
-        $this->flushCache();
 
         $this->fireEvent(ModuleEvent::ENABLED);
     }
@@ -397,13 +395,6 @@ abstract class Module
         return config('modules.register.files', 'register') === 'boot' &&
             // force register method if option == boot && app is AsgardCms
             ! class_exists('\Modules\Core\Foundation\AsgardCms');
-    }
-
-    private function flushCache(): void
-    {
-        if (config('modules.cache.enabled')) {
-            $this->cache->store(config('modules.cache.driver'))->flush();
-        }
     }
 
     /**
