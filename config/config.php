@@ -249,21 +249,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Caching
-    |--------------------------------------------------------------------------
-    |
-    | Here is the config for setting up the caching feature.
-    |
-    */
-    'cache' => [
-        'enabled' => env('MODULES_CACHE_ENABLED', false),
-        'driver' => env('MODULES_CACHE_DRIVER', 'file'),
-        'key' => env('MODULES_CACHE_KEY', 'laravel-modules'),
-        'lifetime' => env('MODULES_CACHE_LIFETIME', 60),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Choose what laravel-modules will register as custom namespaces.
     | Setting one to false will require you to register that part
     | in your own Service Provider class.
@@ -290,8 +275,6 @@ return [
         'file' => [
             'class' => FileActivator::class,
             'statuses-file' => base_path('modules_statuses.json'),
-            'cache-key' => 'activator.installed',
-            'cache-lifetime' => 604800,
         ],
     ],
 
