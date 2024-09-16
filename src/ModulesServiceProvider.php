@@ -28,10 +28,12 @@ abstract class ModulesServiceProvider extends ServiceProvider
     {
         // $this->app->register(\Nwidart\Modules\Providers\BootstrapServiceProvider::class);
 
-        $providers = app()->make(ModuleManifest::class)->providersArray();
+        $manifest = app()->make(ModuleManifest::class);
 
-        (new ProviderRepository($this->app, new Filesystem(), $this->getCachedModulePath()))
-            ->load($providers);
+        (new ProviderRepository($this->app, new Filesystem, $this->getCachedModulePath()))
+            ->load($manifest->providersArray());
+
+        $manifest->registerFiles();
 
     }
 
