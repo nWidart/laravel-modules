@@ -105,16 +105,10 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         }
 
         $this->app->resolving(Migrator::class, function (Migrator $migrator) {
-            $path = implode(DIRECTORY_SEPARATOR, [
-                $this->app['config']->get('modules.paths.modules'),
-                '*',
-                '[Dd]atabase',
-                'migrations',
-            ]);
-
-            collect(glob($path, GLOB_ONLYDIR))
-                ->each(function (string $path) use ($migrator) {
-                    $migrator->path($path);
+            $migration_path = $this->app['config']->get('modules.paths.generator.migration.path');
+            collect(\Nwidart\Modules\Facades\Module::allEnabled())
+                ->each(function (\Nwidart\Modules\Laravel\Module $module) use ($migration_path, $migrator) {
+                    $migrator->path($module->getExtraPath($migration_path));
                 });
         });
     }
