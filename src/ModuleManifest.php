@@ -160,4 +160,33 @@ class ModuleManifest
             '<?php return '.var_export($manifest, true).';'
         );
     }
+
+    public function registerFiles(): void
+    {
+        //todo check this section store on module.php or not?
+        $this->paths
+            ->flatMap(function ($path) {
+                $manifests = $this->files->glob("{$path}/module.json");
+                is_array($manifests) || $manifests = [];
+
+                return collect($manifests)
+                    ->map(function ($manifest) {
+                        $json = $this->files->json($manifest);
+
+                        if (! empty($json['files'])) {
+                            return [
+                                'module_directory' => dirname($manifest),
+                                ...$this->files->json($manifest),
+                            ];
+                        }
+                    });
+            })
+            ->filter()
+            ->sortBy(fn ($module) => $module['priority'] ?? 0)
+            ->each(function (array $manifest) {
+                foreach ($manifest['files'] as $file) {
+                    include_once $manifest['module_directory'].DIRECTORY_SEPARATOR.$file;
+                }
+            });
+    }
 }
