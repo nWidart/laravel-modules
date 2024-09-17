@@ -123,16 +123,10 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
                 return;
             }
 
-            $path = implode(DIRECTORY_SEPARATOR, [
-                $this->app['config']->get('modules.paths.modules'),
-                '*',
-                'lang',
-            ]);
-
-            collect(glob($path, GLOB_ONLYDIR))
-                ->each(function (string $path) use ($translator) {
-                    preg_match('/\/([^\/]+)\/lang/', $path, $matches);
-                    $translator->addNamespace(strtolower($matches[1]), $path);
+            collect(\Nwidart\Modules\Facades\Module::allEnabled())
+                ->each(function (\Nwidart\Modules\Laravel\Module $module) use ($translator) {
+                    $path = $module->getExtraPath($this->app['config']->get('modules.paths.generator.lang.path'));
+                    $translator->addNamespace($module->getLowerName(), $path);
                     $translator->addJsonPath($path);
                 });
         });
