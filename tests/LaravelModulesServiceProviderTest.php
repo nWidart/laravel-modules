@@ -25,6 +25,8 @@ class LaravelModulesServiceProviderTest extends BaseTestCase
 
         $this->app['config']->set('modules.activators.file', ['class' => null]);
 
+        app()->forgetInstance(ActivatorInterface::class);
+
         $this->assertInstanceOf(ActivatorInterface::class, app(ActivatorInterface::class));
     }
 }

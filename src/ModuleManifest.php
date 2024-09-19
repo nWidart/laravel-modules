@@ -181,7 +181,7 @@ class ModuleManifest
 
     public function getModulesData(): Collection
     {
-        if (! empty(self::$manifestData)) {
+        if (! empty(self::$manifestData) && ! app()->runningUnitTests()) {
             return self::$manifestData;
         }
 
