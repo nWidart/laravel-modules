@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Translation\Translator;
 use Nwidart\Modules\Constants\ModuleEvent;
+use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 use Nwidart\Modules\Support\Stub;
@@ -30,7 +31,8 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
             fn () => new ModuleManifest(
                 new Filesystem(),
                 app(Contracts\RepositoryInterface::class)->getScanPaths(),
-                $this->getCachedModulePath()
+                $this->getCachedModulePath(),
+                app(ActivatorInterface::class)
             )
         );
 
