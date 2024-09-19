@@ -2,8 +2,6 @@
 
 namespace Nwidart\Modules;
 
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Foundation\ProviderRepository;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
@@ -26,15 +24,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
      */
     protected function registerModules()
     {
-        // $this->app->register(\Nwidart\Modules\Providers\BootstrapServiceProvider::class);
-
-        $manifest = app()->make(ModuleManifest::class);
-
-        (new ProviderRepository($this->app, new Filesystem, $this->getCachedModulePath()))
-            ->load($manifest->providersArray());
-
-        $manifest->registerFiles();
-
+        $this->app->register(\Nwidart\Modules\Providers\BootstrapServiceProvider::class);
     }
 
     /**
