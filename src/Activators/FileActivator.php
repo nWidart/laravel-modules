@@ -2,7 +2,6 @@
 
 namespace Nwidart\Modules\Activators;
 
-use Illuminate\Cache\CacheManager;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -86,13 +85,15 @@ class FileActivator implements ActivatorInterface
     /**
      * {@inheritDoc}
      */
-    public function hasStatus(Module $module, bool $status): bool
+    public function hasStatus(Module|string $module, bool $status): bool
     {
-        if (! isset($this->modulesStatuses[$module->getName()])) {
+        $name = $module instanceof Module ? $module->getName() : $module;
+
+        if (! isset($this->modulesStatuses[$name])) {
             return $status === false;
         }
 
-        return $this->modulesStatuses[$module->getName()] === $status;
+        return $this->modulesStatuses[$name] === $status;
     }
 
     /**
