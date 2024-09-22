@@ -19,7 +19,9 @@
   ],
   "require": {
     "php": ">=8.2",
+    "ext-dom": "*",
     "ext-json": "*",
+    "ext-simplexml": "*",
     "wikimedia/composer-merge-plugin": "^2.1"
   },
   "require-dev": {
