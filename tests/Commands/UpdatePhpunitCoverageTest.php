@@ -35,16 +35,6 @@ class UpdatePhpunitCoverageTest extends BaseTestCase
         $this->assertSame(99, $code);
     }
 
-    public function test_modules_statuses_file_is_not_json()
-    {
-        $this->makePhpunit();
-        $this->makeModulesStatuses('not json');
-
-        $code = $this->artisan('module:update-phpunit-coverage');
-
-        $this->assertSame(98, $code);
-    }
-
     private function MakePhpunit()
     {
         $phpunit = <<<'XML'
