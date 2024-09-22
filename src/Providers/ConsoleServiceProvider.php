@@ -97,6 +97,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\ModuleDiscoverCommand::class,
             Commands\ModuleClearCompiledCommand::class,
             Commands\SetupCommand::class,
+            Commands\UpdatePhpunitCoverage::class,
 
             Commands\Database\MigrateFreshCommand::class,
         ]);
