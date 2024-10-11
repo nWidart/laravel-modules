@@ -129,7 +129,7 @@ return [
             'notifications' => ['path' => 'app/Notifications', 'generate' => false],
             'observer' => ['path' => 'app/Observers', 'generate' => false],
             'policies' => ['path' => 'app/Policies', 'generate' => false],
-            'provider' => ['path' => 'app/Providers', 'generate' => true],
+            'provider' => ['path' => 'Providers', 'generate' => true],
             'repository' => ['path' => 'app/Repositories', 'generate' => false],
             'resource' => ['path' => 'app/Transformers', 'generate' => false],
             'route-provider' => ['path' => 'app/Providers', 'generate' => true],
