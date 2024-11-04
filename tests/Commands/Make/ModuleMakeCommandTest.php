@@ -95,6 +95,18 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_generates_web_route_file_with_multi_segment_default_namespace()
+    {
+        $this->app['config']->set('modules.namespace', 'Custom\Modules');
+        $files = $this->app['modules']->config('stubs.files');
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $path = $this->modulePath.'/'.$files['routes/web'];
+
+        $this->assertMatchesSnapshot($this->finder->get($path));
+        $this->assertSame(0, $code);
+    }
+
     public function test_it_generates_api_route_file()
     {
         $files = $this->app['modules']->config('stubs.files');
@@ -105,6 +117,20 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($this->finder->get($path));
         $this->assertSame(0, $code);
     }
+
+    public function test_it_generates_api_route_file_with_multi_segment_default_namespace()
+    {
+        $this->app['config']->set('modules.namespace', 'Custom\Modules');
+        $files = $this->app['modules']->config('stubs.files');
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $path = $this->modulePath.'/'.$files['routes/api'];
+
+        $this->assertMatchesSnapshot($this->finder->get($path));
+        $this->assertSame(0, $code);
+    }
+
 
     public function test_it_generates_vite_file()
     {
