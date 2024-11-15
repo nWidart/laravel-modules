@@ -486,7 +486,14 @@ class ModuleGenerator extends Generator
         }
         foreach ($keys as $key) {
             if (method_exists($this, $method = 'get'.ucfirst(Str::studly(strtolower($key))).'Replacement')) {
-                $replaces[$key] = $this->$method();
+                $replace = $this->$method();
+
+                if($stub === 'routes/web' || $stub === 'routes/api' ){
+                    $replace = str_replace('\\\\', '\\', $replace);
+                }
+
+                $replaces[$key] = $replace;
+
             } else {
                 $replaces[$key] = null;
             }
