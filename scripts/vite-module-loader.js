@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { pathToFileURL } from 'url';
 
 async function collectModuleAssetsPaths(paths, modulesPath) {
   modulesPath = path.join(__dirname, modulesPath);
@@ -26,8 +27,11 @@ async function collectModuleAssetsPaths(paths, modulesPath) {
 
         try {
           await fs.access(viteConfigPath);
+          // Convert to a file URL for Windows compatibility
+          const moduleConfigURL = pathToFileURL(viteConfigPath);
+
           // Import the module-specific Vite configuration
-          const moduleConfig = await import(viteConfigPath);
+          const moduleConfig = await import(moduleConfigURL.href);
 
           if (moduleConfig.paths && Array.isArray(moduleConfig.paths)) {
             paths.push(...moduleConfig.paths);
