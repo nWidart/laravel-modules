@@ -298,6 +298,7 @@ class ModuleGenerator extends Generator
 
         if ($this->type !== 'plain') {
             $this->generateFiles();
+            $this->module->resetModules();
             $this->generateResources();
         }
 
