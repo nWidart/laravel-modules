@@ -382,13 +382,13 @@ abstract class Module
     /**
      * Get extra path.
      */
-    public function getExtraPath(string $path): string
+    public function getExtraPath(?string $path): string
     {
-        return $this->getPath().'/'.$path;
+        return $this->getPath() . ($path ? '/' . $path : '');
     }
 
     /**
-     * Check if can load files of module on boot method.
+     * Check can load files of module on boot method.
      */
     protected function isLoadFilesOnBoot(): bool
     {
