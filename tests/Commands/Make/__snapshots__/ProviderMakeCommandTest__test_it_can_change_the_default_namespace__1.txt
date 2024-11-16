@@ -5,6 +5,8 @@ namespace Modules\Blog\SuperProviders;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 class BlogServiceProvider extends ServiceProvider
 {
@@ -76,8 +78,23 @@ class BlogServiceProvider extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $this->publishes([module_path($this->name, 'config/config.php') => config_path($this->nameLower.'.php')], 'config');
-        $this->mergeConfigFrom(module_path($this->name, 'config/config.php'), $this->nameLower);
+        $relativeConfigPath = config('modules.paths.generator.config.path');
+        $configPath = module_path($this->name, $relativeConfigPath);
+
+        if (is_dir($configPath)) {
+            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
+
+            foreach ($iterator as $file) {
+                if ($file->isFile() && $file->getExtension() === 'php') {
+                    $relativePath = str_replace($configPath . DIRECTORY_SEPARATOR, '', $file->getPathname());
+                    $configKey = $this->nameLower . '.' . str_replace([DIRECTORY_SEPARATOR, '.php'], ['.', ''], $relativePath);
+                    $key = ($relativePath === 'config.php') ? $this->nameLower : $configKey;
+
+                    $this->publishes([$file->getPathname() => config_path($relativePath)], $configPath);
+                    $this->mergeConfigFrom($file->getPathname(), $key);
+                }
+            }
+        }
     }
 
     /**
