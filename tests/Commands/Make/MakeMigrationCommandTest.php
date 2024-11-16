@@ -6,7 +6,7 @@ use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class MigrationMakeCommandTest extends BaseTestCase
+class MakeMigrationCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
 

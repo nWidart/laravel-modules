@@ -1,44 +1,37 @@
 <?php
 
-namespace Nwidart\Modules\Commands\Make;
+namespace Nwidart\Modules\Commands\Database;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Commands\Make\GeneratorCommand;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
 
-class FactoryMakeCommand extends GeneratorCommand
+class MakeFactoryCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
     /**
      * The name of argument name.
-     *
-     * @var string
      */
     protected $argumentName = 'name';
 
     /**
      * The console command name.
-     *
-     * @var string
      */
     protected $name = 'module:make-factory';
 
     /**
      * The console command description.
-     *
-     * @var string
      */
     protected $description = 'Create a new model factory for the specified module.';
 
     /**
      * Get the console command arguments.
-     *
-     * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['name', InputArgument::REQUIRED, 'The name of the model.'],
@@ -46,24 +39,18 @@ class FactoryMakeCommand extends GeneratorCommand
         ];
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getTemplateContents()
+    protected function getTemplateContents(): mixed
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/factory.stub', [
+        return (new Stub('/database/factories/factory.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
             'NAME' => $this->getModelName(),
             'MODEL_NAMESPACE' => $this->getModelNamespace(),
         ]))->render();
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): mixed
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -72,18 +59,12 @@ class FactoryMakeCommand extends GeneratorCommand
         return $path.$factoryPath->getPath().'/'.$this->getFileName();
     }
 
-    /**
-     * @return string
-     */
-    private function getFileName()
+    private function getFileName(): string
     {
         return Str::studly($this->argument('name')).'Factory.php';
     }
 
-    /**
-     * @return mixed|string
-     */
-    private function getModelName()
+    private function getModelName(): mixed
     {
         return Str::studly($this->argument('name'));
     }
