@@ -42,8 +42,8 @@ if (! function_exists('module_vite')) {
     /**
      * support for vite
      */
-    function module_vite($module, $asset): Vite
+    function module_vite($module, $asset, $hotFilePath = null): Vite
     {
-        return ViteFacade::useHotFile(storage_path('vite.hot'))->useBuildDirectory($module)->withEntryPoints([$asset]);
+        return ViteFacade::useHotFile($hotFilePath ?: storage_path('vite.hot'))->useBuildDirectory($module)->withEntryPoints([$asset]);
     }
 }
