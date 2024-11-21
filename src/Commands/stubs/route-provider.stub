@@ -8,12 +8,7 @@ use Illuminate\Support\Facades\File;
 
 class $CLASS$ extends ServiceProvider
 {
-    /**
-     * The module namespace to assume when generating URLs to actions.
-     *
-     * @var string
-     */
-    protected $moduleNamespace = '$MODULE_NAMESPACE$\$MODULE$\$CONTROLLER_NAMESPACE$';
+    protected string $name = '$MODULE$';
 
     /**
      * Called before routes are registered.
@@ -46,33 +41,24 @@ class $CLASS$ extends ServiceProvider
      *
      * @return void
      */
-    protected function mapWebRoutes()
-    {
+  protected function mapWebRoutes(): void
+  {
 
-          $routesPath = module_path('$MODULE$', '/Routes');
+          $routesPath = module_path($this->name, '/Routes');
 
             foreach (File::allFiles($routesPath) as $routeFile) {
                 if (str_ends_with($routeFile->getFilename(),'web.php')) {
-                    Route::middleware(['web'])
-                        ->namespace($this->moduleNamespace)
-                        ->group($routeFile->getPathname());
+                    Route::middleware('web')->group($routeFile->getPathname());
                 }
             }
-        
     }
-
     /**
      * Define the "api" routes for the application.
      *
      * These routes are typically stateless.
-     *
-     * @return void
      */
-    protected function mapApiRoutes()
+    protected function mapApiRoutes(): void
     {
-        Route::prefix('api')
-            ->middleware('api')
-            ->namespace($this->moduleNamespace)
-            ->group(module_path('$MODULE$', '$API_ROUTES_PATH$'));
+        Route::middleware('api')->prefix('api')->name('api.')->group(module_path($this->name, '$API_ROUTES_PATH$'));
     }
 }
