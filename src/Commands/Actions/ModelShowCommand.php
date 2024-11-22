@@ -8,11 +8,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 use function Laravel\Prompts\search;
-use function Laravel\Prompts\select;
 
 #[AsCommand('module:model-show', 'Show information about an Eloquent model in modules')]
 class ModelShowCommand extends ShowModelCommand implements PromptsForMissingInput
@@ -40,32 +37,6 @@ class ModelShowCommand extends ShowModelCommand implements PromptsForMissingInpu
                 {--database= : The database connection to use}
                 {--json : Output the model as JSON}';
 
-    /**
-     * Qualify the given model class base name.
-     *
-     * @see \Illuminate\Console\GeneratorCommand
-     */
-    protected function qualifyModel(string $model): string
-    {
-        if (str_contains($model, '\\') && class_exists($model)) {
-            return $model;
-        }
-
-        $modelPaths = $this->findModels($model);
-
-        if ($modelPaths->count() == 0) {
-            return $model;
-        } elseif ($modelPaths->count() == 1) {
-            return $this->formatModuleNamespace($modelPaths->first());
-        }
-
-        return select(
-            label: 'Select Model',
-            options: $modelPaths,
-            required: 'You must select at least one model',
-        );
-    }
-
     private function formatModuleNamespace(string $path): string
     {
         return
@@ -90,22 +61,19 @@ class ModelShowCommand extends ShowModelCommand implements PromptsForMissingInpu
             ->map($this->formatModuleNamespace(...));
     }
 
-    protected function promptForMissingArguments(InputInterface $input, OutputInterface $output): void
+    protected function promptForMissingArgumentsUsing(): array
     {
-        $selected_item = search(
-            label: 'Select Model',
-            options: function (string $search_value) {
-                return $this->findModels(
-                    Str::of($search_value)->wrap('', '*')
-                )->toArray();
-            },
-            placeholder: 'type some thing',
-            required: 'You must select one Model',
-        );
-
-        $input->setArgument(
-            name: 'model',
-            value: $selected_item
-        );
+        return [
+            'model' => fn () => search(
+                label: 'Select Model',
+                options: function (string $search_value) {
+                    return $this->findModels(
+                        Str::of($search_value)->wrap('', '*')
+                    )->toArray();
+                },
+                placeholder: 'type some thing',
+                required: 'You must select one Model',
+            ),
+        ];
     }
 }
