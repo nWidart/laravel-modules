@@ -61,7 +61,12 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
 
     public function getConfirmableLabel(): ?string
     {
-        return 'Warning';
+        return 'Application In Production';
+    }
+
+    public function getConfirmableCallback(): \Closure|bool|null
+    {
+        return null;
     }
 
     /**
@@ -71,8 +76,8 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
     {
         if ($this instanceof ConfirmableCommand) {
             if ($this->isProhibited() ||
-                ! $this->confirmToProceed($this->getConfirmableLabel(), fn () => true)) {
-                return 1;
+                ! $this->confirmToProceed($this->getConfirmableLabel(), $this->getConfirmableCallback())) {
+                return Command::FAILURE;
             }
         }
 
