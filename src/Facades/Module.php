@@ -3,6 +3,9 @@
 namespace Nwidart\Modules\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use Nwidart\Modules\Commands\Database\MigrateFreshCommand;
+use Nwidart\Modules\Commands\Database\MigrateRefreshCommand;
+use Nwidart\Modules\Commands\Database\MigrateResetCommand;
 
 /**
  * @method static array all()
@@ -19,7 +22,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Nwidart\Modules\Module findOrFail(string $name)
  * @method static string getModulePath($moduleName)
  * @method static \Illuminate\Filesystem\Filesystem getFiles()
- * @method static mixed config(string $key, $default = NULL)
+ * @method static mixed config(string $key, $default = null)
  * @method static string getPath()
  * @method static void boot()
  * @method static void register(): void
@@ -30,6 +33,21 @@ use Illuminate\Support\Facades\Facade;
  */
 class Module extends Facade
 {
+    /**
+     * Indicate if destructive Artisan commands should be prohibited.
+     *
+     * Prohibits: module:migrate-fresh, module:migrate-refresh, and module:migrate-reset
+     *
+     * @param  bool  $prohibit
+     * @return void
+     */
+    public static function prohibitDestructiveCommands(bool $prohibit = true): void
+    {
+        MigrateFreshCommand::prohibit($prohibit);
+        MigrateRefreshCommand::prohibit($prohibit);
+        MigrateResetCommand::prohibit($prohibit);
+    }
+
     protected static function getFacadeAccessor(): string
     {
         return 'modules';

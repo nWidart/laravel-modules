@@ -28,4 +28,9 @@ class ModuleDeleteCommand extends BaseCommand implements ConfirmableCommand
     {
         return 'Warning: Do you want to remove the module?';
     }
+
+    public function getConfirmableCallback(): \Closure|bool|null
+    {
+        return true;
+    }
 }

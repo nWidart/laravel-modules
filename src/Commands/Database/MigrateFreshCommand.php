@@ -5,9 +5,10 @@ namespace Nwidart\Modules\Commands\Database;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Commands\BaseCommand;
+use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-class MigrateFreshCommand extends BaseCommand
+class MigrateFreshCommand extends BaseCommand implements ConfirmableCommand
 {
     /**
      * The console command name.
