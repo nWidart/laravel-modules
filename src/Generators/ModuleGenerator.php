@@ -304,6 +304,7 @@ class ModuleGenerator extends Generator
 
         if ($this->type === 'plain') {
             $this->cleanModuleJsonFile();
+            $this->module->resetModules();
         }
 
         $this->activator->setActiveByName($name, $this->isActive);
@@ -489,7 +490,7 @@ class ModuleGenerator extends Generator
             if (method_exists($this, $method = 'get'.ucfirst(Str::studly(strtolower($key))).'Replacement')) {
                 $replace = $this->$method();
 
-                if($stub === 'routes/web' || $stub === 'routes/api' ){
+                if ($stub === 'routes/web' || $stub === 'routes/api') {
                     $replace = str_replace('\\\\', '\\', $replace);
                 }
 
