@@ -65,6 +65,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
             'WEB_ROUTES_PATH' => $this->getWebRoutesPath(),
             'API_ROUTES_PATH' => $this->getApiRoutesPath(),
             'LOWER_NAME' => $module->getLowerName(),
+            'KEBAB_NAME' => $module->getKebabName(),
         ]))->render();
     }
 

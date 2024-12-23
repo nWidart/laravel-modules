@@ -547,6 +547,11 @@ class ModuleGenerator extends Generator
         return strtolower($this->getName());
     }
 
+    protected function getKebabNameReplacement(): string
+    {
+        return Str::kebab($this->getName());
+    }
+
     /**
      * Get the module name in studly case.
      */
