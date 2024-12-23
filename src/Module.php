@@ -126,6 +126,14 @@ abstract class Module
     }
 
     /**
+     * Get name in studly case.
+     */
+    public function getKebabName(): string
+    {
+        return Str::kebab($this->name);
+    }
+
+    /**
      * Get name in snake case.
      */
     public function getSnakeName(): string
