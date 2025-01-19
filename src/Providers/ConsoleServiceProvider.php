@@ -85,7 +85,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\Make\TestMakeCommand::class,
             Commands\Make\ViewMakeCommand::class,
 
-            //Publish Commands
+            // Publish Commands
             Commands\Publish\PublishCommand::class,
             Commands\Publish\PublishConfigurationCommand::class,
             Commands\Publish\PublishMigrationCommand::class,

@@ -219,7 +219,7 @@ class Migrator
             return include $this->getPath().'/'.$file.'.php';
         }
 
-        return new $class();
+        return new $class;
     }
 
     /**

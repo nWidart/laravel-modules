@@ -35,7 +35,7 @@ class ModuleMakeCommandTest extends BaseTestCase
      */
     private $repository;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->modulePath = $this->getModuleBasePath();
@@ -44,7 +44,7 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->activator = $this->app[ActivatorInterface::class];
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->artisan('module:delete', ['--all' => true, '--force' => true]);
 
@@ -130,7 +130,6 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($this->finder->get($path));
         $this->assertSame(0, $code);
     }
-
 
     public function test_it_generates_vite_file()
     {
@@ -509,7 +508,7 @@ class ModuleMakeCommandTest extends BaseTestCase
                 'name' => ['Blog'],
                 '--author-name' => 'Joe Blogs',
                 '--author-email' => 'user@domain.com',
-                '--author-vendor' => 'JoeBlogs'
+                '--author-vendor' => 'JoeBlogs',
             ]
         );
 

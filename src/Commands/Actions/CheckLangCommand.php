@@ -98,7 +98,7 @@ class CheckLangCommand extends BaseCommand
 
     private function checkMissingFiles(Collection $directories)
     {
-        //show missing files
+        // show missing files
         $missingFilesMessage = [];
 
         $uniqeLangFiles = $directories->pluck('files')->flatten()->unique()->values();
@@ -135,7 +135,7 @@ class CheckLangCommand extends BaseCommand
 
     private function checkMissingKeys(Collection $directories)
     {
-        //show missing keys
+        // show missing keys
         $uniqeLangFiles = $directories->pluck('files')->flatten()->unique();
         $langDirectories = $directories->pluck('name');
 

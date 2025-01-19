@@ -20,7 +20,7 @@ class MigrationMakeCommandTest extends BaseTestCase
      */
     private $modulePath;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
@@ -28,7 +28,7 @@ class MigrationMakeCommandTest extends BaseTestCase
         $this->modulePath = $this->getModuleBasePath();
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->app[RepositoryInterface::class]->delete('Blog');
         parent::tearDown();

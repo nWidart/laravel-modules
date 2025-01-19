@@ -29,7 +29,7 @@ class Module extends BaseModule
      */
     public function registerProviders(): void
     {
-        (new ProviderRepository($this->app, new Filesystem(), $this->getCachedServicesPath()))
+        (new ProviderRepository($this->app, new Filesystem, $this->getCachedServicesPath()))
             ->load($this->get('providers', []));
     }
 

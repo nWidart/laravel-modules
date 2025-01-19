@@ -28,7 +28,5 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
-    public function registerAliases(): void
-    {
-    }
+    public function registerAliases(): void {}
 }

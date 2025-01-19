@@ -15,7 +15,7 @@ class ModuleDiscoverCommandTest extends BaseTestCase
 
     private Filesystem $finder;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
@@ -23,7 +23,7 @@ class ModuleDiscoverCommandTest extends BaseTestCase
         $this->repository = $this->app[RepositoryInterface::class];
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->artisan('module:delete', ['--all' => true, '--force' => true]);
         parent::tearDown();
@@ -79,6 +79,4 @@ class ModuleDiscoverCommandTest extends BaseTestCase
             $this->assertContains($provider, $manifest['eager'], 'provider not found in manifest file');
         }
     }
-
-
 }

@@ -23,30 +23,31 @@ class UpdatePhpunitCoverage extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
     public function handle(): int
     {
         $appFolder = config('modules.paths.app_folder', 'app/');
-        $appFolder = rtrim($appFolder, '/') . '/';
+        $appFolder = rtrim($appFolder, '/').'/';
         $phpunitXmlPath = base_path('phpunit.xml');
         $modulesStatusPath = base_path('modules_statuses.json');
 
-        if (!file_exists($phpunitXmlPath)) {
+        if (! file_exists($phpunitXmlPath)) {
             $this->error("phpunit.xml file not found: {$phpunitXmlPath}");
+
             return 100;
         }
 
-        if (!file_exists($modulesStatusPath)) {
+        if (! file_exists($modulesStatusPath)) {
             $this->error("Modules statuses file not found: {$modulesStatusPath}");
+
             return 99;
         }
 
         $enabledModules = json_decode(file_get_contents($modulesStatusPath), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            $this->error("Error decoding JSON from {$modulesStatusPath}: " . json_last_error_msg());
+            $this->error("Error decoding JSON from {$modulesStatusPath}: ".json_last_error_msg());
+
             return 98;
         }
 
@@ -55,14 +56,12 @@ class UpdatePhpunitCoverage extends Command
 
         foreach ($enabledModules as $module => $status) {
             if ($status) { // Only add enabled modules
-                $moduleDir = $modulesPath . $module . '/' . $appFolder;
+                $moduleDir = $modulesPath.$module.'/'.$appFolder;
                 if (is_dir($moduleDir)) {
                     $moduleDirs[] = $moduleDir;
                 }
             }
         }
-
-
 
         $phpunitXml = simplexml_load_file($phpunitXmlPath);
 
@@ -77,13 +76,13 @@ class UpdatePhpunitCoverage extends Command
             $directory->addAttribute('suffix', '.php');
         }
 
-        $dom = new DOMDocument();
+        $dom = new DOMDocument;
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
         $dom->loadXML($phpunitXml->asXML());
         $dom->save($phpunitXmlPath);
 
-        $this->info("phpunit.xml updated with enabled module directories.");
+        $this->info('phpunit.xml updated with enabled module directories.');
 
         return 0;
     }

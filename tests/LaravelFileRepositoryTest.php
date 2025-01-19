@@ -22,14 +22,14 @@ class LaravelFileRepositoryTest extends BaseTestCase
      */
     private $activator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->repository = new LaravelFileRepository($this->app);
         $this->activator = $this->app[ActivatorInterface::class];
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->activator->reset();
         $this->artisan('module:delete', ['--all' => true, '--force' => true]);
@@ -205,8 +205,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
 
     public function test_it_can_register_macros()
     {
-        Module::macro('registeredMacro', function () {
-        });
+        Module::macro('registeredMacro', function () {});
 
         $this->assertTrue(Module::hasMacro('registeredMacro'));
     }

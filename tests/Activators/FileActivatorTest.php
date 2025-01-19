@@ -25,7 +25,7 @@ class FileActivatorTest extends BaseTestCase
      */
     private $activator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->module = new TestModule($this->app, 'Recipe', __DIR__.'/stubs/valid/Recipe');
@@ -33,7 +33,7 @@ class FileActivatorTest extends BaseTestCase
         $this->activator = new FileActivator($this->app);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->activator->reset();
         parent::tearDown();

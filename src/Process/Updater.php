@@ -8,10 +8,8 @@ class Updater extends Runner
 {
     /**
      * Update the dependencies for the specified module by given the module name.
-     *
-     * @param  string  $module
      */
-    public function update($module)
+    public function update(string $module)
     {
         $module = $this->module->findOrFail($module);
 
@@ -24,10 +22,8 @@ class Updater extends Runner
 
     /**
      * Check if composer should output anything.
-     *
-     * @return string
      */
-    private function isComposerSilenced()
+    private function isComposerSilenced(): string
     {
         return config('modules.composer.composer-output') === false ? ' --quiet' : '';
     }

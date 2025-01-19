@@ -19,14 +19,14 @@ class LumenModuleTest extends BaseTestCase
      */
     private $activator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->module = new LumenTestingModule($this->app, 'Recipe Name', __DIR__.'/stubs/valid/Recipe');
         $this->activator = $this->app[ActivatorInterface::class];
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->activator->reset();
         parent::tearDown();

@@ -17,7 +17,7 @@ class PublishMigrationCommandTest extends BaseTestCase
      */
     private $modulePath;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
@@ -26,7 +26,7 @@ class PublishMigrationCommandTest extends BaseTestCase
         $this->artisan('module:make-migration', ['name' => 'create_posts_table', 'module' => 'Blog']);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->app[RepositoryInterface::class]->delete('Blog');
         $this->finder->delete($this->finder->allFiles(base_path('database/migrations')));
