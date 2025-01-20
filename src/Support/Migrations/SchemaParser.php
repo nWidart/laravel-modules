@@ -19,7 +19,7 @@ class SchemaParser implements Arrayable
     /**
      * The migration schema.
      */
-    protected string $schema;
+    protected ?string $schema;
 
     /**
      * The relationship keys.
@@ -39,7 +39,7 @@ class SchemaParser implements Arrayable
     /**
      * Parse a string to array of formatted schema.
      */
-    public function parse(string $schema): array
+    public function parse(?string $schema): array
     {
         $this->schema = $schema;
 

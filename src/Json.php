@@ -21,7 +21,7 @@ class Json
     /**
      * The attributes collection.
      */
-    protected Collection $attributes;
+    protected ?Collection $attributes = null;
 
     /**
      * The constructor.
@@ -110,7 +110,7 @@ class Json
      */
     public function getAttributes(): array
     {
-        return $this->attributes ?? $this->decodeContents();
+        return $this->attributes ? $this->attributes->toArray() : $this->decodeContents();
     }
 
     /**

@@ -42,7 +42,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * Stub path
      */
-    protected string $stubPath;
+    protected ?string $stubPath = null;
 
     /**
      * URL Generator
@@ -136,9 +136,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
         $modules = [];
 
         foreach ($paths as $key => $path) {
-            $manifests = $this->getFiles()->glob("{$path}/module.json");
-
-            is_array($manifests) || $manifests = [];
+            $manifests = (array) $this->getFiles()->glob("{$path}/module.json");
 
             foreach ($manifests as $manifest) {
                 $json = Json::make($manifest);
