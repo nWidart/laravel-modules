@@ -67,7 +67,7 @@
         }
     },
     "scripts": {
-        "update-snapshots": "./phpunit --no-coverage -d --update-snapshots",
+        "update-snapshots": "phpunit --no-coverage -d --update-snapshots",
         "lint": "pint",
         "test": "phpunit",
         "test-coverage": "phpunit --coverage-html coverage",
