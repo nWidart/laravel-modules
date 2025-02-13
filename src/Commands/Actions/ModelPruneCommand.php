@@ -8,12 +8,14 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Nwidart\Modules\Facades\Module;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
 use function Laravel\Prompts\multiselect;
 
+#[AsCommand(name: 'module:prune')]
 class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
 {
     public const ALL = 'All';
@@ -48,12 +50,17 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
             return;
         }
 
+        if (! empty($input->getArgument('module'))) {
+            return;
+        }
+
         $selected_item = multiselect(
             label   : 'Select Modules',
-            options : [
-                self::ALL,
-                ...array_keys(Module::all()),
-            ],
+            options : collect(Module::allEnabled())
+                ->map(fn (\Nwidart\Modules\Module $module) => $module->getName())
+                ->prepend(self::ALL)
+                ->values()
+                ->toArray(),
             required: 'You must select at least one module',
         );
 
@@ -90,7 +97,7 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
             );
         } else {
             $path = sprintf(
-                '%s/{%s}/%s',
+                '%s/%s/%s',
                 config('modules.paths.modules'),
                 collect($this->argument('module'))->implode(','),
                 config('modules.paths.generator.model.path')
