@@ -89,19 +89,23 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
             throw new InvalidArgumentException('The --models and --except options cannot be combined.');
         }
 
-        if ($this->argument('module') == [self::ALL]) {
+        $modules = collect($this->argument('module'));
+
+        if ($modules->contains(self::ALL)) {
             $path = sprintf(
                 '%s/*/%s',
                 config('modules.paths.modules'),
                 config('modules.paths.generator.model.path')
             );
         } else {
-            $path = sprintf(
+            $path = collect($modules)->map(fn ($module) => sprintf(
                 '%s/%s/%s',
                 config('modules.paths.modules'),
-                collect($this->argument('module'))->implode(','),
+                $module,
                 config('modules.paths.generator.model.path')
-            );
+            ))
+                ->filter(fn ($path) => is_dir($path))
+                ->toArray();
         }
 
         return collect(Finder::create()->in($path)->files()->name('*.php'))
@@ -114,7 +118,8 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
                     ['\\', ''],
                     Str::after($model->getRealPath(), realpath(config('modules.paths.modules')))
                 );
-            })->values()
+            })
+            ->values()
             ->when(! empty($except), function ($models) use ($except) {
                 return $models->reject(function ($model) use ($except) {
                     return in_array($model, $except);
