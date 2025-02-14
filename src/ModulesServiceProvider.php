@@ -31,7 +31,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
         $manifest = app()->make(ModuleManifest::class);
 
         (new ProviderRepository($this->app, new Filesystem, $this->getCachedModulePath()))
-            ->load($manifest->getManifest());
+            ->load($manifest->getProviders());
 
         $manifest->registerFiles();
 

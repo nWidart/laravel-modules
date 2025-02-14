@@ -64,7 +64,7 @@ class ModuleManifest
     /**
      * Get the current package manifest.
      */
-    public function getManifest(): array
+    public function getProviders(): array
     {
         if (! is_null($this->manifest)) {
             return $this->manifest;
