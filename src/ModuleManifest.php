@@ -63,8 +63,6 @@ class ModuleManifest
 
     /**
      * Get the current package manifest.
-     *
-     * @return array
      */
     public function getManifest(): array
     {
@@ -77,8 +75,6 @@ class ModuleManifest
 
     /**
      * Build the manifest and write it to disk.
-     *
-     * @return array
      */
     public function build(): array
     {
@@ -91,7 +87,7 @@ class ModuleManifest
 
     public function registerFiles(): void
     {
-        //todo check this section store on module.php or not?
+        // todo check this section store on module.php or not?
         $this->getModulesData()
             ->each(function (array $manifest) {
                 if (empty($manifest['files'])) {
