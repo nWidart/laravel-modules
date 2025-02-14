@@ -5,6 +5,9 @@ namespace Nwidart\Modules\Commands;
 use Illuminate\Console\Command;
 use Nwidart\Modules\ModuleManifest;
 
+/**
+ * @deprecated This command is deprecated and will be removed in the next major version.
+ */
 class ModuleClearCompiledCommand extends Command
 {
     /**
@@ -27,6 +30,6 @@ class ModuleClearCompiledCommand extends Command
             @unlink($manifest->manifestPath);
         }
 
-        $this->components->info('Compiled module files removed successfully.');
+        $this->components->warn('You may stop calling the `module:clear-compiled` command.');
     }
 }

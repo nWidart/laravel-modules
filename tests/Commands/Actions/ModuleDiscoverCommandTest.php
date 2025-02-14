@@ -7,6 +7,9 @@ use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\ModuleManifest;
 use Nwidart\Modules\Tests\BaseTestCase;
 
+/**
+ * @deprecated This Test File is deprecated and will be removed in the next major version.
+ */
 class ModuleDiscoverCommandTest extends BaseTestCase
 {
     private RepositoryInterface $repository;
@@ -37,48 +40,4 @@ class ModuleDiscoverCommandTest extends BaseTestCase
 
         $this->assertSame(0, $code);
     }
-
-    public function test_manifest_file_contain_new_module_provider()
-    {
-        $this->createModule('Foo');
-
-        $path = base_path('modules/Foo').'/module.json';
-        $provider = json_decode($this->finder->get($path))->providers[0];
-
-        $code = $this->artisan('module:discover');
-        $this->assertSame(0, $code);
-
-        $manifest = require $this->manifestPath;
-
-        $this->assertContains($provider, $manifest['providers'], 'provider not found in manifest file');
-        $this->assertContains($provider, $manifest['eager'], 'provider not found in manifest file');
-    }
-
-    public function test_manifest_file_contain_multi_module_provider()
-    {
-        $modules = [
-            'Foo',
-            'Bar',
-            'Baz',
-        ];
-
-        foreach ($modules as $module) {
-            $this->createModule($module);
-        }
-
-        $code = $this->artisan('module:discover');
-        $this->assertSame(0, $code);
-
-        $manifest = require $this->manifestPath;
-
-        foreach ($modules as $module) {
-            $path = module_path($module).'/module.json';
-            $provider = json_decode($this->finder->get($path))->providers[0];
-
-            $this->assertContains($provider, $manifest['providers'], 'provider not found in manifest file');
-            $this->assertContains($provider, $manifest['eager'], 'provider not found in manifest file');
-        }
-    }
-
-
 }
