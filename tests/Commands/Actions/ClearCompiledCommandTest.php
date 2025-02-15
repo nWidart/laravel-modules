@@ -7,6 +7,9 @@ use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\ModuleManifest;
 use Nwidart\Modules\Tests\BaseTestCase;
 
+/**
+ * @deprecated This Test File is deprecated and will be removed in the next major version.
+ */
 class ClearCompiledCommandTest extends BaseTestCase
 {
     private RepositoryInterface $repository;
@@ -36,47 +39,5 @@ class ClearCompiledCommandTest extends BaseTestCase
 
         $this->assertFileDoesNotExist($this->manifestPath);
         $this->assertSame(0, $code);
-    }
-
-    public function test_manifest_file_clear_when_create_module()
-    {
-        $this->assertFileExists($this->manifestPath);
-
-        $this->createModule('Foo');
-
-        $this->assertFileDoesNotExist($this->manifestPath);
-    }
-
-    public function test_manifest_file_clear_when_delete_module()
-    {
-        $this->assertFileExists($this->manifestPath);
-
-        $this->createModule('Foo');
-
-        $this->artisan('module:delete', ['module' => 'Foo', '--force' => true]);
-
-        $this->assertFileDoesNotExist($this->manifestPath);
-    }
-
-    public function test_manifest_file_clear_when_disable_module()
-    {
-        $this->assertFileExists($this->manifestPath);
-
-        $this->createModule('Foo');
-
-        $this->artisan('module:disable', ['module' => 'Foo']);
-
-        $this->assertFileDoesNotExist($this->manifestPath);
-    }
-
-    public function test_manifest_file_clear_when_enable_module()
-    {
-        $this->assertFileExists($this->manifestPath);
-
-        $this->createModule('Foo');
-
-        $this->artisan('module:enable', ['module' => 'Foo']);
-
-        $this->assertFileDoesNotExist($this->manifestPath);
     }
 }

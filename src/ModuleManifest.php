@@ -2,7 +2,6 @@
 
 namespace Nwidart\Modules;
 
-use Exception;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Contracts\ActivatorInterface;
@@ -51,90 +50,27 @@ class ModuleManifest
     }
 
     /**
-     * Get all of the service provider class names for all packages.
-     */
-    public function providers(): array
-    {
-        return $this->config('providers');
-    }
-
-    /**
-     * Get all of the service provider class names for all packages.
-     */
-    public function providersArray(): array
-    {
-        return $this->getManifest()['providers'] ?? [];
-    }
-
-    /**
-     * Get all of the aliases for all packages.
-     */
-    public function aliases(): array
-    {
-        return $this->config('aliases');
-    }
-
-    /**
-     * Get all of the values for all packages for the given configuration name.
-     */
-    public function config(string $key): array
-    {
-        return collect($this->getManifest())->flatMap(function ($configuration) use ($key) {
-            return (array) ($configuration[$key] ?? []);
-        })->filter()->all();
-    }
-
-    /**
      * Get the current package manifest.
      */
-    protected function getManifest(): array
+    public function getProviders(): array
     {
         if (! is_null($this->manifest)) {
             return $this->manifest;
         }
 
-        if (! is_file($this->manifestPath)) {
-            $this->build();
-        }
-
-        return $this->manifest = is_file($this->manifestPath) ?
-            $this->files->getRequire($this->manifestPath) : [];
+        return $this->manifest = $this->build();
     }
 
     /**
      * Build the manifest and write it to disk.
      */
-    public function build(): void
+    public function build(): array
     {
-        $providers = $this->getModulesData()
+        return $this->getModulesData()
             ->pluck('providers')
             ->flatten()
             ->filter()
             ->toArray();
-
-        $this->write(
-            [
-                'providers' => $providers,
-                'eager' => $providers,
-                'deferred' => [],
-            ]
-        );
-    }
-
-    /**
-     * Write the given manifest array to disk.
-     *
-     * @throws \Exception
-     */
-    protected function write(array $manifest): void
-    {
-        if (! is_writable($dirname = dirname($this->manifestPath))) {
-            throw new Exception("The {$dirname} directory must be present and writable.");
-        }
-        $this->files->replace(
-            $this->manifestPath,
-            '<?php return '.var_export($manifest, true).';'
-        );
     }
 
     public function registerFiles(): void
