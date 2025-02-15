@@ -31,3 +31,19 @@ jobs:
 
     - name: Run test suite
       run: composer run-script test
+  phplint:
+      permissions:
+          contents: write
+      runs-on: ubuntu-latest
+      steps:
+          - uses: actions/checkout@v3
+          - name: "laravel-pint"
+            uses: aglipanci/laravel-pint-action@latest
+            with:
+                configPath: './pint.json'
+
+          - name: Commit changes
+            uses: stefanzweifel/git-auto-commit-action@v4
+            with:
+                commit_message: PHP Linting (Pint)
+                skip_fetch: true
