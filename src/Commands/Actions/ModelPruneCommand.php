@@ -8,12 +8,14 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Nwidart\Modules\Facades\Module;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
 use function Laravel\Prompts\multiselect;
 
+#[AsCommand(name: 'module:prune')]
 class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
 {
     public const ALL = 'All';
@@ -48,12 +50,17 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
             return;
         }
 
+        if (! empty($input->getArgument('module'))) {
+            return;
+        }
+
         $selected_item = multiselect(
             label   : 'Select Modules',
-            options : [
-                self::ALL,
-                ...array_keys(Module::all()),
-            ],
+            options : collect(Module::allEnabled())
+                ->map(fn (\Nwidart\Modules\Module $module) => $module->getName())
+                ->prepend(self::ALL)
+                ->values()
+                ->toArray(),
             required: 'You must select at least one module',
         );
 
@@ -82,19 +89,23 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
             throw new InvalidArgumentException('The --models and --except options cannot be combined.');
         }
 
-        if ($this->argument('module') == [self::ALL]) {
+        $modules = collect($this->argument('module'));
+
+        if ($modules->contains(self::ALL)) {
             $path = sprintf(
                 '%s/*/%s',
                 config('modules.paths.modules'),
                 config('modules.paths.generator.model.path')
             );
         } else {
-            $path = sprintf(
-                '%s/{%s}/%s',
+            $path = collect($modules)->map(fn ($module) => sprintf(
+                '%s/%s/%s',
                 config('modules.paths.modules'),
-                collect($this->argument('module'))->implode(','),
+                $module,
                 config('modules.paths.generator.model.path')
-            );
+            ))
+                ->filter(fn ($path) => is_dir($path))
+                ->toArray();
         }
 
         return collect(Finder::create()->in($path)->files()->name('*.php'))
@@ -107,7 +118,8 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
                     ['\\', ''],
                     Str::after($model->getRealPath(), realpath(config('modules.paths.modules')))
                 );
-            })->values()
+            })
+            ->values()
             ->when(! empty($except), function ($models) use ($except) {
                 return $models->reject(function ($model) use ($except) {
                     return in_array($model, $except);

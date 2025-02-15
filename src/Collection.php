@@ -9,20 +9,16 @@ class Collection extends BaseCollection
 {
     /**
      * Get items collections.
-     *
-     * @return array
      */
-    public function getItems()
+    public function getItems(): array
     {
         return $this->items;
     }
 
     /**
      * Get the collection of items as a plain array.
-     *
-     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return array_map(function ($value) {
             if ($value instanceof Module) {

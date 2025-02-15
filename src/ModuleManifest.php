@@ -10,24 +10,18 @@ class ModuleManifest
 {
     /**
      * The filesystem instance.
-     *
-     * @var Filesystem
      */
-    private $files;
+    private Filesystem $files;
 
     /**
      * The base path.
-     *
-     * @var string
      */
-    public $paths;
+    public Collection $paths;
 
     /**
      * The manifest path.
-     *
-     * @var string|null
      */
-    public $manifestPath;
+    public ?string $manifestPath;
 
     /**
      * The manifestData
@@ -36,10 +30,8 @@ class ModuleManifest
 
     /**
      * The loaded manifest array.
-     *
-     * @var array
      */
-    private $manifest;
+    private array $manifest = [];
 
     /**
      * module activator class
@@ -48,12 +40,8 @@ class ModuleManifest
 
     /**
      * Create a new package manifest instance.
-     *
-     * @param  Collection  $paths
-     * @param  string  $manifestPath
-     * @return void
      */
-    public function __construct(Filesystem $files, $paths, $manifestPath, ActivatorInterface $activator)
+    public function __construct(Filesystem $files, array $paths, string $manifestPath, ActivatorInterface $activator)
     {
         $this->files = $files;
         $this->paths = collect($paths);

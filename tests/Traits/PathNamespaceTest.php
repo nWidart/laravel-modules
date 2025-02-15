@@ -6,11 +6,11 @@ use Nwidart\Modules\Tests\BaseTestCase;
 
 class PathNamespaceTest extends BaseTestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->class = new UsePathNamespaceTrait();
+        $this->class = new UsePathNamespaceTrait;
     }
 
     public function test_studly_path()

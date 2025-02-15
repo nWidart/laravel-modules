@@ -10,7 +10,7 @@ class DisableCommandTest extends BaseTestCase
 {
     private RepositoryInterface $repository;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->createModule('Blog');
@@ -18,7 +18,7 @@ class DisableCommandTest extends BaseTestCase
         $this->repository = $this->app[RepositoryInterface::class];
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->repository->delete('Blog');
         $this->repository->delete('Taxonomy');

@@ -7,7 +7,7 @@ use Nwidart\Modules\Laravel\Module;
 
 class CollectionTest extends BaseTestCase
 {
-    public function test_toArraySetsPathAttribute()
+    public function test_to_array_sets_path_attribute()
     {
         $moduleOnePath = __DIR__.'/stubs/valid/Recipe';
         $moduleTwoPath = __DIR__.'/stubs/valid/Requirement';
@@ -24,7 +24,7 @@ class CollectionTest extends BaseTestCase
         $this->assertEquals($moduleTwoPath, $collectionArray[1]['path']);
     }
 
-    public function test_getItemsReturnsTheCollectionItems()
+    public function test_get_items_returns_the_collection_items()
     {
         $modules = [
             new Module($this->app, 'module-one', __DIR__.'/stubs/valid/Recipe'),

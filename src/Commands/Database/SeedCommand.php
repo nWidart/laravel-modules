@@ -102,14 +102,14 @@ class SeedCommand extends BaseCommand
                 }
             }
         } else {
-            $class = $this->getSeederName($name); //legacy support
+            $class = $this->getSeederName($name); // legacy support
 
             $class = implode('\\', array_map('ucwords', explode('\\', $class)));
 
             if (class_exists($class)) {
                 $seeders[] = $class;
             } else {
-                //look at other namespaces
+                // look at other namespaces
                 $classes = $this->getSeederNames($name);
                 foreach ($classes as $class) {
                     if (class_exists($class)) {

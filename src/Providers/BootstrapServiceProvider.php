@@ -25,9 +25,9 @@ class BootstrapServiceProvider extends ServiceProvider
     }
 
     /**
-     * @return LaravelFileRepository
+     * Get Repository Interface
      */
-    public function getRepositoryInterface()
+    public function getRepositoryInterface(): LaravelFileRepository
     {
         return $this->app[RepositoryInterface::class];
     }

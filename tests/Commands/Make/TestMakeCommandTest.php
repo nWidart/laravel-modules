@@ -26,7 +26,7 @@ class TestMakeCommandTest extends BaseTestCase
      */
     private $activator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
@@ -35,7 +35,7 @@ class TestMakeCommandTest extends BaseTestCase
         $this->activator = $this->app[ActivatorInterface::class];
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->app[RepositoryInterface::class]->delete('Blog');
         $this->activator->reset();

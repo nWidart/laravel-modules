@@ -7,9 +7,9 @@ use Nwidart\Modules\Migrations\Migrator;
 class MigrationPublisher extends AssetPublisher
 {
     /**
-     * @var Migrator
+     * Migrator
      */
-    private $migrator;
+    private Migrator $migrator;
 
     /**
      * MigrationPublisher constructor.
@@ -22,20 +22,16 @@ class MigrationPublisher extends AssetPublisher
 
     /**
      * Get destination path.
-     *
-     * @return string
      */
-    public function getDestinationPath()
+    public function getDestinationPath(): string
     {
         return $this->repository->config('paths.migration');
     }
 
     /**
      * Get source path.
-     *
-     * @return string
      */
-    public function getSourcePath()
+    public function getSourcePath(): string
     {
         return $this->migrator->getPath();
     }

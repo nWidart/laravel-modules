@@ -17,7 +17,7 @@ class PublishCommandTest extends BaseTestCase
      */
     private $modulePath;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->createModule();
@@ -26,7 +26,7 @@ class PublishCommandTest extends BaseTestCase
         $this->finder->put($this->modulePath.'/resources/assets/script.js', 'assetfile');
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->app[RepositoryInterface::class]->delete('Blog');
         parent::tearDown();

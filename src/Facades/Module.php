@@ -37,9 +37,6 @@ class Module extends Facade
      * Indicate if destructive Artisan commands should be prohibited.
      *
      * Prohibits: module:migrate-fresh, module:migrate-refresh, and module:migrate-reset
-     *
-     * @param  bool  $prohibit
-     * @return void
      */
     public static function prohibitDestructiveCommands(bool $prohibit = true): void
     {
