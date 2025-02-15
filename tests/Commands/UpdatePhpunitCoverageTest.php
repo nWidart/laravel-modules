@@ -6,7 +6,7 @@ use Nwidart\Modules\Tests\BaseTestCase;
 
 class UpdatePhpunitCoverageTest extends BaseTestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

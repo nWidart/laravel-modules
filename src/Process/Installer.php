@@ -11,65 +11,48 @@ class Installer
 {
     /**
      * The module name.
-     *
-     * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * The version of module being installed.
-     *
-     * @var string
      */
-    protected $version;
+    protected string $version;
 
     /**
      * The module repository instance.
-     *
-     * @var \Nwidart\Modules\Contracts\RepositoryInterface
      */
-    protected $repository;
+    protected RepositoryInterface $repository;
 
     /**
      * The console command instance.
-     *
-     * @var \Illuminate\Console\Command
      */
-    protected $console;
+    protected Command $console;
 
     /**
      * The destionation path.
-     *
-     * @var string
      */
-    protected $path;
+    protected string $path;
 
     /**
      * The process timeout.
-     *
-     * @var int
      */
-    protected $timeout = 3360;
+    protected int $timeout = 3360;
 
     /**
-     * @var null|string
+     * Type
      */
-    private $type;
+    private ?string $type;
 
     /**
-     * @var bool
+     * Tree
      */
-    private $tree;
+    private bool $tree;
 
     /**
      * The constructor.
-     *
-     * @param  string  $name
-     * @param  string  $version
-     * @param  string  $type
-     * @param  bool  $tree
      */
-    public function __construct($name, $version = null, $type = null, $tree = false)
+    public function __construct(string $name, ?string $version = null, ?string $type = null, bool $tree = false)
     {
         $this->name = $name;
         $this->version = $version;
@@ -79,11 +62,8 @@ class Installer
 
     /**
      * Set destination path.
-     *
-     * @param  string  $path
-     * @return $this
      */
-    public function setPath($path)
+    public function setPath(string $path): self
     {
         $this->path = $path;
 
@@ -92,10 +72,8 @@ class Installer
 
     /**
      * Set the module repository instance.
-     *
-     * @return $this
      */
-    public function setRepository(RepositoryInterface $repository)
+    public function setRepository(RepositoryInterface $repository): self
     {
         $this->repository = $repository;
 
@@ -104,11 +82,8 @@ class Installer
 
     /**
      * Set console command instance.
-     *
-     *
-     * @return $this
      */
-    public function setConsole(Command $console)
+    public function setConsole(Command $console): self
     {
         $this->console = $console;
 
@@ -117,11 +92,8 @@ class Installer
 
     /**
      * Set process timeout.
-     *
-     * @param  int  $timeout
-     * @return $this
      */
-    public function setTimeout($timeout)
+    public function setTimeout(int $timeout): self
     {
         $this->timeout = $timeout;
 
@@ -130,10 +102,8 @@ class Installer
 
     /**
      * Run the installation process.
-     *
-     * @return \Symfony\Component\Process\Process
      */
-    public function run()
+    public function run(): Process
     {
         $process = $this->getProcess();
 
@@ -150,10 +120,8 @@ class Installer
 
     /**
      * Get process instance.
-     *
-     * @return \Symfony\Component\Process\Process
      */
-    public function getProcess()
+    public function getProcess(): Process
     {
         if ($this->type) {
             if ($this->tree) {
@@ -168,10 +136,8 @@ class Installer
 
     /**
      * Get destination path.
-     *
-     * @return string
      */
-    public function getDestinationPath()
+    public function getDestinationPath(): string
     {
         if ($this->path) {
             return $this->path;
@@ -182,10 +148,8 @@ class Installer
 
     /**
      * Get git repo url.
-     *
-     * @return string|null
      */
-    public function getRepoUrl()
+    public function getRepoUrl(): ?string
     {
         switch ($this->type) {
             case 'github':
@@ -203,7 +167,6 @@ class Installer
                 return "git@bitbucket.org:{$this->name}.git";
 
             default:
-
                 // Check of type 'scheme://host/path'
                 if (filter_var($this->type, FILTER_VALIDATE_URL)) {
                     return $this->type;
@@ -213,29 +176,21 @@ class Installer
                 if (filter_var($this->type, FILTER_VALIDATE_EMAIL)) {
                     return "{$this->type}:{$this->name}.git";
                 }
-
-                return;
-
-                break;
         }
     }
 
     /**
      * Get branch name.
-     *
-     * @return string
      */
-    public function getBranch()
+    public function getBranch(): string
     {
         return is_null($this->version) ? 'master' : $this->version;
     }
 
     /**
      * Get module name.
-     *
-     * @return string
      */
-    public function getModuleName()
+    public function getModuleName(): string
     {
         $parts = explode('/', $this->name);
 
@@ -244,10 +199,8 @@ class Installer
 
     /**
      * Get composer package name.
-     *
-     * @return string
      */
-    public function getPackageName()
+    public function getPackageName(): string
     {
         if (is_null($this->version)) {
             return $this->name.':dev-master';
@@ -258,10 +211,8 @@ class Installer
 
     /**
      * Install the module via git.
-     *
-     * @return \Symfony\Component\Process\Process
      */
-    public function installViaGit()
+    public function installViaGit(): Process
     {
         return Process::fromShellCommandline(sprintf(
             'cd %s && git clone %s %s && cd %s && git checkout %s',
@@ -275,10 +226,8 @@ class Installer
 
     /**
      * Install the module via git subtree.
-     *
-     * @return \Symfony\Component\Process\Process
      */
-    public function installViaSubtree()
+    public function installViaSubtree(): Process
     {
         return Process::fromShellCommandline(sprintf(
             'cd %s && git remote add %s %s && git subtree add --prefix=%s --squash %s %s',
@@ -293,10 +242,8 @@ class Installer
 
     /**
      * Install the module via composer.
-     *
-     * @return \Symfony\Component\Process\Process
      */
-    public function installViaComposer()
+    public function installViaComposer(): Process
     {
         return Process::fromShellCommandline(sprintf(
             'cd %s && composer require %s',

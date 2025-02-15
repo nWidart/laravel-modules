@@ -38,7 +38,7 @@ class RecipeServiceProvider extends ServiceProvider
         $this->app->bind(
             'Modules\Recipe\Repositories\RecipeRepository',
             function () {
-                $repository = new \Modules\Recipe\Repositories\Eloquent\EloquentRecipeRepository(new \Modules\Recipe\Entities\Recipe());
+                $repository = new \Modules\Recipe\Repositories\Eloquent\EloquentRecipeRepository(new \Modules\Recipe\Entities\Recipe);
 
                 if (! config('app.cache')) {
                     return $repository;

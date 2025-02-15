@@ -23,14 +23,14 @@ class ModuleDeleteCommandTest extends BaseTestCase
      */
     private $activator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
         $this->activator = new FileActivator($this->app);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->artisan('module:delete', ['--all' => true, '--force' => true]);
 

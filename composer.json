@@ -1,78 +1,78 @@
 {
-  "name": "nwidart/laravel-modules",
-  "description": "Laravel Module management",
-  "keywords": [
-    "modules",
-    "laravel",
-    "nwidart",
-    "module",
-    "rad"
-  ],
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Nicolas Widart",
-      "email": "n.widart@gmail.com",
-      "homepage": "https://nicolaswidart.com",
-      "role": "Developer"
-    }
-  ],
-  "require": {
-    "php": ">=8.2",
-    "ext-dom": "*",
-    "ext-json": "*",
-    "ext-simplexml": "*",
-    "wikimedia/composer-merge-plugin": "^2.1"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^11.0",
-    "mockery/mockery": "^1.6",
-    "orchestra/testbench": "^v9.0",
-    "friendsofphp/php-cs-fixer": "^v3.52",
-    "laravel/framework": "^v11.33",
-    "laravel/pint": "^1.16",
-    "spatie/phpunit-snapshot-assertions": "^5.0",
-    "phpstan/phpstan": "^1.4"
-  },
-  "autoload": {
-    "psr-4": {
-      "Nwidart\\Modules\\": "src"
+    "name": "nwidart/laravel-modules",
+    "description": "Laravel Module management",
+    "keywords": [
+        "modules",
+        "laravel",
+        "nwidart",
+        "module",
+        "rad"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com",
+            "homepage": "https://nicolaswidart.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-simplexml": "*",
+        "wikimedia/composer-merge-plugin": "^2.1"
     },
-    "files": [
-      "src/helpers.php"
-    ]
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Nwidart\\Modules\\Tests\\": "tests",
-      "Modules\\Recipe\\": "tests/stubs/valid/Recipe"
-    }
-  },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Nwidart\\Modules\\LaravelModulesServiceProvider"
-      ],
-      "aliases": {
-        "Module": "Nwidart\\Modules\\Facades\\Module"
-      }
+    "require-dev": {
+        "phpunit/phpunit": "^11.0",
+        "mockery/mockery": "^1.6",
+        "orchestra/testbench": "^v9.0",
+        "friendsofphp/php-cs-fixer": "^v3.52",
+        "laravel/framework": "^v11.33",
+        "laravel/pint": "^1.16",
+        "spatie/phpunit-snapshot-assertions": "^5.0",
+        "phpstan/phpstan": "^1.4"
     },
-    "branch-alias": {
-      "dev-master": "11.0-dev"
-    }
-  },
-  "config": {
-    "allow-plugins": {
-      "wikimedia/composer-merge-plugin": true
-    }
-  },
-  "scripts": {
-    "update-snapshots": "./phpunit --no-coverage -d --update-snapshots",
-    "lint": "pint",
-    "test": "phpunit",
-    "test-coverage": "phpunit --coverage-html coverage",
-    "pcf": "vendor/bin/php-cs-fixer fix --verbose"
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+    "autoload": {
+        "psr-4": {
+            "Nwidart\\Modules\\": "src"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nwidart\\Modules\\Tests\\": "tests",
+            "Modules\\Recipe\\": "tests/stubs/valid/Recipe"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Nwidart\\Modules\\LaravelModulesServiceProvider"
+            ],
+            "aliases": {
+                "Module": "Nwidart\\Modules\\Facades\\Module"
+            }
+        },
+        "branch-alias": {
+            "dev-master": "11.0-dev"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "wikimedia/composer-merge-plugin": true
+        }
+    },
+    "scripts": {
+        "update-snapshots": "phpunit --no-coverage -d --update-snapshots",
+        "lint": "pint",
+        "test": "phpunit",
+        "test-coverage": "phpunit --coverage-html coverage",
+        "pcf": "vendor/bin/php-cs-fixer fix --verbose"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

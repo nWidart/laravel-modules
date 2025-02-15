@@ -29,7 +29,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->app->singleton(
             ModuleManifest::class,
             fn () => new ModuleManifest(
-                new Filesystem(),
+                new Filesystem,
                 app(Contracts\RepositoryInterface::class)->getScanPaths(),
                 $this->getCachedModulePath(),
                 app(ActivatorInterface::class)
@@ -133,7 +133,6 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
                 });
         });
     }
-
 
     private function registerEvents(): void
     {

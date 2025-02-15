@@ -10,47 +10,36 @@ class SchemaParser implements Arrayable
 {
     /**
      * The array of custom attributes.
-     *
-     * @var array
      */
-    protected $customAttributes = [
+    protected array $customAttributes = [
         'remember_token' => 'rememberToken()',
         'soft_delete' => 'softDeletes()',
     ];
 
     /**
      * The migration schema.
-     *
-     * @var string
      */
-    protected $schema;
+    protected ?string $schema;
 
     /**
      * The relationship keys.
-     *
-     * @var array
      */
-    protected $relationshipKeys = [
+    protected array $relationshipKeys = [
         'belongsTo',
     ];
 
     /**
      * Create new instance.
-     *
-     * @param  string|null  $schema
      */
-    public function __construct($schema = null)
+    public function __construct(?string $schema = null)
     {
         $this->schema = $schema;
     }
 
     /**
      * Parse a string to array of formatted schema.
-     *
-     * @param  string  $schema
-     * @return array
      */
-    public function parse($schema)
+    public function parse(?string $schema): array
     {
         $this->schema = $schema;
 
@@ -69,10 +58,8 @@ class SchemaParser implements Arrayable
 
     /**
      * Get array of schema.
-     *
-     * @return array
      */
-    public function getSchemas()
+    public function getSchemas(): array
     {
         if (is_null($this->schema)) {
             return [];
@@ -83,20 +70,16 @@ class SchemaParser implements Arrayable
 
     /**
      * Convert string migration to array.
-     *
-     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->parse($this->schema);
     }
 
     /**
      * Render the migration to formatted script.
-     *
-     * @return string
      */
-    public function render()
+    public function render(): string
     {
         $results = '';
 
@@ -109,20 +92,16 @@ class SchemaParser implements Arrayable
 
     /**
      * Render up migration fields.
-     *
-     * @return string
      */
-    public function up()
+    public function up(): string
     {
         return $this->render();
     }
 
     /**
      * Render down migration fields.
-     *
-     * @return string
      */
-    public function down()
+    public function down(): string
     {
         $results = '';
 
@@ -136,13 +115,8 @@ class SchemaParser implements Arrayable
 
     /**
      * Create field.
-     *
-     * @param  string  $column
-     * @param  array  $attributes
-     * @param  string  $type
-     * @return string
      */
-    public function createField($column, $attributes, $type = 'add')
+    public function createField(string $column, array $attributes, string $type = 'add'): string
     {
         $results = "\t\t\t".'$table';
 
@@ -159,13 +133,8 @@ class SchemaParser implements Arrayable
 
     /**
      * Add relation column.
-     *
-     * @param  int  $key
-     * @param  string  $field
-     * @param  string  $column
-     * @return string
      */
-    protected function addRelationColumn($key, $field, $column)
+    protected function addRelationColumn(int $key, string $field, ?string $column = null): string
     {
         if ($key === 0) {
             $relatedColumn = Str::snake(class_basename($field)).'_id';
@@ -187,13 +156,8 @@ class SchemaParser implements Arrayable
 
     /**
      * Format field to script.
-     *
-     * @param  int  $key
-     * @param  string  $field
-     * @param  string  $column
-     * @return string
      */
-    protected function addColumn($key, $field, $column)
+    protected function addColumn(int $key, string $field, string $column): string
     {
         if ($this->hasCustomAttribute($column)) {
             return '->'.$field;
@@ -212,13 +176,8 @@ class SchemaParser implements Arrayable
 
     /**
      * Format field to script.
-     *
-     * @param  int  $key
-     * @param  string  $field
-     * @param  string  $column
-     * @return string
      */
-    protected function removeColumn($key, $field, $column)
+    protected function removeColumn(int $key, string $field, string $column): string
     {
         if ($this->hasCustomAttribute($column)) {
             return '->'.$field;
@@ -229,23 +188,16 @@ class SchemaParser implements Arrayable
 
     /**
      * Get column name from schema.
-     *
-     * @param  string  $schema
-     * @return string
      */
-    public function getColumn($schema)
+    public function getColumn(string $schema): string
     {
         return Arr::get(explode(':', $schema), 0);
     }
 
     /**
      * Get column attributes.
-     *
-     * @param  string  $column
-     * @param  string  $schema
-     * @return array
      */
-    public function getAttributes($column, $schema)
+    public function getAttributes(string $column, string $schema): array
     {
         $fields = str_replace($column.':', '', $schema);
 
@@ -254,22 +206,16 @@ class SchemaParser implements Arrayable
 
     /**
      * Determine whether the given column is exist in customAttributes array.
-     *
-     * @param  string  $column
-     * @return bool
      */
-    public function hasCustomAttribute($column)
+    public function hasCustomAttribute(string $column): bool
     {
         return array_key_exists($column, $this->customAttributes);
     }
 
     /**
      * Get custom attributes value.
-     *
-     * @param  string  $column
-     * @return array
      */
-    public function getCustomAttribute($column)
+    public function getCustomAttribute(string $column): array
     {
         return (array) $this->customAttributes[$column];
     }

@@ -11,24 +11,18 @@ class ModuleManifest
 {
     /**
      * The filesystem instance.
-     *
-     * @var \Illuminate\Filesystem\Filesystem
      */
-    private $files;
+    private Filesystem $files;
 
     /**
      * The base path.
-     *
-     * @var string
      */
-    public $paths;
+    public Collection $paths;
 
     /**
      * The manifest path.
-     *
-     * @var string|null
      */
-    public $manifestPath;
+    public ?string $manifestPath;
 
     /**
      * The manifestData
@@ -37,10 +31,8 @@ class ModuleManifest
 
     /**
      * The loaded manifest array.
-     *
-     * @var array
      */
-    private $manifest;
+    private array $manifest = [];
 
     /**
      * module activator class
@@ -49,12 +41,8 @@ class ModuleManifest
 
     /**
      * Create a new package manifest instance.
-     *
-     * @param  Collection  $paths
-     * @param  string  $manifestPath
-     * @return void
      */
-    public function __construct(Filesystem $files, $paths, $manifestPath, ActivatorInterface $activator)
+    public function __construct(Filesystem $files, array $paths, string $manifestPath, ActivatorInterface $activator)
     {
         $this->files = $files;
         $this->paths = collect($paths);
@@ -64,53 +52,42 @@ class ModuleManifest
 
     /**
      * Get all of the service provider class names for all packages.
-     *
-     * @return array
      */
-    public function providers()
+    public function providers(): array
     {
         return $this->config('providers');
     }
 
     /**
      * Get all of the service provider class names for all packages.
-     *
-     * @return array
      */
-    public function providersArray()
+    public function providersArray(): array
     {
         return $this->getManifest()['providers'] ?? [];
     }
 
     /**
      * Get all of the aliases for all packages.
-     *
-     * @return array
      */
-    public function aliases()
+    public function aliases(): array
     {
         return $this->config('aliases');
     }
 
     /**
      * Get all of the values for all packages for the given configuration name.
-     *
-     * @param  string  $key
-     * @return array
      */
-    public function config($key)
+    public function config(string $key): array
     {
         return collect($this->getManifest())->flatMap(function ($configuration) use ($key) {
-            return (array)($configuration[$key] ?? []);
+            return (array) ($configuration[$key] ?? []);
         })->filter()->all();
     }
 
     /**
      * Get the current package manifest.
-     *
-     * @return array
      */
-    protected function getManifest()
+    protected function getManifest(): array
     {
         if (! is_null($this->manifest)) {
             return $this->manifest;
@@ -126,8 +103,6 @@ class ModuleManifest
 
     /**
      * Build the manifest and write it to disk.
-     *
-     * @return void
      */
     public function build(): void
     {
@@ -149,8 +124,6 @@ class ModuleManifest
     /**
      * Write the given manifest array to disk.
      *
-     * @return void
-     *
      * @throws \Exception
      */
     protected function write(array $manifest): void
@@ -166,7 +139,7 @@ class ModuleManifest
 
     public function registerFiles(): void
     {
-        //todo check this section store on module.php or not?
+        // todo check this section store on module.php or not?
         $this->getModulesData()
             ->each(function (array $manifest) {
                 if (empty($manifest['files'])) {

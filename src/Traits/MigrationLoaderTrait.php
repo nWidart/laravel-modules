@@ -6,10 +6,8 @@ trait MigrationLoaderTrait
 {
     /**
      * Include all migrations files from the specified module.
-     *
-     * @param  string  $module
      */
-    protected function loadMigrationFiles($module)
+    protected function loadMigrationFiles(string $module)
     {
         $path = $this->laravel['modules']->getModulePath($module).$this->getMigrationGeneratorPath();
 
@@ -22,10 +20,8 @@ trait MigrationLoaderTrait
 
     /**
      * Get migration generator path.
-     *
-     * @return string
      */
-    protected function getMigrationGeneratorPath()
+    protected function getMigrationGeneratorPath(): string
     {
         return $this->laravel['modules']->config('paths.generator.migration');
     }

@@ -13,31 +13,23 @@ class FileActivator implements ActivatorInterface
 {
     /**
      * Laravel Filesystem instance
-     *
-     * @var Filesystem
      */
-    private $files;
+    private Filesystem $files;
 
     /**
      * Laravel config instance
-     *
-     * @var Config
      */
-    private $config;
+    private Config $config;
 
     /**
      * Array of modules activation statuses
-     *
-     * @var array
      */
-    private $modulesStatuses;
+    private array $modulesStatuses;
 
     /**
      * File used to store activation statuses
-     *
-     * @var string
      */
-    private $statusesFile;
+    private string $statusesFile;
 
     public function __construct(Container $app)
     {
@@ -149,8 +141,6 @@ class FileActivator implements ActivatorInterface
 
     /**
      * Reads a config parameter under the 'activators.file' key
-     *
-     * @return mixed
      */
     private function config(string $key, $default = null)
     {

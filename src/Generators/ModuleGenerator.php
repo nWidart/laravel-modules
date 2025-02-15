@@ -53,7 +53,6 @@ class ModuleGenerator extends Generator
     /**
      * The module instance.
      */
-    /*?Module*/
     protected mixed $module = null;
 
     /**
