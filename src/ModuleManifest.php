@@ -54,7 +54,7 @@ class ModuleManifest
      */
     public function getProviders(): array
     {
-        if (! is_null($this->manifest)) {
+        if (! empty($this->manifest)) {
             return $this->manifest;
         }
 
