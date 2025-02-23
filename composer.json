@@ -29,7 +29,7 @@
         "mockery/mockery": "^1.6",
         "orchestra/testbench": "^v9.0",
         "friendsofphp/php-cs-fixer": "^v3.52",
-        "laravel/framework": "^v11.33",
+        "laravel/framework": "^v11.33|^v12.0",
         "laravel/pint": "^1.16",
         "spatie/phpunit-snapshot-assertions": "^5.0",
         "phpstan/phpstan": "^1.4"
