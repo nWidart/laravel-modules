@@ -2,6 +2,8 @@
 
 All Notable changes to `laravel-modules` will be documented in this file.
 
+See https://github.com/nWidart/laravel-modules/releases for the latest releases.
+
 ## Next
 
 - [@omerbaflah](https://github.com/omerbaflah) Fixes Invokable Controller Stub
