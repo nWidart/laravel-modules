@@ -18,6 +18,7 @@
 | 9.0         | ^9.0                |
 | 10.0        | ^10.0               |
 | 11.0        | ^11.0               |
+| 12.0        | ^12.0               |
 
 `nwidart/laravel-modules` is a Laravel package created to manage your large Laravel app using modules. A Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 11.
 
