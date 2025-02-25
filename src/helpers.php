@@ -40,7 +40,7 @@ if (! function_exists('public_path')) {
 if (! function_exists('module_vite')) {
     /**
      * support for vite
-     * 
+     *
      * @param  string  $module
      * @param  string  $asset
      * @param  string|null  $hotFilePath
