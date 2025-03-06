@@ -9,40 +9,25 @@ class $NAME$Observer
     /**
      * Handle the $NAME$ "created" event.
      */
-    public function created($NAME$ $NAME_VARIABLE$): void
-    {
-        //
-    }
+    public function created($NAME$ $NAME_VARIABLE$): void {}
 
     /**
      * Handle the $NAME$ "updated" event.
      */
-    public function updated($NAME$ $NAME_VARIABLE$): void
-    {
-        //
-    }
+    public function updated($NAME$ $NAME_VARIABLE$): void {}
 
     /**
      * Handle the $NAME$ "deleted" event.
      */
-    public function deleted($NAME$ $NAME_VARIABLE$): void
-    {
-        //
-    }
+    public function deleted($NAME$ $NAME_VARIABLE$): void {}
 
     /**
      * Handle the $NAME$ "restored" event.
      */
-    public function restored($NAME$ $NAME_VARIABLE$): void
-    {
-        //
-    }
+    public function restored($NAME$ $NAME_VARIABLE$): void {}
 
     /**
      * Handle the $NAME$ "force deleted" event.
      */
-    public function forceDeleted($NAME$ $NAME_VARIABLE$): void
-    {
-        //
-    }
+    public function forceDeleted($NAME$ $NAME_VARIABLE$): void {}
 }

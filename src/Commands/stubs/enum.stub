@@ -2,7 +2,4 @@
 
 namespace $CLASS_NAMESPACE$;
 
-enum $CLASS$
-{
-    //
-}
+enum $CLASS$ {}
