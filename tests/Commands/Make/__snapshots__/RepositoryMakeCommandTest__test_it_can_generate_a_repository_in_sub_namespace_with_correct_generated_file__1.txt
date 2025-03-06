@@ -4,8 +4,5 @@ namespace Modules\Blog\Repositories\Api;
 
 class MyRepository
 {
-    public function handle()
-    {
-        //
-    }
+    public function handle() {}
 }

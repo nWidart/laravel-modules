@@ -2,7 +2,4 @@
 
 namespace Modules\Blog\Traits\Api;
 
-trait MyTrait
-{
-    //
-}
+trait MyTrait {}

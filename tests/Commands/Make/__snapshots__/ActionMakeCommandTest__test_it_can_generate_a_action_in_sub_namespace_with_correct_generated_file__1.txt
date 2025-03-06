@@ -4,8 +4,5 @@ namespace Modules\Blog\Actions\Api;
 
 class MyAction
 {
-    public function handle()
-    {
-        //
-    }
+    public function handle() {}
 }

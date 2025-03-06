@@ -29,10 +29,7 @@ class MyAwesomeCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
-    {
-        //
-    }
+    public function handle() {}
 
     /**
      * Get the console command arguments.
