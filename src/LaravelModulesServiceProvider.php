@@ -7,15 +7,11 @@ use Illuminate\Contracts\Translation\Translator as TranslatorContract;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\AboutCommand;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Translation\Translator;
-use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 use Nwidart\Modules\Support\Stub;
-use Symfony\Component\Console\Output\NullOutput;
 
 class LaravelModulesServiceProvider extends ModulesServiceProvider
 {
@@ -37,8 +33,6 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         );
 
         $this->registerModules();
-
-        $this->registerEvents();
 
         AboutCommand::add('Laravel-Modules', [
             'Version' => fn () => InstalledVersions::getPrettyVersion('nwidart/laravel-modules'),
@@ -132,18 +126,5 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
                     $translator->addJsonPath($path);
                 });
         });
-    }
-
-    private function registerEvents(): void
-    {
-        Event::listen(
-            [
-                'modules.*.'.ModuleEvent::DELETED,
-                'modules.*.'.ModuleEvent::CREATED,
-                'modules.*.'.ModuleEvent::DISABLED,
-                'modules.*.'.ModuleEvent::ENABLED,
-            ],
-            fn () => Artisan::call('module:clear-compiled', outputBuffer: new NullOutput)
-        );
     }
 }
