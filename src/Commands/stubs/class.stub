@@ -4,8 +4,5 @@ namespace $NAMESPACE$;
 
 class $CLASS$
 {
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() {}
 }

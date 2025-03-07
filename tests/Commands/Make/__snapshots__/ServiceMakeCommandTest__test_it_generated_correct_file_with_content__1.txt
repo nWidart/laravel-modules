@@ -4,8 +4,5 @@ namespace Modules\Blog\Services;
 
 class MyService
 {
-    public function handle()
-    {
-        //
-    }
+    public function handle() {}
 }

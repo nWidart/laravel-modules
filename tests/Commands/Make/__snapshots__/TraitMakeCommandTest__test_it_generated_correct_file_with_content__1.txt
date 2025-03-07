@@ -2,7 +2,4 @@
 
 namespace Modules\Blog\Traits;
 
-trait MyTrait
-{
-    //
-}
+trait MyTrait {}

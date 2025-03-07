@@ -4,8 +4,5 @@ namespace Modules\Blog\Helpers;
 
 class MyHelper
 {
-    public function handle()
-    {
-        //
-    }
+    public function handle() {}
 }

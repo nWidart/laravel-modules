@@ -11,8 +11,5 @@ class $CLASS$ extends Exception
     /**
      * Render the exception as an HTTP response.
      */
-    public function render(Request $request): Response
-    {
-        //
-    }
+    public function render(Request $request): Response {}
 }

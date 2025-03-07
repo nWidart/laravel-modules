@@ -1,7 +1,5 @@
-@extends('$LOWER_NAME$::layouts.master')
-
-@section('content')
+<x-$LOWER_NAME$::layouts.master>
     <h1>Hello World</h1>
 
     <p>Module: {!! config('$LOWER_NAME$.name') !!}</p>
-@endsection
+</x-$LOWER_NAME$::layouts.master>

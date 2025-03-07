@@ -13,16 +13,10 @@ class $CLASS$ implements ShouldQueue
     /**
      * Create the event listener.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() {}
 
     /**
      * Handle the event.
      */
-    public function handle($SHORTEVENTNAME$ $event): void
-    {
-        //
-    }
+    public function handle($SHORTEVENTNAME$ $event): void {}
 }
