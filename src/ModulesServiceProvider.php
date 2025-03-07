@@ -26,9 +26,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
      */
     protected function registerModules()
     {
-        // $this->app->register(\Nwidart\Modules\Providers\BootstrapServiceProvider::class);
-
-        $manifest = app()->make(ModuleManifest::class);
+        $manifest = app(ModuleManifest::class);
 
         (new ProviderRepository($this->app, new Filesystem, $this->getCachedModulePath()))
             ->load($manifest->getProviders());

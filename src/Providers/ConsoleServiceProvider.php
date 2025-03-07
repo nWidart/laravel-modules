@@ -94,8 +94,6 @@ class ConsoleServiceProvider extends ServiceProvider
             // Other Commands
             Commands\ComposerUpdateCommand::class,
             Commands\LaravelModulesV6Migrator::class,
-            Commands\ModuleDiscoverCommand::class,
-            Commands\ModuleClearCompiledCommand::class,
             Commands\SetupCommand::class,
             Commands\UpdatePhpunitCoverage::class,
 
