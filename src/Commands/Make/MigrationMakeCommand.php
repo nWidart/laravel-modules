@@ -79,6 +79,8 @@ class MigrationMakeCommand extends GeneratorCommand
                 'class' => $this->getClass(),
                 'table' => $parser->getTableName(),
                 'fields' => $this->getSchemaParser()->render(),
+                'module' => $this->getModuleName(),
+                'module_namespace' => $this->laravel['modules']->config('namespace'),
             ]);
         } elseif ($parser->isAdd()) {
             return Stub::create('/migration/add.stub', [
@@ -86,6 +88,8 @@ class MigrationMakeCommand extends GeneratorCommand
                 'table' => $parser->getTableName(),
                 'fields_up' => $this->getSchemaParser()->up(),
                 'fields_down' => $this->getSchemaParser()->down(),
+                'module' => $this->getModuleName(),
+                'module_namespace' => $this->laravel['modules']->config('namespace'),
             ]);
         } elseif ($parser->isDelete()) {
             return Stub::create('/migration/delete.stub', [
@@ -93,12 +97,16 @@ class MigrationMakeCommand extends GeneratorCommand
                 'table' => $parser->getTableName(),
                 'fields_down' => $this->getSchemaParser()->up(),
                 'fields_up' => $this->getSchemaParser()->down(),
+                'module' => $this->getModuleName(),
+                'module_namespace' => $this->laravel['modules']->config('namespace'),
             ]);
         } elseif ($parser->isDrop()) {
             return Stub::create('/migration/drop.stub', [
                 'class' => $this->getClass(),
                 'table' => $parser->getTableName(),
                 'fields' => $this->getSchemaParser()->render(),
+                'module' => $this->getModuleName(),
+                'module_namespace' => $this->laravel['modules']->config('namespace'),
             ]);
         }
 
