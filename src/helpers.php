@@ -4,12 +4,7 @@ use Illuminate\Foundation\Vite;
 use Illuminate\Support\Facades\Vite as ViteFacade;
 
 if (! function_exists('module_path')) {
-    /**
-     * @param  string  $name
-     * @param  string  $path
-     * @return string
-     */
-    function module_path($name, $path = '')
+    function module_path(string $name, string $path = ''): string
     {
         $module = app('modules')->find($name);
 
@@ -40,12 +35,8 @@ if (! function_exists('public_path')) {
 if (! function_exists('module_vite')) {
     /**
      * support for vite
-     *
-     * @param  string  $module
-     * @param  string  $asset
-     * @param  string|null  $hotFilePath
      */
-    function module_vite($module, $asset, $hotFilePath = null): Vite
+    function module_vite(string $module, string $asset, ?string $hotFilePath = null): Vite
     {
         return ViteFacade::useHotFile($hotFilePath ?: storage_path('vite.hot'))->useBuildDirectory($module)->withEntryPoints([$asset]);
     }
