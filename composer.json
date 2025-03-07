@@ -25,14 +25,14 @@
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^11.0",
+        "phpunit/phpunit": "^11.5.3|^12.0.",
         "mockery/mockery": "^1.6",
         "orchestra/testbench": "^v10.0",
         "friendsofphp/php-cs-fixer": "^v3.52",
         "laravel/framework": "^v12.0",
         "laravel/pint": "^1.16",
         "spatie/phpunit-snapshot-assertions": "^5.0",
-        "phpstan/phpstan": "^1.4"
+        "phpstan/phpstan": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -58,7 +58,7 @@
             }
         },
         "branch-alias": {
-            "dev-master": "11.0-dev"
+            "dev-master": "12.x-dev"
         }
     },
     "config": {
