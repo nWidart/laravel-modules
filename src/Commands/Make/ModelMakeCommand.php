@@ -56,7 +56,7 @@ class ModelMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    private function createMigrationName()
+    private function createMigrationName(): string
     {
         $pieces = preg_split('/(?=[A-Z])/', $this->argument('model'), -1, PREG_SPLIT_NO_EMPTY);
 
@@ -77,7 +77,7 @@ class ModelMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['model', InputArgument::REQUIRED, 'The name of model will be created.'],
@@ -90,7 +90,7 @@ class ModelMakeCommand extends GeneratorCommand
      *
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['fillable', null, InputOption::VALUE_OPTIONAL, 'The fillable attributes.', null],
@@ -105,7 +105,7 @@ class ModelMakeCommand extends GeneratorCommand
     /**
      * Create the migration file with the given model if migration flag was used
      */
-    private function handleOptionalMigrationOption()
+    private function handleOptionalMigrationOption(): void
     {
         if ($this->option('migration') === true) {
             $migrationName = 'create_'.$this->createMigrationName().'_table';
@@ -116,7 +116,7 @@ class ModelMakeCommand extends GeneratorCommand
     /**
      * Create the controller file for the given model if controller flag was used
      */
-    private function handleOptionalControllerOption()
+    private function handleOptionalControllerOption(): void
     {
         if ($this->option('controller') === true) {
             $controllerName = "{$this->getModelName()}Controller";
@@ -133,7 +133,7 @@ class ModelMakeCommand extends GeneratorCommand
      *
      * @return void
      */
-    protected function handleOptionalSeedOption()
+    protected function handleOptionalSeedOption(): void
     {
         if ($this->option('seed') === true) {
             $seedName = "{$this->getModelName()}Seeder";
@@ -150,7 +150,7 @@ class ModelMakeCommand extends GeneratorCommand
      *
      * @return void
      */
-    protected function handleOptionalFactoryOption()
+    protected function handleOptionalFactoryOption(): void
     {
         if ($this->option('factory') === true) {
             $this->call('module:make-factory', array_filter([
@@ -165,7 +165,7 @@ class ModelMakeCommand extends GeneratorCommand
      *
      * @return void
      */
-    protected function handleOptionalRequestOption()
+    protected function handleOptionalRequestOption(): void
     {
         if ($this->option('request') === true) {
             $requestName = "{$this->getModelName()}Request";
@@ -177,10 +177,7 @@ class ModelMakeCommand extends GeneratorCommand
         }
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getTemplateContents()
+    protected function getTemplateContents(): string
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
@@ -196,10 +193,7 @@ class ModelMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
-    /**
-     * @return mixed
-     */
-    protected function getDestinationFilePath()
+    protected function getDestinationFilePath(): string
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
@@ -208,18 +202,12 @@ class ModelMakeCommand extends GeneratorCommand
         return $path.$modelPath->getPath().'/'.$this->getModelName().'.php';
     }
 
-    /**
-     * @return mixed|string
-     */
-    private function getModelName()
+    private function getModelName(): string
     {
         return Str::studly($this->argument('model'));
     }
 
-    /**
-     * @return string
-     */
-    private function getFillable()
+    private function getFillable(): string
     {
         $fillable = $this->option('fillable');
 
