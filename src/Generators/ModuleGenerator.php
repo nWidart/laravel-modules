@@ -486,17 +486,19 @@ class ModuleGenerator extends Generator
             }
         }
 
-        foreach ($keys as $key) {
-            if (method_exists($this, $method = 'get'.ucfirst(Str::studly(strtolower($key))).'Replacement')) {
+        foreach ($keys as $key => $value) {
+            if ($value instanceof \Closure) {
+                $replaces[strtoupper($key)] = $value($this);
+            } elseif (method_exists($this, $method = 'get'.ucfirst(Str::studly(strtolower($value))).'Replacement')) {
                 $replace = $this->$method();
 
                 if ($stub === 'routes/web' || $stub === 'routes/api') {
                     $replace = str_replace('\\\\', '\\', $replace);
                 }
 
-                $replaces[$key] = $replace;
+                $replaces[$value] = $replace;
             } else {
-                $replaces[$key] = null;
+                $replaces[$value] = null;
             }
         }
 
