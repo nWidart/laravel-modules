@@ -46,7 +46,7 @@ trait PathNamespace
      */
     public function clean_path(string $path, $ds = '/'): string
     {
-        return Str::of($path)->explode($ds)->reject(empty($path))->implode($ds);
+        return Str::of($path)->replace('\\', $ds)->explode($ds)->filter(fn ($segment) => ! empty($segment))->implode($ds);
     }
 
     /**
@@ -54,22 +54,39 @@ trait PathNamespace
      */
     public function app_path(?string $path = null): string
     {
-        $config_path = config('modules.paths.app_folder');
+        $default = 'app/';
+        $app_path = config('modules.paths.app_folder', $default);
+        $app_path = rtrim($this->clean_path(strlen($app_path) ? $app_path : $default), '/').'/';
 
-        // Get modules config app path or use Laravel default app path.
-        $app_path = strlen($config_path) ? $config_path : 'app/';
-
+        // Remove duplicated app_path
         if ($path) {
-            // Replace duplicate custom|default app paths
-            $replaces = array_unique([$this->clean_path($app_path).'/', 'app/']);
-            do {
-                $path = Str::of($path)->replaceStart($app_path, '')->replaceStart('app/', '');
-            } while (Str::of($path)->startsWith($replaces));
+            $path = rtrim($this->clean_path($path), '/').'/';
+            $replaces = array_filter(array_unique([$app_path, $default]), fn ($x) => Str::lower($x));
 
-            // Append additional path
-            $app_path .= strlen($path) ? '/'.$path : '';
+            while (Str::of(Str::lower($path))->startsWith($replaces)) {
+                $path = Str::of($path)->after('/');
+            }
+
+            // Append the remaining path
+            $app_path .= ltrim($path, '/');
         }
 
         return $this->clean_path($app_path);
+    }
+
+    /**
+     * Get the app_path namespace.
+     */
+    public function app_path_namespace(?string $path = null): string
+    {
+        return $this->path_namespace($this->app_path($path));
+    }
+
+    /**
+     * Get the module's app_path namespace.
+     */
+    public function modules_app_path_namespace(string $name, ?string $path = null): string
+    {
+        return $this->module_namespace($name, $this->app_path($path));
     }
 }
