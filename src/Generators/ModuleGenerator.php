@@ -323,7 +323,7 @@ class ModuleGenerator extends Generator
      */
     public function generateFolders()
     {
-        foreach ($this->getFolders() as $key => $folder) {
+        foreach (array_keys($this->getFolders()) as $key) {
             $folder = GenerateConfigReader::read($key);
 
             if ($folder->generate() === false) {
@@ -630,7 +630,7 @@ class ModuleGenerator extends Generator
      */
     protected function getAppPathReplacement(): string
     {
-        return rtrim($this->app_path(), '/').'/';
+        return $this->app_path().'/';
     }
 
     /**
@@ -638,7 +638,9 @@ class ModuleGenerator extends Generator
      */
     protected function getAppPathNamespaceReplacement(): string
     {
-        return Str::of(strlen($ns = rtrim($this->app_path_namespace(), '\\')) ? $ns.'\\' : null)->replace('\\', '\\\\');
+        $namespace = $this->app_path_namespace();
+
+        return Str::of(strlen($namespace) ? $namespace.'\\' : $namespace)->replace('\\', '\\\\');
     }
 
     protected function getProviderNamespaceReplacement(): string
