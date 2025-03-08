@@ -74,7 +74,8 @@ class ModuleGenerator extends Generator
      * Module author
      */
     protected array $author = [
-        'name', 'email',
+        'name',
+        'email',
     ];
 
     /**
@@ -468,8 +469,12 @@ class ModuleGenerator extends Generator
     {
         $replacements = $this->module->config('stubs.replacements');
 
-        if (! isset($replacements['composer']['APP_FOLDER_NAME'])) {
-            $replacements['composer'][] = 'APP_FOLDER_NAME';
+        if (! isset($replacements['composer']['APP_PATH'])) {
+            $replacements['composer'][] = 'APP_PATH';
+        }
+
+        if (! isset($replacements['composer']['APP_PATH_NAMESPACE'])) {
+            $replacements['composer'][] = 'APP_PATH_NAMESPACE';
         }
 
         if (! isset($replacements[$stub])) {
@@ -601,7 +606,7 @@ class ModuleGenerator extends Generator
         if ($this->module->config('paths.generator.controller.namespace')) {
             return $this->module->config('paths.generator.controller.namespace');
         } else {
-            return $this->path_namespace(ltrim($this->module->config('paths.generator.controller.path', 'app/Http/Controllers'), config('modules.paths.app_folder')));
+            return $this->path_namespace(ltrim($this->module->config('paths.generator.controller.path', 'app/Http/Controllers'), config('modules.paths.app')));
         }
     }
 
@@ -622,11 +627,19 @@ class ModuleGenerator extends Generator
     }
 
     /**
-     * Get replacement for $APP_FOLDER_NAME$.
+     * Get replacement for $APP_PATH$.
      */
-    protected function getAppFolderNameReplacement(): string
+    protected function getAppPathReplacement(): string
     {
-        return $this->module->config('paths.app_folder');
+        return rtrim($this->app_path(), '/').'/';
+    }
+
+    /**
+     * Get replacement for $APP_PATH$ namespace.
+     */
+    protected function getAppPathNamespaceReplacement(): string
+    {
+        return Str::of(strlen($ns = rtrim($this->app_path_namespace(), '\\')) ? $ns.'\\' : null)->replace('\\', '\\\\');
     }
 
     protected function getProviderNamespaceReplacement(): string

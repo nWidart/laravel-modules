@@ -65,7 +65,7 @@ class EventProviderMakeCommand extends GeneratorCommand
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.provider.namespace')
-            ?? ltrim(config('modules.paths.generator.provider.path', 'Providers'), config('modules.paths.app_folder', ''));
+            ?? ltrim(config('modules.paths.generator.provider.path', 'Providers'), config('modules.paths.app', ''));
     }
 
     protected function getStubName(): string

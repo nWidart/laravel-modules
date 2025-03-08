@@ -94,7 +94,7 @@ class FactoryMakeCommand extends GeneratorCommand
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.factory.namespace')
-            ?? ltrim(config('modules.paths.generator.factory.path', 'Database/Factories'), config('modules.paths.app_folder', ''));
+            ?? ltrim(config('modules.paths.generator.factory.path', 'Database/Factories'), config('modules.paths.app', ''));
     }
 
     /**
@@ -102,7 +102,7 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     public function getModelNamespace(): string
     {
-        $path = ltrim(config('modules.paths.generator.model.path', 'Entities'), config('modules.paths.app_folder', ''));
+        $path = ltrim(config('modules.paths.generator.model.path', 'Entities'), config('modules.paths.app', ''));
 
         $path = str_replace('/', '\\', $path);
 

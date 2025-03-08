@@ -55,7 +55,7 @@ trait PathNamespace
     public function app_path(?string $path = null): string
     {
         $default = 'app/';
-        $app_path = config('modules.paths.app_folder', $default);
+        $app_path = config('modules.paths.app', $default);
         $app_path = rtrim($this->clean_path(strlen($app_path) ? $app_path : $default), '/').'/';
 
         // Remove duplicated app_path
