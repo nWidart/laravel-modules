@@ -532,17 +532,16 @@ class ModuleGenerator extends Generator
      */
     private function cleanModuleJsonFile()
     {
-        $path = $this->module->getModulePath($this->getName()).'module.json';
+        $json = $this->module->getModulePath($this->getName()).'module.json';
 
-        $content = $this->filesystem->get($path);
-        $namespace = $this->getModuleNamespaceReplacement();
-        $studlyName = $this->getStudlyNameReplacement();
+        $content = $this->filesystem->get($json);
+        $name = $this->getStudlyNameReplacement();
+        $namespace = $this->app_path(config('modules.paths.generator.provider.path').'/'."{$name}ServiceProvider");
 
-        $provider = '"'.$namespace.'\\\\'.$studlyName.'\\\\Providers\\\\'.$studlyName.'ServiceProvider"';
+        $provider = Str::of($this->module_namespace($this->getName(), $namespace))->replace('\\', '\\\\');
+        $content = str_replace('"'.$provider.'"', '', $content);
 
-        $content = str_replace($provider, '', $content);
-
-        $this->filesystem->put($path, $content);
+        $this->filesystem->put($json, $content);
     }
 
     /**
