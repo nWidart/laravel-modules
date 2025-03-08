@@ -40,11 +40,22 @@ class ModelMakeCommand extends GeneratorCommand
             return E_ERROR;
         }
 
-        $this->handleOptionalMigrationOption();
+        if ($this->option('all')) {
+            $this->input->setOption('controller', true);
+            $this->input->setOption('factory', true);
+            $this->input->setOption('migration', true);
+            $this->input->setOption('request', true);
+            $this->input->setOption('resource', true);
+            $this->input->setOption('policy', true);
+            $this->input->setOption('seed', true);
+        }
+
         $this->handleOptionalControllerOption();
-        $this->handleOptionalSeedOption();
         $this->handleOptionalFactoryOption();
+        $this->handleOptionalMigrationOption();
         $this->handleOptionalRequestOption();
+        $this->handleOptionalResourceOption();
+        $this->handleOptionalSeedOption();
 
         return 0;
     }
@@ -56,7 +67,7 @@ class ModelMakeCommand extends GeneratorCommand
      *
      * @return string
      */
-    private function createMigrationName(): string
+    protected function createMigrationName(): string
     {
         $pieces = preg_split('/(?=[A-Z])/', $this->argument('model'), -1, PREG_SPLIT_NO_EMPTY);
 
@@ -93,19 +104,22 @@ class ModelMakeCommand extends GeneratorCommand
     protected function getOptions(): array
     {
         return [
-            ['fillable', null, InputOption::VALUE_OPTIONAL, 'The fillable attributes.', null],
-            ['migration', 'm', InputOption::VALUE_NONE, 'Flag to create associated migrations', null],
+            ['all', 'a', InputOption::VALUE_NONE, 'Flag to create all associated files', null],
             ['controller', 'c', InputOption::VALUE_NONE, 'Flag to create associated controllers', null],
-            ['seed', 's', InputOption::VALUE_NONE, 'Create a new seeder for the model', null],
+            ['fillable', null, InputOption::VALUE_OPTIONAL, 'The fillable attributes.', null],
             ['factory', 'f', InputOption::VALUE_NONE, 'Create a new factory for the model', null],
+            ['migration', 'm', InputOption::VALUE_NONE, 'Flag to create associated migrations', null],
             ['request', 'r', InputOption::VALUE_NONE, 'Create a new request for the model', null],
+            ['resource', 'R', InputOption::VALUE_NONE, 'Create a new resource for the model', null],
+            ['policy', 'p', InputOption::VALUE_NONE, 'Create a new policy for the model', null],
+            ['seed', 's', InputOption::VALUE_NONE, 'Create a new seeder for the model', null],
         ];
     }
 
     /**
      * Create the migration file with the given model if migration flag was used
      */
-    private function handleOptionalMigrationOption(): void
+    protected function handleOptionalMigrationOption(): void
     {
         if ($this->option('migration') === true) {
             $migrationName = 'create_'.$this->createMigrationName().'_table';
@@ -116,30 +130,13 @@ class ModelMakeCommand extends GeneratorCommand
     /**
      * Create the controller file for the given model if controller flag was used
      */
-    private function handleOptionalControllerOption(): void
+    protected function handleOptionalControllerOption(): void
     {
         if ($this->option('controller') === true) {
             $controllerName = "{$this->getModelName()}Controller";
 
             $this->call('module:make-controller', array_filter([
                 'controller' => $controllerName,
-                'module' => $this->argument('module'),
-            ]));
-        }
-    }
-
-    /**
-     * Create a seeder file for the model.
-     *
-     * @return void
-     */
-    protected function handleOptionalSeedOption(): void
-    {
-        if ($this->option('seed') === true) {
-            $seedName = "{$this->getModelName()}Seeder";
-
-            $this->call('module:make-seed', array_filter([
-                'name' => $seedName,
                 'module' => $this->argument('module'),
             ]));
         }
@@ -172,6 +169,40 @@ class ModelMakeCommand extends GeneratorCommand
 
             $this->call('module:make-request', array_filter([
                 'name' => $requestName,
+                'module' => $this->argument('module'),
+            ]));
+        }
+    }
+
+    /**
+     * Create a resource file for the model.
+     *
+     * @return void
+     */
+    protected function handleOptionalResourceOption(): void
+    {
+        if ($this->option('resource') === true) {
+            $resourceName = "{$this->getModelName()}Resource";
+
+            $this->call('module:make-resource', array_filter([
+                'name' => $resourceName,
+                'module' => $this->argument('module'),
+            ]));
+        }
+    }
+
+    /**
+     * Create a seeder file for the model.
+     *
+     * @return void
+     */
+    protected function handleOptionalSeedOption(): void
+    {
+        if ($this->option('seed') === true) {
+            $seedName = "{$this->getModelName()}Seeder";
+
+            $this->call('module:make-seed', array_filter([
+                'name' => $seedName,
                 'module' => $this->argument('module'),
             ]));
         }
