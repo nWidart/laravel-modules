@@ -64,8 +64,6 @@ class ModelMakeCommand extends GeneratorCommand
      * Create a proper migration name:
      * ProductDetail: product_details
      * Product: products
-     *
-     * @return string
      */
     protected function createMigrationName(): string
     {
@@ -85,8 +83,6 @@ class ModelMakeCommand extends GeneratorCommand
 
     /**
      * Get the console command arguments.
-     *
-     * @return array
      */
     protected function getArguments(): array
     {
@@ -98,8 +94,6 @@ class ModelMakeCommand extends GeneratorCommand
 
     /**
      * Get the console command options.
-     *
-     * @return array
      */
     protected function getOptions(): array
     {
@@ -144,8 +138,6 @@ class ModelMakeCommand extends GeneratorCommand
 
     /**
      * Create a seeder file for the model.
-     *
-     * @return void
      */
     protected function handleOptionalFactoryOption(): void
     {
@@ -159,8 +151,6 @@ class ModelMakeCommand extends GeneratorCommand
 
     /**
      * Create a request file for the model.
-     *
-     * @return void
      */
     protected function handleOptionalRequestOption(): void
     {
@@ -176,8 +166,6 @@ class ModelMakeCommand extends GeneratorCommand
 
     /**
      * Create a resource file for the model.
-     *
-     * @return void
      */
     protected function handleOptionalResourceOption(): void
     {
@@ -193,8 +181,6 @@ class ModelMakeCommand extends GeneratorCommand
 
     /**
      * Create a seeder file for the model.
-     *
-     * @return void
      */
     protected function handleOptionalSeedOption(): void
     {
