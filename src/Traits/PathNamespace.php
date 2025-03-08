@@ -7,6 +7,26 @@ use Illuminate\Support\Str;
 trait PathNamespace
 {
     /**
+     * Clean up path and namespace.
+     */
+    public function clean(string $path, string $ds = '/', string $replace = '\\'): string
+    {
+        if ($ds === $replace) {
+            $replace = $ds === '/' ? '\\' : '/';
+        }
+
+        return Str::of($path)->trim($ds)->replace($replace, $ds)->explode($ds)->filter(fn ($segment) => ! empty($segment))->implode($ds);
+    }
+
+    /**
+     * Clean up a namespace.
+     */
+    public function clean_namespace(string $namespace, string $ds = '\\', string $replace = '/'): string
+    {
+        return $this->clean($namespace, $ds, $replace);
+    }
+
+    /**
      * Get a well-formatted StudlyCase representation of path components.
      */
     public function studly_path(string $path, $ds = '/'): string
@@ -19,7 +39,7 @@ trait PathNamespace
      */
     public function studly_namespace(string $namespace, $ds = '\\'): string
     {
-        return $this->studly_path($namespace, $ds);
+        return $this->studly_path(Str::of($namespace)->replace('/', $ds)->trim($ds), $ds);
     }
 
     /**
@@ -27,7 +47,7 @@ trait PathNamespace
      */
     public function path_namespace(string $path): string
     {
-        return Str::of($this->studly_path($path))->replace('/', '\\')->trim('\\');
+        return $this->studly_namespace($this->is_app_path($path) ? $this->app_path($path) : $path);
     }
 
     /**
@@ -35,18 +55,55 @@ trait PathNamespace
      */
     public function module_namespace(string $module, ?string $path = null): string
     {
-        $module_namespace = config('modules.namespace', $this->path_namespace(config('modules.paths.modules'))).'\\'.($module);
-        $module_namespace .= strlen($path) ? '\\'.$this->path_namespace($path) : '';
+        $module_namespace = rtrim(config('modules.namespace', config('modules.paths.modules')), '\\').'\\'.($module);
+        if (! empty($path)) {
+            $module_namespace .= '\\'.ltrim($path, '\\');
+        }
 
-        return $this->studly_namespace($module_namespace);
+        return $this->path_namespace($module_namespace);
     }
 
     /**
-     * Clean path
+     * Clean up a path.
      */
-    public function clean_path(string $path, $ds = '/'): string
+    public function clean_path(string $path, string $ds = '/', string $replace = '\\'): string
     {
-        return Str::of($path)->replace('\\', $ds)->explode($ds)->filter(fn ($segment) => ! empty($segment))->implode($ds);
+        return $this->clean($path, $ds, $replace);
+    }
+
+    /**
+     * Format a namespace.
+     */
+    public function namespace(string $namespace): string
+    {
+        return $this->is_app_path($namespace) ? $this->app_path_namespace($namespace) : $this->clean_namespace($namespace);
+    }
+
+    /**
+     * Format a path.
+     */
+    public function path(string $path): string
+    {
+        return $this->is_app_path($path) ? $this->app_path($path) : $this->clean_path($path);
+    }
+
+    /**
+     * Determine if the given path is app_path.
+     */
+    public function is_app_path(string $path): bool
+    {
+        $default = 'app/';
+        $app_path = config('modules.paths.app', $default);
+        $app_path = rtrim($this->clean_path(strlen($app_path) ? $app_path : $default), '/').'/';
+
+        $path = rtrim($this->clean_path($path), '/').'/';
+        $replaces = array_filter(array_unique([$app_path, $default]), fn ($x) => Str::lower($x));
+
+        if (Str::of(Str::lower($path))->startsWith($replaces)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -61,9 +118,8 @@ trait PathNamespace
         // Remove duplicated app_path
         if ($path) {
             $path = rtrim($this->clean_path($path), '/').'/';
-            $replaces = array_filter(array_unique([$app_path, $default]), fn ($x) => Str::lower($x));
 
-            while (Str::of(Str::lower($path))->startsWith($replaces)) {
+            while ($this->is_app_path($path)) {
                 $path = Str::of($path)->after('/');
             }
 
