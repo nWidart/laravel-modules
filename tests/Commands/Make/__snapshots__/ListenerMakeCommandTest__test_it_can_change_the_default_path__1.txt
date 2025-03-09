@@ -1,8 +1,7 @@
 <?php
 
-namespace Modules\Blog\App\Listeners;
+namespace Modules\Blog\Events\Handlers;
 
-use Modules\Blog\app\Events\User\WasCreated;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -16,5 +15,5 @@ class NotifyUsersOfANewPost
     /**
      * Handle the event.
      */
-    public function handle(WasCreated $event): void {}
+    public function handle($event): void {}
 }
