@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\App\Policies;
+namespace Modules\Blog\SuperPolicies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
 
