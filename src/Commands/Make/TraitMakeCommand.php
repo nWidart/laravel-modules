@@ -65,7 +65,8 @@ class TraitMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.traits.namespace', 'Traits');
+        return config('modules.paths.generator.traits.namespace')
+            ?? $this->namespace(config('modules.paths.generator.traits.path', 'app/Traits'));
     }
 
     protected function getStubName(): string
