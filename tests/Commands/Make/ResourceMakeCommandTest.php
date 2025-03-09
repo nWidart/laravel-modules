@@ -38,7 +38,7 @@ class ResourceMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-resource', ['name' => 'PostsTransformer', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Transformers/PostsTransformer.php'));
+        $this->assertTrue(is_file($this->modulePath.'/app/Resources/PostsTransformer.php'));
         $this->assertSame(0, $code);
     }
 
@@ -46,7 +46,7 @@ class ResourceMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-resource', ['name' => 'PostsTransformer', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Transformers/PostsTransformer.php');
+        $file = $this->finder->get($this->modulePath.'/app/Resources/PostsTransformer.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -56,31 +56,31 @@ class ResourceMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-resource', ['name' => 'PostsTransformer', 'module' => 'Blog', '--collection' => true]);
 
-        $file = $this->finder->get($this->modulePath.'/Transformers/PostsTransformer.php');
+        $file = $this->finder->get($this->modulePath.'/app/Resources/PostsTransformer.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
 
-    public function test_it_can_change_the_default_namespace()
+    public function test_changes_default_path()
     {
         $this->app['config']->set('modules.paths.generator.resource.path', 'app/Http/Resources');
 
         $code = $this->artisan('module:make-resource', ['name' => 'PostsTransformer', 'module' => 'Blog', '--collection' => true]);
 
-        $file = $this->finder->get($this->modulePath.'/Http/Resources/PostsTransformer.php');
+        $file = $this->finder->get($this->modulePath.'/app/Http/Resources/PostsTransformer.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
 
-    public function test_it_can_change_the_default_namespace_specific()
+    public function test_changes_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.resource.namespace', 'Http\\Resources');
 
         $code = $this->artisan('module:make-resource', ['name' => 'PostsTransformer', 'module' => 'Blog', '--collection' => true]);
 
-        $file = $this->finder->get($this->modulePath.'/Transformers/PostsTransformer.php');
+        $file = $this->finder->get($this->modulePath.'/app/Resources/PostsTransformer.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

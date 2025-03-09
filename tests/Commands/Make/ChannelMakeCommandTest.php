@@ -38,7 +38,7 @@ class ChannelMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-channel', ['name' => 'WelcomeChannel', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Broadcasting/WelcomeChannel.php'));
+        $this->assertTrue(is_file($this->modulePath.'/app/Broadcasting/WelcomeChannel.php'));
         $this->assertSame(0, $code);
     }
 
@@ -46,13 +46,13 @@ class ChannelMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-channel', ['name' => 'WelcomeChannel', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Broadcasting/WelcomeChannel.php');
+        $file = $this->finder->get($this->modulePath.'/app/Broadcasting/WelcomeChannel.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
 
-    public function test_it_can_change_the_default_namespace()
+    public function test_changes_default_path()
     {
         $this->app['config']->set('modules.paths.generator.channels.path', 'SuperChannel');
 
@@ -64,13 +64,13 @@ class ChannelMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    public function test_it_can_change_the_default_namespace_specific()
+    public function test_changes_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.channels.namespace', 'SuperChannel');
 
         $code = $this->artisan('module:make-channel', ['name' => 'WelcomeChannel', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Broadcasting/WelcomeChannel.php');
+        $file = $this->finder->get($this->modulePath.'/app/Broadcasting/WelcomeChannel.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

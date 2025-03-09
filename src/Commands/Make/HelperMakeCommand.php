@@ -23,7 +23,7 @@ class HelperMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('helpers')->getPath() ?? config('modules.paths.app_folder').'Helpers';
+        $filePath = GenerateConfigReader::read('helpers')->getPath() ?? config('modules.paths.app').'Helpers';
 
         return $path.$filePath.'/'.$this->getHelperName().'.php';
     }
@@ -66,7 +66,8 @@ class HelperMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.helpers.namespace', 'Helpers');
+        return config('modules.paths.generator.helpers.namespace')
+            ?? $this->namespace(config('modules.paths.generator.helpers.path', 'app/Helpers'));
     }
 
     protected function getStubName(): string

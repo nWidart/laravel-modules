@@ -41,7 +41,7 @@ class PublishConfigurationCommand extends BaseCommand
         $namespace = $this->laravel['config']->get('modules.namespace');
         $studlyName = Str::studly($module);
         $provider = $this->laravel['config']->get('modules.paths.generator.provider.path');
-        $provider = str_replace($this->laravel['config']->get('modules.paths.app_folder'), '', $provider);
+        $provider = str_replace($this->laravel['config']->get('modules.paths.app'), '', $provider);
         $provider = str_replace('/', '\\', $provider);
 
         return "$namespace\\$studlyName\\$provider\\{$studlyName}ServiceProvider";

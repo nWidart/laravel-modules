@@ -26,7 +26,7 @@ class UpdatePhpunitCoverage extends Command
      */
     public function handle(): int
     {
-        $appFolder = config('modules.paths.app_folder', 'app/');
+        $appFolder = config('modules.paths.app', 'app/');
         $appFolder = rtrim($appFolder, '/').'/';
         $phpunitXmlPath = base_path('phpunit.xml');
         $modulesStatusPath = base_path('modules_statuses.json');

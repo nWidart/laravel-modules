@@ -23,7 +23,7 @@ class EnumMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('enums')->getPath() ?? config('modules.paths.app_folder').'Enums';
+        $filePath = GenerateConfigReader::read('enums')->getPath() ?? config('modules.paths.app').'Enums';
 
         return $path.$filePath.'/'.$this->getEnumName().'.php';
     }
@@ -65,7 +65,8 @@ class EnumMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.enums.namespace', 'Enums');
+        return config('modules.paths.generator.enums.namespace')
+            ?? $this->namespace(config('modules.paths.generator.enums.path', 'app/Enums'));
     }
 
     protected function getStubName(): string

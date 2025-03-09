@@ -37,7 +37,7 @@ class ComponentClassMakeCommandTest extends BaseTestCase
     public function test_it_generates_the_component_class()
     {
         $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
-        $this->assertTrue(is_file($this->modulePath.'/View/Components/Blog.php'));
+        $this->assertTrue(is_file($this->modulePath.'/app/View/Components/Blog.php'));
         $this->assertSame(0, $code);
     }
 
@@ -52,7 +52,7 @@ class ComponentClassMakeCommandTest extends BaseTestCase
     public function test_it_generated_correct_file_with_content()
     {
         $code = $this->artisan('module:make-component', ['name' => 'Blog', 'module' => 'Blog']);
-        $file = $this->finder->get($this->modulePath.'/View/Components/Blog.php');
+        $file = $this->finder->get($this->modulePath.'/app/View/Components/Blog.php');
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }

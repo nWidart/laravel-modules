@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\Blog\Observers;
+namespace Modules\Blog\App\Observers;
 
-use Modules\Blog\app\Models\Post;
+use Modules\Blog\App\Models\Post;
 
 class PostObserver
 {

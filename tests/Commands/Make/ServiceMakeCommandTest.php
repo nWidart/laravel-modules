@@ -39,7 +39,7 @@ class ServiceMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Services/MyService.php'));
+        $this->assertTrue(is_file($this->modulePath.'/app/Services/MyService.php'));
         $this->assertSame(0, $code);
     }
 
@@ -48,7 +48,7 @@ class ServiceMakeCommandTest extends BaseTestCase
         $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog']);
         $code = $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog', '--force' => true]);
 
-        $this->assertTrue(is_file($this->modulePath.'/Services/MyService.php'));
+        $this->assertTrue(is_file($this->modulePath.'/app/Services/MyService.php'));
         $this->assertSame(0, $code);
     }
 
@@ -56,7 +56,7 @@ class ServiceMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog', '--invokable' => true]);
 
-        $this->assertTrue(is_file($this->modulePath.'/Services/MyService.php'));
+        $this->assertTrue(is_file($this->modulePath.'/app/Services/MyService.php'));
         $this->assertSame(0, $code);
     }
 
@@ -64,7 +64,7 @@ class ServiceMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Services/MyService.php');
+        $file = $this->finder->get($this->modulePath.'/app/Services/MyService.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -74,7 +74,7 @@ class ServiceMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-service', ['name' => 'Api\\MyService', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Services/Api/MyService.php'));
+        $this->assertTrue(is_file($this->modulePath.'/app/Services/Api/MyService.php'));
         $this->assertSame(0, $code);
     }
 
@@ -82,7 +82,7 @@ class ServiceMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-service', ['name' => 'Api\\MyService', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Services/Api/MyService.php');
+        $file = $this->finder->get($this->modulePath.'/app/Services/Api/MyService.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

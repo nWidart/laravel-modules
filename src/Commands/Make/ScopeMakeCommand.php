@@ -65,12 +65,7 @@ class ScopeMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        $namespace = config('modules.paths.generator.model.path');
-
-        $parts = explode('/', $namespace);
-        $models = end($parts);
-
-        return $models.'\Scopes';
+        return $this->namespace(config('modules.paths.generator.model.path').'\Scopes');
     }
 
     protected function getStubName(): string

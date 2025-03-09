@@ -38,7 +38,7 @@ class CommandMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-command', ['name' => 'MyAwesomeCommand', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Console/MyAwesomeCommand.php'));
+        $this->assertTrue(is_file($this->modulePath.'/app/Console/MyAwesomeCommand.php'));
         $this->assertSame(0, $code);
     }
 
@@ -46,7 +46,7 @@ class CommandMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-command', ['name' => 'MyAwesomeCommand', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Console/MyAwesomeCommand.php');
+        $file = $this->finder->get($this->modulePath.'/app/Console/MyAwesomeCommand.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -59,19 +59,19 @@ class CommandMakeCommandTest extends BaseTestCase
             ['name' => 'MyAwesomeCommand', 'module' => 'Blog', '--command' => 'my:awesome']
         );
 
-        $file = $this->finder->get($this->modulePath.'/Console/MyAwesomeCommand.php');
+        $file = $this->finder->get($this->modulePath.'/app/Console/MyAwesomeCommand.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
 
-    public function test_it_can_change_the_default_namespace()
+    public function test_changes_the_default_path()
     {
         $this->app['config']->set('modules.paths.generator.command.path', 'app/CustomCommands');
 
         $code = $this->artisan('module:make-command', ['name' => 'AwesomeCommand', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/CustomCommands/AwesomeCommand.php');
+        $file = $this->finder->get($this->modulePath.'/app/CustomCommands/AwesomeCommand.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -83,7 +83,7 @@ class CommandMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-command', ['name' => 'AwesomeCommand', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Console/AwesomeCommand.php');
+        $file = $this->finder->get($this->modulePath.'/app/Console/AwesomeCommand.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

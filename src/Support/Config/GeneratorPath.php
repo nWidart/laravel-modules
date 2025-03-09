@@ -17,16 +17,16 @@ class GeneratorPath
     public function __construct($config)
     {
         if (is_array($config)) {
-            $this->path = $config['path'];
+            $this->path = $this->path($config['path']);
+            $this->namespace = $config['namespace'] ?? $this->namespace($config['path']);
             $this->generate = $config['generate'];
-            $this->namespace = $config['namespace'] ?? $this->path_namespace(ltrim($config['path'], config('modules.paths.app_folder', '')));
 
             return;
         }
 
-        $this->path = $config;
+        $this->path = $this->path($config ?? '');
+        $this->namespace = $this->namespace($config ?? '');
         $this->generate = (bool) $config;
-        $this->namespace = $this->path_namespace(ltrim($config, config('modules.paths.app_folder', '')));
     }
 
     public function getPath()
@@ -41,6 +41,6 @@ class GeneratorPath
 
     public function getNamespace()
     {
-        return $this->studly_namespace($this->namespace);
+        return $this->namespace;
     }
 }
