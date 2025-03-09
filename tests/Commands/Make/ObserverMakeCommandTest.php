@@ -38,7 +38,7 @@ class ObserverMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-observer', ['name' => 'Post', 'module' => 'Blog']);
 
-        $observerFile = $this->modulePath.'/Observers/PostObserver.php';
+        $observerFile = $this->modulePath.'/app/Observers/PostObserver.php';
 
         $this->assertTrue(is_file($observerFile), 'Observer file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($observerFile));
