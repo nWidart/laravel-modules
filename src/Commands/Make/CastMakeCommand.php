@@ -65,7 +65,8 @@ class CastMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.casts.namespace', 'Casts');
+        return config('modules.paths.generator.casts.namespace')
+            ?? $this->namespace(config('modules.paths.generator.casts.path', 'app/Casts'));
     }
 
     protected function getStubName(): string
