@@ -38,7 +38,7 @@ class EventMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Events/PostWasCreated.php'));
+        $this->assertTrue(is_file($this->modulePath.'/app/Events/PostWasCreated.php'));
         $this->assertSame(0, $code);
     }
 
@@ -46,13 +46,13 @@ class EventMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Events/PostWasCreated.php');
+        $file = $this->finder->get($this->modulePath.'/app/Events/PostWasCreated.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
 
-    public function test_it_can_change_the_default_namespace()
+    public function test_it_can_change_the_default_path()
     {
         $this->app['config']->set('modules.paths.generator.event.path', 'SuperEvents');
 
@@ -64,13 +64,13 @@ class EventMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    public function test_it_can_change_the_default_namespace_specific()
+    public function test_it_can_change_the_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.event.namespace', 'SuperEvents');
 
         $code = $this->artisan('module:make-event', ['name' => 'PostWasCreated', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Events/PostWasCreated.php');
+        $file = $this->finder->get($this->modulePath.'/app/Events/PostWasCreated.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
