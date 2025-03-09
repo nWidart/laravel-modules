@@ -94,7 +94,7 @@ class FactoryMakeCommand extends GeneratorCommand
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.factory.namespace')
-            ?? ltrim(config('modules.paths.generator.factory.path', 'Database/Factories'), config('modules.paths.app', ''));
+            ?? $this->namespace(config('modules.paths.generator.factory.path', 'database/factories'));
     }
 
     /**
@@ -102,10 +102,9 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     public function getModelNamespace(): string
     {
-        $path = ltrim(config('modules.paths.generator.model.path', 'Entities'), config('modules.paths.app', ''));
+        $namespace = config('modules.paths.generator.model.namespace')
+            ?? $this->namespace(config('modules.paths.generator.model.path', 'app/Models'));
 
-        $path = str_replace('/', '\\', $path);
-
-        return $this->laravel['modules']->config('namespace').'\\'.$this->laravel['modules']->findOrFail($this->getModuleName()).'\\'.$path;
+        return $this->module_namespace($this->argument('module'), $namespace);
     }
 }
