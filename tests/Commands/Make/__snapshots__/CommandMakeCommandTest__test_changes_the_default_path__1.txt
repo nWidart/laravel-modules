@@ -1,17 +1,17 @@
 <?php
 
-namespace Modules\Blog\App\Console;
+namespace Modules\Blog\App\CustomCommands;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class MyAwesomeCommand extends Command
+class AwesomeCommand extends Command
 {
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'my:awesome';
+    protected $signature = 'command:name';
 
     /**
      * The console command description.
