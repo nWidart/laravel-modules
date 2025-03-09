@@ -86,6 +86,7 @@ class ClassMakeCommand extends GeneratorCommand
     {
         $type = $this->type();
 
-        return config("modules.paths.generator.{$type}.namespace", 'Classes');
+        return config("modules.paths.generator.{$type}.namespace")
+            ?? $this->namespace(config("modules.paths.generator.{$type}.path", 'app/Classes'));
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Classes\Api;
+namespace Modules\Blog\App\Classes\Api;
 
 class Api\Demo
 {
