@@ -46,7 +46,7 @@ final class GenerateConfigReaderTest extends BaseTestCase
         $seedConfig = GenerateConfigReader::read('seeder');
 
         $this->assertInstanceOf(GeneratorPath::class, $seedConfig);
-        $this->assertFalse($seedConfig->getPath());
+        $this->assertSame('', $seedConfig->getPath());
         $this->assertFalse($seedConfig->generate());
     }
 
