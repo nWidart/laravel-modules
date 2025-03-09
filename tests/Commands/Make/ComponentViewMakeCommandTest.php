@@ -55,7 +55,7 @@ class ComponentViewMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-component-view', ['name' => 'Blog', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->getModuleBasePath().'/Resources/views/components/newDirectory/blog.blade.php');
+        $file = $this->finder->get($this->getModuleBasePath().'/resources/views/components/newDirectory/blog.blade.php');
 
         $this->assertTrue(str_contains($file, '<div>'));
         $this->assertSame(0, $code);
