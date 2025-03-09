@@ -31,7 +31,7 @@ final class ChannelMakeCommand extends GeneratorCommand
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.channels.namespace')
-            ?? ltrim(config('modules.paths.generator.channels.path', 'Broadcasting'), config('modules.paths.app', ''));
+            ?? $this->namespace(config('modules.paths.generator.channels.path', 'app/Broadcasting'));
     }
 
     /**
