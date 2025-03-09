@@ -5,7 +5,7 @@
     "keywords": [],
     "priority": 0,
     "providers": [
-        "Modules\\Blog\\Providers\\BlogServiceProvider"
+        "Modules\\Blog\\App\\Providers\\BlogServiceProvider"
     ],
     "files": []
 }

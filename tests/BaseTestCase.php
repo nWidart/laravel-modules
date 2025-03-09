@@ -4,10 +4,13 @@ namespace Nwidart\Modules\Tests;
 
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
+use Nwidart\Modules\Traits\PathNamespace;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class BaseTestCase extends OrchestraTestCase
 {
+    use PathNamespace;
+
     protected function setUp(): void
     {
         parent::setUp();

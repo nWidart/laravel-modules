@@ -594,7 +594,8 @@ class ModuleGenerator extends Generator
      */
     protected function getModuleNamespaceReplacement(): string
     {
-        return str_replace('\\', '\\\\', $this->module->config('namespace') ?? $this->path_namespace($this->module->config('paths.modules')));
+        return str_replace('\\', '\\\\', $this->module->config('namespace')
+            ?? $this->namespace($this->module->config('paths.modules')));
     }
 
     /**
@@ -602,11 +603,8 @@ class ModuleGenerator extends Generator
      */
     private function getControllerNamespaceReplacement(): string
     {
-        if ($this->module->config('paths.generator.controller.namespace')) {
-            return $this->module->config('paths.generator.controller.namespace');
-        } else {
-            return $this->path_namespace(ltrim($this->module->config('paths.generator.controller.path', 'app/Http/Controllers'), config('modules.paths.app')));
-        }
+        return $this->module->config('paths.generator.controller.namespace')
+            ?? $this->namespace($this->module->config('paths.generator.controller.path', 'app/Http/Controllers'));
     }
 
     /**
