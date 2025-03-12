@@ -46,7 +46,7 @@ class ClassMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('class')->getPath() ?? config('modules.paths.app_folder').'Classes';
+        $filePath = GenerateConfigReader::read('class')->getPath() ?? config('modules.paths.app').'Classes';
 
         return $this->typePath($path.$filePath.'/'.$this->getFileName().'.php');
     }
@@ -86,6 +86,7 @@ class ClassMakeCommand extends GeneratorCommand
     {
         $type = $this->type();
 
-        return config("modules.paths.generator.{$type}.namespace", 'Classes');
+        return config("modules.paths.generator.{$type}.namespace")
+            ?? $this->namespace(config("modules.paths.generator.{$type}.path", 'app/Classes'));
     }
 }

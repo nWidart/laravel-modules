@@ -70,7 +70,7 @@ return [
                 'AUTHOR_EMAIL',
                 'MODULE_NAMESPACE',
                 'PROVIDER_NAMESPACE',
-                'APP_FOLDER_NAME',
+                'APP_PATH',
             ],
         ],
         'gitkeep' => true,
@@ -110,13 +110,17 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | The app path
+        | /app path
         |--------------------------------------------------------------------------
         |
-        | app folder name
-        | for example can change it to 'src' or 'App'
+        | Specifies a custom path for the /app directory.
+        |
+        | Examples:
+        |   ''     => '/app'  (default Laravel structure),
+        |   'src'  => '/src'  (custom location),
+        |   '/'    => '/'     (root directory).
         */
-        'app_folder' => 'app/',
+        'app' => '',
 
         /*
         |--------------------------------------------------------------------------
@@ -147,7 +151,7 @@ return [
             'policies' => ['path' => 'app/Policies', 'generate' => false],
             'provider' => ['path' => 'app/Providers', 'generate' => true],
             'repository' => ['path' => 'app/Repositories', 'generate' => false],
-            'resource' => ['path' => 'app/Transformers', 'generate' => false],
+            'resource' => ['path' => 'app/Resources', 'generate' => false],
             'route-provider' => ['path' => 'app/Providers', 'generate' => true],
             'rules' => ['path' => 'app/Rules', 'generate' => false],
             'services' => ['path' => 'app/Services', 'generate' => false],

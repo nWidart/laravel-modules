@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Models;
+namespace Modules\Blog\App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +13,7 @@ class Post extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ["title","slug"];
+    protected $fillable = [];
 
     // protected static function newFactory(): PostFactory
     // {

@@ -23,11 +23,11 @@ class TestMakeCommand extends GeneratorCommand
     {
         if ($this->option('feature')) {
             return config('modules.paths.generator.test-feature.namespace')
-                ?? config('modules.paths.generator.test-feature.path', 'tests/Feature');
+                ?? $this->namespace(config('modules.paths.generator.test-feature.path', 'tests/Feature'));
         }
 
         return config('modules.paths.generator.test-unit.namespace')
-            ?? config('modules.paths.generator.test-unit.path', 'tests/Unit');
+            ?? $this->namespace(config('modules.paths.generator.test-unit.path', 'tests/Unit'));
     }
 
     /**

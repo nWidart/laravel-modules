@@ -168,7 +168,7 @@ abstract class Module
      */
     public function getAppPath(): string
     {
-        $app_path = rtrim($this->getExtraPath(config('modules.paths.app_folder', '')), '/');
+        $app_path = rtrim($this->getExtraPath(config('modules.paths.app', '')), '/');
 
         return is_dir($app_path) ? $app_path : $this->getPath();
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Actions\Api;
+namespace Modules\Blog\App\Actions\Api;
 
 class MyAction
 {

@@ -51,11 +51,10 @@ class ComponentViewMakeCommandTest extends BaseTestCase
 
     public function test_it_can_change_the_default_namespace()
     {
-        $this->app['config']->set('modules.paths.generator.component-view.path', 'Resources/views/components/newDirectory');
+        $this->app['config']->set('modules.paths.generator.component-view.path', 'resources/views/components/new_directory');
 
         $code = $this->artisan('module:make-component-view', ['name' => 'Blog', 'module' => 'Blog']);
-
-        $file = $this->finder->get($this->getModuleBasePath().'/Resources/views/components/newDirectory/blog.blade.php');
+        $file = $this->finder->get($this->getModuleBasePath().'/resources/views/components/new_directory/blog.blade.php');
 
         $this->assertTrue(str_contains($file, '<div>'));
         $this->assertSame(0, $code);

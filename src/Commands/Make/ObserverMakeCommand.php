@@ -66,11 +66,10 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     public function getModelNamespace(): string
     {
-        $path = $this->laravel['modules']->config('paths.generator.model.path', 'Entities');
+        $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        $path = str_replace('/', '\\', $path);
-
-        return $this->laravel['modules']->config('namespace').'\\'.$this->laravel['modules']->findOrFail($this->getModuleName()).'\\'.$path;
+        return $this->module_namespace($this->getModuleName(), config('modules.paths.generator.model.namespace')
+            ?? $this->namespace(config('modules.paths.generator.model.path', 'app/Models')));
     }
 
     /**
@@ -124,6 +123,6 @@ class ObserverMakeCommand extends GeneratorCommand
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.observer.namespace')
-            ?? ltrim(config('modules.paths.generator.observer.path', 'Observers'), config('modules.paths.app_folder', ''));
+            ?? $this->namespace(config('modules.paths.generator.observer.path', 'app/Observers'));
     }
 }
