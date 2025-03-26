@@ -38,6 +38,11 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         AboutCommand::add('Laravel-Modules', [
             'Version' => fn () => InstalledVersions::getPrettyVersion('nwidart/laravel-modules'),
         ]);
+
+        // Create @module() blade directive.
+        Blade::if('module', function (string $name) {
+            return module($name);
+        });
     }
 
     /**
@@ -53,11 +58,6 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->registerTranslations();
 
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'modules');
-
-        // Create @module() blade directive.
-        Blade::if('module', function (string $name) {
-            return module($name, true);
-        });
     }
 
     /**

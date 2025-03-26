@@ -7,13 +7,13 @@ use Nwidart\Modules\Laravel\Module;
 
 if (! function_exists('module')) {
     /**
-     * Retrieves a module instance or its status.
+     * Retrieves a module status or its instance.
      *
      * @param  string  $name  The name of the module.
-     * @param  bool  $status  Whether to return the module's status instead of the instance. Defaults to false.
-     * @return Module|bool The module instance or its status.
+     * @param  bool  $instance  Whether to return the module's instance instead of the status. Defaults to false [status].
+     * @return bool|Module The module instance or its status.
      */
-    function module(string $name, bool $status = false): Module|bool
+    function module(string $name, bool $instance = false): bool|Module
     {
         $modules = app('modules');
         if (! $modules->has($name)) {
@@ -22,7 +22,7 @@ if (! function_exists('module')) {
             return false;
         }
 
-        return $status ? $modules->isEnabled($name) : $modules->find($name);
+        return $instance ? $modules->find($name) : $modules->isEnabled($name);
     }
 }
 

@@ -33,36 +33,47 @@ class ModuleHelperTest extends BaseTestCase
         parent::tearDown();
     }
 
-    public function test_module_returns_instance_when_exists()
+    public function test_module_returns_true_when_found()
     {
-        $module = module('Blog');
+        $this->assertTrue(module('Blog'));
+    }
+
+    public function test_module_returns_false_and_log_error_when_not_found()
+    {
+        Log::shouldReceive('error')->once()->with("Module 'Blogs' not found.");
+
+        $this->assertFalse(module('Blogs'));
+    }
+
+    public function test_module_returns_false_and_log_error_when_not_found_and_instance_parameter_is_true()
+    {
+        Log::shouldReceive('error')->once()->with("Module 'Blogs' not found.");
+
+        $this->assertFalse(module('Blogs', true));
+    }
+
+    public function test_module_returns_instance_when_instance_parameter_is_true()
+    {
+        $module = module('Blog', true);
 
         $this->assertInstanceOf(Module::class, $module);
         $this->assertEquals('Blog', $module->getName());
     }
 
-    public function test_module_returns_false_when_not_found()
-    {
-        Log::shouldReceive('error')->once()->with("Module 'Blogs' not found.");
-
-        $this->assertFalse(module('Blogs'));
-    }
-
-    public function test_module_returns_false_when_not_found_and_status_parameter_is_true()
-    {
-        Log::shouldReceive('error')->once()->with("Module 'Blogs' not found.");
-
-        $this->assertFalse(module('Blogs'));
-    }
-
-    public function test_module_returns_status_when_status_parameter_is_true()
-    {
-        $this->assertTrue(module('Blog', true));
-    }
-
-    public function test_module_returns_status_when_status_parameter_is_true_and_module_is_disabled()
+    public function test_module_returns_false_when_disabled()
     {
         Artisan::call('module:disable Blog');
-        $this->assertFalse(module('Blog', true));
+
+        $this->assertFalse(module('Blog'));
+    }
+
+    public function test_module_returns_instance_when_disabled_and_instance_parameter_is_true()
+    {
+        Artisan::call('module:disable Blog');
+
+        $module = module('Blog', true);
+
+        $this->assertInstanceOf(Module::class, $module);
+        $this->assertEquals('Blog', $module->getName());
     }
 }
