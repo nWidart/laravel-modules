@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Tests;
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Log;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Laravel\Module;
@@ -75,5 +76,21 @@ class ModuleHelperTest extends BaseTestCase
 
         $this->assertInstanceOf(Module::class, $module);
         $this->assertEquals('Blog', $module->getName());
+    }
+
+    public function test_module_directive_renders_content_when_module_is_enabled()
+    {
+        $blade = "@module('Blog') Enabled @endmodule";
+
+        $this->assertStringContainsString('Enabled', Blade::render($blade));
+    }
+
+    public function test_module_directive_does_not_render_content_when_module_is_disabled()
+    {
+        Artisan::call('module:disable Blog');
+
+        $blade = "@module('Blog') Enabled @endmodule";
+
+        $this->assertStringNotContainsString('Enabled', Blade::render($blade));
     }
 }
