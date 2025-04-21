@@ -91,10 +91,21 @@ class $CLASS$ extends ServiceProvider
                     $key = ($relativePath === 'config.php') ? $this->nameLower : $configKey;
 
                     $this->publishes([$file->getPathname() => config_path($relativePath)], 'config');
-                    $this->mergeConfigFrom($file->getPathname(), $key);
+                    $this->merge_config_from($file->getPathname(), $key);
                 }
             }
         }
+    }
+
+    /**
+     * Merge config from the given path recursively.
+     */
+    protected function merge_config_from(string $path, string $key): void
+    {
+        $existing = config($key, []);
+        $module_config = require $path;
+
+        config([$key => array_replace_recursive($existing, $module_config)]);
     }
 
     /**
