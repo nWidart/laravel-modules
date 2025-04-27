@@ -1,7 +1,30 @@
 <?php
 
 use Illuminate\Foundation\Vite;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Vite as ViteFacade;
+use Nwidart\Modules\Laravel\Module;
+
+if (! function_exists('module')) {
+    /**
+     * Retrieves a module status or its instance.
+     *
+     * @param  string  $name  The name of the module.
+     * @param  bool  $instance  Whether to return the module's instance instead of the status. Defaults to false [status].
+     * @return bool|Module The module instance or its status.
+     */
+    function module(string $name, bool $instance = false): bool|Module
+    {
+        $modules = app('modules');
+        if (! $modules->has($name)) {
+            Log::error("Module '$name' not found.");
+
+            return false;
+        }
+
+        return $instance ? $modules->find($name) : $modules->isEnabled($name);
+    }
+}
 
 if (! function_exists('module_path')) {
     function module_path(string $name, string $path = ''): string

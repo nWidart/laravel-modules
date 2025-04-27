@@ -7,6 +7,7 @@ use Illuminate\Contracts\Translation\Translator as TranslatorContract;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\AboutCommand;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Translation\Translator;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
@@ -37,6 +38,11 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         AboutCommand::add('Laravel-Modules', [
             'Version' => fn () => InstalledVersions::getPrettyVersion('nwidart/laravel-modules'),
         ]);
+
+        // Create @module() blade directive.
+        Blade::if('module', function (string $name) {
+            return module($name);
+        });
     }
 
     /**
