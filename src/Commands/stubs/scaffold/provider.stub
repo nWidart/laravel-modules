@@ -118,8 +118,7 @@ class $CLASS$ extends ServiceProvider
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        $componentNamespace = $this->module_namespace($this->name, $this->app_path(config('modules.paths.generator.component-class.path')));
-        Blade::componentNamespace($componentNamespace, $this->nameLower);
+        Blade::componentNamespace(config('modules.namespace').'\\' . $this->moduleName . '\\View\\Components', $this->moduleNameLower);
     }
 
     /**
