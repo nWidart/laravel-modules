@@ -88,6 +88,7 @@ class BlogServiceProvider extends ServiceProvider
                     $config = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
                     $config_key = str_replace([DIRECTORY_SEPARATOR, '.php'], ['.', ''], $config);
                     $segments = explode('.', $this->nameLower.'.'.$config_key);
+
                     // Remove duplicated adjacent segments
                     $normalized = [];
                     foreach ($segments as $segment) {
