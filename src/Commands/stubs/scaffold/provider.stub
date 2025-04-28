@@ -99,7 +99,7 @@ class $CLASS$ extends ServiceProvider
 
                     $key = ($config === 'config.php') ? $this->nameLower : implode('.', $normalized);
 
-                    $this->publishes([$file->getPathname() => config_path($relativePath)], 'config');
+                    $this->publishes([$file->getPathname() => config_path($config)], 'config');
                     $this->merge_config_from($file->getPathname(), $key);
                 }
             }
@@ -129,7 +129,7 @@ class $CLASS$ extends ServiceProvider
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        Blade::componentNamespace(config('modules.namespace').'\\' . $this->moduleName . '\\View\\Components', $this->moduleNameLower);
+        Blade::componentNamespace(config('modules.namespace').'\\' . $this->name . '\\View\\Components', $this->nameLower);
     }
 
     /**
