@@ -99,11 +99,22 @@ class BlogServiceProvider extends ServiceProvider
 
                     $key = ($config === 'config.php') ? $this->nameLower : implode('.', $normalized);
 
-                    $this->publishes([$file->getPathname() => config_path($config)], 'config');
-                    $this->mergeConfigFrom($file->getPathname(), $key);
+                    $this->publishes([$file->getPathname() => config_path($relativePath)], 'config');
+                    $this->merge_config_from($file->getPathname(), $key);
                 }
             }
         }
+    }
+
+    /**
+     * Merge config from the given path recursively.
+     */
+    protected function merge_config_from(string $path, string $key): void
+    {
+        $existing = config($key, []);
+        $module_config = require $path;
+
+        config([$key => array_replace_recursive($existing, $module_config)]);
     }
 
     /**

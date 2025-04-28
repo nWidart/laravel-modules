@@ -88,7 +88,6 @@ class BlogServiceProvider extends ServiceProvider
                     $config = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
                     $config_key = str_replace([DIRECTORY_SEPARATOR, '.php'], ['.', ''], $config);
                     $segments = explode('.', $this->nameLower.'.'.$config_key);
-
                     // Remove duplicated adjacent segments
                     $normalized = [];
                     foreach ($segments as $segment) {
@@ -99,11 +98,22 @@ class BlogServiceProvider extends ServiceProvider
 
                     $key = ($config === 'config.php') ? $this->nameLower : implode('.', $normalized);
 
-                    $this->publishes([$file->getPathname() => config_path($config)], 'config');
-                    $this->mergeConfigFrom($file->getPathname(), $key);
+                    $this->publishes([$file->getPathname() => config_path($relativePath)], 'config');
+                    $this->merge_config_from($file->getPathname(), $key);
                 }
             }
         }
+    }
+
+    /**
+     * Merge config from the given path recursively.
+     */
+    protected function merge_config_from(string $path, string $key): void
+    {
+        $existing = config($key, []);
+        $module_config = require $path;
+
+        config([$key => array_replace_recursive($existing, $module_config)]);
     }
 
     /**
