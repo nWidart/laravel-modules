@@ -468,8 +468,15 @@ class ModuleGenerator extends Generator
     {
         $replacements = $this->module->config('stubs.replacements');
 
+        // Temporarily check if the replacements are defined; remove in the next major version.
         if (! isset($replacements['composer']['APP_FOLDER_NAME'])) {
             $replacements['composer'][] = 'APP_FOLDER_NAME';
+        }
+        if (! isset($replacements['routes/web']['PLURAL_LOWER_NAME'])) {
+            $replacements['routes/web'][] = 'PLURAL_LOWER_NAME';
+        }
+        if (! isset($replacements['routes/api']['PLURAL_LOWER_NAME'])) {
+            $replacements['routes/api'][] = 'PLURAL_LOWER_NAME';
         }
 
         if (! isset($replacements[$stub])) {

@@ -78,17 +78,26 @@ class BlogServiceProvider extends ServiceProvider
      */
     protected function registerConfig(): void
     {
-        $relativeConfigPath = config('modules.paths.generator.config.path');
-        $configPath = module_path($this->name, $relativeConfigPath);
+        $configPath = module_path($this->name, config('modules.paths.generator.config.path'));
 
         if (is_dir($configPath)) {
             $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
 
             foreach ($iterator as $file) {
                 if ($file->isFile() && $file->getExtension() === 'php') {
-                    $relativePath = str_replace($configPath . DIRECTORY_SEPARATOR, '', $file->getPathname());
-                    $configKey = $this->nameLower . '.' . str_replace([DIRECTORY_SEPARATOR, '.php'], ['.', ''], $relativePath);
-                    $key = ($relativePath === 'config.php') ? $this->nameLower : $configKey;
+                    $config = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
+                    $config_key = str_replace([DIRECTORY_SEPARATOR, '.php'], ['.', ''], $config);
+                    $segments = explode('.', $this->nameLower.'.'.$config_key);
+
+                    // Remove duplicated adjacent segments
+                    $normalized = [];
+                    foreach ($segments as $segment) {
+                        if (end($normalized) !== $segment) {
+                            $normalized[] = $segment;
+                        }
+                    }
+
+                    $key = ($config === 'config.php') ? $this->nameLower : implode('.', $normalized);
 
                     $this->publishes([$file->getPathname() => config_path($relativePath)], 'config');
                     $this->merge_config_from($file->getPathname(), $key);
@@ -120,8 +129,7 @@ class BlogServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        $componentNamespace = $this->module_namespace($this->name, $this->app_path(config('modules.paths.generator.component-class.path')));
-        Blade::componentNamespace($componentNamespace, $this->nameLower);
+        Blade::componentNamespace(config('modules.namespace').'\\' . $this->moduleName . '\\View\\Components', $this->moduleNameLower);
     }
 
     /**
