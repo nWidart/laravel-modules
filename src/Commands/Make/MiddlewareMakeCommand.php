@@ -35,8 +35,7 @@ class MiddlewareMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.filter.namespace')
-            ?? ltrim(config('modules.paths.generator.filter.path', 'Http/Middleware'), config('modules.paths.app_folder', ''));
+        return $this->default_namespace('filter');
     }
 
     /**

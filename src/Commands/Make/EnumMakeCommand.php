@@ -65,7 +65,7 @@ class EnumMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.enums.namespace', 'Enums');
+        return $this->default_namespace('enums');
     }
 
     protected function getStubName(): string
