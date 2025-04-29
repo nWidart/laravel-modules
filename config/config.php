@@ -111,13 +111,17 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | The app path
+        | /app path
         |--------------------------------------------------------------------------
         |
-        | app folder name
-        | for example can change it to 'src' or 'App'
+        | Specifies a custom path for the /app directory.
+        |
+        | Examples:
+        |   ''     => '/app'  (default Laravel structure),
+        |   'src'  => '/src'  (custom location),
+        |   '/'    => '/'     (root directory).
         */
-        'app_folder' => 'app/',
+        'app' => '',
 
         /*
         |--------------------------------------------------------------------------
