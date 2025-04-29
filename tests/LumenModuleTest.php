@@ -59,7 +59,7 @@ class LumenModuleTest extends BaseTestCase
 
     public function test_it_gets_module_path()
     {
-        $this->assertEquals(__DIR__.'/stubs/valid/Recipe', $this->module->getPath());
+        $this->assertEquals(__DIR__.'/stubs/valid/Recipe', $this->module->path());
     }
 
     public function test_it_loads_module_translations()

@@ -110,7 +110,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
             $migration_path = $this->app['config']->get('modules.paths.generator.migration.path');
             collect(\Nwidart\Modules\Facades\Module::allEnabled())
                 ->each(function (\Nwidart\Modules\Laravel\Module $module) use ($migration_path, $migrator) {
-                    $migrator->path($module->getExtraPath($migration_path));
+                    $migrator->path($module->path($migration_path));
                 });
         });
     }
@@ -127,7 +127,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
             collect(\Nwidart\Modules\Facades\Module::allEnabled())
                 ->each(function (\Nwidart\Modules\Laravel\Module $module) use ($translator) {
-                    $path = $module->getExtraPath($this->app['config']->get('modules.paths.generator.lang.path'));
+                    $path = $module->path($this->app['config']->get('modules.paths.generator.lang.path'));
                     $translator->addNamespace($module->getLowerName(), $path);
                     $translator->addJsonPath($path);
                 });

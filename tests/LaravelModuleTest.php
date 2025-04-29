@@ -73,7 +73,7 @@ class LaravelModuleTest extends BaseTestCase
 
     public function test_it_gets_module_path()
     {
-        $this->assertEquals(__DIR__.'/stubs/valid/Recipe', $this->module->getPath());
+        $this->assertEquals(__DIR__.'/stubs/valid/Recipe', $this->module->path());
     }
 
     public function test_it_gets_module_path_with_symlink()
@@ -82,7 +82,7 @@ class LaravelModuleTest extends BaseTestCase
 
         $this->module = new TestingModule($this->app, 'Recipe Name', __DIR__.'/stubs/valid_symlink/Recipe');
 
-        $this->assertEquals(__DIR__.'/stubs/valid_symlink/Recipe', $this->module->getPath());
+        $this->assertEquals(__DIR__.'/stubs/valid_symlink/Recipe', $this->module->path());
 
         // symlink deleted in tearDownAfterClass
     }

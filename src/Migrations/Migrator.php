@@ -87,7 +87,7 @@ class Migrator
         $migrationPath = GenerateConfigReader::read('migration');
         $path = (is_array($config) && array_key_exists('path', $config)) ? $config['path'] : $migrationPath->getPath();
 
-        return $this->module->getExtraPath($path);
+        return $this->module->path($path);
     }
 
     /**

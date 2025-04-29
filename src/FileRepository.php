@@ -304,7 +304,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     public function getModulePath($module): string
     {
         try {
-            return $this->findOrFail($module)->getPath().'/';
+            return $this->findOrFail($module)->path().'/';
         } catch (ModuleNotFoundException $e) {
             return $this->getPath().'/'.Str::studly($module).'/';
         }
