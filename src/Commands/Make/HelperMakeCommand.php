@@ -66,7 +66,7 @@ class HelperMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.helpers.namespace', 'Helpers');
+        return $this->default_namespace('helpers');
     }
 
     protected function getStubName(): string

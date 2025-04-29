@@ -84,6 +84,6 @@ class ClassMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return $this->default_namespace($this->type(), "app/{$this->type()}");
+        return $this->default_namespace($this->type(), $this->app_path("app/{$this->type()}"));
     }
 }
