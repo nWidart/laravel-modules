@@ -23,7 +23,7 @@ class CastMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('casts')->getPath() ?? config('modules.paths.app_folder').'Casts';
+        $filePath = GenerateConfigReader::read('casts')->getPath() ?? config('modules.paths.app').'Casts';
 
         return $path.$filePath.'/'.$this->getCastName().'.php';
     }
