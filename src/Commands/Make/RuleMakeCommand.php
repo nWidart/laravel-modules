@@ -91,7 +91,7 @@ class RuleMakeCommand extends GeneratorCommand
 
         $rulePath = GenerateConfigReader::read('rules');
 
-        return $path.$rulePath->getPath().'/'.$this->getFileName().'.php';
+        return $path.$rulePath->path($this->getFileName().'.php');
     }
 
     /**

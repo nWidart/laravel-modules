@@ -23,7 +23,7 @@ class ScopeMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('scopes')->getPath() ?? config('modules.paths.generator.model.path').'/Scopes';
+        $filePath = GenerateConfigReader::read('scopes')->path() ?? $this->app_path(config('modules.paths.generator.model.path').'/Scopes');
 
         return $path.$filePath.'/'.$this->getScopeName().'.php';
     }

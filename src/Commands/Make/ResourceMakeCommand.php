@@ -67,7 +67,7 @@ class ResourceMakeCommand extends GeneratorCommand
 
         $resourcePath = GenerateConfigReader::read('resource');
 
-        return $path.$resourcePath->getPath().'/'.$this->getFileName().'.php';
+        return $path.$resourcePath->path($this->getFileName().'.php');
     }
 
     /**

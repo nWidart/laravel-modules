@@ -124,7 +124,7 @@ class MigrationMakeCommand extends GeneratorCommand
 
         $generatorPath = GenerateConfigReader::read('migration');
 
-        return $path.$generatorPath->getPath().'/'.$this->getFileName().'.php';
+        return $path.$generatorPath->path($this->getFileName()).'.php';
     }
 
     /**

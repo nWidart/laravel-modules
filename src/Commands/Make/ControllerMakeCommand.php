@@ -45,7 +45,7 @@ class ControllerMakeCommand extends GeneratorCommand
 
         $controllerPath = GenerateConfigReader::read('controller');
 
-        return $path.$controllerPath->getPath().'/'.$this->getControllerName().'.php';
+        return $path.$controllerPath->path($this->getControllerName().'.php');
     }
 
     /**
