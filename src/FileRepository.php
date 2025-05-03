@@ -16,11 +16,15 @@ use Nwidart\Modules\Exceptions\InvalidAssetPath;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Process\Installer;
 use Nwidart\Modules\Process\Updater;
+use Nwidart\Modules\Traits\PathNamespace;
 use Symfony\Component\Process\Process;
 
 abstract class FileRepository implements Countable, RepositoryInterface
 {
     use Macroable;
+    use PathNamespace {
+        path as __path;
+    }
 
     /**
      * Application instance.
@@ -97,6 +101,13 @@ abstract class FileRepository implements Countable, RepositoryInterface
         return $this->paths;
     }
 
+    public function path(?string $path = null): string
+    {
+        $base = $this->path ?: $this->config('paths.modules', base_path('Modules'));
+
+        return $this->__path($base.DIRECTORY_SEPARATOR.$path);
+    }
+
     /**
      * Get scanned modules paths.
      */
@@ -104,7 +115,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     {
         $paths = $this->paths;
 
-        $paths[] = $this->getPath();
+        $paths[] = $this->path();
 
         if ($this->config('scan.enabled')) {
             $paths = array_merge($paths, $this->config('scan.paths'));
@@ -240,10 +251,12 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @deprecated use path() instead
      */
     public function getPath(): string
     {
-        return $this->path ?: $this->config('paths.modules', base_path('Modules'));
+        return $this->path();
     }
 
     /**
@@ -306,7 +319,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
         try {
             return $this->findOrFail($module)->path().'/';
         } catch (ModuleNotFoundException $e) {
-            return $this->getPath().'/'.Str::studly($module).'/';
+            return $this->path(Str::studly($module)).'/';
         }
     }
 
