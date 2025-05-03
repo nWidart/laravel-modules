@@ -34,7 +34,7 @@ class StubTest extends BaseTestCase
             'NAME' => 'Name',
         ]);
 
-        $this->assertTrue(Str::contains($stub->getPath(), 'src/Commands/stubs/model.stub'));
+        $this->assertTrue(Str::contains($stub->path(), 'src/Commands/stubs/model.stub'));
         $this->assertEquals(['NAME' => 'Name'], $stub->getReplaces());
     }
 
@@ -69,7 +69,7 @@ class StubTest extends BaseTestCase
 
         $stub->setPath('/new-path/');
 
-        $this->assertTrue(Str::contains($stub->getPath(), 'Commands/stubs/new-path/'));
+        $this->assertTrue(Str::contains($stub->path(), 'Commands/stubs/new-path/'));
     }
 
     public function test_use_default_stub_if_override_not_exists()
