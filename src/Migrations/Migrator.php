@@ -78,6 +78,8 @@ class Migrator
     /**
      * Get migration path.
      *
+     * @deprecated use path() instead
+     *
      * @return string
      */
     public function getPath()
@@ -91,6 +93,19 @@ class Migrator
     }
 
     /**
+     * Get migration path.
+     */
+    public function path(): string
+    {
+        $config = $this->module->get('migration');
+
+        $migrationPath = GenerateConfigReader::read('migration');
+        $path = (is_array($config) && array_key_exists('path', $config)) ? $config['path'] : $migrationPath->path();
+
+        return $this->module->path($path);
+    }
+
+    /**
      * Get migration files.
      *
      * @param  bool  $reverse
@@ -99,9 +114,9 @@ class Migrator
     public function getMigrations($reverse = false)
     {
         if (! empty($this->subpath)) {
-            $files = $this->laravel['files']->glob($this->getPath().'/'.$this->subpath);
+            $files = $this->laravel['files']->glob($this->path($this->subpath));
         } else {
-            $files = $this->laravel['files']->glob($this->getPath().'/*_*.php');
+            $files = $this->laravel['files']->glob($this->path().'/*_*.php');
         }
 
         // Once we have the array of files in the directory we will just remove the
@@ -215,8 +230,8 @@ class Migrator
 
         $class = Str::studly($name);
 
-        if (! class_exists($class) && file_exists($this->getPath().'/'.$file.'.php')) {
-            return include $this->getPath().'/'.$file.'.php';
+        if (! class_exists($class) && file_exists($this->path($file.'.php'))) {
+            return include $this->path($file.'.php');
         }
 
         return new $class;
@@ -227,7 +242,7 @@ class Migrator
      */
     public function requireFiles(array $files)
     {
-        $path = $this->getPath();
+        $path = $this->path();
         foreach ($files as $file) {
             $this->laravel['files']->requireOnce($path.'/'.$file.'.php');
         }

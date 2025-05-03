@@ -33,6 +33,6 @@ class MigrationPublisher extends AssetPublisher
      */
     public function getSourcePath(): string
     {
-        return $this->migrator->getPath();
+        return $this->migrator->path();
     }
 }
