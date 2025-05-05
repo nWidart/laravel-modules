@@ -111,17 +111,17 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | /app path
+        | app/ path
         |--------------------------------------------------------------------------
         |
-        | Specifies a custom path for the /app directory.
+        | Specifies a the path for the app/ directory.
         |
         | Examples:
-        |   ''     => '/app'  (default Laravel structure),
-        |   'src'  => '/src'  (custom location),
-        |   '/'    => '/'     (root directory).
+        |   'app/'  = (default Laravel structure),
+        |   'src/'  = (custom location),
+        |   '/'     = (root directory).
         */
-        'app' => '',
+        'app' => 'app/',
 
         /*
         |--------------------------------------------------------------------------
@@ -152,7 +152,7 @@ return [
             'policies' => ['path' => 'app/Policies', 'generate' => false],
             'provider' => ['path' => 'app/Providers', 'generate' => true],
             'repository' => ['path' => 'app/Repositories', 'generate' => false],
-            'resource' => ['path' => 'app/Transformers', 'generate' => false],
+            'resource' => ['path' => 'app/Resources', 'generate' => false],
             'route-provider' => ['path' => 'app/Providers', 'generate' => true],
             'rules' => ['path' => 'app/Rules', 'generate' => false],
             'services' => ['path' => 'app/Services', 'generate' => false],
