@@ -97,6 +97,6 @@ class SeedMakeCommand extends GeneratorCommand
      */
     public function getDefaultNamespace(): string
     {
-        return $this->default_namespace('seeder');
+        return $this->default_namespace('seeder', 'database/seeds');
     }
 }
