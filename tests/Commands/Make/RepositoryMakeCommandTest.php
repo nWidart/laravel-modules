@@ -15,18 +15,11 @@ class RepositoryMakeCommandTest extends BaseTestCase
      */
     private $finder;
 
-    /**
-     * @var string
-     */
-    private $modulePath;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
         $this->createModule();
-        $this->modulePath = $this->getModuleAppPath();
-
     }
 
     protected function tearDown(): void
@@ -39,7 +32,7 @@ class RepositoryMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-repository', ['name' => 'MyRepository', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Repositories/MyRepository.php'));
+        $this->assertTrue(is_file($this->module_app_path('Repositories/MyRepository.php')));
         $this->assertSame(0, $code);
     }
 
@@ -48,7 +41,7 @@ class RepositoryMakeCommandTest extends BaseTestCase
         $this->artisan('module:make-repository', ['name' => 'MyRepository', 'module' => 'Blog']);
         $code = $this->artisan('module:make-repository', ['name' => 'MyRepository', 'module' => 'Blog', '--force' => true]);
 
-        $this->assertTrue(is_file($this->modulePath.'/Repositories/MyRepository.php'));
+        $this->assertTrue(is_file($this->module_app_path('Repositories/MyRepository.php')));
         $this->assertSame(0, $code);
     }
 
@@ -56,7 +49,7 @@ class RepositoryMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-repository', ['name' => 'MyRepository', 'module' => 'Blog', '--invokable' => true]);
 
-        $this->assertTrue(is_file($this->modulePath.'/Repositories/MyRepository.php'));
+        $this->assertTrue(is_file($this->module_app_path('Repositories/MyRepository.php')));
         $this->assertSame(0, $code);
     }
 
@@ -64,7 +57,7 @@ class RepositoryMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-repository', ['name' => 'MyRepository', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Repositories/MyRepository.php');
+        $file = $this->finder->get($this->module_app_path('Repositories/MyRepository.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -74,7 +67,7 @@ class RepositoryMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-repository', ['name' => 'Api\\MyRepository', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Repositories/Api/MyRepository.php'));
+        $this->assertTrue(is_file($this->module_app_path('Repositories/Api/MyRepository.php')));
         $this->assertSame(0, $code);
     }
 
@@ -82,7 +75,7 @@ class RepositoryMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-repository', ['name' => 'Api\\MyRepository', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Repositories/Api/MyRepository.php');
+        $file = $this->finder->get($this->module_app_path('Repositories/Api/MyRepository.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

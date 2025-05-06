@@ -15,17 +15,11 @@ class CommandMakeCommandTest extends BaseTestCase
      */
     private $finder;
 
-    /**
-     * @var string
-     */
-    private $modulePath;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
         $this->createModule();
-        $this->modulePath = $this->getModuleAppPath();
     }
 
     protected function tearDown(): void
@@ -38,7 +32,7 @@ class CommandMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-command', ['name' => 'MyAwesomeCommand', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Console/MyAwesomeCommand.php'));
+        $this->assertTrue(is_file($this->module_app_path('app/Console/MyAwesomeCommand.php')));
         $this->assertSame(0, $code);
     }
 
@@ -46,7 +40,7 @@ class CommandMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-command', ['name' => 'MyAwesomeCommand', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Console/MyAwesomeCommand.php');
+        $file = $this->finder->get($this->module_app_path('app/Console/MyAwesomeCommand.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -59,7 +53,19 @@ class CommandMakeCommandTest extends BaseTestCase
             ['name' => 'MyAwesomeCommand', 'module' => 'Blog', '--command' => 'my:awesome']
         );
 
-        $file = $this->finder->get($this->modulePath.'/Console/MyAwesomeCommand.php');
+        $file = $this->finder->get($this->module_app_path('app/Console/MyAwesomeCommand.php'));
+
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_changes_the_default_path()
+    {
+        $this->app['config']->set('modules.paths.generator.command.path', 'app/CustomCommands');
+
+        $code = $this->artisan('module:make-command', ['name' => 'AwesomeCommand', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->module_app_path('app/CustomCommands/AwesomeCommand.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -67,23 +73,11 @@ class CommandMakeCommandTest extends BaseTestCase
 
     public function test_it_can_change_the_default_namespace()
     {
-        $this->app['config']->set('modules.paths.generator.command.path', 'app/CustomCommands');
-
-        $code = $this->artisan('module:make-command', ['name' => 'AwesomeCommand', 'module' => 'Blog']);
-
-        $file = $this->finder->get($this->modulePath.'/CustomCommands/AwesomeCommand.php');
-
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
-
-    public function test_it_can_change_the_default_namespace_specific()
-    {
         $this->app['config']->set('modules.paths.generator.command.namespace', 'Commands');
 
         $code = $this->artisan('module:make-command', ['name' => 'AwesomeCommand', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Console/AwesomeCommand.php');
+        $file = $this->finder->get($this->module_app_path('app/Console/AwesomeCommand.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

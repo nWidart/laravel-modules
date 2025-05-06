@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Helpers;
+namespace Modules\Blog\App\Helpers;
 
 class MyHelper
 {
