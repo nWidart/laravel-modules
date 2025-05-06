@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Casts\Api;
+namespace Modules\Blog\App\Casts\Api;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;

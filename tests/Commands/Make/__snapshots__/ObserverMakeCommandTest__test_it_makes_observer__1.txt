@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Observers;
+namespace Modules\Blog\App\Observers;
 
 use Modules\Blog\app\Models\Post;
 

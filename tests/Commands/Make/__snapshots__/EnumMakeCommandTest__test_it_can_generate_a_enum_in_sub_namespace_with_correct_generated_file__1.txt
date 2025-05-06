@@ -1,5 +1,5 @@
 <?php
 
-namespace Modules\Blog\Enums\Api;
+namespace Modules\Blog\App\Enums\Api;
 
 enum MyEnum {}

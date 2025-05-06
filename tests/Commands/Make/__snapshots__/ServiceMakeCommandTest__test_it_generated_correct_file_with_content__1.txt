@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Services;
+namespace Modules\Blog\App\Services;
 
 class MyService
 {
