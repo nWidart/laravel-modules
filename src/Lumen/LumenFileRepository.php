@@ -4,7 +4,6 @@ namespace Nwidart\Modules\Lumen;
 
 use Illuminate\Container\Container;
 use Nwidart\Modules\FileRepository;
-use Nwidart\Modules\Module;
 
 class LumenFileRepository extends FileRepository
 {
