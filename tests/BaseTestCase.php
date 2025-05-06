@@ -4,10 +4,16 @@ namespace Nwidart\Modules\Tests;
 
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
+use Nwidart\Modules\Traits\PathNamespace;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class BaseTestCase extends OrchestraTestCase
 {
+    use PathNamespace {
+        module_path as __module_path;
+        module_app_path as __module_app_path;
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -72,18 +78,18 @@ abstract class BaseTestCase extends OrchestraTestCase
         $this->resetDatabase();
     }
 
-    protected function createModule(string $moduleName = 'Blog'): int
+    protected function createModule(string $module = 'Blog'): int
     {
-        return $this->artisan('module:make', ['name' => [$moduleName]]);
+        return $this->artisan('module:make', ['name' => [$module]]);
     }
 
-    protected function getModuleAppPath(string $moduleName = 'Blog'): string
+    protected function module_path(?string $path = null, string $module = 'Blog'): string
     {
-        return base_path("modules/$moduleName/").rtrim(config('modules.paths.app'), '/');
+        return $this->modules_path("{$module}/{$path}");
     }
 
-    protected function getModuleBasePath(string $moduleName = 'Blog'): string
+    protected function module_app_path(?string $path = null, string $module = 'Blog'): string
     {
-        return base_path("modules/$moduleName");
+        return $this->module_path($this->app_path($path), $module);
     }
 }

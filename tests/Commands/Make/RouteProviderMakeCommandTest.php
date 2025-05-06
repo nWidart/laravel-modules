@@ -15,17 +15,11 @@ class RouteProviderMakeCommandTest extends BaseTestCase
      */
     private $finder;
 
-    /**
-     * @var string
-     */
-    private $modulePath;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
         $this->createModule();
-        $this->modulePath = $this->getModuleAppPath();
     }
 
     protected function tearDown(): void
@@ -36,7 +30,7 @@ class RouteProviderMakeCommandTest extends BaseTestCase
 
     public function test_it_generates_a_new_service_provider_class()
     {
-        $path = $this->modulePath.'/Providers/RouteServiceProvider.php';
+        $path = $this->module_app_path('Providers/RouteServiceProvider.php');
         $this->finder->delete($path);
         $code = $this->artisan('module:route-provider', ['module' => 'Blog']);
 
@@ -46,7 +40,7 @@ class RouteProviderMakeCommandTest extends BaseTestCase
 
     public function test_it_generated_correct_file_with_content()
     {
-        $path = $this->modulePath.'/Providers/RouteServiceProvider.php';
+        $path = $this->module_app_path('Providers/RouteServiceProvider.php');
         $this->finder->delete($path);
         $code = $this->artisan('module:route-provider', ['module' => 'Blog']);
 
@@ -56,23 +50,23 @@ class RouteProviderMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    public function test_it_can_change_the_default_namespace()
+    public function test_it_can_change_the_default_path()
     {
         $this->app['config']->set('modules.paths.generator.provider.path', 'SuperProviders');
 
         $code = $this->artisan('module:route-provider', ['module' => 'Blog']);
 
-        $file = $this->finder->get($this->getModuleBasePath().'/SuperProviders/RouteServiceProvider.php');
+        $file = $this->finder->get($this->module_path('SuperProviders/RouteServiceProvider.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
 
-    public function test_it_can_change_the_default_namespace_specific()
+    public function test_it_can_change_the_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.provider.namespace', 'SuperProviders');
 
-        $path = $this->modulePath.'/Providers/RouteServiceProvider.php';
+        $path = $this->module_app_path('Providers/RouteServiceProvider.php');
         $this->finder->delete($path);
         $code = $this->artisan('module:route-provider', ['module' => 'Blog']);
 
@@ -89,7 +83,7 @@ class RouteProviderMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:route-provider', ['module' => 'Blog', '--force' => true]);
 
-        $file = $this->finder->get($this->modulePath.'/Providers/RouteServiceProvider.php');
+        $file = $this->finder->get($this->module_app_path('Providers/RouteServiceProvider.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -101,7 +95,7 @@ class RouteProviderMakeCommandTest extends BaseTestCase
         $this->app['config']->set('modules.stubs.files.routes/web', 'SuperRoutes/web.php');
 
         $code = $this->artisan('module:route-provider', ['module' => 'Blog', '--force' => true]);
-        $file = $this->finder->get($this->modulePath.'/Providers/RouteServiceProvider.php');
+        $file = $this->finder->get($this->module_app_path('Providers/RouteServiceProvider.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -113,7 +107,7 @@ class RouteProviderMakeCommandTest extends BaseTestCase
         $this->app['config']->set('modules.paths.generator.provider.path', 'Base/Providers');
 
         $code = $this->artisan('module:route-provider', ['module' => 'Blog']);
-        $file = $this->finder->get($this->getModuleBasePath().'/Base/Providers/RouteServiceProvider.php');
+        $file = $this->finder->get($this->module_path('Base/Providers/RouteServiceProvider.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
