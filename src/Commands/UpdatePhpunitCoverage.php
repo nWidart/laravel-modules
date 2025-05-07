@@ -4,9 +4,12 @@ namespace Nwidart\Modules\Commands;
 
 use DOMDocument;
 use Illuminate\Console\Command;
+use Nwidart\Modules\Traits\PathNamespace;
 
 class UpdatePhpunitCoverage extends Command
 {
+    use PathNamespace;
+
     /**
      * The name and signature of the console command.
      *
@@ -26,8 +29,7 @@ class UpdatePhpunitCoverage extends Command
      */
     public function handle(): int
     {
-        $appFolder = config('modules.paths.app', 'app/');
-        $appFolder = rtrim($appFolder, '/').'/';
+        $app_path = rtrim($this->app_path(), '/').'/';
         $phpunitXmlPath = base_path('phpunit.xml');
         $modulesStatusPath = base_path('modules_statuses.json');
 
@@ -56,7 +58,7 @@ class UpdatePhpunitCoverage extends Command
 
         foreach ($enabledModules as $module => $status) {
             if ($status) { // Only add enabled modules
-                $moduleDir = $modulesPath.$module.'/'.$appFolder;
+                $moduleDir = $modulesPath.$module.'/'.$app_path;
                 if (is_dir($moduleDir)) {
                     $moduleDirs[] = $moduleDir;
                 }
