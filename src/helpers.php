@@ -1,9 +1,10 @@
 <?php
 
 use Illuminate\Foundation\Vite;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Vite as ViteFacade;
-use Nwidart\Modules\Laravel\Module;
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
+use Nwidart\Modules\FileRepository;
+use Nwidart\Modules\Module;
 
 if (! function_exists('module')) {
     /**
@@ -15,14 +16,16 @@ if (! function_exists('module')) {
      */
     function module(string $name, bool $instance = false): bool|Module
     {
-        $modules = app('modules');
-        if (! $modules->has($name)) {
-            Log::error("Module '$name' not found.");
+        /** @var FileRepository $repository */
+        $repository = app('modules');
 
+        try {
+            $module = $repository->findOrFail($name);
+
+            return $instance ? $module : $module->isEnabled();
+        } catch (ModuleNotFoundException $exception) {
             return false;
         }
-
-        return $instance ? $modules->find($name) : $modules->isEnabled($name);
     }
 }
 

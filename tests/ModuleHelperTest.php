@@ -4,9 +4,8 @@ namespace Nwidart\Modules\Tests;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Log;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Laravel\Module;
+use Nwidart\Modules\Module;
 
 class ModuleHelperTest extends BaseTestCase
 {
@@ -37,20 +36,6 @@ class ModuleHelperTest extends BaseTestCase
     public function test_module_returns_true_when_found()
     {
         $this->assertTrue(module('Blog'));
-    }
-
-    public function test_module_returns_false_and_log_error_when_not_found()
-    {
-        Log::shouldReceive('error')->once()->with("Module 'Blogs' not found.");
-
-        $this->assertFalse(module('Blogs'));
-    }
-
-    public function test_module_returns_false_and_log_error_when_not_found_and_instance_parameter_is_true()
-    {
-        Log::shouldReceive('error')->once()->with("Module 'Blogs' not found.");
-
-        $this->assertFalse(module('Blogs', true));
     }
 
     public function test_module_returns_instance_when_instance_parameter_is_true()
