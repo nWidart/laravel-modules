@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Custom\Modules\Blog\Http\Controllers\BlogController;
+use Custom\Modules\Blog\App\Http\Controllers\BlogController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('blogs', BlogController::class)->names('blog');

@@ -15,17 +15,11 @@ class FactoryMakeCommandTest extends BaseTestCase
      */
     private $finder;
 
-    /**
-     * @var string
-     */
-    private $modulePath;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
         $this->createModule();
-        $this->modulePath = $this->getModuleAppPath();
     }
 
     protected function tearDown(): void
@@ -38,7 +32,7 @@ class FactoryMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-factory', ['name' => 'Post', 'module' => 'Blog']);
 
-        $factoryFile = $this->getModuleBasePath().'/database/factories/PostFactory.php';
+        $factoryFile = $this->module_path('database/factories/PostFactory.php');
 
         $this->assertTrue(is_file($factoryFile), 'Factory file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($factoryFile));
