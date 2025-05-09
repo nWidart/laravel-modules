@@ -60,7 +60,7 @@ final class ChannelMakeCommand extends GeneratorCommand
 
         $channelPath = GenerateConfigReader::read('channels');
 
-        return $path.$channelPath->getPath().'/'.$this->getFileName().'.php';
+        return $path.$channelPath->path($this->getFileName());
     }
 
     /**
@@ -68,7 +68,7 @@ final class ChannelMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name'));
+        return Str::studly($this->argument('name')).'.php';
     }
 
     /**
