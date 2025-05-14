@@ -4,11 +4,11 @@ namespace Nwidart\Modules;
 
 use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
+use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
-use Illuminate\Translation\Translator;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 
