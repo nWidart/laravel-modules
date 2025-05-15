@@ -42,10 +42,8 @@ class ModelShowCommand extends ShowModelCommand implements PromptsForMissingInpu
         return
             Str::of($path)
                 ->after(base_path().DIRECTORY_SEPARATOR)
-                ->replace(
-                    [config('modules.paths.app_folder'), '/', '.php'],
-                    ['', '\\', ''],
-                )->toString();
+                ->replace(['/', '.php'], ['\\', ''])
+                ->toString();
     }
 
     public function findModels(string $model): Collection
