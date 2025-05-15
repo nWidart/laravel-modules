@@ -329,7 +329,7 @@ class ModuleGenerator extends Generator
                 continue;
             }
 
-            $path = $this->module->getModulePath($this->getName()).'/'.$folder->getPath();
+            $path = $this->module->getModulePath($this->getName()).'/'.$folder->path();
 
             $this->filesystem->ensureDirectoryExists($path, 0755, true);
             if (config('modules.stubs.gitkeep')) {
@@ -396,8 +396,8 @@ class ModuleGenerator extends Generator
 
         $eventGeneratorConfig = GenerateConfigReader::read('event-provider');
         if (
-            (is_null($eventGeneratorConfig->getPath()) && $providerGenerator->generate())
-            || (! is_null($eventGeneratorConfig->getPath()) && $eventGeneratorConfig->generate())
+            (is_null($eventGeneratorConfig->path()) && $providerGenerator->generate())
+            || (! is_null($eventGeneratorConfig->path()) && $eventGeneratorConfig->generate())
         ) {
             $this->console->call('module:make-event-provider', [
                 'module' => $this->getName(),
@@ -408,15 +408,15 @@ class ModuleGenerator extends Generator
                 $this->filesystem->replaceInFile(
                     '$this->app->register(Event',
                     '// $this->app->register(Event',
-                    $this->module->getModulePath($this->getName()).DIRECTORY_SEPARATOR.$providerGenerator->getPath().DIRECTORY_SEPARATOR.sprintf('%sServiceProvider.php', $this->getName())
+                    $this->module->getModulePath($this->getName()).DIRECTORY_SEPARATOR.$providerGenerator->path(sprintf('%sServiceProvider.php', $this->getName()))
                 );
             }
         }
 
         $routeGeneratorConfig = GenerateConfigReader::read('route-provider');
         if (
-            (is_null($routeGeneratorConfig->getPath()) && $providerGenerator->generate())
-            || (! is_null($routeGeneratorConfig->getPath()) && $routeGeneratorConfig->generate())
+            (is_null($routeGeneratorConfig->path()) && $providerGenerator->generate())
+            || (! is_null($routeGeneratorConfig->path()) && $routeGeneratorConfig->generate())
         ) {
             $this->console->call('module:route-provider', [
                 'module' => $this->getName(),
@@ -427,7 +427,7 @@ class ModuleGenerator extends Generator
                 $this->filesystem->replaceInFile(
                     '$this->app->register(Route',
                     '// $this->app->register(Route',
-                    $this->module->getModulePath($this->getName()).DIRECTORY_SEPARATOR.$providerGenerator->getPath().DIRECTORY_SEPARATOR.sprintf('%sServiceProvider.php', $this->getName())
+                    $this->module->getModulePath($this->getName()).DIRECTORY_SEPARATOR.$providerGenerator->path(sprintf('%sServiceProvider.php', $this->getName()))
                 );
             }
         }

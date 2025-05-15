@@ -216,7 +216,7 @@ class ModelMakeCommand extends GeneratorCommand
 
         $modelPath = GenerateConfigReader::read('model');
 
-        return $path.$modelPath->getPath().'/'.$this->getModelName().'.php';
+        return $path.$modelPath->path($this->getModelName().'.php');
     }
 
     private function getModelName(): string
