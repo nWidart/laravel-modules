@@ -79,6 +79,14 @@ abstract class GeneratorCommand extends Command
     }
 
     /**
+     * Get a default namespace from config.
+     */
+    public function default_namespace(string $key, string $default = ''): string
+    {
+        return config("modules.paths.generator.{$key}.namespace") ?? $this->namespace(config("modules.paths.generator.{$key}.path") ?? $default);
+    }
+
+    /**
      * Get class namespace.
      *
      * @param  \Nwidart\Modules\Module  $module

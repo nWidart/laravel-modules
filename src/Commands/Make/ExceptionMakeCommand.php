@@ -23,7 +23,7 @@ class ExceptionMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('exceptions')->getPath() ?? config('modules.paths.app_folder').'Exceptions';
+        $filePath = GenerateConfigReader::read('exceptions')->getPath() ?? config('modules.paths.app').'Exceptions';
 
         return $path.$filePath.'/'.$this->getExceptionName().'.php';
     }
@@ -67,7 +67,7 @@ class ExceptionMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.exceptions.namespace', 'Exceptions');
+        return $this->default_namespace('exceptions');
     }
 
     protected function getStubName(): string
