@@ -23,7 +23,7 @@ class JsonTest extends BaseTestCase
     {
         $path = __DIR__.'/stubs/valid/module.json';
 
-        $this->assertEquals($path, $this->json->getPath());
+        $this->assertEquals($path, $this->json->path());
     }
 
     public function test_it_throws_an_exception_with_invalid_json()
@@ -69,10 +69,10 @@ class JsonTest extends BaseTestCase
     public function test_it_sets_a_path()
     {
         $path = __DIR__.'/stubs/valid/module.json';
-        $this->assertEquals($path, $this->json->getPath());
+        $this->assertEquals($path, $this->json->path());
 
         $this->json->setPath('some/path.json');
-        $this->assertEquals('some/path.json', $this->json->getPath());
+        $this->assertEquals('some/path.json', $this->json->path());
     }
 
     public function test_it_decodes_json()

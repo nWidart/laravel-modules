@@ -13,7 +13,7 @@ final class GenerateConfigReaderTest extends BaseTestCase
         $seedConfig = GenerateConfigReader::read('seeder');
 
         $this->assertInstanceOf(GeneratorPath::class, $seedConfig);
-        $this->assertEquals('database/seeders', $seedConfig->getPath());
+        $this->assertEquals('database/seeders', $seedConfig->path());
         $this->assertTrue($seedConfig->generate());
     }
 
@@ -24,7 +24,7 @@ final class GenerateConfigReaderTest extends BaseTestCase
         $seedConfig = GenerateConfigReader::read('seeder');
 
         $this->assertInstanceOf(GeneratorPath::class, $seedConfig);
-        $this->assertEquals('Database/Seeders', $seedConfig->getPath());
+        $this->assertEquals('Database/Seeders', $seedConfig->path());
         $this->assertFalse($seedConfig->generate());
     }
 
@@ -35,7 +35,7 @@ final class GenerateConfigReaderTest extends BaseTestCase
         $seedConfig = GenerateConfigReader::read('seeder');
 
         $this->assertInstanceOf(GeneratorPath::class, $seedConfig);
-        $this->assertEquals('Database/Seeders', $seedConfig->getPath());
+        $this->assertEquals('Database/Seeders', $seedConfig->path());
         $this->assertTrue($seedConfig->generate());
     }
 
@@ -46,7 +46,7 @@ final class GenerateConfigReaderTest extends BaseTestCase
         $seedConfig = GenerateConfigReader::read('seeder');
 
         $this->assertInstanceOf(GeneratorPath::class, $seedConfig);
-        $this->assertFalse($seedConfig->getPath());
+        $this->assertSame('', $seedConfig->path());
         $this->assertFalse($seedConfig->generate());
     }
 
@@ -56,7 +56,7 @@ final class GenerateConfigReaderTest extends BaseTestCase
 
         $config = GenerateConfigReader::read('provider');
 
-        $this->assertEquals('Base/Providers', $config->getPath());
+        $this->assertEquals('Base/Providers', $config->path());
         $this->assertEquals('Base\Providers', $config->getNamespace());
     }
 }

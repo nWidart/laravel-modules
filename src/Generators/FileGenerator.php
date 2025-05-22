@@ -75,8 +75,18 @@ class FileGenerator extends Generator
 
     /**
      * Get path.
+     *
+     * @deprecated use `path()` instead
      */
     public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * Get path.
+     */
+    public function path(): string
     {
         return $this->path;
     }
@@ -103,10 +113,12 @@ class FileGenerator extends Generator
      */
     public function generate()
     {
-        $path = $this->getPath();
+        $path = $this->path();
+
         if (! $this->filesystem->exists($path)) {
             return $this->filesystem->put($path, $this->getContents());
         }
+
         if ($this->overwriteFile === true) {
             return $this->filesystem->put($path, $this->getContents());
         }

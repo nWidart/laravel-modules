@@ -44,7 +44,7 @@ class MigrateCommand extends BaseCommand
 
         $this->components->twoColumnDetail("Running Migration <fg=cyan;options=bold>{$module->getName()}</> Module");
 
-        $module_path = $module->getPath();
+        $module_path = $module->path();
 
         $paths = $this->migration_list
             ->filter(fn ($path) => str_starts_with($path, $module_path));

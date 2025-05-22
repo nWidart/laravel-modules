@@ -69,7 +69,7 @@ class FactoryMakeCommand extends GeneratorCommand
 
         $factoryPath = GenerateConfigReader::read('factory');
 
-        return $path.$factoryPath->getPath().'/'.$this->getFileName();
+        return $path.$factoryPath->path($this->getFileName());
     }
 
     /**
