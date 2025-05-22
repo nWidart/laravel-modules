@@ -34,7 +34,9 @@ See the website traffic at https://app.usefathom.com/share/sdinlflk/laravel+modu
 
 ### Sponsors
 
-- [David Carr](https://dcblog.dev?ref=laravelmodules)
+<a href="https://nativephp.com/mobile"><img src="https://laravelmodules.com/images/sponsors/NativePHP-mobile-light.svg" alt="NativePHP for Mobile" title="NativePHP for Mobile" width="200"/></a>
+
+<a href="https://dcblog.dev"><img src="https://laravelmodules.com/images/sponsors/dcblog.png" alt="David Carr" title="David Carr" width="200"/></a>
 
 ## upgrade
 To upgrade to version V12 follow [Upgrade Guide](https://laravelmodules.com/docs/12/getting-started/upgrade) on official document.
