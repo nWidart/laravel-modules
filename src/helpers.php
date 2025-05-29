@@ -32,7 +32,7 @@ if (! function_exists('module')) {
 if (! function_exists('module_path')) {
     function module_path(string $name, string $path = ''): string
     {
-        $module = app('modules')->find($name);
+        $module = module($name, true);
 
         return $module->getPath().($path ? DIRECTORY_SEPARATOR.$path : $path);
     }

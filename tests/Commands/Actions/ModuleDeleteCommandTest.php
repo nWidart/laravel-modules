@@ -58,14 +58,14 @@ class ModuleDeleteCommandTest extends BaseTestCase
 
         foreach ($modules as $module) {
             $this->createModule($module);
-            $this->assertDirectoryExists($this->getModuleBasePath($module));
+            $this->assertDirectoryExists($this->module_path(null, $module));
         }
 
         $code = $this->artisan('module:delete', ['module' => ['Foo', 'Bar'], '--force' => true]);
         $this->assertSame(0, $code);
-        $this->assertFileDoesNotExist($this->getModuleBasePath('Foo'));
-        $this->assertFileDoesNotExist($this->getModuleBasePath('Bar'));
-        $this->assertDirectoryExists($this->getModuleBasePath('Zoo'));
+        $this->assertFileDoesNotExist($this->module_path(null, 'Foo'));
+        $this->assertFileDoesNotExist($this->module_path(null, 'Bar'));
+        $this->assertDirectoryExists($this->module_path(null, 'Zoo'));
 
         $this->app[RepositoryInterface::class]->delete('Zoo');
     }
@@ -80,14 +80,14 @@ class ModuleDeleteCommandTest extends BaseTestCase
 
         foreach ($modules as $module) {
             $this->createModule($module);
-            $this->assertDirectoryExists($this->getModuleBasePath($module));
+            $this->assertDirectoryExists($this->module_path(null, $module));
         }
 
         $code = $this->artisan('module:delete', ['--all' => true, '--force' => true]);
         $this->assertSame(0, $code);
-        $this->assertFileDoesNotExist($this->getModuleBasePath('Foo'));
-        $this->assertFileDoesNotExist($this->getModuleBasePath('Bar'));
-        $this->assertFileDoesNotExist($this->getModuleBasePath('Zoo'));
+        $this->assertFileDoesNotExist($this->module_path(null, 'Foo'));
+        $this->assertFileDoesNotExist($this->module_path(null, 'Bar'));
+        $this->assertFileDoesNotExist($this->module_path(null, 'Zoo'));
     }
 
     public function test_it_deletes_modules_from_status_file(): void

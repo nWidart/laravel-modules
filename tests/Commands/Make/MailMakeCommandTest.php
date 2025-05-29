@@ -15,17 +15,11 @@ class MailMakeCommandTest extends BaseTestCase
      */
     private $finder;
 
-    /**
-     * @var string
-     */
-    private $modulePath;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
         $this->createModule();
-        $this->modulePath = $this->getModuleAppPath();
     }
 
     protected function tearDown(): void
@@ -38,7 +32,7 @@ class MailMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Emails/SomeMail.php'));
+        $this->assertTrue(is_file($this->module_app_path('app/Emails/SomeMail.php')));
         $this->assertSame(0, $code);
     }
 
@@ -46,7 +40,19 @@ class MailMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Emails/SomeMail.php');
+        $file = $this->finder->get($this->module_app_path('app/Emails/SomeMail.php'));
+
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_can_change_the_default_path()
+    {
+        $this->app['config']->set('modules.paths.generator.emails.path', 'SuperEmails');
+
+        $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->module_path('/SuperEmails/SomeMail.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -54,23 +60,11 @@ class MailMakeCommandTest extends BaseTestCase
 
     public function test_it_can_change_the_default_namespace()
     {
-        $this->app['config']->set('modules.paths.generator.emails.path', 'SuperEmails');
-
-        $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
-
-        $file = $this->finder->get($this->getModuleBasePath().'/SuperEmails/SomeMail.php');
-
-        $this->assertMatchesSnapshot($file);
-        $this->assertSame(0, $code);
-    }
-
-    public function test_it_can_change_the_default_namespace_specific()
-    {
         $this->app['config']->set('modules.paths.generator.emails.namespace', 'SuperEmails');
 
         $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Emails/SomeMail.php');
+        $file = $this->finder->get($this->module_app_path('app/Emails/SomeMail.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

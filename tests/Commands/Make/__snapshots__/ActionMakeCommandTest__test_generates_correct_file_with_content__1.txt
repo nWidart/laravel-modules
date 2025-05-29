@@ -1,0 +1,8 @@
+<?php
+
+namespace Modules\Blog\App\Actions;
+
+class MyAction
+{
+    public function handle() {}
+}

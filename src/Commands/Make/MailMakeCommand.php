@@ -30,8 +30,7 @@ class MailMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.emails.namespace')
-            ?? ltrim(config('modules.paths.generator.emails.path', 'Emails'), config('modules.paths.app_folder', ''));
+        return $this->default_namespace('emails');
     }
 
     /**

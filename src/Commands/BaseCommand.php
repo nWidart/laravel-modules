@@ -8,6 +8,7 @@ use Illuminate\Console\Prohibitable;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
+use Nwidart\Modules\Traits\PathNamespace;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -18,6 +19,7 @@ use function Laravel\Prompts\multisearch;
 abstract class BaseCommand extends Command implements PromptsForMissingInput
 {
     use ConfirmableTrait;
+    use PathNamespace;
     use Prohibitable;
 
     public const ALL = 'All';

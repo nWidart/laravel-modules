@@ -11,10 +11,11 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Traits\PathNamespace;
 
 abstract class Module
 {
-    use Macroable;
+    use Macroable, PathNamespace;
 
     /**
      * The laravel|lumen application instance.
@@ -168,9 +169,7 @@ abstract class Module
      */
     public function getAppPath(): string
     {
-        $app_path = rtrim($this->getExtraPath(config('modules.paths.app_folder', '')), '/');
-
-        return is_dir($app_path) ? $app_path : $this->getPath();
+        return $this->app_path();
     }
 
     /**

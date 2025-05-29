@@ -23,7 +23,7 @@ class InterfaceMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('interfaces')->getPath() ?? config('modules.paths.app_folder').'Interfaces';
+        $filePath = GenerateConfigReader::read('interfaces')->getPath() ?? config('modules.paths.app').'Interfaces';
 
         return $path.$filePath.'/'.$this->getInterfaceName().'.php';
     }
@@ -65,7 +65,7 @@ class InterfaceMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.interfaces.namespace', 'Interfaces');
+        return $this->default_namespace('interfaces');
     }
 
     protected function getStubName(): string
