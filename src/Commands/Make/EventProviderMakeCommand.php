@@ -23,7 +23,7 @@ class EventProviderMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('provider')->getPath();
+        $filePath = GenerateConfigReader::read('provider')->path();
 
         return $path.$filePath.'/'.$this->getEventServiceProviderName().'.php';
     }

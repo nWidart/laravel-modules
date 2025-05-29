@@ -26,8 +26,8 @@ class LangPublisher extends Publisher
      */
     public function getSourcePath(): string
     {
-        return $this->getModule()->getExtraPath(
-            GenerateConfigReader::read('lang')->getPath()
+        return $this->getModule()->path(
+            GenerateConfigReader::read('lang')->path()
         );
     }
 }
