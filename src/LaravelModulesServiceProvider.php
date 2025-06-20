@@ -23,18 +23,6 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     {
         $this->registerNamespaces();
 
-        $this->app->singleton(
-            ModuleManifest::class,
-            fn () => new ModuleManifest(
-                new Filesystem,
-                app(Contracts\RepositoryInterface::class)->getScanPaths(),
-                $this->getCachedModulePath(),
-                app(ActivatorInterface::class)
-            )
-        );
-
-        $this->registerModules();
-
         AboutCommand::add('Laravel-Modules', [
             'Version' => fn () => InstalledVersions::getPrettyVersion('nwidart/laravel-modules'),
         ]);
@@ -58,6 +46,8 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->registerTranslations();
 
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'modules');
+
+        $this->registerModules();
     }
 
     /**
@@ -98,6 +88,17 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
             return new $class($app);
         });
         $this->app->alias(Contracts\RepositoryInterface::class, 'modules');
+        
+        $this->app->singleton(
+            ModuleManifest::class,
+            fn() => new ModuleManifest(
+                new Filesystem,
+                app(Contracts\RepositoryInterface::class)->getScanPaths(),
+                $this->getCachedModulePath(),
+                app(ActivatorInterface::class)
+            )
+        );
+
     }
 
     protected function registerMigrations(): void
