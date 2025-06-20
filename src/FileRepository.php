@@ -3,7 +3,6 @@
 namespace Nwidart\Modules;
 
 use Countable;
-use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Routing\UrlGenerator;
@@ -59,11 +58,6 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     private Filesystem $files;
 
-    /**
-     * Cache Manager
-     */
-    private CacheManager $cache;
-
     private static $modules = [];
 
     /**
@@ -76,7 +70,6 @@ abstract class FileRepository implements Countable, RepositoryInterface
         $this->url = $app['url'];
         $this->config = $app['config'];
         $this->files = $app['files'];
-        $this->cache = $app['cache'];
     }
 
     /**
