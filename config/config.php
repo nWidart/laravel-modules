@@ -114,11 +114,11 @@ return [
         | app/ path
         |--------------------------------------------------------------------------
         |
-        | Specifies a the path for the app/ directory.
+        | Specifies the path for the app/ directory.
         |
         | Examples:
-        |   'app/'  = (default Laravel structure),
-        |   'src/'  = (custom location),
+        |   'app/'  = (default Laravel directory),
+        |   'src/'  = (custom directory),
         |   '/'     = (root directory).
         */
         'app' => 'app/',
