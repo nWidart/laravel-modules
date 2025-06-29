@@ -43,7 +43,6 @@ class CheckLangCommand extends BaseCommand
         $this->checkMissingFiles($directories);
 
         $this->checkMissingKeys($directories);
-
     }
 
     public function getInfo(): ?string
@@ -54,7 +53,7 @@ class CheckLangCommand extends BaseCommand
     private function getLangFiles($module)
     {
         $files = [];
-        $path = $module->getPath().$this->langPath;
+        $path = $module->path($this->langPath);
         if (is_dir($path)) {
             $files = array_merge($files, $this->laravel['files']->all($path));
         }
@@ -65,7 +64,7 @@ class CheckLangCommand extends BaseCommand
     private function getDirectories($module)
     {
         $moduleName = $module->getStudlyName();
-        $path = $module->getPath().$this->langPath;
+        $path = $module->path($this->langPath);
         $directories = [];
         if (is_dir($path)) {
             $directories = $this->laravel['files']->directories($path);
@@ -112,7 +111,6 @@ class CheckLangCommand extends BaseCommand
                     $missingFilesMessage[$directory['name']][] = " {$directory['module']} - Missing language file: {$directory['name']}/{$missingFile}";
                 });
             }
-
         });
 
         if (count($missingFilesMessage) > 0) {
@@ -126,11 +124,8 @@ class CheckLangCommand extends BaseCommand
                 );
 
                 $this->newLine();
-
             });
-
         }
-
     }
 
     private function checkMissingKeys(Collection $directories)
@@ -167,7 +162,6 @@ class CheckLangCommand extends BaseCommand
                             $missingKeys->each(function ($missingKey) use ($directory, $langDirectory, $file, &$missingKeysMessage) {
                                 $missingKeysMessage[$langDirectory][] = " {$directory['module']} - Missing language key: {$langDirectory}/{$file} | key: $missingKey";
                             });
-
                         }
                     }
                 });

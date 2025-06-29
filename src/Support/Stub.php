@@ -48,8 +48,20 @@ class Stub
 
     /**
      * Get stub path.
+     *
+     * @deprecated use path() instead
      */
     public function getPath(): string
+    {
+        $path = static::getBasePath().$this->path;
+
+        return file_exists($path) ? $path : __DIR__.'/../Commands/stubs'.$this->path;
+    }
+
+    /**
+     * Get stub path.
+     */
+    public function path(): string
     {
         $path = static::getBasePath().$this->path;
 
@@ -77,7 +89,7 @@ class Stub
      */
     public function getContents(): string
     {
-        $contents = file_get_contents($this->getPath());
+        $contents = file_get_contents($this->path());
 
         foreach ($this->replaces as $search => $replace) {
             $contents = str_replace('$'.strtoupper($search).'$', $replace, $contents);
