@@ -15,17 +15,11 @@ class PolicyMakeCommandTest extends BaseTestCase
      */
     private $finder;
 
-    /**
-     * @var string
-     */
-    private $modulePath;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
         $this->createModule();
-        $this->modulePath = $this->getModuleAppPath();
     }
 
     protected function tearDown(): void
@@ -38,32 +32,32 @@ class PolicyMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
-        $policyFile = $this->modulePath.'/Policies/PostPolicy.php';
+        $policyFile = $this->module_app_path('app/Policies/PostPolicy.php');
 
         $this->assertTrue(is_file($policyFile), 'Policy file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($policyFile));
         $this->assertSame(0, $code);
     }
 
-    public function test_it_can_change_the_default_namespace()
+    public function test_it_can_change_the_default_path()
     {
         $this->app['config']->set('modules.paths.generator.policies.path', 'SuperPolicies');
 
         $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->getModuleBasePath().'/SuperPolicies/PostPolicy.php');
+        $file = $this->finder->get($this->module_path('SuperPolicies/PostPolicy.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
 
-    public function test_it_can_change_the_default_namespace_specific()
+    public function test_it_can_change_the_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.policies.namespace', 'SuperPolicies');
 
         $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Policies/PostPolicy.php');
+        $file = $this->finder->get($this->module_app_path('Policies/PostPolicy.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

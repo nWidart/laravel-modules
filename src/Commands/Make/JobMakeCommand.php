@@ -31,8 +31,7 @@ class JobMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.jobs.namespace')
-            ?? ltrim(config('modules.paths.generator.jobs.path', 'Jobs'), config('modules.paths.app_folder', ''));
+        return $this->default_namespace('jobs');
     }
 
     /**

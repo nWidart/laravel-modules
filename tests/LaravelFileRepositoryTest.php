@@ -200,7 +200,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
 
         $this->repository->delete('Blog');
 
-        $this->assertFalse(is_dir(base_path('modules/Blog')));
+        $this->assertFalse(is_dir($this->module_path()));
     }
 
     public function test_it_can_register_macros()

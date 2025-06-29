@@ -3,13 +3,14 @@
 namespace $NAMESPACE$;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use $MODEL_NAMESPACE$\$NAME$;
 
 class $NAME$Factory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      */
-    protected $model = \$MODEL_NAMESPACE$\$NAME$::class;
+    protected $model = $NAME$::class;
 
     /**
      * Define the model's default state.

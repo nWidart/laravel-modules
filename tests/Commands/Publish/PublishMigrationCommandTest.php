@@ -12,17 +12,11 @@ class PublishMigrationCommandTest extends BaseTestCase
      */
     private $finder;
 
-    /**
-     * @var string
-     */
-    private $modulePath;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
         $this->createModule();
-        $this->modulePath = $this->getModuleAppPath();
         $this->artisan('module:make-migration', ['name' => 'create_posts_table', 'module' => 'Blog']);
     }
 
