@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Http\Controllers;
+namespace Modules\Blog\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -12,9 +12,12 @@ class MyController extends Controller
      */
     public function index()
     {
-        //
-
-        return response()->json([]);
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                // 'users' => []
+            ],
+        ]);
     }
 
     /**
@@ -22,9 +25,12 @@ class MyController extends Controller
      */
     public function store(Request $request)
     {
-        //
-
-        return response()->json([]);
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                // 'user' => []
+            ],
+        ]);
     }
 
     /**
@@ -32,9 +38,12 @@ class MyController extends Controller
      */
     public function show($id)
     {
-        //
-
-        return response()->json([]);
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                // 'user' => []
+            ],
+        ]);
     }
 
     /**
@@ -42,9 +51,12 @@ class MyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-
-        return response()->json([]);
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                // 'user' => []
+            ],
+        ]);
     }
 
     /**
@@ -52,8 +64,10 @@ class MyController extends Controller
      */
     public function destroy($id)
     {
-        //
-
-        return response()->json([]);
+        return response()->json([
+            'status' => 'success',
+            'data' => null,
+            'message' => 'Record deleted successfully.',
+        ]);
     }
 }

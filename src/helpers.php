@@ -14,7 +14,7 @@ if (! function_exists('module')) {
      * @param  bool  $instance  Whether to return the module's instance instead of the status. Defaults to false [status].
      * @return bool|Module The module instance or its status.
      */
-    function module(string $name, bool $instance = false): bool|Module
+    function module(string $name, bool $instance = false): Module|bool
     {
         /** @var FileRepository $repository */
         $repository = app('modules');
@@ -32,7 +32,7 @@ if (! function_exists('module')) {
 if (! function_exists('module_path')) {
     function module_path(string $name, string $path = ''): string
     {
-        $module = app('modules')->find($name);
+        $module = module($name, true);
 
         return $module->getPath().($path ? DIRECTORY_SEPARATOR.$path : $path);
     }
