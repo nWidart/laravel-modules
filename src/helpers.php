@@ -14,7 +14,7 @@ if (! function_exists('module')) {
      * @param  bool  $instance  Whether to return the module's instance instead of the status. Defaults to false [status].
      * @return bool|Module The module instance or its status.
      */
-    function module(string $name, bool $instance = false): bool|Module
+    function module(string $name, bool $instance = false): Module|bool
     {
         /** @var FileRepository $repository */
         $repository = app('modules');
