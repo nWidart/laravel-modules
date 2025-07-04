@@ -92,4 +92,20 @@ abstract class BaseTestCase extends OrchestraTestCase
     {
         return $this->module_path($this->app_path($path), $module);
     }
+
+    /**
+     * @deprecated Use `module_app_path` instead.
+     */
+    protected function getModuleAppPath(string $moduleName = 'Blog'): string
+    {
+        return $this->module_app_path(null, $moduleName);
+    }
+
+    /**
+     * @deprecated Use `module_path` instead.
+     */
+    protected function getModuleBasePath(string $moduleName = 'Blog'): string
+    {
+        return $this->module_path(null, $moduleName);
+    }
 }
