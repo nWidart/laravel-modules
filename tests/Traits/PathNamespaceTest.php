@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests\Traits;
 
+use Nwidart\Modules\Helpers\Path;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class PathNamespaceTest extends BaseTestCase
@@ -13,22 +14,22 @@ class PathNamespaceTest extends BaseTestCase
 
     public function test_converts_to_studly_path()
     {
-        $this->assertSame('Modules/User/App/Models/User', $this->studly_path('Modules/User/app/Models/User'));
+        $this->assertSame('Modules/User/App/Models/User', Path::studly('Modules/User/app/Models/User'));
     }
 
     public function test_converts_namespace_with_studly_path()
     {
-        $this->assertSame('Modules\\User\\App\\Models\\User', $this->studly_path('Modules\\User\\app\\Models\\User', '\\'));
+        $this->assertSame('Modules\\User\\App\\Models\\User', Path::studly('Modules\\User\\app\\Models\\User', '\\'));
     }
 
     public function test_converts_to_studly_namespace()
     {
-        $this->assertSame('Modules\User\App\Models\User', $this->studly_namespace('Modules/User/app/Models/User'));
+        $this->assertSame('Modules\User\App\Models\User', Path::studly('Modules/User/app/Models/User', '\\'));
     }
 
     public function test_converts_custom_namespace_with_studly_namespace()
     {
-        $this->assertSame('Modules\\\\User\\\\App\\\\Models\\\\User', $this->studly_namespace('Modules\\\\User\\\\app\\\\Models\\\\User', '\\\\'));
+        $this->assertSame('Modules\\\\User\\\\App\\\\Models\\\\User', Path::studly('Modules\\\\User\\\\app\\\\Models\\\\User', '\\\\'));
     }
 
     public function test_generates_path_namespace()
@@ -44,15 +45,15 @@ class PathNamespaceTest extends BaseTestCase
 
     public function test_cleans_path()
     {
-        $this->assertSame('blog/services', $this->clean_path('blog//services'));
-        $this->assertSame('', $this->clean_path('//'));
-        $this->assertSame('', $this->clean_path(''));
+        $this->assertSame('blog/services', Path::clean('blog//services'));
+        $this->assertSame('', Path::clean('//'));
+        $this->assertSame('', Path::clean(''));
     }
 
     public function test_cleans_namespace_with_clean_path()
     {
-        $this->assertSame('Modules\User\App\Models\User', $this->clean_path('Modules\\\\User/App\\Models\User\\//', '\\'));
-        $this->assertSame('', $this->clean_path('\\'));
+        $this->assertSame('Modules\User\App\Models\User', Path::clean('Modules\\\\User/App\\Models\User\\//', '\\'));
+        $this->assertSame('', Path::clean('\\'));
     }
 
     public function test_identifies_app_path()
