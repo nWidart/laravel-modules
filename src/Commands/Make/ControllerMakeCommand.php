@@ -118,8 +118,7 @@ class ControllerMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.controller.namespace')
-            ?? ltrim(config('modules.paths.generator.controller.path', 'Http/Controllers'), config('modules.paths.app_folder'));
+        return $this->default_namespace('controller');
     }
 
     /**

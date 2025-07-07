@@ -10,8 +10,5 @@ class $CLASS$ extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request)
-    {
-        return response()->json([]);
-    }
+    public function __invoke(Request $request) {}
 }

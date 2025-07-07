@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Broadcasting;
+namespace Modules\Blog\App\Broadcasting;
 
 class WelcomeChannel
 {

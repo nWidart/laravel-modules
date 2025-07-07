@@ -7,16 +7,10 @@ use Nwidart\Modules\Tests\BaseTestCase;
 
 class ListCommandTest extends BaseTestCase
 {
-    /**
-     * @var string
-     */
-    private $modulePath;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->createModule();
-        $this->modulePath = $this->getModuleAppPath();
     }
 
     protected function tearDown(): void
