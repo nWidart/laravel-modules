@@ -66,7 +66,7 @@ class NameParser
     /**
      * Get the table will be used.
      */
-    public function getTableName(): string
+    public function getTableName(): ?string
     {
         $matches = array_reverse($this->getMatches());
 
