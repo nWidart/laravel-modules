@@ -29,7 +29,7 @@ class UpdatePhpunitCoverage extends Command
         $appFolder = config('modules.paths.app_folder', 'app/');
         $appFolder = rtrim($appFolder, '/').'/';
         $phpunitXmlPath = base_path('phpunit.xml');
-        $modulesStatusPath = base_path('modules_statuses.json');
+        $modulesStatusPath = config('modules.activators.file.statuses-file', base_path('modules_statuses.json'));
 
         if (! file_exists($phpunitXmlPath)) {
             $this->error("phpunit.xml file not found: {$phpunitXmlPath}");
@@ -51,7 +51,7 @@ class UpdatePhpunitCoverage extends Command
             return 98;
         }
 
-        $modulesPath = base_path('Modules/');
+        $modulesPath = rtrim(config('modules.paths.modules', base_path('Modules')), '/').'/';
         $moduleDirs = [];
 
         foreach ($enabledModules as $module => $status) {
