@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Custom\Modules\Blog\Http\Controllers\BlogController;
+use Custom\Modules\Blog\App\Http\Controllers\BlogController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('blogs', BlogController::class)->names('blog');
+Route::middleware(['auth:api'])->prefix('v1')->group(function () {
+    Route::apiResource('blogs', BlogController::class);
 });

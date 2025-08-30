@@ -38,13 +38,10 @@ class PublishConfigurationCommand extends BaseCommand
 
     private function getServiceProviderForModule(string $module): string
     {
-        $namespace = $this->laravel['config']->get('modules.namespace');
         $studlyName = Str::studly($module);
         $provider = $this->laravel['config']->get('modules.paths.generator.provider.path');
-        $provider = str_replace($this->laravel['config']->get('modules.paths.app_folder'), '', $provider);
-        $provider = str_replace('/', '\\', $provider);
 
-        return "$namespace\\$studlyName\\$provider\\{$studlyName}ServiceProvider";
+        return $this->module_namespace($module, "$provider/{$studlyName}ServiceProvider");
     }
 
     protected function getOptions(): array

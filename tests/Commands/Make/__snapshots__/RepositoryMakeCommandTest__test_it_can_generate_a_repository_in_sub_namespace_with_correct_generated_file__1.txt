@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Repositories\Api;
+namespace Modules\Blog\App\Repositories\Api;
 
 class MyRepository
 {

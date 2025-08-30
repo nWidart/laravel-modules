@@ -23,7 +23,7 @@ class RepositoryMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('repository')->getPath() ?? config('modules.paths.app_folder').'Repositories';
+        $filePath = GenerateConfigReader::read('repository')->getPath() ?? config('modules.paths.app').'Repositories';
 
         return $path.$filePath.'/'.$this->getRepositoryName().'.php';
     }
@@ -66,7 +66,7 @@ class RepositoryMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.repository.namespace', 'Repositories');
+        return $this->default_namespace('repository');
     }
 
     protected function getStubName(): string

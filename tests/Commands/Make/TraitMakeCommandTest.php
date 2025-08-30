@@ -15,18 +15,11 @@ class TraitMakeCommandTest extends BaseTestCase
      */
     private $finder;
 
-    /**
-     * @var string
-     */
-    private $modulePath;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->finder = $this->app['files'];
         $this->createModule();
-        $this->modulePath = $this->getModuleAppPath();
-
     }
 
     protected function tearDown(): void
@@ -39,7 +32,7 @@ class TraitMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-trait', ['name' => 'MyTrait', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Traits/MyTrait.php'));
+        $this->assertTrue(is_file($this->module_app_path('Traits/MyTrait.php')));
         $this->assertSame(0, $code);
     }
 
@@ -48,7 +41,7 @@ class TraitMakeCommandTest extends BaseTestCase
         $this->artisan('module:make-trait', ['name' => 'MyTrait', 'module' => 'Blog']);
         $code = $this->artisan('module:make-trait', ['name' => 'MyTrait', 'module' => 'Blog', '--force' => true]);
 
-        $this->assertTrue(is_file($this->modulePath.'/Traits/MyTrait.php'));
+        $this->assertTrue(is_file($this->module_app_path('Traits/MyTrait.php')));
         $this->assertSame(0, $code);
     }
 
@@ -56,7 +49,7 @@ class TraitMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-trait', ['name' => 'MyTrait', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Traits/MyTrait.php');
+        $file = $this->finder->get($this->module_app_path('Traits/MyTrait.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -66,7 +59,7 @@ class TraitMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-trait', ['name' => 'Api\\MyTrait', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Traits/Api/MyTrait.php'));
+        $this->assertTrue(is_file($this->module_app_path('Traits/Api/MyTrait.php')));
         $this->assertSame(0, $code);
     }
 
@@ -74,7 +67,7 @@ class TraitMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-trait', ['name' => 'Api\\MyTrait', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Traits/Api/MyTrait.php');
+        $file = $this->finder->get($this->module_app_path('Traits/Api/MyTrait.php'));
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

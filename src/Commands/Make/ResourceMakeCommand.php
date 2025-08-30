@@ -21,8 +21,7 @@ class ResourceMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.resource.namespace')
-            ?? ltrim(config('modules.paths.generator.resource.path', 'Transformers'), config('modules.paths.app_folder', ''));
+        return $this->default_namespace('resource');
     }
 
     /**

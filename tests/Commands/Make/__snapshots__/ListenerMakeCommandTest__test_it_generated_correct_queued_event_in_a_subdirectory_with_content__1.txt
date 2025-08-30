@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Listeners;
+namespace Modules\Blog\App\Listeners;
 
 use Modules\Blog\app\Events\User\WasCreated;
 use Illuminate\Queue\InteractsWithQueue;

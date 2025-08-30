@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\Rules;
+namespace Modules\Blog\App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;

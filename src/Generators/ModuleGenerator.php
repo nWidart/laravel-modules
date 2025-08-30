@@ -74,7 +74,8 @@ class ModuleGenerator extends Generator
      * Module author
      */
     protected array $author = [
-        'name', 'email',
+        'name',
+        'email',
     ];
 
     /**
@@ -322,7 +323,7 @@ class ModuleGenerator extends Generator
      */
     public function generateFolders()
     {
-        foreach ($this->getFolders() as $key => $folder) {
+        foreach (array_keys($this->getFolders()) as $key) {
             $folder = GenerateConfigReader::read($key);
 
             if ($folder->generate() === false) {
@@ -469,12 +470,18 @@ class ModuleGenerator extends Generator
         $replacements = $this->module->config('stubs.replacements');
 
         // Temporarily check if the replacements are defined; remove in the next major version.
-        if (! isset($replacements['composer']['APP_FOLDER_NAME'])) {
-            $replacements['composer'][] = 'APP_FOLDER_NAME';
+        if (! isset($replacements['composer']['APP_PATH'])) {
+            $replacements['composer'][] = 'APP_PATH';
         }
+
+        if (! isset($replacements['composer']['APP_PATH_NAMESPACE'])) {
+            $replacements['composer'][] = 'APP_PATH_NAMESPACE';
+        }
+
         if (! isset($replacements['routes/web']['PLURAL_LOWER_NAME'])) {
             $replacements['routes/web'][] = 'PLURAL_LOWER_NAME';
         }
+
         if (! isset($replacements['routes/api']['PLURAL_LOWER_NAME'])) {
             $replacements['routes/api'][] = 'PLURAL_LOWER_NAME';
         }
@@ -534,17 +541,16 @@ class ModuleGenerator extends Generator
      */
     private function cleanModuleJsonFile()
     {
-        $path = $this->module->getModulePath($this->getName()).'module.json';
+        $json = $this->module->getModulePath($this->getName()).'module.json';
 
-        $content = $this->filesystem->get($path);
-        $namespace = $this->getModuleNamespaceReplacement();
-        $studlyName = $this->getStudlyNameReplacement();
+        $content = $this->filesystem->get($json);
+        $name = $this->getStudlyNameReplacement();
+        $namespace = $this->app_path(config('modules.paths.generator.provider.path').'/'."{$name}ServiceProvider");
 
-        $provider = '"'.$namespace.'\\\\'.$studlyName.'\\\\Providers\\\\'.$studlyName.'ServiceProvider"';
+        $provider = Str::of($this->module_namespace($this->getName(), $namespace))->replace('\\', '\\\\');
+        $content = str_replace('"'.$provider.'"', '', $content);
 
-        $content = str_replace($provider, '', $content);
-
-        $this->filesystem->put($path, $content);
+        $this->filesystem->put($json, $content);
     }
 
     /**
@@ -597,7 +603,8 @@ class ModuleGenerator extends Generator
      */
     protected function getModuleNamespaceReplacement(): string
     {
-        return str_replace('\\', '\\\\', $this->module->config('namespace') ?? $this->path_namespace($this->module->config('paths.modules')));
+        return str_replace('\\', '\\\\', $this->module->config('namespace')
+            ?? $this->namespace($this->module->config('paths.modules')));
     }
 
     /**
@@ -605,11 +612,8 @@ class ModuleGenerator extends Generator
      */
     private function getControllerNamespaceReplacement(): string
     {
-        if ($this->module->config('paths.generator.controller.namespace')) {
-            return $this->module->config('paths.generator.controller.namespace');
-        } else {
-            return $this->path_namespace(ltrim($this->module->config('paths.generator.controller.path', 'app/Http/Controllers'), config('modules.paths.app_folder')));
-        }
+        return $this->module->config('paths.generator.controller.namespace')
+            ?? $this->namespace($this->module->config('paths.generator.controller.path', 'app/Http/Controllers'));
     }
 
     /**
@@ -630,15 +634,35 @@ class ModuleGenerator extends Generator
 
     /**
      * Get replacement for $APP_FOLDER_NAME$.
+     *
+     * @deprecated use $APP_PATH$ instead of $APP_FOLDER_NAME$
      */
     protected function getAppFolderNameReplacement(): string
     {
-        return $this->module->config('paths.app_folder');
+        return $this->app_path().'/';
+    }
+
+    /**
+     * Get replacement for $APP_PATH$.
+     */
+    protected function getAppPathReplacement(): string
+    {
+        return $this->app_path().'/';
+    }
+
+    /**
+     * Get replacement for $APP_PATH_NAMESPACE$.
+     */
+    protected function getAppPathNamespaceReplacement(): string
+    {
+        $namespace = $this->app_path_namespace();
+
+        return Str::of(strlen($namespace) ? $namespace.'\\' : $namespace)->replace('\\', '\\\\');
     }
 
     protected function getProviderNamespaceReplacement(): string
     {
-        return str_replace('\\', '\\\\', GenerateConfigReader::read('provider')->getNamespace());
+        return str_replace('\\', '\\\\', GenerateConfigReader::read('provider')->namespace());
     }
 
     /**

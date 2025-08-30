@@ -12,18 +12,12 @@ class PublishCommandTest extends BaseTestCase
      */
     private $finder;
 
-    /**
-     * @var string
-     */
-    private $modulePath;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->createModule();
-        $this->modulePath = $this->getModuleBasePath();
         $this->finder = $this->app['files'];
-        $this->finder->put($this->modulePath.'/resources/assets/script.js', 'assetfile');
+        $this->finder->put($this->module_path('resources/assets/script.js'), 'assetfile');
     }
 
     protected function tearDown(): void

@@ -1,5 +1,5 @@
 <?php
 
-namespace Modules\Blog\Traits;
+namespace Modules\Blog\App\Traits;
 
 trait MyTrait {}

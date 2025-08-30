@@ -4,10 +4,16 @@ namespace Nwidart\Modules\Tests;
 
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
+use Nwidart\Modules\Traits\PathNamespace;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class BaseTestCase extends OrchestraTestCase
 {
+    use PathNamespace {
+        module_path as __module_path;
+        module_app_path as __module_app_path;
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -58,7 +64,7 @@ abstract class BaseTestCase extends OrchestraTestCase
             'modules' => base_path('modules'),
             'assets' => public_path('modules'),
             'migration' => base_path('database/migrations'),
-            'app_folder' => $module_config['paths']['app_folder'],
+            'app' => $module_config['paths']['app'],
             'generator' => $module_config['paths']['generator'],
         ]);
 
@@ -72,18 +78,34 @@ abstract class BaseTestCase extends OrchestraTestCase
         $this->resetDatabase();
     }
 
-    protected function createModule(string $moduleName = 'Blog'): int
+    protected function createModule(string $module = 'Blog'): int
     {
-        return $this->artisan('module:make', ['name' => [$moduleName]]);
+        return $this->artisan('module:make', ['name' => [$module]]);
     }
 
+    protected function module_path(?string $path = null, string $module = 'Blog'): string
+    {
+        return $this->modules_path("{$module}/{$path}");
+    }
+
+    protected function module_app_path(?string $path = null, string $module = 'Blog'): string
+    {
+        return $this->module_path($this->app_path($path), $module);
+    }
+
+    /**
+     * @deprecated Use `module_app_path` instead.
+     */
     protected function getModuleAppPath(string $moduleName = 'Blog'): string
     {
-        return base_path("modules/$moduleName/").rtrim(config('modules.paths.app_folder'), '/');
+        return $this->module_app_path(null, $moduleName);
     }
 
+    /**
+     * @deprecated Use `module_path` instead.
+     */
     protected function getModuleBasePath(string $moduleName = 'Blog'): string
     {
-        return base_path("modules/$moduleName");
+        return $this->module_path(null, $moduleName);
     }
 }

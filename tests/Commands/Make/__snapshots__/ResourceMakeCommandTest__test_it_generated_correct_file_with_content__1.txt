@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Blog\Transformers;
+namespace Modules\Blog\App\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PostsTransformer extends JsonResource
+class PostsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

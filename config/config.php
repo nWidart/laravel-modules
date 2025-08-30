@@ -70,7 +70,8 @@ return [
                 'AUTHOR_EMAIL',
                 'MODULE_NAMESPACE',
                 'PROVIDER_NAMESPACE',
-                'APP_FOLDER_NAME',
+                'APP_PATH_NAMESPACE',
+                'APP_PATH',
             ],
         ],
         'gitkeep' => true,
@@ -85,7 +86,7 @@ return [
         | This path will also be added automatically to the list of scanned folders.
         |
         */
-        'modules' => base_path('Modules'),
+        'modules' => base_path('modules'),
 
         /*
         |--------------------------------------------------------------------------
@@ -110,13 +111,17 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | The app path
+        | app/ path
         |--------------------------------------------------------------------------
         |
-        | app folder name
-        | for example can change it to 'src' or 'App'
+        | Specifies the path for the app/ directory.
+        |
+        | Examples:
+        |   'app/'  = (default Laravel directory),
+        |   'src/'  = (custom directory),
+        |   '/'     = (root directory).
         */
-        'app_folder' => 'app/',
+        'app' => 'app/',
 
         /*
         |--------------------------------------------------------------------------
@@ -147,7 +152,7 @@ return [
             'policies' => ['path' => 'app/Policies', 'generate' => false],
             'provider' => ['path' => 'app/Providers', 'generate' => true],
             'repository' => ['path' => 'app/Repositories', 'generate' => false],
-            'resource' => ['path' => 'app/Transformers', 'generate' => false],
+            'resource' => ['path' => 'app/Resources', 'generate' => false],
             'route-provider' => ['path' => 'app/Providers', 'generate' => true],
             'rules' => ['path' => 'app/Rules', 'generate' => false],
             'services' => ['path' => 'app/Services', 'generate' => false],
