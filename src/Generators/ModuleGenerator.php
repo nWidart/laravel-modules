@@ -585,6 +585,14 @@ class ModuleGenerator extends Generator
     }
 
     /**
+     * Get the module name in plural upper case.
+     */
+    protected function getPluralUpperNameReplacement(): string
+    {
+        return Str::of($this->getName())->upper()->plural();
+    }
+
+    /**
      * Get replacement for $VENDOR$.
      */
     protected function getVendorReplacement(): string
