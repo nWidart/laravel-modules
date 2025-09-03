@@ -2,8 +2,8 @@
 
 namespace Nwidart\Modules\Commands\Publish;
 
-use Illuminate\Support\Str;
 use Nwidart\Modules\Commands\BaseCommand;
+use Nwidart\Modules\Facades\Module;
 use Symfony\Component\Console\Input\InputOption;
 
 class PublishConfigurationCommand extends BaseCommand
@@ -38,13 +38,15 @@ class PublishConfigurationCommand extends BaseCommand
 
     private function getServiceProviderForModule(string $module): string
     {
+        $moduleModel = Module::find($module);
+
         $namespace = $this->laravel['config']->get('modules.namespace');
-        $studlyName = Str::studly($module);
+        $moduleName = $moduleModel->getName();
         $provider = $this->laravel['config']->get('modules.paths.generator.provider.path');
         $provider = str_replace($this->laravel['config']->get('modules.paths.app_folder'), '', $provider);
         $provider = str_replace('/', '\\', $provider);
 
-        return "$namespace\\$studlyName\\$provider\\{$studlyName}ServiceProvider";
+        return "$namespace\\$moduleName\\$provider\\{$moduleName}ServiceProvider";
     }
 
     protected function getOptions(): array
