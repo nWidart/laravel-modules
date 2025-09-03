@@ -95,7 +95,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
         $factoryPath = GenerateConfigReader::read('component-class');
 
-        return $path.$factoryPath->getPath().'/'.$this->getFileName();
+        return $path.$factoryPath->path($this->getFileName());
     }
 
     /**

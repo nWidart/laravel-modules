@@ -31,7 +31,7 @@ class MigrateStatusCommand extends BaseCommand
     {
         $module = $this->getModuleModel($name);
 
-        $path = str_replace(base_path(), '', (new Migrator($module, $this->getLaravel()))->getPath());
+        $path = str_replace(base_path(), '', (new Migrator($module, $this->getLaravel()))->path());
 
         $this->call('migrate:status', [
             '--path' => $path,

@@ -23,7 +23,7 @@ use Nwidart\Modules\Commands\Database\MigrateResetCommand;
  * @method static string getModulePath($moduleName)
  * @method static \Illuminate\Filesystem\Filesystem getFiles()
  * @method static mixed config(string $key, $default = null)
- * @method static string getPath()
+ * @method static string path()
  * @method static void boot()
  * @method static void register(): void
  * @method static string assetPath(string $module)

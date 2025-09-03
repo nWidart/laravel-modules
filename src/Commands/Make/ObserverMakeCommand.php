@@ -98,7 +98,7 @@ class ObserverMakeCommand extends GeneratorCommand
 
         $observerPath = GenerateConfigReader::read('observer');
 
-        return $path.$observerPath->getPath().'/'.$this->getFileName();
+        return $path.$observerPath->path($this->getFileName());
     }
 
     /**

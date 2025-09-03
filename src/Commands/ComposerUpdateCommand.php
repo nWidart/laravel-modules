@@ -26,7 +26,7 @@ class ComposerUpdateCommand extends BaseCommand
 
         $this->components->task("Updating Composer.json <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
 
-            $composer_path = $module->getPath().DIRECTORY_SEPARATOR.'composer.json';
+            $composer_path = $module->path('composer.json');
 
             $composer = json_decode(File::get($composer_path), true);
 

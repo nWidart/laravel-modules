@@ -161,7 +161,7 @@ class SeedCommand extends BaseCommand
 
         $namespace = $this->laravel['modules']->config('namespace');
         $config = GenerateConfigReader::read('seeder');
-        $seederPath = str_replace('/', '\\', $config->getPath());
+        $seederPath = str_replace('/', '\\', $config->path());
 
         return $namespace.'\\'.$name.'\\'.$seederPath.'\\'.$name.'DatabaseSeeder';
     }
@@ -177,7 +177,7 @@ class SeedCommand extends BaseCommand
         $name = Str::studly($name);
 
         $seederPath = GenerateConfigReader::read('seeder');
-        $seederPath = str_replace('/', '\\', $seederPath->getPath());
+        $seederPath = str_replace('/', '\\', $seederPath->path());
 
         $foundModules = [];
         foreach ($this->laravel['modules']->config('scan.paths') as $path) {

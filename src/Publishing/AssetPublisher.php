@@ -24,8 +24,8 @@ class AssetPublisher extends Publisher
      */
     public function getSourcePath(): string
     {
-        return $this->getModule()->getExtraPath(
-            GenerateConfigReader::read('assets')->getPath()
+        return $this->getModule()->path(
+            GenerateConfigReader::read('assets')->path()
         );
     }
 }

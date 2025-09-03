@@ -11,10 +11,14 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Traits\PathNamespace;
 
 abstract class Module
 {
     use Macroable;
+    use PathNamespace {
+        path as __path;
+    }
 
     /**
      * The laravel|lumen application instance.
@@ -157,6 +161,8 @@ abstract class Module
 
     /**
      * Get path.
+     *
+     * @deprecated use `path()` instead
      */
     public function getPath(): string
     {
@@ -165,12 +171,22 @@ abstract class Module
 
     /**
      * Get app path.
+     *
+     * @deprecated use `app_path()` instead
      */
     public function getAppPath(): string
     {
         $app_path = rtrim($this->getExtraPath(config('modules.paths.app_folder', '')), '/');
 
         return is_dir($app_path) ? $app_path : $this->getPath();
+    }
+
+    /**
+     * Get the module path.
+     */
+    public function path(?string $path = null): string
+    {
+        return $this->__path($this->path.DIRECTORY_SEPARATOR.$path);
     }
 
     /**
@@ -206,7 +222,7 @@ abstract class Module
     {
         $lowerName = $this->getLowerName();
 
-        $langPath = $this->getPath().'/Resources/lang';
+        $langPath = $this->path('lang');
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $lowerName);
@@ -223,7 +239,7 @@ abstract class Module
         }
 
         return Arr::get($this->moduleJson, $file, function () use ($file) {
-            return $this->moduleJson[$file] = new Json($this->getPath().'/'.$file, $this->files);
+            return $this->moduleJson[$file] = new Json($this->path($file), $this->files);
         });
     }
 
@@ -365,7 +381,7 @@ abstract class Module
 
         $this->activator->delete($this);
 
-        $result = $this->json()->getFilesystem()->deleteDirectory($this->getPath());
+        $result = $this->json()->getFilesystem()->deleteDirectory($this->path());
 
         $this->fireEvent(ModuleEvent::DELETED);
 
@@ -374,10 +390,12 @@ abstract class Module
 
     /**
      * Get extra path.
+     *
+     * @deprecated use `path()` instead
      */
     public function getExtraPath(?string $path): string
     {
-        return $this->getPath().($path ? '/'.$path : '');
+        return $this->path($path);
     }
 
     /**

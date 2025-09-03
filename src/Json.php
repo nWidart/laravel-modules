@@ -53,8 +53,18 @@ class Json
 
     /**
      * Get path.
+     *
+     * @deprecated use path() instead.
      */
     public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * Get path.
+     */
+    public function path(): string
     {
         return $this->path;
     }
@@ -82,7 +92,7 @@ class Json
      */
     public function getContents(): string
     {
-        return $this->filesystem->get($this->getPath());
+        return $this->filesystem->get($this->path());
     }
 
     /**
@@ -92,11 +102,11 @@ class Json
      */
     public function decodeContents(): array
     {
-        $attributes = $this->filesystem->json($this->getPath());
+        $attributes = $this->filesystem->json($this->path());
 
         // any JSON parsing errors should throw an exception
         if (json_last_error() > 0) {
-            throw new InvalidJsonException('Error processing file: '.$this->getPath().'. Error: '.json_last_error_msg());
+            throw new InvalidJsonException('Error processing file: '.$this->path().'. Error: '.json_last_error_msg());
         }
 
         return $attributes;
@@ -146,7 +156,7 @@ class Json
      */
     public function save(): bool
     {
-        return $this->filesystem->put($this->getPath(), $this->toJsonPretty());
+        return $this->filesystem->put($this->path(), $this->toJsonPretty());
     }
 
     /**

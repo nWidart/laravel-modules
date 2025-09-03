@@ -51,7 +51,7 @@ class ListCommand extends Command
                 $module->getName(),
                 $module->isEnabled() ? '<fg=green>Enabled</>' : '<fg=red>Disabled</>',
                 $module->get('priority'),
-                $module->getPath(),
+                $module->path(),
             ];
         }
 

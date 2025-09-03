@@ -74,7 +74,7 @@ class PolicyMakeCommand extends GeneratorCommand
 
         $policyPath = GenerateConfigReader::read('policies');
 
-        return $path.$policyPath->getPath().'/'.$this->getFileName().'.php';
+        return $path.$policyPath->path($this->getFileName().'.php');
     }
 
     /**

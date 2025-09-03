@@ -82,6 +82,11 @@ interface RepositoryInterface
     public function getPath(): string;
 
     /**
+     * Get the modules path.
+     */
+    public function path(?string $path = null): string;
+
+    /**
      * Boot the modules.
      */
     public function boot(): void;

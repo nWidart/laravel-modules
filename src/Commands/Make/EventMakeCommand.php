@@ -44,7 +44,7 @@ class EventMakeCommand extends GeneratorCommand
 
         $eventPath = GenerateConfigReader::read('event');
 
-        return $path.$eventPath->getPath().'/'.$this->getFileName().'.php';
+        return $path.$eventPath->path($this->getFileName().'.php');
     }
 
     /**
