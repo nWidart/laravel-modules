@@ -8,6 +8,7 @@ use Illuminate\Console\Prohibitable;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
+use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -75,8 +76,10 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
     public function handle()
     {
         if ($this instanceof ConfirmableCommand) {
-            if ($this->isProhibited() ||
-                ! $this->confirmToProceed($this->getConfirmableLabel(), $this->getConfirmableCallback())) {
+            if (
+                $this->isProhibited() ||
+                ! $this->confirmToProceed($this->getConfirmableLabel(), $this->getConfirmableCallback())
+            ) {
                 return Command::FAILURE;
             }
         }
@@ -85,6 +88,7 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
             $this->components->info($info);
         }
 
+        // Always resolve modules from the argument; ordering is handled in promptForMissingArguments()
         $modules = (array) $this->argument('module');
 
         foreach ($modules as $module) {
@@ -94,9 +98,8 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
 
     protected function promptForMissingArguments(InputInterface $input, OutputInterface $output): void
     {
-        $modules = $this->hasOption('direction')
-            ? array_keys($this->laravel['modules']->getOrdered($input->hasOption('direction')))
-            : array_keys($this->laravel['modules']->all());
+        // Prefer the order defined in the statuses file (modules.json) as configured in modules.activators.file.statuses-file
+        $modules = $this->getModulesOrderedByStatusesFile();
 
         if ($input->getOption(strtolower(self::ALL))) {
             $input->setArgument('module', $modules);
@@ -129,11 +132,51 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         );
     }
 
-    protected function getModuleModel($name)
+    protected function getModuleModel($name): Module
     {
         return $name instanceof \Nwidart\Modules\Module
             ? $name
             : $this->laravel['modules']->findOrFail($name);
+    }
+
+    /**
+     * Read the statuses file defined in config('modules.activators.file.statuses-file')
+     * and return enabled module names preserving the order in that file.
+     * Falls back to repository ordering if file is missing or invalid.
+     */
+    private function getModulesOrderedByStatusesFile(): array
+    {
+        $statusesFile = $this->laravel['config']->get('modules.activators.file.statuses-file');
+        $statusesFile = is_string($statusesFile) && $statusesFile !== ''
+            ? $statusesFile
+            : base_path('modules_statuses.json');
+
+        $sort = $this->option('direction') ?? 'asc';
+
+        if (! is_string($statusesFile) || ! file_exists($statusesFile)) {
+            return array_keys($this->laravel['modules']->getOrdered($sort));
+        }
+
+        $json = @file_get_contents($statusesFile);
+        $data = is_string($json) ? json_decode($json, true) : null;
+
+        if (! is_array($data)) {
+            return array_keys($this->laravel['modules']->getOrdered($sort));
+        }
+
+        $modules = [];
+        foreach ($data as $name => $enabled) {
+            if ($enabled === true || $enabled === 1) {
+                $modules[] = $name; // Keep StudlyCase names as defined
+            }
+        }
+
+        // Fallback if no enabled modules found
+        if (empty($modules)) {
+            return array_keys($this->laravel['modules']->getOrdered($sort));
+        }
+
+        return $modules;
     }
 
     private function configureConfirmable(): void
