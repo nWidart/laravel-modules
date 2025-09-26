@@ -79,6 +79,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\Make\ResourceMakeCommand::class,
             Commands\Make\RouteProviderMakeCommand::class,
             Commands\Make\RuleMakeCommand::class,
+            Commands\Make\ReplacementMakeCommand::class,
             Commands\Make\ScopeMakeCommand::class,
             Commands\Make\SeedMakeCommand::class,
             Commands\Make\ServiceMakeCommand::class,
