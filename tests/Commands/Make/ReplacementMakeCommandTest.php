@@ -75,5 +75,3 @@ class ReplacementMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 }
-
-
