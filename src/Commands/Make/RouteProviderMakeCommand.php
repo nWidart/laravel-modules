@@ -96,12 +96,12 @@ class RouteProviderMakeCommand extends GeneratorCommand
 
     protected function shouldGenerateWebRoutes(): bool
     {
-        return config('modules.paths.generator.routes.web');
+        return config('modules.paths.generator.routes.web', true);
     }
 
     protected function shouldGenerateApiRoutes(): bool
     {
-        return config('modules.paths.generator.routes.api');
+        return config('modules.paths.generator.routes.api', true);
     }
 
     /**
