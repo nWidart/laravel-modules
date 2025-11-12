@@ -176,7 +176,7 @@ return [
             'views' => ['path' => 'resources/views', 'generate' => true],
 
             // routes/
-            'routes' => ['path' => 'routes', 'generate' => true],
+            'routes' => ['path' => 'routes', 'generate' => true, 'web' => true, 'api' => true],
 
             // tests/
             'test-feature' => ['path' => 'tests/Feature', 'generate' => true],
