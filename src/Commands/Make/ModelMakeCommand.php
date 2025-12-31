@@ -72,7 +72,7 @@ class ModelMakeCommand extends GeneratorCommand
         $string = '';
         foreach ($pieces as $i => $piece) {
             if ($i + 1 < count($pieces)) {
-                $string .= strtolower($piece).'_';
+                $string .= strtolower($piece) . '_';
             } else {
                 $string .= Str::plural(strtolower($piece));
             }
@@ -116,7 +116,7 @@ class ModelMakeCommand extends GeneratorCommand
     protected function handleOptionalMigrationOption(): void
     {
         if ($this->option('migration') === true) {
-            $migrationName = 'create_'.$this->createMigrationName().'_table';
+            $migrationName = 'create_' . $this->createMigrationName() . '_table';
             $this->call('module:make-migration', ['name' => $migrationName, 'module' => $this->argument('module')]);
         }
     }
@@ -216,7 +216,7 @@ class ModelMakeCommand extends GeneratorCommand
 
         $modelPath = GenerateConfigReader::read('model');
 
-        return $path.$modelPath->getPath().'/'.$this->getModelName().'.php';
+        return $path . $modelPath->getPath() . '/' . $this->getModelName() . '.php';
     }
 
     private function getModelName(): string

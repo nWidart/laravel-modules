@@ -60,7 +60,7 @@ final class ChannelMakeCommand extends GeneratorCommand
 
         $channelPath = GenerateConfigReader::read('channels');
 
-        return $path.$channelPath->getPath().'/'.$this->getFileName().'.php';
+        return $path . $channelPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

@@ -35,8 +35,8 @@ trait PathNamespace
      */
     public function module_namespace(string $module, ?string $path = null): string
     {
-        $module_namespace = config('modules.namespace', $this->path_namespace(config('modules.paths.modules'))).'\\'.($module);
-        $module_namespace .= strlen($path) ? '\\'.$this->path_namespace($path) : '';
+        $module_namespace = config('modules.namespace', $this->path_namespace(config('modules.paths.modules'))) . '\\' . ($module);
+        $module_namespace .= strlen($path) ? '\\' . $this->path_namespace($path) : '';
 
         return $this->studly_namespace($module_namespace);
     }
@@ -61,13 +61,13 @@ trait PathNamespace
 
         if ($path) {
             // Replace duplicate custom|default app paths
-            $replaces = array_unique([$this->clean_path($app_path).'/', 'app/']);
+            $replaces = array_unique([$this->clean_path($app_path) . '/', 'app/']);
             do {
                 $path = Str::of($path)->replaceStart($app_path, '')->replaceStart('app/', '');
             } while (Str::of($path)->startsWith($replaces));
 
             // Append additional path
-            $app_path .= strlen($path) ? '/'.$path : '';
+            $app_path .= strlen($path) ? '/' . $path : '';
         }
 
         return $this->clean_path($app_path);

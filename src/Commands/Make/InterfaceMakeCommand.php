@@ -23,9 +23,9 @@ class InterfaceMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('interfaces')->getPath() ?? config('modules.paths.app_folder').'Interfaces';
+        $filePath = GenerateConfigReader::read('interfaces')->getPath() ?? config('modules.paths.app_folder') . 'Interfaces';
 
-        return $path.$filePath.'/'.$this->getInterfaceName().'.php';
+        return $path . $filePath . '/' . $this->getInterfaceName() . '.php';
     }
 
     protected function getTemplateContents(): string

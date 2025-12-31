@@ -38,7 +38,7 @@ class NotificationMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-notification', ['name' => 'WelcomeNotification', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Notifications/WelcomeNotification.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Notifications/WelcomeNotification.php'));
         $this->assertSame(0, $code);
     }
 
@@ -46,7 +46,7 @@ class NotificationMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-notification', ['name' => 'WelcomeNotification', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Notifications/WelcomeNotification.php');
+        $file = $this->finder->get($this->modulePath . '/Notifications/WelcomeNotification.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -58,7 +58,7 @@ class NotificationMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-notification', ['name' => 'WelcomeNotification', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->getModuleBasePath().'/SuperNotifications/WelcomeNotification.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/SuperNotifications/WelcomeNotification.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -70,7 +70,7 @@ class NotificationMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-notification', ['name' => 'WelcomeNotification', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Notifications/WelcomeNotification.php');
+        $file = $this->finder->get($this->modulePath . '/Notifications/WelcomeNotification.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

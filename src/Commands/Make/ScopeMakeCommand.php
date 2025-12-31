@@ -23,9 +23,9 @@ class ScopeMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('scopes')->getPath() ?? config('modules.paths.generator.model.path').'/Scopes';
+        $filePath = GenerateConfigReader::read('scopes')->getPath() ?? config('modules.paths.generator.model.path') . '/Scopes';
 
-        return $path.$filePath.'/'.$this->getScopeName().'.php';
+        return $path . $filePath . '/' . $this->getScopeName() . '.php';
     }
 
     protected function getTemplateContents(): string
@@ -70,7 +70,7 @@ class ScopeMakeCommand extends GeneratorCommand
         $parts = explode('/', $namespace);
         $models = end($parts);
 
-        return $models.'\Scopes';
+        return $models . '\Scopes';
     }
 
     protected function getStubName(): string

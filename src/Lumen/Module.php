@@ -12,7 +12,7 @@ class Module extends BaseModule
      */
     public function getCachedServicesPath(): string
     {
-        return Str::replaceLast('services.php', $this->getSnakeName().'_module.php', $this->app->basePath('storage/app/').'services.php');
+        return Str::replaceLast('services.php', $this->getSnakeName() . '_module.php', $this->app->basePath('storage/app/') . 'services.php');
     }
 
     /**
@@ -28,5 +28,7 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
-    public function registerAliases(): void {}
+    public function registerAliases(): void
+    {
+    }
 }

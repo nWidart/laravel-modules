@@ -51,9 +51,9 @@ class Stub
      */
     public function getPath(): string
     {
-        $path = static::getBasePath().$this->path;
+        $path = static::getBasePath() . $this->path;
 
-        return file_exists($path) ? $path : __DIR__.'/../Commands/stubs'.$this->path;
+        return file_exists($path) ? $path : __DIR__ . '/../Commands/stubs' . $this->path;
     }
 
     /**
@@ -80,7 +80,7 @@ class Stub
         $contents = file_get_contents($this->getPath());
 
         foreach ($this->replaces as $search => $replace) {
-            $contents = str_replace('$'.strtoupper($search).'$', $replace, $contents);
+            $contents = str_replace('$' . strtoupper($search) . '$', $replace, $contents);
         }
 
         return $contents;
@@ -99,7 +99,7 @@ class Stub
      */
     public function saveTo(string $path, string $filename): bool
     {
-        return file_put_contents($path.'/'.$filename, $this->getContents());
+        return file_put_contents($path . '/' . $filename, $this->getContents());
     }
 
     /**

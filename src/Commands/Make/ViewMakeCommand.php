@@ -37,11 +37,11 @@ class ViewMakeCommand extends GeneratorCommand
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
         $factoryPath = GenerateConfigReader::read('views');
 
-        return $path.$factoryPath->getPath().'/'.$this->getFileName();
+        return $path . $factoryPath->getPath() . '/' . $this->getFileName();
     }
 
     private function getFileName(): string
     {
-        return Str::lower($this->argument('name')).'.blade.php';
+        return Str::lower($this->argument('name')) . '.blade.php';
     }
 }

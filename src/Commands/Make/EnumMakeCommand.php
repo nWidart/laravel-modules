@@ -23,9 +23,9 @@ class EnumMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('enums')->getPath() ?? config('modules.paths.app_folder').'Enums';
+        $filePath = GenerateConfigReader::read('enums')->getPath() ?? config('modules.paths.app_folder') . 'Enums';
 
-        return $path.$filePath.'/'.$this->getEnumName().'.php';
+        return $path . $filePath . '/' . $this->getEnumName() . '.php';
     }
 
     protected function getTemplateContents(): string

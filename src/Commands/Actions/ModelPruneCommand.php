@@ -7,13 +7,15 @@ use Illuminate\Database\Console\PruneCommand;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+
+use function Laravel\Prompts\multiselect;
+
 use Nwidart\Modules\Facades\Module;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Finder\Finder;
 
-use function Laravel\Prompts\multiselect;
+use Symfony\Component\Finder\Finder;
 
 #[AsCommand(name: 'module:prune')]
 class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
@@ -113,7 +115,7 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
 
                 $namespace = config('modules.namespace');
 
-                return $namespace.str_replace(
+                return $namespace . str_replace(
                     ['/', '.php'],
                     ['\\', ''],
                     Str::after($model->getRealPath(), realpath(config('modules.paths.modules')))

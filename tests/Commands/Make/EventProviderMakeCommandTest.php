@@ -39,7 +39,7 @@ class EventProviderMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-event-provider', ['module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Providers/EventServiceProvider.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Providers/EventServiceProvider.php'));
         $this->assertSame(1, $code);
     }
 
@@ -48,7 +48,7 @@ class EventProviderMakeCommandTest extends BaseTestCase
         $this->artisan('module:make-event-provider', ['module' => 'Blog']);
         $code = $this->artisan('module:make-event-provider', ['module' => 'Blog', '--force' => true]);
 
-        $this->assertTrue(is_file($this->modulePath.'/Providers/EventServiceProvider.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Providers/EventServiceProvider.php'));
         $this->assertSame(0, $code);
     }
 
@@ -56,7 +56,7 @@ class EventProviderMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-event-provider', ['module' => 'Blog', '--force' => true]);
 
-        $file = $this->finder->get($this->modulePath.'/Providers/EventServiceProvider.php');
+        $file = $this->finder->get($this->modulePath . '/Providers/EventServiceProvider.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

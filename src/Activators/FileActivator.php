@@ -144,6 +144,6 @@ class FileActivator implements ActivatorInterface
      */
     private function config(string $key, $default = null)
     {
-        return $this->config->get('modules.activators.file.'.$key, $default);
+        return $this->config->get('modules.activators.file.' . $key, $default);
     }
 }

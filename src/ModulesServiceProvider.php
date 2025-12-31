@@ -14,12 +14,16 @@ abstract class ModulesServiceProvider extends ServiceProvider
     /**
      * Booting the package.
      */
-    public function boot() {}
+    public function boot()
+    {
+    }
 
     /**
      * Register all modules.
      */
-    public function register() {}
+    public function register()
+    {
+    }
 
     /**
      * Register all modules.
@@ -28,7 +32,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
     {
         $manifest = app(ModuleManifest::class);
 
-        (new ProviderRepository($this->app, new Filesystem, $this->getCachedModulePath()))
+        (new ProviderRepository($this->app, new Filesystem(), $this->getCachedModulePath()))
             ->load($manifest->getProviders());
 
         $manifest->registerFiles();
@@ -40,8 +44,8 @@ abstract class ModulesServiceProvider extends ServiceProvider
      */
     protected function registerNamespaces()
     {
-        $configPath = __DIR__.'/../config/config.php';
-        $stubsPath = dirname(__DIR__).'/src/Commands/stubs';
+        $configPath = __DIR__ . '/../config/config.php';
+        $stubsPath = dirname(__DIR__) . '/src/Commands/stubs';
 
         $this->publishes([
             $configPath => config_path('modules.php'),
@@ -52,7 +56,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
         ], 'stubs');
 
         $this->publishes([
-            __DIR__.'/../scripts/vite-module-loader.js' => base_path('vite-module-loader.js'),
+            __DIR__ . '/../scripts/vite-module-loader.js' => base_path('vite-module-loader.js'),
         ], 'vite');
     }
 

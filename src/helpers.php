@@ -34,7 +34,7 @@ if (! function_exists('module_path')) {
     {
         $module = app('modules')->find($name);
 
-        return $module->getPath().($path ? DIRECTORY_SEPARATOR.$path : $path);
+        return $module->getPath() . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 }
 
@@ -44,7 +44,7 @@ if (! function_exists('config_path')) {
      */
     function config_path(string $path = ''): string
     {
-        return app()->basePath().'/config'.($path ? DIRECTORY_SEPARATOR.$path : $path);
+        return app()->basePath() . '/config' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 }
 
@@ -54,7 +54,7 @@ if (! function_exists('public_path')) {
      */
     function public_path(string $path = ''): string
     {
-        return app()->make('path.public').($path ? DIRECTORY_SEPARATOR.ltrim($path, DIRECTORY_SEPARATOR) : $path);
+        return app()->make('path.public') . ($path ? DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR) : $path);
     }
 }
 

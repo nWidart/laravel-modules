@@ -23,9 +23,9 @@ class TraitMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('traits')->getPath() ?? config('modules.paths.app_folder').'Traits';
+        $filePath = GenerateConfigReader::read('traits')->getPath() ?? config('modules.paths.app_folder') . 'Traits';
 
-        return $path.$filePath.'/'.$this->getTraitName().'.php';
+        return $path . $filePath . '/' . $this->getTraitName() . '.php';
     }
 
     protected function getTemplateContents(): string

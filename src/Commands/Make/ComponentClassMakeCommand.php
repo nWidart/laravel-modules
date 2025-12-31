@@ -83,7 +83,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS' => $this->getClass(),
             'LOWER_NAME' => $module->getLowerName(),
-            'COMPONENT_NAME' => 'components.'.Str::lower($this->argument('name')),
+            'COMPONENT_NAME' => 'components.' . Str::lower($this->argument('name')),
         ]))->render();
     }
 
@@ -95,7 +95,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
         $factoryPath = GenerateConfigReader::read('component-class');
 
-        return $path.$factoryPath->getPath().'/'.$this->getFileName();
+        return $path . $factoryPath->getPath() . '/' . $this->getFileName();
     }
 
     /**
@@ -103,6 +103,6 @@ class ComponentClassMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name')).'.php';
+        return Str::studly($this->argument('name')) . '.php';
     }
 }

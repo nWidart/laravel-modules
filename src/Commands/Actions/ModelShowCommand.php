@@ -7,9 +7,10 @@ use Illuminate\Database\Console\ShowModelCommand;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Symfony\Component\Console\Attribute\AsCommand;
 
 use function Laravel\Prompts\search;
+
+use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand('module:model-show', 'Show information about an Eloquent model in modules')]
 class ModelShowCommand extends ShowModelCommand implements PromptsForMissingInput
@@ -41,7 +42,7 @@ class ModelShowCommand extends ShowModelCommand implements PromptsForMissingInpu
     {
         return
             Str::of($path)
-                ->after(base_path().DIRECTORY_SEPARATOR)
+                ->after(base_path() . DIRECTORY_SEPARATOR)
                 ->replace(
                     [config('modules.paths.app_folder'), '/', '.php'],
                     ['', '\\', ''],

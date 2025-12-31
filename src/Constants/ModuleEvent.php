@@ -4,27 +4,27 @@ namespace Nwidart\Modules\Constants;
 
 class ModuleEvent
 {
-    const BOOT = 'boot';
+    public const BOOT = 'boot';
 
-    const REGISTER = 'register';
+    public const REGISTER = 'register';
 
-    const DISABLING = 'disabling';
+    public const DISABLING = 'disabling';
 
-    const DISABLED = 'disabled';
+    public const DISABLED = 'disabled';
 
-    const ENABLING = 'enabling';
+    public const ENABLING = 'enabling';
 
-    const ENABLED = 'enabled';
+    public const ENABLED = 'enabled';
 
-    const CREATING = 'creating';
+    public const CREATING = 'creating';
 
-    const CREATED = 'created';
+    public const CREATED = 'created';
 
-    const DELETING = 'deleting';
+    public const DELETING = 'deleting';
 
-    const DELETED = 'deleted';
+    public const DELETED = 'deleted';
 
-    const USED = 'used';
+    public const USED = 'used';
 
-    const UNUSED = 'unused';
+    public const UNUSED = 'unused';
 }

@@ -203,10 +203,10 @@ class Installer
     public function getPackageName(): string
     {
         if (is_null($this->version)) {
-            return $this->name.':dev-master';
+            return $this->name . ':dev-master';
         }
 
-        return $this->name.':'.$this->version;
+        return $this->name . ':' . $this->version;
     }
 
     /**

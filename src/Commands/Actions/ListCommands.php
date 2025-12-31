@@ -63,9 +63,9 @@ class ListCommands extends BaseCommand
         $possiblePaths = [
             $module->getExtraPath('Commands'),
             $module->getExtraPath('Console/Commands'),
-            $module->getAppPath().'/Commands',
-            $module->getAppPath().'/Console',
-            $module->getAppPath().'/Console/Commands',
+            $module->getAppPath() . '/Commands',
+            $module->getAppPath() . '/Console',
+            $module->getAppPath() . '/Console/Commands',
         ];
 
         foreach ($possiblePaths as $path) {
@@ -82,7 +82,7 @@ class ListCommands extends BaseCommand
                 }
 
                 // Get the class name from the file path
-                $relativePath = str_replace($module->getPath().'/', '', $file->getPathname());
+                $relativePath = str_replace($module->getPath() . '/', '', $file->getPathname());
                 $className = $this->getClassNameFromPath($relativePath, $moduleNamespace);
 
                 // Try to get command information
@@ -102,7 +102,7 @@ class ListCommands extends BaseCommand
      */
     protected function getModuleNamespace(string $moduleName): string
     {
-        return config('modules.namespace', 'Modules').'\\'.$moduleName;
+        return config('modules.namespace', 'Modules') . '\\' . $moduleName;
     }
 
     /**
@@ -118,9 +118,9 @@ class ListCommands extends BaseCommand
 
         // If the path starts with app/, remove it and prepend the module namespace
         if (Str::startsWith($path, 'app\\')) {
-            $path = $moduleNamespace.'\\'.Str::after($path, 'app\\');
+            $path = $moduleNamespace . '\\' . Str::after($path, 'app\\');
         } else {
-            $path = $moduleNamespace.'\\'.$path;
+            $path = $moduleNamespace . '\\' . $path;
         }
 
         return $path;

@@ -80,7 +80,7 @@ class StubTest extends BaseTestCase
             'CLASS' => 'MyCommand',
         ]);
 
-        $stub->setBasePath(__DIR__.'/stubs');
+        $stub->setBasePath(__DIR__ . '/stubs');
 
         $stub->saveTo(base_path(), 'stub-override-not-exists.php');
 
@@ -93,7 +93,7 @@ class StubTest extends BaseTestCase
             'NAME' => 'Name',
         ]);
 
-        $stub->setBasePath(__DIR__.'/stubs');
+        $stub->setBasePath(__DIR__ . '/stubs');
 
         $stub->saveTo(base_path(), 'stub-override-exists.php');
 

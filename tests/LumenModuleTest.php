@@ -22,7 +22,7 @@ class LumenModuleTest extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->module = new LumenTestingModule($this->app, 'Recipe Name', __DIR__.'/stubs/valid/Recipe');
+        $this->module = new LumenTestingModule($this->app, 'Recipe Name', __DIR__ . '/stubs/valid/Recipe');
         $this->activator = $this->app[ActivatorInterface::class];
     }
 
@@ -59,12 +59,12 @@ class LumenModuleTest extends BaseTestCase
 
     public function test_it_gets_module_path()
     {
-        $this->assertEquals(__DIR__.'/stubs/valid/Recipe', $this->module->getPath());
+        $this->assertEquals(__DIR__ . '/stubs/valid/Recipe', $this->module->getPath());
     }
 
     public function test_it_loads_module_translations()
     {
-        (new LumenTestingModule($this->app, 'Recipe', __DIR__.'/stubs/valid/Recipe'))->boot();
+        (new LumenTestingModule($this->app, 'Recipe', __DIR__ . '/stubs/valid/Recipe'))->boot();
         $this->assertEquals('Recipe', trans('recipe::recipes.title.recipes'));
     }
 
@@ -115,8 +115,8 @@ class LumenModuleTest extends BaseTestCase
 
         $this->module->enable();
 
-        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::ENABLING, $this->module->getLowerName()));
-        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::ENABLED, $this->module->getLowerName()));
+        Event::assertDispatched(sprintf('modules.%s.' . ModuleEvent::ENABLING, $this->module->getLowerName()));
+        Event::assertDispatched(sprintf('modules.%s.' . ModuleEvent::ENABLED, $this->module->getLowerName()));
     }
 
     public function test_it_fires_events_when_module_is_disabled()
@@ -125,8 +125,8 @@ class LumenModuleTest extends BaseTestCase
 
         $this->module->disable();
 
-        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DISABLING, $this->module->getLowerName()));
-        Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::DISABLED, $this->module->getLowerName()));
+        Event::assertDispatched(sprintf('modules.%s.' . ModuleEvent::DISABLING, $this->module->getLowerName()));
+        Event::assertDispatched(sprintf('modules.%s.' . ModuleEvent::DISABLED, $this->module->getLowerName()));
     }
 
     public function test_it_has_a_good_providers_manifest_path()
@@ -138,4 +138,6 @@ class LumenModuleTest extends BaseTestCase
     }
 }
 
-class LumenTestingModule extends \Nwidart\Modules\Lumen\Module {}
+class LumenTestingModule extends \Nwidart\Modules\Lumen\Module
+{
+}

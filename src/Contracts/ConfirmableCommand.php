@@ -2,4 +2,6 @@
 
 namespace Nwidart\Modules\Contracts;
 
-interface ConfirmableCommand {}
+interface ConfirmableCommand
+{
+}

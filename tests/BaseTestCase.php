@@ -39,7 +39,7 @@ abstract class BaseTestCase extends OrchestraTestCase
      */
     protected function getEnvironmentSetUp($app)
     {
-        $module_config = require __DIR__.'/../config/config.php';
+        $module_config = require __DIR__ . '/../config/config.php';
 
         // enable all generators
         array_walk($module_config['paths']['generator'], function (&$item) {
@@ -79,7 +79,7 @@ abstract class BaseTestCase extends OrchestraTestCase
 
     protected function getModuleAppPath(string $moduleName = 'Blog'): string
     {
-        return base_path("modules/$moduleName/").rtrim(config('modules.paths.app_folder'), '/');
+        return base_path("modules/$moduleName/") . rtrim(config('modules.paths.app_folder'), '/');
     }
 
     protected function getModuleBasePath(string $moduleName = 'Blog'): string

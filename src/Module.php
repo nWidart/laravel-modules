@@ -206,7 +206,7 @@ abstract class Module
     {
         $lowerName = $this->getLowerName();
 
-        $langPath = $this->getPath().'/Resources/lang';
+        $langPath = $this->getPath() . '/Resources/lang';
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $lowerName);
@@ -223,7 +223,7 @@ abstract class Module
         }
 
         return Arr::get($this->moduleJson, $file, function () use ($file) {
-            return $this->moduleJson[$file] = new Json($this->getPath().'/'.$file, $this->files);
+            return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->files);
         });
     }
 
@@ -288,7 +288,7 @@ abstract class Module
     protected function registerFiles(): void
     {
         foreach ($this->get('files', []) as $file) {
-            include $this->path.'/'.$file;
+            include $this->path . '/' . $file;
         }
     }
 
@@ -377,7 +377,7 @@ abstract class Module
      */
     public function getExtraPath(?string $path): string
     {
-        return $this->getPath().($path ? '/'.$path : '');
+        return $this->getPath() . ($path ? '/' . $path : '');
     }
 
     /**

@@ -39,7 +39,7 @@ class ControllerMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-controller', ['controller' => 'MyController', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Http/Controllers/MyController.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Http/Controllers/MyController.php'));
         $this->assertSame(0, $code);
     }
 
@@ -47,7 +47,7 @@ class ControllerMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-controller', ['controller' => 'MyController', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Http/Controllers/MyController.php');
+        $file = $this->finder->get($this->modulePath . '/Http/Controllers/MyController.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -57,7 +57,7 @@ class ControllerMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-controller', ['controller' => 'My', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Http/Controllers/MyController.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Http/Controllers/MyController.php'));
         $this->assertSame(0, $code);
     }
 
@@ -65,7 +65,7 @@ class ControllerMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-controller', ['controller' => 'My', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Http/Controllers/MyController.php');
+        $file = $this->finder->get($this->modulePath . '/Http/Controllers/MyController.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -79,7 +79,7 @@ class ControllerMakeCommandTest extends BaseTestCase
             '--plain' => true,
         ]);
 
-        $file = $this->finder->get($this->modulePath.'/Http/Controllers/MyController.php');
+        $file = $this->finder->get($this->modulePath . '/Http/Controllers/MyController.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -93,7 +93,7 @@ class ControllerMakeCommandTest extends BaseTestCase
             '--api' => true,
         ]);
 
-        $file = $this->finder->get($this->modulePath.'/Http/Controllers/MyController.php');
+        $file = $this->finder->get($this->modulePath . '/Http/Controllers/MyController.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -107,7 +107,7 @@ class ControllerMakeCommandTest extends BaseTestCase
             '--invokable' => true,
         ]);
 
-        $file = $this->finder->get($this->modulePath.'/Http/Controllers/MyController.php');
+        $file = $this->finder->get($this->modulePath . '/Http/Controllers/MyController.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -119,7 +119,7 @@ class ControllerMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-controller', ['controller' => 'MyController', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->getModuleBasePath().'/Controllers/MyController.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/Controllers/MyController.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -131,7 +131,7 @@ class ControllerMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-controller', ['controller' => 'MyController', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Http/Controllers/MyController.php');
+        $file = $this->finder->get($this->modulePath . '/Http/Controllers/MyController.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -141,7 +141,7 @@ class ControllerMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-controller', ['controller' => 'Api\\MyController', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Http/Controllers/Api/MyController.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Http/Controllers/Api/MyController.php'));
         $this->assertSame(0, $code);
     }
 
@@ -149,7 +149,7 @@ class ControllerMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-controller', ['controller' => 'Api\\MyController', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Http/Controllers/Api/MyController.php');
+        $file = $this->finder->get($this->modulePath . '/Http/Controllers/Api/MyController.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

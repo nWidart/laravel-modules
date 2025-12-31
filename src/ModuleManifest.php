@@ -83,7 +83,7 @@ class ModuleManifest
                 }
 
                 foreach ($manifest['files'] as $file) {
-                    include_once $manifest['module_directory'].DIRECTORY_SEPARATOR.$file;
+                    include_once $manifest['module_directory'] . DIRECTORY_SEPARATOR . $file;
                 }
             });
     }

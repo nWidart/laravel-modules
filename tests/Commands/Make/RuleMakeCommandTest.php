@@ -38,7 +38,7 @@ class RuleMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
 
-        $ruleFile = $this->modulePath.'/Rules/UniqueRule.php';
+        $ruleFile = $this->modulePath . '/Rules/UniqueRule.php';
 
         $this->assertTrue(is_file($ruleFile), 'Rule file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($ruleFile));
@@ -49,7 +49,7 @@ class RuleMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-rule', ['name' => 'ImplicitUniqueRule', 'module' => 'Blog', '--implicit' => true]);
 
-        $ruleFile = $this->modulePath.'/Rules/ImplicitUniqueRule.php';
+        $ruleFile = $this->modulePath . '/Rules/ImplicitUniqueRule.php';
 
         $this->assertTrue(is_file($ruleFile), 'Rule file was not created.');
         $this->assertMatchesSnapshot($this->finder->get($ruleFile));
@@ -62,7 +62,7 @@ class RuleMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->getModuleBasePath().'/SuperRules/UniqueRule.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/SuperRules/UniqueRule.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -74,7 +74,7 @@ class RuleMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-rule', ['name' => 'UniqueRule', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Rules/UniqueRule.php');
+        $file = $this->finder->get($this->modulePath . '/Rules/UniqueRule.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

@@ -25,7 +25,7 @@ class EventProviderMakeCommand extends GeneratorCommand
 
         $filePath = GenerateConfigReader::read('provider')->getPath();
 
-        return $path.$filePath.'/'.$this->getEventServiceProviderName().'.php';
+        return $path . $filePath . '/' . $this->getEventServiceProviderName() . '.php';
     }
 
     protected function getTemplateContents(): string

@@ -23,9 +23,9 @@ class RepositoryMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('repository')->getPath() ?? config('modules.paths.app_folder').'Repositories';
+        $filePath = GenerateConfigReader::read('repository')->getPath() ?? config('modules.paths.app_folder') . 'Repositories';
 
-        return $path.$filePath.'/'.$this->getRepositoryName().'.php';
+        return $path . $filePath . '/' . $this->getRepositoryName() . '.php';
     }
 
     protected function getTemplateContents(): string

@@ -70,7 +70,7 @@ class ObserverMakeCommand extends GeneratorCommand
 
         $path = str_replace('/', '\\', $path);
 
-        return $this->laravel['modules']->config('namespace').'\\'.$this->laravel['modules']->findOrFail($this->getModuleName()).'\\'.$path;
+        return $this->laravel['modules']->config('namespace') . '\\' . $this->laravel['modules']->findOrFail($this->getModuleName()) . '\\' . $path;
     }
 
     /**
@@ -86,7 +86,7 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     private function getModelVariable(): string
     {
-        return '$'.Str::lower($this->argument('name'));
+        return '$' . Str::lower($this->argument('name'));
     }
 
     /**
@@ -98,7 +98,7 @@ class ObserverMakeCommand extends GeneratorCommand
 
         $observerPath = GenerateConfigReader::read('observer');
 
-        return $path.$observerPath->getPath().'/'.$this->getFileName();
+        return $path . $observerPath->getPath() . '/' . $this->getFileName();
     }
 
     /**
@@ -106,7 +106,7 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name')).'Observer.php';
+        return Str::studly($this->argument('name')) . 'Observer.php';
     }
 
     public function handle(): int

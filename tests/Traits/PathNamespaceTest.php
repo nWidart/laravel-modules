@@ -10,7 +10,7 @@ class PathNamespaceTest extends BaseTestCase
     {
         parent::setUp();
 
-        $this->class = new UsePathNamespaceTrait;
+        $this->class = new UsePathNamespaceTrait();
     }
 
     public function test_studly_path()

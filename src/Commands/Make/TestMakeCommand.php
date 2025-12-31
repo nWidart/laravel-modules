@@ -61,7 +61,7 @@ class TestMakeCommand extends GeneratorCommand
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
-        $stub = '/tests/'.(($this->option('feature')) ? 'feature' : 'unit').'.stub';
+        $stub = '/tests/' . (($this->option('feature')) ? 'feature' : 'unit') . '.stub';
 
         return (new Stub($stub, [
             'NAMESPACE' => $this->getClassNamespace($module),
@@ -82,7 +82,7 @@ class TestMakeCommand extends GeneratorCommand
             $testPath = GenerateConfigReader::read('test-unit');
         }
 
-        return $path.$testPath->getPath().'/'.$this->getFileName().'.php';
+        return $path . $testPath->getPath() . '/' . $this->getFileName() . '.php';
     }
 
     /**

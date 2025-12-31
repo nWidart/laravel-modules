@@ -23,9 +23,9 @@ class HelperMakeCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $filePath = GenerateConfigReader::read('helpers')->getPath() ?? config('modules.paths.app_folder').'Helpers';
+        $filePath = GenerateConfigReader::read('helpers')->getPath() ?? config('modules.paths.app_folder') . 'Helpers';
 
-        return $path.$filePath.'/'.$this->getHelperName().'.php';
+        return $path . $filePath . '/' . $this->getHelperName() . '.php';
     }
 
     protected function getTemplateContents(): string

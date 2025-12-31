@@ -7,13 +7,15 @@ use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Console\Prohibitable;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Collection;
+
+use function Laravel\Prompts\multisearch;
+
 use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 
-use function Laravel\Prompts\multisearch;
+use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class BaseCommand extends Command implements PromptsForMissingInput
 {

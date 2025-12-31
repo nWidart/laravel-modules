@@ -38,7 +38,7 @@ class MailMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $this->assertTrue(is_file($this->modulePath.'/Emails/SomeMail.php'));
+        $this->assertTrue(is_file($this->modulePath . '/Emails/SomeMail.php'));
         $this->assertSame(0, $code);
     }
 
@@ -46,7 +46,7 @@ class MailMakeCommandTest extends BaseTestCase
     {
         $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Emails/SomeMail.php');
+        $file = $this->finder->get($this->modulePath . '/Emails/SomeMail.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -58,7 +58,7 @@ class MailMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->getModuleBasePath().'/SuperEmails/SomeMail.php');
+        $file = $this->finder->get($this->getModuleBasePath() . '/SuperEmails/SomeMail.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
@@ -70,7 +70,7 @@ class MailMakeCommandTest extends BaseTestCase
 
         $code = $this->artisan('module:make-mail', ['name' => 'SomeMail', 'module' => 'Blog']);
 
-        $file = $this->finder->get($this->modulePath.'/Emails/SomeMail.php');
+        $file = $this->finder->get($this->modulePath . '/Emails/SomeMail.php');
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);

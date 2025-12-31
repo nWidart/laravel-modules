@@ -297,9 +297,9 @@ abstract class FileRepository implements Countable, RepositoryInterface
     public function getModulePath($module): string
     {
         try {
-            return $this->findOrFail($module)->getPath().'/';
+            return $this->findOrFail($module)->getPath() . '/';
         } catch (ModuleNotFoundException $e) {
-            return $this->getPath().'/'.Str::studly($module).'/';
+            return $this->getPath() . '/' . Str::studly($module) . '/';
         }
     }
 
@@ -308,7 +308,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function assetPath(string $module): string
     {
-        return $this->config('paths.assets').'/'.$module;
+        return $this->config('paths.assets') . '/' . $module;
     }
 
     /**
@@ -316,7 +316,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function config(string $key, $default = null)
     {
-        return $this->config->get('modules.'.$key, $default);
+        return $this->config->get('modules.' . $key, $default);
     }
 
     /**
@@ -399,9 +399,9 @@ abstract class FileRepository implements Countable, RepositoryInterface
         }
         [$name, $url] = explode(':', $asset);
 
-        $baseUrl = str_replace(public_path().DIRECTORY_SEPARATOR, '', $this->getAssetsPath());
+        $baseUrl = str_replace(public_path() . DIRECTORY_SEPARATOR, '', $this->getAssetsPath());
 
-        $url = $this->url->asset($baseUrl."/{$name}/".$url);
+        $url = $this->url->asset($baseUrl . "/{$name}/" . $url);
 
         return str_replace(['http://', 'https://'], '//', $url);
     }
