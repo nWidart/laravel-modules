@@ -45,7 +45,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->registerMigrations();
         $this->registerTranslations();
 
-        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'modules');
+        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'modules');
 
         $this->registerModules();
     }
@@ -55,7 +55,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
      */
     public function setupStubPath()
     {
-        $path = $this->app['config']->get('modules.stubs.path') ?? __DIR__.'/Commands/stubs';
+        $path = $this->app['config']->get('modules.stubs.path') ?? __DIR__ . '/Commands/stubs';
         Stub::setBasePath($path);
 
         $this->app->booted(function ($app) {
@@ -79,7 +79,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         });
         $this->app->singleton(Contracts\ActivatorInterface::class, function ($app) {
             $activator = $app['config']->get('modules.activator');
-            $class = $app['config']->get('modules.activators.'.$activator)['class'];
+            $class = $app['config']->get('modules.activators.' . $activator)['class'];
 
             if ($class === null) {
                 throw InvalidActivatorClass::missingConfig();
@@ -92,7 +92,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->app->singleton(
             ModuleManifest::class,
             fn () => new ModuleManifest(
-                new Filesystem,
+                new Filesystem(),
                 app(Contracts\RepositoryInterface::class)->getScanPaths(),
                 $this->getCachedModulePath(),
                 app(ActivatorInterface::class)
@@ -109,11 +109,31 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
         $this->app->resolving(Migrator::class, function (Migrator $migrator) {
             $migration_path = $this->app['config']->get('modules.paths.generator.migration.path');
-            collect(\Nwidart\Modules\Facades\Module::allEnabled())
+
+            $this->getModulesForMigration()
                 ->each(function (\Nwidart\Modules\Laravel\Module $module) use ($migration_path, $migrator) {
                     $migrator->path($module->getExtraPath($migration_path));
                 });
         });
+    }
+
+    protected function getModulesForMigration(): \Illuminate\Support\Collection
+    {
+        $modules = collect(\Nwidart\Modules\Facades\Module::allEnabled());
+
+        $includeModules = $this->app['config']->get('modules.auto-discover.include_modules', []);
+        $excludeModules = $this->app['config']->get('modules.auto-discover.exclude_modules', []);
+
+        // Include takes precedence over exclude
+        if (! empty($includeModules)) {
+            return $modules->filter(fn ($module) => in_array($module->getName(), $includeModules));
+        }
+
+        if (! empty($excludeModules)) {
+            return $modules->reject(fn ($module) => in_array($module->getName(), $excludeModules));
+        }
+
+        return $modules;
     }
 
     protected function registerTranslations(): void

@@ -206,6 +206,29 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Include Modules
+        |--------------------------------------------------------------------------
+        |
+        | When non-empty, only these modules will have migrations auto-discovered.
+        | Useful for multi-tenancy where you want to separate tenant migrations.
+        | Takes precedence over exclude_modules if both are defined.
+        |
+        */
+        'include_modules' => [],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Exclude Modules
+        |--------------------------------------------------------------------------
+        |
+        | Modules listed here will be excluded from migration auto-discovery.
+        | Ignored if include_modules is non-empty.
+        |
+        */
+        'exclude_modules' => [],
+
+        /*
+        |--------------------------------------------------------------------------
         | Translations
         |--------------------------------------------------------------------------
         |
