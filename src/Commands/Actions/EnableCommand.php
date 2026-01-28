@@ -35,6 +35,6 @@ class EnableCommand extends BaseCommand
 
     public function getInfo(): ?string
     {
-        return 'Disabling module ...';
+        return 'Enabling module ...';
     }
 }
