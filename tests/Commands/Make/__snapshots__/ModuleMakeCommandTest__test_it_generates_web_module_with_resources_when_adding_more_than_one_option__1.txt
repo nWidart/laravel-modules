@@ -99,7 +99,10 @@ class BlogServiceProvider extends ServiceProvider
 
                     $key = ($config === 'config.php') ? $this->nameLower : implode('.', $normalized);
 
-                    $this->publishes([$file->getPathname() => config_path($config)], 'config');
+                    $publishPath = ($config === 'config.php')
+                        ? config_path($this->nameLower.'.php')
+                        : config_path($config);
+                    $this->publishes([$file->getPathname() => $publishPath], 'config');
                     $this->merge_config_from($file->getPathname(), $key);
                 }
             }
