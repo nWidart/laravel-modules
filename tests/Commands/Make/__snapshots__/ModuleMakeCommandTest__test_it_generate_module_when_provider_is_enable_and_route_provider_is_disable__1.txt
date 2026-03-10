@@ -111,6 +111,10 @@ class BlogServiceProvider extends ServiceProvider
      */
     protected function merge_config_from(string $path, string $key): void
     {
+        if (app()->configurationIsCached()) {
+            return;
+        }
+
         $existing = config($key, []);
         $module_config = require $path;
 
