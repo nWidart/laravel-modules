@@ -86,7 +86,8 @@ class ModuleNameServiceProvider extends ServiceProvider
             foreach ($iterator as $file) {
                 if ($file->isFile() && $file->getExtension() === 'php') {
                     $config = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
-                    $config_key = str_replace([DIRECTORY_SEPARATOR, '.php'], ['.', ''], $config);
+                    $config_key = str_replace(DIRECTORY_SEPARATOR, '.', $config);
+                    $config_key = str_replace('.php', '', $config_key);
                     $segments = explode('.', $this->nameLower.'.'.$config_key);
 
                     // Remove duplicated adjacent segments
