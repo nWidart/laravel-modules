@@ -66,11 +66,19 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     public function getModelNamespace(): string
     {
-        $path = $this->laravel['modules']->config('paths.generator.model.path', 'Entities');
+        $moduleNamespace = $this->laravel['modules']->config('namespace'); // 'Modules'
+        $moduleName      = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        $path = str_replace('/', '\\', $path);
+        $path = $this->laravel['modules']->config('paths.generator.model.path', 'Entities'); // current is 'app/Models'
+        $appFolder = $this->laravel['modules']->config('paths.app_folder', 'app/');
 
-        return $this->laravel['modules']->config('namespace').'\\'.$this->laravel['modules']->findOrFail($this->getModuleName()).'\\'.$path;
+        if (str_starts_with($path, $appFolder)) {
+            $path = substr($path, strlen($appFolder)); // has 'Models'
+        }
+
+        $nsPart = trim(str_replace('/', '\\', $path), '\\'); // 'Models'
+
+        return $moduleNamespace.'\\'.$moduleName.'\\'.$nsPart; // Modules\Core\Models
     }
 
     /**
@@ -123,7 +131,14 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.observer.namespace')
-            ?? ltrim(config('modules.paths.generator.observer.path', 'Observers'), config('modules.paths.app_folder', ''));
+
+        $path = config('modules.paths.generator.observer.path', 'Observers'); // 'app/Observers'
+        $appFolder = config('modules.paths.app_folder', 'app/');
+
+        if (str_starts_with($path, $appFolder)) {
+            $path = substr($path, strlen($appFolder)); // 'Observers'
+        }
+
+        return trim(str_replace('/', '\\', $path), '\\'); // 'Observers'
     }
 }
