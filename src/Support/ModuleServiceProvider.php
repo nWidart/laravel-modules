@@ -1,6 +1,6 @@
 <?php
 
-namespace Nwidart\Support;
+namespace Nwidart\Modules\Support;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Blade;
