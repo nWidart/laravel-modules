@@ -2,7 +2,8 @@
 
 namespace $NAMESPACE$;
 
-use Nwidart\Support\ModuleServiceProvider;
+use Nwidart\Modules\Support\ModuleServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
 
 class $CLASS$ extends ModuleServiceProvider
 {
@@ -36,7 +37,7 @@ class $CLASS$ extends ModuleServiceProvider
     /**
      * Define module schedules.
      * 
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param $schedule
      */
     // protected function configureSchedules(Schedule $schedule): void
     // {
