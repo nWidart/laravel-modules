@@ -107,8 +107,9 @@ abstract class ModuleServiceProvider extends ServiceProvider
             $this->loadTranslationsFrom($langPath, $this->nameLower);
             $this->loadJsonTranslationsFrom($langPath);
         } else {
-            $this->loadTranslationsFrom(module_path($this->name, 'lang'), $this->nameLower);
-            $this->loadJsonTranslationsFrom(module_path($this->name, 'lang'));
+            $moduleLangPath = module_path($this->name, config('modules.paths.generator.lang.path'));
+            $this->loadTranslationsFrom($moduleLangPath), $this->nameLower);
+            $this->loadJsonTranslationsFrom($moduleLangPath);
         }
     }
 
@@ -125,8 +126,8 @@ abstract class ModuleServiceProvider extends ServiceProvider
             foreach ($iterator as $file) {
                 if ($file->isFile() && $file->getExtension() === 'php') {
                     $config = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
-                    $config_key = str_replace([DIRECTORY_SEPARATOR, '.php'], ['.', ''], $config);
-                    $segments = explode('.', $this->nameLower.'.'.$config_key);
+                    $configKey = str_replace([DIRECTORY_SEPARATOR, '.php'], ['.', ''], $config);
+                    $segments = explode('.', $this->nameLower.'.'.$configKey);
 
                     // Remove duplicated adjacent segments
                     $normalized = [];
@@ -139,7 +140,7 @@ abstract class ModuleServiceProvider extends ServiceProvider
                     $key = ($config === 'config.php') ? $this->nameLower : implode('.', $normalized);
 
                     $this->publishes([$file->getPathname() => config_path($config)], 'config');
-                    $this->merge_config_from($file->getPathname(), $key);
+                    $this->mergeConfigFrom($file->getPathname(), $key);
                 }
             }
         }
@@ -148,12 +149,12 @@ abstract class ModuleServiceProvider extends ServiceProvider
     /**
      * Merge config from the given path recursively.
      */
-    private function merge_config_from(string $path, string $key): void
+    private function mergeConfigFrom(string $path, string $key): void
     {
         $existing = config($key, []);
-        $module_config = require $path;
+        $moduleConfig = require $path;
 
-        config([$key => array_replace_recursive($existing, $module_config)]);
+        config([$key => array_replace_recursive($existing, $moduleConfig)]);
     }
 
     /**
@@ -162,7 +163,7 @@ abstract class ModuleServiceProvider extends ServiceProvider
     protected function registerViews(): void
     {
         $viewPath = resource_path('views/modules/'.$this->nameLower);
-        $sourcePath = module_path($this->name, 'resources/views');
+        $sourcePath = module_path($this->name, config('modules.paths.generator.views.path'));
 
         $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower.'-module-views']);
 
