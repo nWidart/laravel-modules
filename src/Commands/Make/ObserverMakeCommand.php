@@ -67,7 +67,7 @@ class ObserverMakeCommand extends GeneratorCommand
     public function getModelNamespace(): string
     {
         $moduleNamespace = $this->laravel['modules']->config('namespace'); // 'Modules'
-        $moduleName      = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $moduleName = $this->laravel['modules']->findOrFail($this->getModuleName());
 
         $path = $this->laravel['modules']->config('paths.generator.model.path', 'Entities'); // current is 'app/Models'
         $appFolder = $this->laravel['modules']->config('paths.app_folder', 'app/');
