@@ -19,7 +19,7 @@ interface ActivatorInterface
     /**
      * Determine whether the given status same with a module status.
      */
-    public function hasStatus(Module $module, bool $status): bool;
+    public function hasStatus(Module|string $module, bool $status): bool;
 
     /**
      * Set active state for a module.
