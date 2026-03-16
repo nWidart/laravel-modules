@@ -8,6 +8,7 @@ use Modules\Recipe\Providers\RecipeServiceProvider;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Json;
+use Nwidart\Modules\Laravel\Module;
 
 class LaravelModuleTest extends BaseTestCase
 {
@@ -217,7 +218,7 @@ class LaravelModuleTest extends BaseTestCase
     }
 }
 
-class TestingModule extends \Nwidart\Modules\Laravel\Module
+class TestingModule extends Module
 {
     public function registerProviders(): void
     {

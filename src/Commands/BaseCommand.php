@@ -8,6 +8,7 @@ use Illuminate\Console\Prohibitable;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
+use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -131,7 +132,7 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
 
     protected function getModuleModel($name)
     {
-        return $name instanceof \Nwidart\Modules\Module
+        return $name instanceof Module
             ? $name
             : $this->laravel['modules']->findOrFail($name);
     }

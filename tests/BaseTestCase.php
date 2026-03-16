@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests;
 
+use Illuminate\Foundation\Application;
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
@@ -35,7 +36,7 @@ abstract class BaseTestCase extends OrchestraTestCase
     /**
      * Set up the environment.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  Application  $app
      */
     protected function getEnvironmentSetUp($app)
     {

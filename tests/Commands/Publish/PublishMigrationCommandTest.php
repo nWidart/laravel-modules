@@ -2,13 +2,14 @@
 
 namespace Nwidart\Modules\Tests\Commands\Publish;
 
+use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class PublishMigrationCommandTest extends BaseTestCase
 {
     /**
-     * @var \Illuminate\Filesystem\Filesystem
+     * @var Filesystem
      */
     private $finder;
 
