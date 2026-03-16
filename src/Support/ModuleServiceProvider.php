@@ -59,7 +59,8 @@ abstract class ModuleServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+        $generatorMigrationPath = config('modules.paths.generator.migration') ?? 'database/migrations';
+        $this->loadMigrationsFrom(module_path($this->name, $generatorMigrationPath));
     }
 
     /**
