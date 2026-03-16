@@ -97,18 +97,28 @@ abstract class ModuleServiceProvider extends ServiceProvider
     }
 
     /**
+     * Define module schedules.
+     *
+     * @param Schedule $schedule
+     */
+    protected function configureSchedules(Schedule $schedule): void
+    {
+        //
+    }
+
+    /**
      * Register translations.
      */
     protected function registerTranslations(): void
     {
-        $langPath = resource_path('lang/modules/'.$this->nameLower);
+        $langPath = resource_path('lang/modules/' . $this->nameLower);
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $this->nameLower);
             $this->loadJsonTranslationsFrom($langPath);
         } else {
             $moduleLangPath = module_path($this->name, config('modules.paths.generator.lang.path'));
-            $this->loadTranslationsFrom($moduleLangPath), $this->nameLower);
+            $this->loadTranslationsFrom($moduleLangPath);
             $this->loadJsonTranslationsFrom($moduleLangPath);
         }
     }
@@ -125,9 +135,9 @@ abstract class ModuleServiceProvider extends ServiceProvider
 
             foreach ($iterator as $file) {
                 if ($file->isFile() && $file->getExtension() === 'php') {
-                    $config = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
+                    $config = str_replace($configPath . DIRECTORY_SEPARATOR, '', $file->getPathname());
                     $configKey = str_replace([DIRECTORY_SEPARATOR, '.php'], ['.', ''], $config);
-                    $segments = explode('.', $this->nameLower.'.'.$configKey);
+                    $segments = explode('.', $this->nameLower . '.' . $configKey);
 
                     // Remove duplicated adjacent segments
                     $normalized = [];
@@ -140,7 +150,7 @@ abstract class ModuleServiceProvider extends ServiceProvider
                     $key = ($config === 'config.php') ? $this->nameLower : implode('.', $normalized);
 
                     $this->publishes([$file->getPathname() => config_path($config)], 'config');
-                    $this->mergeConfigFrom($file->getPathname(), $key);
+                    $this->merge_config_from($file->getPathname(), $key);
                 }
             }
         }
@@ -149,7 +159,7 @@ abstract class ModuleServiceProvider extends ServiceProvider
     /**
      * Merge config from the given path recursively.
      */
-    private function mergeConfigFrom(string $path, string $key): void
+    private function merge_config_from(string $path, string $key): void
     {
         $existing = config($key, []);
         $moduleConfig = require $path;
@@ -162,14 +172,14 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     protected function registerViews(): void
     {
-        $viewPath = resource_path('views/modules/'.$this->nameLower);
+        $viewPath = resource_path('views/modules/' . $this->nameLower);
         $sourcePath = module_path($this->name, config('modules.paths.generator.views.path'));
 
-        $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower.'-module-views']);
+        $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower . '-module-views']);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        Blade::componentNamespace(config('modules.namespace').'\\'.$this->name.'\\View\\Components', $this->nameLower);
+        Blade::componentNamespace(config('modules.namespace') . '\\' . $this->name . '\\View\\Components', $this->nameLower);
     }
 
     /**
@@ -179,8 +189,8 @@ abstract class ModuleServiceProvider extends ServiceProvider
     {
         $paths = [];
         foreach (config('view.paths') as $path) {
-            if (is_dir($path.'/modules/'.$this->nameLower)) {
-                $paths[] = $path.'/modules/'.$this->nameLower;
+            if (is_dir($path . '/modules/' . $this->nameLower)) {
+                $paths[] = $path . '/modules/' . $this->nameLower;
             }
         }
 
