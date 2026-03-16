@@ -68,6 +68,6 @@ class $CLASS$ extends Controller
             'status' => 'success',
             'message' => 'Record deleted successfully.',
             // 'data' => [],
-        ]);
+        ], 200);
     }
 }
