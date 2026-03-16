@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests\Commands\Make;
 
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
@@ -16,7 +17,7 @@ class ModuleMakeCommandTest extends BaseTestCase
     use MatchesSnapshots;
 
     /**
-     * @var \Illuminate\Filesystem\Filesystem
+     * @var Filesystem
      */
     private $finder;
 

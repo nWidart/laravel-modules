@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands\Database;
 
 use Nwidart\Modules\Commands\BaseCommand;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Migrations\Migrator;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -23,7 +24,7 @@ class MigrateStatusCommand extends BaseCommand
     protected $description = 'Status for all module migrations';
 
     /**
-     * @var \Nwidart\Modules\Contracts\RepositoryInterface
+     * @var RepositoryInterface
      */
     protected $module;
 

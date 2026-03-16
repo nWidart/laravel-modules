@@ -12,6 +12,7 @@ use Illuminate\Translation\Translator;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
+use Nwidart\Modules\Facades\Module;
 use Nwidart\Modules\Support\Stub;
 
 class LaravelModulesServiceProvider extends ModulesServiceProvider
@@ -72,12 +73,12 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
      */
     protected function registerServices()
     {
-        $this->app->singleton(Contracts\RepositoryInterface::class, function ($app) {
+        $this->app->singleton(RepositoryInterface::class, function ($app) {
             $path = $app['config']->get('modules.paths.modules');
 
             return new Laravel\LaravelFileRepository($app, $path);
         });
-        $this->app->singleton(Contracts\ActivatorInterface::class, function ($app) {
+        $this->app->singleton(ActivatorInterface::class, function ($app) {
             $activator = $app['config']->get('modules.activator');
             $class = $app['config']->get('modules.activators.'.$activator)['class'];
 
@@ -87,13 +88,13 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
             return new $class($app);
         });
-        $this->app->alias(Contracts\RepositoryInterface::class, 'modules');
+        $this->app->alias(RepositoryInterface::class, 'modules');
 
         $this->app->singleton(
             ModuleManifest::class,
             fn () => new ModuleManifest(
                 new Filesystem,
-                app(Contracts\RepositoryInterface::class)->getScanPaths(),
+                app(RepositoryInterface::class)->getScanPaths(),
                 $this->getCachedModulePath(),
                 app(ActivatorInterface::class)
             )
@@ -109,8 +110,8 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
         $this->app->resolving(Migrator::class, function (Migrator $migrator) {
             $migration_path = $this->app['config']->get('modules.paths.generator.migration.path');
-            collect(\Nwidart\Modules\Facades\Module::allEnabled())
-                ->each(function (\Nwidart\Modules\Laravel\Module $module) use ($migration_path, $migrator) {
+            collect(Module::allEnabled())
+                ->each(function (Laravel\Module $module) use ($migration_path, $migrator) {
                     $migrator->path($module->getExtraPath($migration_path));
                 });
         });
@@ -126,8 +127,8 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
                 return;
             }
 
-            collect(\Nwidart\Modules\Facades\Module::allEnabled())
-                ->each(function (\Nwidart\Modules\Laravel\Module $module) use ($translator) {
+            collect(Module::allEnabled())
+                ->each(function (Laravel\Module $module) use ($translator) {
                     $path = $module->getExtraPath($this->app['config']->get('modules.paths.generator.lang.path'));
                     $translator->addNamespace($module->getLowerName(), $path);
                     $translator->addJsonPath($path);

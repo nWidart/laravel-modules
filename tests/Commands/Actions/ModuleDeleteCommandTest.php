@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Event;
 use Nwidart\Modules\Activators\FileActivator;
 use Nwidart\Modules\Constants\ModuleEvent;
@@ -14,7 +15,7 @@ class ModuleDeleteCommandTest extends BaseTestCase
     use MatchesSnapshots;
 
     /**
-     * @var \Illuminate\Filesystem\Filesystem
+     * @var Filesystem
      */
     private $finder;
 

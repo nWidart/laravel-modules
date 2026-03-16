@@ -193,12 +193,12 @@ class ModuleGenerator extends Generator
         return $this;
     }
 
-    public function getComponent(): \Illuminate\Console\View\Components\Factory
+    public function getComponent(): Factory
     {
         return $this->component;
     }
 
-    public function setComponent(\Illuminate\Console\View\Components\Factory $component): self
+    public function setComponent(Factory $component): self
     {
         $this->component = $component;
 

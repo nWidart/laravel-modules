@@ -2,7 +2,9 @@
 
 namespace Nwidart\Modules\Tests\Activators;
 
+use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Activators\FileActivator;
+use Nwidart\Modules\Laravel\Module;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -16,7 +18,7 @@ class FileActivatorTest extends BaseTestCase
     private $module;
 
     /**
-     * @var \Illuminate\Filesystem\Filesystem
+     * @var Filesystem
      */
     private $finder;
 
@@ -81,7 +83,7 @@ class FileActivatorTest extends BaseTestCase
     }
 }
 
-class TestModule extends \Nwidart\Modules\Laravel\Module
+class TestModule extends Module
 {
     public function registerProviders(): void
     {
