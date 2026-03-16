@@ -99,7 +99,7 @@ interface RepositoryInterface
     /**
      * Delete a specific module.
      *
-     * @throws \Nwidart\Modules\Exceptions\ModuleNotFoundException
+     * @throws ModuleNotFoundException
      */
     public function delete(string $module): bool;
 

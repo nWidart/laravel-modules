@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Event;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Json;
+use Nwidart\Modules\Lumen\Module;
 
 class LumenModuleTest extends BaseTestCase
 {
@@ -138,4 +139,4 @@ class LumenModuleTest extends BaseTestCase
     }
 }
 
-class LumenTestingModule extends \Nwidart\Modules\Lumen\Module {}
+class LumenTestingModule extends Module {}

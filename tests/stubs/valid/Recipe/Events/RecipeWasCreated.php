@@ -2,6 +2,7 @@
 
 namespace Modules\Recipe\Events;
 
+use Illuminate\Database\Eloquent\Model;
 use Modules\Media\Contracts\StoringMedia;
 
 class RecipeWasCreated implements StoringMedia
@@ -19,7 +20,7 @@ class RecipeWasCreated implements StoringMedia
     /**
      * Return the entity
      *
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return Model
      */
     public function getEntity()
     {

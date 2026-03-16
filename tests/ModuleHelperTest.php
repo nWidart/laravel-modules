@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests;
 
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Blade;
 use Nwidart\Modules\Contracts\RepositoryInterface;
@@ -10,7 +11,7 @@ use Nwidart\Modules\Module;
 class ModuleHelperTest extends BaseTestCase
 {
     /**
-     * @var \Illuminate\Filesystem\Filesystem
+     * @var Filesystem
      */
     private $finder;
 
