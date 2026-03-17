@@ -84,10 +84,7 @@ class ProviderMakeCommand extends GeneratorCommand
             'NAME' => $this->getFileName(),
             'STUDLY_NAME' => $module->getStudlyName(),
             'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
-            'PATH_VIEWS' => GenerateConfigReader::read('views')->getPath(),
-            'PATH_LANG' => GenerateConfigReader::read('lang')->getPath(),
             'PATH_CONFIG' => GenerateConfigReader::read('config')->getPath(),
-            'MIGRATIONS_PATH' => GenerateConfigReader::read('migration')->getPath(),
             'FACTORIES_PATH' => GenerateConfigReader::read('factory')->getPath(),
         ]))->render();
     }
