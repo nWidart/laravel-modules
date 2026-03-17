@@ -31,8 +31,6 @@ class InertiaComponentMakeCommand extends GeneratorCommand
 
     /**
      * Get the console command arguments.
-     *
-     * @return array
      */
     protected function getArguments(): array
     {
@@ -44,8 +42,6 @@ class InertiaComponentMakeCommand extends GeneratorCommand
 
     /**
      * Get the console command options.
-     *
-     * @return array
      */
     protected function getOptions(): array
     {
@@ -58,8 +54,6 @@ class InertiaComponentMakeCommand extends GeneratorCommand
 
     /**
      * Get template contents.
-     *
-     * @return string
      */
     protected function getTemplateContents(): string
     {
@@ -73,8 +67,6 @@ class InertiaComponentMakeCommand extends GeneratorCommand
 
     /**
      * Get the destination file path.
-     *
-     * @return string
      */
     protected function getDestinationFilePath(): string
     {
