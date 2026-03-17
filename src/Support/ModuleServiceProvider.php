@@ -161,6 +161,10 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     private function merge_config_from(string $path, string $key): void
     {
+        if (app()->configurationIsCached()) {
+            return;
+        }
+
         $existing = config($key, []);
         $moduleConfig = require $path;
 
