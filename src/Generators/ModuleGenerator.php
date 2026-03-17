@@ -13,6 +13,7 @@ use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\FileRepository;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
+use Nwidart\Modules\Support\ReplacementKeyCommand;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\PathNamespace;
 
@@ -494,8 +495,8 @@ class ModuleGenerator extends Generator
         }
 
         foreach ($keys as $key => $value) {
-            if ($value instanceof \Closure) {
-                $replaces[strtoupper($key)] = $value($this);
+            if (class_exists($value) && is_subclass_of($value, ReplacementKeyCommand::class)) {
+                $replaces[strtoupper($key)] = (new $value($this))->handle();
             } elseif (method_exists($this, $method = 'get'.ucfirst(Str::studly(strtolower($value))).'Replacement')) {
                 $replace = $this->$method();
 

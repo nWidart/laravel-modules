@@ -1,0 +1,13 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use Nwidart\Modules\Support\ReplacementKeyCommand;
+
+class $CLASS$ extends ReplacementKeyCommand
+{
+    public function handle(): string
+    {
+        return $this->generator->getModule()->getLowerName();
+    }
+}

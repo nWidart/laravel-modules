@@ -41,17 +41,22 @@ return [
         'replacements' => [
             /**
              * Define custom replacements for each section.
-             * You can specify a closure for dynamic values.
+             * You can now specify a class name that extends
+             * \Nwidart\Modules\Support\ReplacementKeyCommand for dynamic values.
              *
              * Example:
              *
              * 'composer' => [
-             *      'CUSTOM_KEY' => fn (\Nwidart\Modules\Generators\ModuleGenerator $generator) => $generator->getModule()->getLowerName() . '-module',
-             *      'CUSTOM_KEY2' => fn () => 'custom text',
+             *      // Map the UPPERCASE token to your command class
+             *      'CUSTOM_KEY' => \App\Modules\Support\Replacements\CustomKey::class,
+             *      // You can still list built-in tokens by their names
              *      'LOWER_NAME',
              *      'STUDLY_NAME',
              *      // ...
              * ],
+             *
+             * The command class must extend ReplacementKeyCommand and implement handle(): string
+             * to return the replacement text.
              *
              * Note: Keys should be in UPPERCASE.
              */
@@ -132,6 +137,7 @@ return [
             'channels' => ['path' => 'app/Broadcasting', 'generate' => false],
             'class' => ['path' => 'app/Classes', 'generate' => false],
             'command' => ['path' => 'app/Console', 'generate' => false],
+            'command_replacements' => ['path' => 'app/Console/Replacements', 'generate' => false],
             'component-class' => ['path' => 'app/View/Components', 'generate' => false],
             'emails' => ['path' => 'app/Emails', 'generate' => false],
             'event' => ['path' => 'app/Events', 'generate' => false],
