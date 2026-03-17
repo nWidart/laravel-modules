@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests\Commands\Make;
 
+use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
@@ -10,7 +11,7 @@ class ReplacementMakeCommandTest extends BaseTestCase
 {
     use MatchesSnapshots;
 
-    /** @var \Illuminate\Filesystem\Filesystem */
+    /** @var Filesystem */
     private $finder;
 
     /** @var string */
