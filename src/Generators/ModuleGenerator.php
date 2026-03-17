@@ -67,6 +67,11 @@ class ModuleGenerator extends Generator
     protected string $type = 'web';
 
     /**
+     * Whether to generate an Inertia module.
+     */
+    protected bool $inertia = false;
+
+    /**
      * Enables the module.
      */
     protected bool $isActive = false;
@@ -108,6 +113,16 @@ class ModuleGenerator extends Generator
     public function setType(string $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Set whether to generate an Inertia module.
+     */
+    public function setInertia(bool $inertia): self
+    {
+        $this->inertia = $inertia;
 
         return $this;
     }
@@ -352,7 +367,13 @@ class ModuleGenerator extends Generator
      */
     public function generateFiles()
     {
+        $bladeViewStubs = ['views/index', 'views/master'];
+
         foreach ($this->getFiles() as $stub => $file) {
+            if ($this->inertia && in_array($stub, $bladeViewStubs, true)) {
+                continue;
+            }
+
             $path = $this->module->getModulePath($this->getName()).$file;
 
             $this->component->task("Generating file {$path}", function () use ($stub, $path) {
@@ -435,10 +456,22 @@ class ModuleGenerator extends Generator
 
         if (GenerateConfigReader::read('controller')->generate() === true) {
             $options = $this->type == 'api' ? ['--api' => true] : [];
+            if ($this->inertia) {
+                $options = ['--inertia' => true];
+            }
             $this->console->call('module:make-controller', [
                 'controller' => $this->getName().'Controller',
                 'module' => $this->getName(),
             ] + $options);
+        }
+
+        if ($this->inertia) {
+            foreach (['Index', 'Create', 'Show', 'Edit'] as $page) {
+                $this->console->call('module:make-inertia-page', [
+                    'name' => $page,
+                    'module' => $this->getName(),
+                ]);
+            }
         }
     }
 

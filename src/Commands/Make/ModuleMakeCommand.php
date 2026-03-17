@@ -43,6 +43,7 @@ class ModuleMakeCommand extends Command
                 ->setComponent($this->components)
                 ->setForce($this->option('force'))
                 ->setType($this->getModuleType())
+                ->setInertia((bool) $this->option('inertia'))
                 ->setActive(! $this->option('disabled'))
                 ->setVendor($this->option('author-vendor'))
                 ->setAuthor($this->option('author-name'), $this->option('author-email'))
@@ -79,6 +80,7 @@ class ModuleMakeCommand extends Command
             ['plain', 'p', InputOption::VALUE_NONE, 'Generate a plain module (without some resources).'],
             ['api', null, InputOption::VALUE_NONE, 'Generate an api module.'],
             ['web', null, InputOption::VALUE_NONE, 'Generate a web module.'],
+            ['inertia', null, InputOption::VALUE_NONE, 'Generate an Inertia module (Inertia controller + JS pages, no Blade views).'],
             ['disabled', 'd', InputOption::VALUE_NONE, 'Do not enable the module at creation.'],
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when the module already exists.'],
             ['author-name', null, InputOption::VALUE_OPTIONAL, 'Author name.'],

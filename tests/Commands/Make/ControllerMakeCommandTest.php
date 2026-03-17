@@ -114,6 +114,20 @@ class ControllerMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_generates_an_inertia_controller()
+    {
+        $code = $this->artisan('module:make-controller', [
+            'controller' => 'MyController',
+            'module' => 'Blog',
+            '--inertia' => true,
+        ]);
+
+        $file = $this->finder->get($this->modulePath.'/Http/Controllers/MyController.php');
+
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
     public function test_it_can_change_the_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.controller.path', 'Controllers');

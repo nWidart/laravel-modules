@@ -63,6 +63,8 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\Make\FactoryMakeCommand::class,
             Commands\Make\InterfaceMakeCommand::class,
             Commands\Make\HelperMakeCommand::class,
+            Commands\Make\InertiaComponentMakeCommand::class,
+            Commands\Make\InertiaPageMakeCommand::class,
             Commands\Make\JobMakeCommand::class,
             Commands\Make\ListenerMakeCommand::class,
             Commands\Make\MailMakeCommand::class,
@@ -90,6 +92,7 @@ class ConsoleServiceProvider extends ServiceProvider
             // Publish Commands
             Commands\Publish\PublishCommand::class,
             Commands\Publish\PublishConfigurationCommand::class,
+            Commands\Publish\PublishInertiaCommand::class,
             Commands\Publish\PublishMigrationCommand::class,
             Commands\Publish\PublishTranslationCommand::class,
 

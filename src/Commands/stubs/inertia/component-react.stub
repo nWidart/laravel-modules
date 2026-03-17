@@ -1,0 +1,7 @@
+export default function $COMPONENT_NAME$({ }) {
+    return (
+        <div>
+            {/* $COMPONENT_NAME$ component */}
+        </div>
+    )
+}
