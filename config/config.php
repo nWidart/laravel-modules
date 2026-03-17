@@ -17,6 +17,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Vapor Maintenance Mode
+    |--------------------------------------------------------------------------
+    |
+    | Indicates if the application is running on Laravel Vapor.
+    | When enabled, cached services path will be set to a writable location.
+    |
+    */
+    'vapor_maintenance_mode' => env('VAPOR_MAINTENANCE_MODE', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Module Stubs
     |--------------------------------------------------------------------------
     |
