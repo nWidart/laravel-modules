@@ -241,7 +241,7 @@ class Migrator
      */
     public function table()
     {
-        return $this->laravel['db']->connection($this->database ?: null)->table(config('database.migrations.table'));
+        return $this->laravel['db']->connection($this->database ?: null)->table(config('database.migrations.table', 'migrations'));
     }
 
     /**
