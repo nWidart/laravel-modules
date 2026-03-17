@@ -109,7 +109,7 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     protected function registerTranslations(): void
     {
-        $langPath = resource_path('lang/modules/'.$this->nameLower);
+        $langPath = resource_path('lang/modules/' . $this->nameLower);
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $this->nameLower);
@@ -133,9 +133,11 @@ abstract class ModuleServiceProvider extends ServiceProvider
 
             foreach ($iterator as $file) {
                 if ($file->isFile() && $file->getExtension() === 'php') {
-                    $config = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
-                    $configKey = str_replace([DIRECTORY_SEPARATOR, '.php'], ['.', ''], $config);
-                    $segments = explode('.', $this->nameLower.'.'.$configKey);
+                    $config = str_replace($configPath . DIRECTORY_SEPARATOR, '', $file->getPathname());
+                    $configKey = str_replace(DIRECTORY_SEPARATOR, '.', $config);
+                    $configKey = str_replace('.php', '', $configKey);
+
+                    $segments = explode('.', $this->nameLower . '.' . $configKey);
 
                     // Remove duplicated adjacent segments
                     $normalized = [];
@@ -170,14 +172,14 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     protected function registerViews(): void
     {
-        $viewPath = resource_path('views/modules/'.$this->nameLower);
+        $viewPath = resource_path('views/modules/' . $this->nameLower);
         $sourcePath = module_path($this->name, config('modules.paths.generator.views.path'));
 
-        $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower.'-module-views']);
+        $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower . '-module-views']);
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        Blade::componentNamespace(config('modules.namespace').'\\'.$this->name.'\\View\\Components', $this->nameLower);
+        Blade::componentNamespace(config('modules.namespace') . '\\' . $this->name . '\\View\\Components', $this->nameLower);
     }
 
     /**
@@ -187,8 +189,8 @@ abstract class ModuleServiceProvider extends ServiceProvider
     {
         $paths = [];
         foreach (config('view.paths') as $path) {
-            if (is_dir($path.'/modules/'.$this->nameLower)) {
-                $paths[] = $path.'/modules/'.$this->nameLower;
+            if (is_dir($path . '/modules/' . $this->nameLower)) {
+                $paths[] = $path . '/modules/' . $this->nameLower;
             }
         }
 
