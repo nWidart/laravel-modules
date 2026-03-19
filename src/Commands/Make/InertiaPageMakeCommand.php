@@ -31,8 +31,6 @@ class InertiaPageMakeCommand extends GeneratorCommand
 
     /**
      * Get the console command arguments.
-     *
-     * @return array
      */
     protected function getArguments(): array
     {
@@ -44,8 +42,6 @@ class InertiaPageMakeCommand extends GeneratorCommand
 
     /**
      * Get the console command options.
-     *
-     * @return array
      */
     protected function getOptions(): array
     {
@@ -58,8 +54,6 @@ class InertiaPageMakeCommand extends GeneratorCommand
 
     /**
      * Get template contents.
-     *
-     * @return string
      */
     protected function getTemplateContents(): string
     {
@@ -73,8 +67,6 @@ class InertiaPageMakeCommand extends GeneratorCommand
 
     /**
      * Get the destination file path.
-     *
-     * @return string
      */
     protected function getDestinationFilePath(): string
     {
@@ -105,8 +97,6 @@ class InertiaPageMakeCommand extends GeneratorCommand
 
     /**
      * Get the file name (basename only, no directory).
-     *
-     * @return string
      */
     private function getFileName(): string
     {
@@ -121,8 +111,6 @@ class InertiaPageMakeCommand extends GeneratorCommand
 
     /**
      * Get the page name (basename only, no directory).
-     *
-     * @return string
      */
     private function getPageName(): string
     {
@@ -131,8 +119,6 @@ class InertiaPageMakeCommand extends GeneratorCommand
 
     /**
      * Get the subdirectory portion of the name, if any.
-     *
-     * @return string
      */
     private function getSubDirectory(): string
     {
@@ -144,8 +130,6 @@ class InertiaPageMakeCommand extends GeneratorCommand
 
     /**
      * Get the stub file name based on the options.
-     *
-     * @return string
      */
     protected function getStubName(): string
     {
@@ -158,8 +142,6 @@ class InertiaPageMakeCommand extends GeneratorCommand
 
     /**
      * Get default namespace.
-     *
-     * @return string
      */
     public function getDefaultNamespace(): string
     {
