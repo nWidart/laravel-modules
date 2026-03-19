@@ -19,15 +19,13 @@
 | 10.0        | ^10.0               |
 | 11.0        | ^11.0               |
 | 12.0        | ^12.0               |
+| 13.0        | ^13.0               |
 
 `nwidart/laravel-modules` is a Laravel package created to manage your large Laravel app using modules. A Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 11.
 
 This package is a re-published, re-organised and maintained version of [pingpong/modules](https://github.com/pingpong-labs/modules), which isn't maintained anymore.
 
 With one big bonus that the original package didn't have: **tests**.
-
-## upgrade
-To upgrade to version V12 follow [Upgrade Guide](https://laravelmodules.com/docs/12/getting-started/upgrade) on official document.
 
 ## Install
 
