@@ -1,0 +1,11 @@
+<script setup>
+defineProps({
+    // Add your props here
+})
+</script>
+
+<template>
+    <div>
+        <!-- $COMPONENT_NAME$ component -->
+    </div>
+</template>

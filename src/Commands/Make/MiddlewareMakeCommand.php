@@ -7,6 +7,7 @@ use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class MiddlewareMakeCommand extends GeneratorCommand
 {
@@ -53,13 +54,27 @@ class MiddlewareMakeCommand extends GeneratorCommand
     }
 
     /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            ['inertia', null, InputOption::VALUE_NONE, 'Generate an Inertia HandleInertiaRequests middleware.'],
+        ];
+    }
+
+    /**
      * @return mixed
      */
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
-        return (new Stub('/middleware.stub', [
+        $stub = $this->option('inertia') ? '/middleware/handle-inertia-requests.stub' : '/middleware.stub';
+
+        return (new Stub($stub, [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS' => $this->getClass(),
         ]))->render();

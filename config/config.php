@@ -191,6 +191,8 @@ return [
             'assets' => ['path' => 'resources/assets', 'generate' => true],
             'component-view' => ['path' => 'resources/views/components', 'generate' => false],
             'views' => ['path' => 'resources/views', 'generate' => true],
+            'inertia' => ['path' => 'resources/js/Pages', 'generate' => false],
+            'inertia-components' => ['path' => 'resources/js/Components', 'generate' => false],
 
             // routes/
             'routes' => ['path' => 'routes', 'generate' => true],
@@ -312,4 +314,19 @@ return [
     ],
 
     'activator' => 'file',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Inertia
+    |--------------------------------------------------------------------------
+    |
+    | Default Inertia frontend framework used by make commands when no
+    | framework flag (--vue, --react, --svelte) is provided.
+    |
+    | Supported: "vue", "react", "svelte"
+    |
+    */
+    'inertia' => [
+        'frontend' => 'vue',
+    ],
 ];

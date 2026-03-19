@@ -1,0 +1,28 @@
+import { createInertiaApp } from '@inertiajs/svelte'
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
+
+const el = document.getElementById('app')
+
+if (el && el.dataset.page) {
+    createInertiaApp({
+        resolve: (name) => {
+            const appPages = import.meta.glob('./Pages/**/*.svelte')
+            const modulePages = import.meta.glob('/Modules/*/resources/js/Pages/**/*.svelte')
+
+            const parts = name.split('/')
+            const modulePage = `/Modules/${parts[0]}/resources/js/Pages/${parts.slice(1).join('/')}.svelte`
+
+            if (modulePages[modulePage]) {
+                return modulePages[modulePage]()
+            }
+
+            return resolvePageComponent(`./Pages/${name}.svelte`, appPages)
+        },
+        setup({ el, App, props }) {
+            new App({ target: el, props })
+        },
+        progress: {
+            color: '#4B5563',
+        },
+    })
+}

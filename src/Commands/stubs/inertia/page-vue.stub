@@ -1,0 +1,24 @@
+<script setup>
+import { Head } from '@inertiajs/vue3'
+
+defineProps({
+    // Add your props here
+})
+</script>
+
+<template>
+    <div>
+        <Head title="$STUDLY_NAME$ - $PAGE_NAME$" />
+
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h1 class="text-2xl font-bold">$PAGE_NAME$</h1>
+                        <p class="mt-4">$STUDLY_NAME$ module - $PAGE_NAME$ page</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
