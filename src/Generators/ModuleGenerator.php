@@ -374,6 +374,11 @@ class ModuleGenerator extends Generator
                 continue;
             }
 
+            $generatorKey = $this->getGeneratorKeyForFile($file);
+            if ($generatorKey !== null && GenerateConfigReader::read($generatorKey)->generate() === false) {
+                continue;
+            }
+
             $path = $this->module->getModulePath($this->getName()).$file;
 
             $this->component->task("Generating file {$path}", function () use ($stub, $path) {
@@ -544,6 +549,28 @@ class ModuleGenerator extends Generator
         }
 
         return $replaces;
+    }
+
+    /**
+     * Get the generator key that corresponds to the given file path.
+     */
+    private function getGeneratorKeyForFile(string $filePath): ?string
+    {
+        $matchedKey = null;
+        $matchedLength = 0;
+
+        foreach ($this->getFolders() as $key => $folder) {
+            $generatorPath = GenerateConfigReader::read($key)->getPath();
+            if ($generatorPath !== null
+                && str_starts_with($filePath, $generatorPath.'/')
+                && strlen($generatorPath) > $matchedLength
+            ) {
+                $matchedKey = $key;
+                $matchedLength = strlen($generatorPath);
+            }
+        }
+
+        return $matchedKey;
     }
 
     /**
