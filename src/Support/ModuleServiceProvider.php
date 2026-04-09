@@ -116,7 +116,7 @@ abstract class ModuleServiceProvider extends ServiceProvider
             $this->loadJsonTranslationsFrom($langPath);
         } else {
             $moduleLangPath = module_path($this->name, config('modules.paths.generator.lang.path'));
-            $this->loadTranslationsFrom($moduleLangPath);
+            $this->loadTranslationsFrom($moduleLangPath, $this->nameLower);
             $this->loadJsonTranslationsFrom($moduleLangPath);
         }
     }
