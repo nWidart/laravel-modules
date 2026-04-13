@@ -195,7 +195,7 @@ return [
             'inertia-components' => ['path' => 'resources/js/Components', 'generate' => false],
 
             // routes/
-            'routes' => ['path' => 'routes', 'generate' => true],
+            'routes' => ['path' => 'routes', 'generate' => true, 'web' => true, 'api' => true],
 
             // tests/
             'test-feature' => ['path' => 'tests/Feature', 'generate' => true],
