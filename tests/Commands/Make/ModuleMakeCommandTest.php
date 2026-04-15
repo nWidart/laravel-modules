@@ -324,6 +324,18 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_does_not_generate_files_for_disabled_generators()
+    {
+        $this->app['config']->set('modules.paths.generator.assets', ['path' => 'resources/assets', 'generate' => false]);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertDirectoryDoesNotExist($this->modulePath.'/resources/assets');
+        $this->assertFileDoesNotExist($this->modulePath.'/resources/assets/js/app.js');
+        $this->assertFileDoesNotExist($this->modulePath.'/resources/assets/sass/app.scss');
+        $this->assertSame(0, $code);
+    }
+
     public function test_it_can_ignore_resource_folders_to_generate()
     {
         $this->app['config']->set('modules.paths.generator.seeder', ['path' => 'Database/Seeders', 'generate' => false]
