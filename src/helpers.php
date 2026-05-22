@@ -34,6 +34,10 @@ if (! function_exists('module_path')) {
     {
         $module = app('modules')->find($name);
 
+        if ($module === null) {
+            return base_path('Modules'.DIRECTORY_SEPARATOR.$name).($path ? DIRECTORY_SEPARATOR.$path : $path);
+        }
+
         return $module->getPath().($path ? DIRECTORY_SEPARATOR.$path : $path);
     }
 }
