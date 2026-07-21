@@ -60,11 +60,22 @@ trait PathNamespace
         $app_path = strlen($config_path) ? $config_path : 'app/';
 
         if ($path) {
-            // Replace duplicate custom|default app paths
-            $replaces = array_unique([$this->clean_path($app_path).'/', 'app/']);
+            // Normalize separators so "App\Foo" and "App/Foo" are handled alike.
+            $path = str_replace('\\', '/', $path);
+
+            // Strip a leading reference to the app path itself, whether given as
+            // the default "app" placeholder or the configured custom app folder,
+            // regardless of case or a missing trailing separator.
+            $replaces = array_unique(array_map('strtolower', [$this->clean_path($app_path), 'app']));
+
             do {
-                $path = Str::of($path)->replaceStart($app_path, '')->replaceStart('app/', '');
-            } while (Str::of($path)->startsWith($replaces));
+                $segments = explode('/', $path, 2);
+                $stripped = in_array(strtolower($segments[0]), $replaces, true);
+
+                if ($stripped) {
+                    $path = $segments[1] ?? '';
+                }
+            } while ($stripped && strlen($path));
 
             // Append additional path
             $app_path .= strlen($path) ? '/'.$path : '';

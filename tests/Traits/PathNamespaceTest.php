@@ -48,4 +48,15 @@ class PathNamespaceTest extends BaseTestCase
         $this->assertSame($configPath, $this->class->app_path(null));
         $this->assertSame('app/blog/services', $this->class->app_path('blog/services'));
     }
+
+    public function test_app_path_normalizes_app_placeholder_variants_with_custom_app_folder()
+    {
+        config(['modules.paths.app_folder' => 'src']);
+
+        $this->assertSame('src', $this->class->app_path('app/'));
+        $this->assertSame('src', $this->class->app_path('app'));
+        $this->assertSame('src', $this->class->app_path('App/'));
+        $this->assertSame('src', $this->class->app_path('App\\'));
+        $this->assertSame('src/blog/services', $this->class->app_path('blog/services'));
+    }
 }
