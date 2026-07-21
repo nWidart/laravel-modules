@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands\Database;
 
 use ErrorException;
+use Illuminate\Console\View\TaskResult;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Commands\BaseCommand;
@@ -44,12 +45,12 @@ class SeedCommand extends BaseCommand
                 $this->reportException($e);
                 $this->renderException($this->getOutput(), $e);
 
-                return false;
+                return TaskResult::Failure->value;
             } catch (\Exception $e) {
                 $this->reportException($e);
                 $this->renderException($this->getOutput(), $e);
 
-                return false;
+                return TaskResult::Failure->value;
             }
         });
     }
