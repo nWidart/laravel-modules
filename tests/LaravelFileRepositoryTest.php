@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Tests;
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Collection;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Enums\ModuleStatus;
 use Nwidart\Modules\Exceptions\InvalidAssetPath;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Laravel\LaravelFileRepository;
@@ -57,7 +58,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     {
         $this->repository->addLocation(__DIR__.'/stubs/valid');
 
-        $this->assertCount(0, $this->repository->getByStatus(true));
+        $this->assertCount(0, $this->repository->getByStatus(ModuleStatus::ACTIVE));
         $this->assertCount(0, $this->repository->allEnabled());
     }
 
@@ -65,7 +66,7 @@ class LaravelFileRepositoryTest extends BaseTestCase
     {
         $this->repository->addLocation(__DIR__.'/stubs/valid');
 
-        $this->assertCount(2, $this->repository->getByStatus(false));
+        $this->assertCount(2, $this->repository->getByStatus(ModuleStatus::INACTIVE));
         $this->assertCount(2, $this->repository->allDisabled());
     }
 

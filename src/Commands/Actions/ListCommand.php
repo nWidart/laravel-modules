@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands\Actions;
 
 use Illuminate\Console\Command;
+use Nwidart\Modules\Enums\ModuleStatus;
 use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -62,12 +63,12 @@ class ListCommand extends Command
     {
         switch ($this->option('only')) {
             case 'enabled':
-                return $this->laravel['modules']->getByStatus(1);
+                return $this->laravel['modules']->getByStatus(ModuleStatus::ACTIVE);
 
                 break;
 
             case 'disabled':
-                return $this->laravel['modules']->getByStatus(0);
+                return $this->laravel['modules']->getByStatus(ModuleStatus::INACTIVE);
 
                 break;
 

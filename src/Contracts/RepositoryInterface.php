@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Contracts;
 
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Collection;
+use Nwidart\Modules\Enums\ModuleStatus;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Module;
 
@@ -52,7 +53,7 @@ interface RepositoryInterface
     /**
      * Get modules by the given status.
      */
-    public function getByStatus(int|bool $status);
+    public function getByStatus(ModuleStatus $status);
 
     /**
      * Find a specific module.

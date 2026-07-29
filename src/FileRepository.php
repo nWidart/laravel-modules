@@ -12,6 +12,7 @@ use Illuminate\Support\Traits\Macroable;
 use Laravel\Lumen\Application;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Enums\ModuleStatus;
 use Nwidart\Modules\Exceptions\InvalidAssetPath;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Process\Installer;
@@ -164,13 +165,13 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * Get modules by status.
      */
-    public function getByStatus($status): array
+    public function getByStatus(ModuleStatus $status): array
     {
         $modules = [];
 
         /** @var Module $module */
         foreach ($this->all() as $name => $module) {
-            if ($module->isStatus($status)) {
+            if ($module->isStatus((bool) $status->value)) {
                 $modules[$name] = $module;
             }
         }
@@ -191,7 +192,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function allEnabled(): array
     {
-        return $this->getByStatus(true);
+        return $this->getByStatus(ModuleStatus::ACTIVE);
     }
 
     /**
@@ -199,7 +200,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function allDisabled(): array
     {
-        return $this->getByStatus(false);
+        return $this->getByStatus(ModuleStatus::INACTIVE);
     }
 
     /**
@@ -287,7 +288,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * Get all modules as laravel collection instance.
      */
-    public function collections($status = 1): Collection
+    public function collections(ModuleStatus $status = ModuleStatus::ACTIVE): Collection
     {
         return new Collection($this->getByStatus($status));
     }
