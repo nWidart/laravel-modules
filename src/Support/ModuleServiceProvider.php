@@ -133,6 +133,7 @@ abstract class ModuleServiceProvider extends ServiceProvider
 
             foreach ($iterator as $file) {
                 if ($file->isFile() && $file->getExtension() === 'php') {
+                    /** @var string $config */
                     $config = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
                     $configKey = str_replace(DIRECTORY_SEPARATOR, '.', $config);
                     $configKey = str_replace('.php', '', $configKey);
