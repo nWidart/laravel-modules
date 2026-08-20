@@ -56,6 +56,7 @@ class ModelMakeCommand extends GeneratorCommand
         $this->handleOptionalRequestOption();
         $this->handleOptionalResourceOption();
         $this->handleOptionalSeedOption();
+        $this->handleOptionalPolicyOption();
 
         return 0;
     }
@@ -189,6 +190,21 @@ class ModelMakeCommand extends GeneratorCommand
 
             $this->call('module:make-seed', array_filter([
                 'name' => $seedName,
+                'module' => $this->argument('module'),
+            ]));
+        }
+    }
+
+    /**
+     * Create a policy file for the model.
+     */
+    protected function handleOptionalPolicyOption(): void
+    {
+        if($this->option('policy') === true) {
+            $policyName = "{$this->getModelName()}Policy";
+
+            $this->call('module:make-policy', array_filter([
+                'name' => $policyName,
                 'module' => $this->argument('module'),
             ]));
         }

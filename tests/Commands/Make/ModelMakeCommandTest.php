@@ -175,4 +175,16 @@ class ModelMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+    public function test_it_generates_policy_file_with_model()
+    {
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--policy' => true]);
+
+        $policies = $this->finder->allFiles($this->modulePath.'/Policies');
+        $policyFile = $policies[0];
+        $policyContent = $this->finder->get($this->modulePath.'/Policies/'.$policyFile->getFilename());
+        $this->assertCount(1, $policies);
+        $this->assertMatchesSnapshot($policyContent);
+        $this->assertSame(0, $code);
+    }
 }
