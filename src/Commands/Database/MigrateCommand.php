@@ -4,7 +4,9 @@ namespace Nwidart\Modules\Commands\Database;
 
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Nwidart\Modules\Commands\BaseCommand;
+use Nwidart\Modules\Migrations\Migrator as ModuleMigrator;
 use Symfony\Component\Console\Input\InputOption;
 
 class MigrateCommand extends BaseCommand
@@ -46,8 +48,13 @@ class MigrateCommand extends BaseCommand
 
         $module_path = $module->getPath();
 
+        // Always include the module's own migration path, so a disabled module (whose
+        // paths are not auto-registered) never falls back to migrating the whole app.
         $paths = $this->migration_list
-            ->filter(fn ($path) => str_starts_with($path, $module_path));
+            ->filter(fn ($path) => Str::startsWith($path, [$module_path.'/', $module_path.DIRECTORY_SEPARATOR]))
+            ->push((new ModuleMigrator($module, $this->getLaravel()))->getPath())
+            ->unique()
+            ->values();
 
         $this->call('migrate', array_filter([
             '--path' => $paths->toArray(),
