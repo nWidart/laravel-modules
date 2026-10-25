@@ -476,10 +476,54 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $RouteProviderPath = $this->getModuleAppPath().'/Providers/RouteServiceProvider.php';
         $this->assertTrue(! $this->finder->exists($RouteProviderPath));
+        $this->assertTrue($this->finder->exists($this->getModuleAppPath().'/Providers/EventServiceProvider.php'));
 
         $content = $this->finder->get($providerPath);
 
+        $this->assertStringNotContainsString('RouteServiceProvider::class', $content);
+        $this->assertStringContainsString('EventServiceProvider::class', $content);
+    }
+
+    public function test_it_generate_module_when_provider_is_enable_and_event_provider_is_disable()
+    {
+        $this->app['config']->set('modules.paths.generator.provider.generate', true);
+        $this->app['config']->set('modules.paths.generator.event-provider', ['path' => 'app/Providers', 'generate' => false]);
+
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $providerPath = $this->getModuleAppPath().'/Providers/BlogServiceProvider.php';
+        $this->assertTrue($this->finder->exists($providerPath));
+        $this->assertMatchesSnapshot($this->finder->get($providerPath));
+
+        $this->assertFalse($this->finder->exists($this->getModuleAppPath().'/Providers/EventServiceProvider.php'));
+        $this->assertTrue($this->finder->exists($this->getModuleAppPath().'/Providers/RouteServiceProvider.php'));
+
+        $content = $this->finder->get($providerPath);
+
+        $this->assertStringNotContainsString('EventServiceProvider::class', $content);
         $this->assertStringContainsString('RouteServiceProvider::class', $content);
+    }
+
+    public function test_it_generate_module_when_provider_is_enable_and_route_and_event_providers_are_disable()
+    {
+        $this->app['config']->set('modules.paths.generator.provider.generate', true);
+        $this->app['config']->set('modules.paths.generator.route-provider.generate', false);
+        $this->app['config']->set('modules.paths.generator.event-provider', ['path' => 'app/Providers', 'generate' => false]);
+
+        $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $providerPath = $this->getModuleAppPath().'/Providers/BlogServiceProvider.php';
+        $this->assertTrue($this->finder->exists($providerPath));
+        $this->assertMatchesSnapshot($this->finder->get($providerPath));
+
+        $this->assertFalse($this->finder->exists($this->getModuleAppPath().'/Providers/EventServiceProvider.php'));
+        $this->assertFalse($this->finder->exists($this->getModuleAppPath().'/Providers/RouteServiceProvider.php'));
+
+        $content = $this->finder->get($providerPath);
+
+        $this->assertStringNotContainsString('EventServiceProvider::class', $content);
+        $this->assertStringNotContainsString('RouteServiceProvider::class', $content);
+        $this->assertStringContainsString('protected array $providers = [];', $content);
     }
 
     public function test_it_generate_module_when_provider_is_disable_and_route_provider_is_disable()

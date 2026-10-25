@@ -29,10 +29,7 @@ class $CLASS$ extends ModuleServiceProvider
      *
      * @var string[]
      */
-    protected array $providers = [
-        EventServiceProvider::class,
-        RouteServiceProvider::class,
-    ];
+    protected array $providers = [$PROVIDERS$];
 
     /**
      * Define module schedules.

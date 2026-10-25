@@ -39,6 +39,15 @@ class GeneratorPath
         return $this->generate;
     }
 
+    /**
+     * Whether this generator runs alongside a parent generator.
+     * Without its own path config, it follows the parent.
+     */
+    public function generatesWith(bool $parentGenerated): bool
+    {
+        return is_null($this->path) ? $parentGenerated : $this->generate;
+    }
+
     public function getNamespace()
     {
         return $this->studly_namespace($this->namespace);
