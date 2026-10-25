@@ -29,6 +29,13 @@ class MigrateRollbackCommand extends BaseCommand implements ConfirmableCommand
 
         $migrator = new Migrator($module, $this->getLaravel(), $this->option('subpath'));
 
+        if (! $migrator->subpathExists()) {
+            $this->components->error("Migration subpath [{$this->option('subpath')}] does not exist in module [{$module->getName()}].");
+            $this->markAsFailed();
+
+            return;
+        }
+
         $database = $this->option('database');
 
         if (! empty($database)) {
@@ -91,7 +98,7 @@ class MigrateRollbackCommand extends BaseCommand implements ConfirmableCommand
             ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
             ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
-            ['subpath', null, InputOption::VALUE_OPTIONAL, 'Indicate a subpath for modules specific migration file'],
+            ['subpath', null, InputOption::VALUE_OPTIONAL, 'A migrations subdirectory, file, or glob pattern, relative to the module migrations directory'],
         ];
     }
 }

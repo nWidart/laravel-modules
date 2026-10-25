@@ -7,7 +7,9 @@ use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Console\Prohibitable;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Collection;
+use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,6 +24,11 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
     use Prohibitable;
 
     public const ALL = 'All';
+
+    /**
+     * Whether the action failed for at least one module during this run.
+     */
+    private bool $hasFailures = false;
 
     /**
      * Create a new console command instance.
@@ -53,6 +60,15 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         }
     }
 
+    /**
+     * Run the action for one module.
+     *
+     * Return false or a non-zero exit code (or call markAsFailed()) when the action
+     * failed for this module: the remaining modules still run, and the command exits
+     * with a failure status.
+     *
+     * @return mixed
+     */
     abstract public function executeAction($name);
 
     public function getInfo(): ?string
@@ -75,11 +91,63 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
      */
     public function handle()
     {
+        if (! $this->hasModulesToRun()) {
+            return Command::FAILURE;
+        }
+
+        $this->validateModules();
+
         if (! $this->canProceed()) {
             return Command::FAILURE;
         }
 
         $this->executeModules();
+
+        return $this->hasFailures() ? Command::FAILURE : Command::SUCCESS;
+    }
+
+    /**
+     * Check that a module or --all was given. Without interaction there is no prompt,
+     * so an empty module argument would otherwise silently do nothing.
+     */
+    protected function hasModulesToRun(): bool
+    {
+        if ($this->option(strtolower(self::ALL)) || ! empty($this->argument('module'))) {
+            return true;
+        }
+
+        $this->components->error('No module given. Pass a module name or --all.');
+
+        return false;
+    }
+
+    /**
+     * Check that every given module exists before any action runs, so a misspelled
+     * name does not fail halfway, after the modules before it were processed.
+     *
+     * @throws ModuleNotFoundException
+     */
+    protected function validateModules(): void
+    {
+        foreach ((array) $this->argument('module') as $module) {
+            $this->getModuleModel($module);
+        }
+    }
+
+    /**
+     * Mark the current run as failed, so the command exits with a failure status.
+     */
+    protected function markAsFailed(): void
+    {
+        $this->hasFailures = true;
+    }
+
+    /**
+     * Whether the action failed for at least one module during this run.
+     */
+    protected function hasFailures(): bool
+    {
+        return $this->hasFailures;
     }
 
     /**
@@ -107,7 +175,11 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         $modules = (array) $this->argument('module');
 
         foreach ($modules as $module) {
-            $this->executeAction($module);
+            $result = $this->executeAction($module);
+
+            if ($result === false || (is_int($result) && $result !== Command::SUCCESS)) {
+                $this->markAsFailed();
+            }
         }
     }
 
@@ -118,6 +190,8 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         parent::initialize($input, $output);
+
+        $this->hasFailures = false;
 
         if ($input->getOption(strtolower(self::ALL))) {
             $input->setArgument('module', $this->getModuleNames($input));
@@ -133,7 +207,31 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
 
         $modules = $this->getModuleNames($input);
 
-        $selected_item = multisearch(
+        try {
+            $selected_item = $this->promptForModules($modules);
+        } catch (NonInteractiveValidationException) {
+            // Prompts cannot ask without a TTY, even when --no-interaction is not given.
+            // handle() then reports the missing module.
+            return;
+        }
+
+        $input->setArgument(
+            'module',
+            value: in_array(self::ALL, $selected_item)
+                ? $modules
+                : $selected_item
+        );
+    }
+
+    /**
+     * Ask which modules to use.
+     *
+     * @param  array<int, string>  $modules
+     * @return array<int, string>
+     */
+    private function promptForModules(array $modules): array
+    {
+        return multisearch(
             label: 'Select Modules',
             options: function (string $search_value) use ($modules) {
                 return collect([
@@ -144,13 +242,6 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
                 })->values()->toArray();
             },
             required: 'You must select at least one module',
-        );
-
-        $input->setArgument(
-            'module',
-            value: in_array(self::ALL, $selected_item)
-                ? $modules
-                : $selected_item
         );
     }
 

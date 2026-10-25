@@ -119,6 +119,32 @@ class MigrateResetCommandTest extends BaseTestCase
         );
     }
 
+    public function test_it_only_resets_the_migrations_of_the_given_subpath()
+    {
+        $this->writeMigration(base_path('modules/Blog/database/migrations/v2'), 'blog_tags');
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog'], '--subpath' => 'v2']);
+        $this->assertTrue(Schema::hasTable('blog_tags'));
+
+        $code = $this->artisan('module:migrate-reset', ['module' => ['Blog'], '--subpath' => 'v2']);
+
+        $this->assertSame(0, $code);
+        $this->assertFalse(Schema::hasTable('blog_tags'));
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+        $this->assertTrue($this->migrationIsLogged());
+    }
+
+    public function test_it_fails_when_the_subpath_does_not_exist()
+    {
+        $code = $this->artisan('module:migrate-reset', ['module' => ['Blog'], '--subpath' => 'missing']);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString(
+            'Migration subpath [missing] does not exist in module [Blog].',
+            $this->app[Kernel::class]->output()
+        );
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+    }
+
     private function migrationIsLogged(?string $connection = null): bool
     {
         return DB::connection($connection)->table('migrations')->where('migration', self::MIGRATION)->exists();

@@ -7,6 +7,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Nwidart\Modules\Commands\Database\MigrateFreshCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class MigrateFreshCommandTest extends BaseTestCase
@@ -93,6 +94,41 @@ class MigrateFreshCommandTest extends BaseTestCase
         $this->artisan('module:migrate-fresh', ['module' => ['Blog'], '--force' => true])
             ->assertFailed();
 
+        $this->assertTrue(Schema::hasTable('legacy_records'));
+        $this->assertFalse(Schema::hasTable('blog_posts'));
+    }
+
+    public function test_it_does_not_wipe_the_database_when_a_module_does_not_exist()
+    {
+        try {
+            $this->artisan('module:migrate-fresh', ['module' => ['Blog', 'Unknown']]);
+            $this->fail('An unknown module should have thrown.');
+        } catch (ModuleNotFoundException $e) {
+            $this->assertStringContainsString('Unknown', $e->getMessage());
+        }
+
+        $this->assertTrue(Schema::hasTable('legacy_records'));
+        $this->assertFalse(Schema::hasTable('blog_posts'));
+    }
+
+    public function test_it_does_not_wipe_the_database_without_a_module_when_not_interactive()
+    {
+        $code = $this->artisan('module:migrate-fresh', ['--no-interaction' => true]);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('No module given. Pass a module name or --all.', $this->app[Kernel::class]->output());
+        $this->assertTrue(Schema::hasTable('legacy_records'));
+    }
+
+    public function test_it_refuses_to_pretend_and_drops_nothing()
+    {
+        $code = $this->artisan('module:migrate-fresh', ['module' => ['Blog'], '--pretend' => true, '--force' => true]);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString(
+            '--pretend is not supported by module:migrate-fresh: it would still drop all tables.',
+            $this->app[Kernel::class]->output()
+        );
         $this->assertTrue(Schema::hasTable('legacy_records'));
         $this->assertFalse(Schema::hasTable('blog_posts'));
     }

@@ -38,7 +38,7 @@ class SetupCommand extends Command
         return $this->generateDirectory(
             $this->laravel['modules']->config('paths.modules'),
             'Modules directory created successfully',
-            'Modules directory already exist'
+            'Modules directory already exists'
         );
     }
 
@@ -50,12 +50,14 @@ class SetupCommand extends Command
         return $this->generateDirectory(
             $this->laravel['modules']->config('paths.assets'),
             'Assets directory created successfully',
-            'Assets directory already exist'
+            'Assets directory already exists'
         );
     }
 
     /**
-     * Generate the specified directory by given $dir.
+     * Generate the specified directory by given $dir. A directory that already exists is not an error.
+     *
+     * @param  string  $error  The message shown when the directory already exists.
      */
     protected function generateDirectory($dir, $success, $error): int
     {
@@ -64,11 +66,11 @@ class SetupCommand extends Command
 
             $this->components->info($success);
 
-            return 0;
+            return self::SUCCESS;
         }
 
-        $this->components->error($error);
+        $this->components->info($error);
 
-        return E_ERROR;
+        return self::SUCCESS;
     }
 }
