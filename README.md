@@ -106,10 +106,6 @@ Older Laravel versions use the matching major: 5.4 uses ^1.0, 5.5 uses ^2.0, thr
 
 Full documentation: [https://laravelmodules.com/docs](https://laravelmodules.com/docs).
 
-## Community
-
-Ask questions on [Discord](https://discord.gg/hkF7BRvRZK).
-
 ## Credits
 
 - [Nicolas Widart](https://github.com/nwidart)
