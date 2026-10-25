@@ -53,18 +53,18 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
     /**
      * Setup stub path.
+     *
+     * The custom `modules.stubs.path` is used only when `modules.stubs.enabled` is true,
+     * otherwise the package stubs are used. The path is resolved once the app is booted,
+     * so the merged package config and config changed by other providers are taken into account.
      */
     public function setupStubPath()
     {
-        $path = $this->app['config']->get('modules.stubs.path') ?? __DIR__.'/Commands/stubs';
-        Stub::setBasePath($path);
-
         $this->app->booted(function ($app) {
-            /** @var RepositoryInterface $moduleRepository */
-            $moduleRepository = $app[RepositoryInterface::class];
-            if ($moduleRepository->config('stubs.enabled') === true) {
-                Stub::setBasePath($moduleRepository->config('stubs.path'));
-            }
+            $config = $app['config'];
+            $path = $config->get('modules.stubs.enabled') === true ? $config->get('modules.stubs.path') : null;
+
+            Stub::setBasePath(is_string($path) && $path !== '' ? $path : __DIR__.'/Commands/stubs');
         });
     }
 
