@@ -534,6 +534,21 @@ class ModuleMakeCommandTest extends BaseTestCase
         Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATED, strtolower($module_name)));
     }
 
+    public function test_it_generates_studly_module_and_fires_created_event_from_kebab_case_name()
+    {
+        Event::fake();
+
+        $code = $this->artisan('module:make', ['name' => ['zz-probe-mod']]);
+
+        $this->assertSame(0, $code);
+        $this->assertDirectoryExists(base_path('modules/ZzProbeMod'));
+        $this->assertDirectoryDoesNotExist(base_path('modules/zz-probe-mod'));
+        $this->assertTrue($this->repository->has('ZzProbeMod'));
+
+        Event::assertDispatched('modules.zzprobemod.'.ModuleEvent::CREATING);
+        Event::assertDispatched('modules.zzprobemod.'.ModuleEvent::CREATED);
+    }
+
     public function test_it_fires_events_when_multi_module_created()
     {
         Event::fake();
