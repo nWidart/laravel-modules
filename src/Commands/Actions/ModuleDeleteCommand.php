@@ -20,6 +20,13 @@ class ModuleDeleteCommand extends BaseCommand implements ConfirmableCommand
         $this->components->task("Deleting <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
             $module->delete();
         });
+
+        // The repository keeps its scan for the application lifetime: rescan without the deleted module.
+        $repository = $this->moduleRepository();
+
+        if (method_exists($repository, 'resetModules')) {
+            $repository->resetModules();
+        }
     }
 
     public function getInfo(): ?string

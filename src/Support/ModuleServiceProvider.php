@@ -130,9 +130,18 @@ abstract class ModuleServiceProvider extends ServiceProvider
 
     /**
      * Register config.
+     *
+     * With cached config, the values come from the cache and publishing only matters to
+     * vendor:publish, so outside the console the config directory is not read at all.
      */
     protected function registerConfig(): void
     {
+        $runningInConsole = $this->app->runningInConsole();
+
+        if (! $runningInConsole && $this->app->configurationIsCached()) {
+            return;
+        }
+
         $configPath = module_path($this->name, config('modules.paths.generator.config.path'));
 
         if (! is_dir($configPath)) {
@@ -155,9 +164,11 @@ abstract class ModuleServiceProvider extends ServiceProvider
 
             $key = ($config === 'config.php') ? $this->nameLower : implode('.', $normalized);
 
-            // Publish to the file Laravel's config loader maps back to $key (a.b.c => config/a/b/c.php).
-            $publishPath = config_path(str_replace('.', DIRECTORY_SEPARATOR, $key).'.php');
-            $this->publishes([$path => $publishPath], 'config');
+            if ($runningInConsole) {
+                // Publish to the file Laravel's config loader maps back to $key (a.b.c => config/a/b/c.php).
+                $publishPath = config_path(str_replace('.', DIRECTORY_SEPARATOR, $key).'.php');
+                $this->publishes([$path => $publishPath], 'config');
+            }
 
             $this->merge_config_from($path, $key);
         }
@@ -207,10 +218,13 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     protected function registerViews(): void
     {
-        $viewPath = resource_path('views/modules/'.$this->nameLower);
         $sourcePath = module_path($this->name, config('modules.paths.generator.views.path'));
 
-        $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower.'-module-views']);
+        // Publish groups are only read by vendor:publish.
+        if ($this->app->runningInConsole()) {
+            $viewPath = resource_path('views/modules/'.$this->nameLower);
+            $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower.'-module-views']);
+        }
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 

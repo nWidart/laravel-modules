@@ -6,6 +6,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 
 class ModuleManifest
 {
@@ -27,11 +28,18 @@ class ModuleManifest
     public ?string $manifestPath;
 
     /**
-     * The manifestData
+     * The enabled modules data, sorted by priority.
      *
      * @var Collection<array-key, non-empty-array<string, mixed>>|null
      */
-    private static ?Collection $manifestData = null;
+    private ?Collection $manifestData = null;
+
+    /**
+     * The repository module.json files the manifest data was built from.
+     *
+     * @var list<array{path: string, json: Json}>|null
+     */
+    private ?array $manifestSource = null;
 
     /**
      * The loaded manifest array.
@@ -134,37 +142,89 @@ class ModuleManifest
     }
 
     /**
-     * Get the module.json data of the enabled modules, sorted by priority. Each entry also
-     * holds the module directory under 'module_directory'.
+     * Get the data of every enabled module, sorted by priority.
+     *
+     * When the module repository scans the same paths, the data is built from the module.json
+     * files the repository already read, so each file is found and read once per application.
+     * Each entry also holds the module directory under 'module_directory'.
      *
      * @return Collection<array-key, non-empty-array<string, mixed>>
      */
     public function getModulesData(): Collection
     {
-        if (! empty(self::$manifestData) && ! app()->runningUnitTests()) {
-            return self::$manifestData;
+        $repository = $this->repository();
+
+        if ($repository === null) {
+            return $this->manifestData ??= $this->buildModulesData(
+                $this->paths->flatMap(function ($path) {
+                    // Filesystem::glob() returns false on error, despite its array return type.
+                    $manifests = $this->files->glob("{$path}/module.json") ?: [];
+
+                    return collect($manifests)
+                        ->map(function ($manifest) {
+                            // Filesystem::json() is typed as a plain array; module.json holds a JSON object.
+                            /** @var array<string, mixed> $json */
+                            $json = $this->files->json($manifest);
+
+                            return [
+                                'module_directory' => dirname($manifest),
+                                ...$json,
+                            ];
+                        });
+                })
+            );
         }
 
-        self::$manifestData = $this->paths
-            ->flatMap(function ($path) {
-                // Filesystem::glob() returns false on error, despite its array return type.
-                $manifests = $this->files->glob("{$path}/module.json") ?: [];
+        // Rebuild when the repository scanned again, for example after resetModules().
+        $files = $repository->getModuleJsonFiles();
 
-                return collect($manifests)
-                    ->map(function ($manifest) {
-                        // Filesystem::json() is typed as a plain array; module.json holds a JSON object.
-                        /** @var array<string, mixed> $json */
-                        $json = $this->files->json($manifest);
+        if ($this->manifestData === null || $this->manifestSource !== $files) {
+            $this->manifestSource = $files;
+            $this->manifestData = $this->buildModulesData(
+                collect($files)->map(fn (array $file) => [
+                    'module_directory' => dirname($file['path']),
+                    ...$file['json']->getAttributes(),
+                ])
+            );
+        }
 
-                        return [
-                            'module_directory' => dirname($manifest),
-                            ...$json,
-                        ];
-                    });
-            })
+        return $this->manifestData;
+    }
+
+    /**
+     * Keep the enabled modules and sort them by priority.
+     *
+     * @param  Collection<array-key, non-empty-array<string, mixed>>  $modules
+     * @return Collection<array-key, non-empty-array<string, mixed>>
+     */
+    private function buildModulesData(Collection $modules): Collection
+    {
+        return $modules
             ->filter(fn ($module) => $this->activator->hasStatus($module['name'], true))
             ->sortBy(fn ($module) => $module['priority'] ?? 0);
+    }
 
-        return self::$manifestData;
+    /**
+     * Get the bound module repository when it scans the same paths as this manifest.
+     *
+     * It is resolved lazily, so the constructor keeps its arguments. A custom repository
+     * that does not extend FileRepository, or one that scans other paths, is not used:
+     * the manifest then reads the module.json files in its own paths.
+     */
+    private function repository(): ?FileRepository
+    {
+        $container = app();
+
+        if (! $container->bound(RepositoryInterface::class)) {
+            return null;
+        }
+
+        $repository = $container->make(RepositoryInterface::class);
+
+        if (! $repository instanceof FileRepository || $repository->getScanPaths() !== $this->paths->values()->all()) {
+            return null;
+        }
+
+        return $repository;
     }
 }

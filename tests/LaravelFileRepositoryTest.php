@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Tests;
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Collection;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidAssetPath;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Laravel\LaravelFileRepository;
@@ -110,6 +111,71 @@ class LaravelFileRepositoryTest extends BaseTestCase
         $this->assertSame('blog-post', $this->repository->find('blog-post')?->getName());
         $this->assertSame('BlogPost', $this->repository->find('BlogPost')?->getName());
         $this->assertSame('BlogPost', $this->repository->find('blog_post')?->getName());
+    }
+
+    public function test_it_keeps_the_scanned_modules_until_they_are_reset()
+    {
+        $files = $this->app['files'];
+        $location = sys_get_temp_dir().'/laravel-modules-'.uniqid();
+        $files->ensureDirectoryExists($location.'/Shop');
+        $files->put($location.'/Shop/module.json', json_encode(['name' => 'Shop']));
+        $this->beforeApplicationDestroyed(fn () => $files->deleteDirectory($location));
+        $this->repository->addLocation($location);
+
+        $this->assertTrue($this->repository->has('Shop'));
+
+        // Rename the module on disk without going through the repository.
+        $files->put($location.'/Shop/module.json', json_encode(['name' => 'Store']));
+
+        $this->assertTrue($this->repository->has('Shop'));
+        $this->assertFalse($this->repository->has('Store'));
+        $this->assertTrue((new LaravelFileRepository($this->app))->addLocation($location)->has('Store'));
+
+        $this->repository->resetModules();
+
+        $this->assertFalse($this->repository->has('Shop'));
+        $this->assertTrue($this->repository->has('Store'));
+    }
+
+    public function test_a_missed_lookup_scans_again_when_the_modules_path_changed()
+    {
+        $files = $this->app['files'];
+        $location = sys_get_temp_dir().'/laravel-modules-'.uniqid();
+        $files->ensureDirectoryExists($location.'/Shop');
+        $files->put($location.'/Shop/module.json', json_encode(['name' => 'Shop']));
+        $this->beforeApplicationDestroyed(fn () => $files->deleteDirectory($location));
+
+        $this->assertFalse($this->repository->has('Shop'));
+
+        $this->app['config']->set('modules.paths.modules', $location);
+
+        $this->assertTrue($this->repository->has('Shop'));
+        $this->assertArrayHasKey('shop', $this->repository->all());
+    }
+
+    public function test_it_sees_modules_made_changed_and_deleted_in_the_same_application()
+    {
+        $repository = $this->app[RepositoryInterface::class];
+        $this->assertFalse($repository->has('Blog'));
+        $this->assertFalse($repository->has('Plain'));
+
+        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->artisan('module:make', ['name' => ['Plain'], '--plain' => true]);
+
+        $this->assertTrue($repository->has('Blog'));
+        $this->assertTrue($repository->has('Plain'));
+
+        $this->artisan('module:disable', ['module' => 'Blog']);
+        $this->assertTrue($repository->isDisabled('Blog'));
+
+        $this->artisan('module:enable', ['module' => 'Blog']);
+        $this->assertTrue($repository->isEnabled('Blog'));
+
+        $this->artisan('module:delete', ['module' => 'Blog', '--force' => true]);
+        $this->assertFalse($repository->has('Blog'));
+
+        $repository->delete('Plain');
+        $this->assertFalse($repository->has('Plain'));
     }
 
     public function test_it_find_or_fail_throws_exception_if_module_not_found()
