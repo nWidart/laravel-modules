@@ -26,7 +26,7 @@ class PublishCommand extends BaseCommand
         $module = $this->getModuleModel($name);
 
         $this->components->task("Publishing Assets <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
-            with(new AssetPublisher($module))
+            (new AssetPublisher($module))
                 ->setRepository($this->laravel['modules'])
                 ->setConsole($this)
                 ->publish();

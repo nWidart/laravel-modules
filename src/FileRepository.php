@@ -467,7 +467,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function update(string $module)
     {
-        with(new Updater($this))->update($module);
+        (new Updater($this))->update($module);
     }
 
     /**
