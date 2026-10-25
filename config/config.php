@@ -287,6 +287,11 @@ return [
     | Choose what laravel-modules will register as custom namespaces.
     | Setting one to false will require you to register that part
     | in your own Service Provider class.
+    |
+    | Deprecated: these keys are read only by Module::boot() and Module::register(),
+    | which the package no longer calls. Module translations are loaded by each
+    | module's service provider (and 'auto-discover.translations'); module files
+    | are loaded by the package on register. Will be removed in v14.
     |--------------------------------------------------------------------------
     */
     'register' => [

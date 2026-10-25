@@ -164,11 +164,7 @@ class ListCommands extends BaseCommand
             $commandInstance = $reflection->newInstance();
 
             // Get name directly from the instance
-            $name = null;
-
-            if (method_exists($commandInstance, 'getName')) {
-                $name = $commandInstance->getName();
-            }
+            $name = $commandInstance->getName();
 
             return [
                 'class' => $className,

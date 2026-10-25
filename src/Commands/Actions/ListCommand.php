@@ -64,22 +64,14 @@ class ListCommand extends Command
             case 'enabled':
                 return $this->laravel['modules']->getByStatus(1);
 
-                break;
-
             case 'disabled':
                 return $this->laravel['modules']->getByStatus(0);
-
-                break;
 
             case 'priority':
                 return $this->laravel['modules']->getPriority($this->option('direction'));
 
-                break;
-
             default:
                 return $this->laravel['modules']->all();
-
-                break;
         }
     }
 

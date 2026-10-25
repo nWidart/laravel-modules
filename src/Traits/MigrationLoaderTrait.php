@@ -2,6 +2,12 @@
 
 namespace Nwidart\Modules\Traits;
 
+/**
+ * @deprecated Unused by the package. getMigrationGeneratorPath() returns the whole
+ *             paths.generator.migration config array, so calling it (or loadMigrationFiles())
+ *             throws a TypeError. Use Nwidart\Modules\Migrations\Migrator to work with module
+ *             migrations. Will be removed in v14.
+ */
 trait MigrationLoaderTrait
 {
     /**

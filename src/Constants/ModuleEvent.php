@@ -4,8 +4,16 @@ namespace Nwidart\Modules\Constants;
 
 class ModuleEvent
 {
+    /**
+     * @deprecated Only fired by the deprecated Module::boot(), which the package no longer calls.
+     *             Will be removed in v14.
+     */
     const BOOT = 'boot';
 
+    /**
+     * @deprecated Only fired by the deprecated Module::register(), which the package no longer calls.
+     *             Will be removed in v14.
+     */
     const REGISTER = 'register';
 
     const DISABLING = 'disabling';
