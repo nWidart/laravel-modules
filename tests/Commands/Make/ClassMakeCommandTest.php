@@ -116,8 +116,35 @@ class ClassMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_uses_the_namespace_configured_under_the_plural_config_key()
+    {
+        // config/config.php names the key "services", not "service".
+        $this->app['config']->set('modules.paths.generator.services.namespace', 'Support\\Services');
+
+        $code = $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog', '--type' => 'service']);
+
+        $file = $this->finder->get($this->modulePath.'/Services/Demo.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Support\\Services;', $file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_uses_the_namespace_configured_under_a_singular_config_key()
+    {
+        // config/config.php names the key "repository", not "repositories".
+        $this->app['config']->set('modules.paths.generator.repository.namespace', 'Data\\Repositories');
+
+        $code = $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog', '--type' => 'repository']);
+
+        $file = $this->finder->get($this->modulePath.'/Repositories/Demo.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Data\\Repositories;', $file);
+        $this->assertSame(0, $code);
+    }
+
     public function test_it_uses_the_configured_type_namespace()
     {
+        // The singular key is still read when the plural one is not set.
         $this->app['config']->set('modules.paths.generator.service.namespace', 'Support\\Services');
 
         $code = $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog', '--type' => 'service']);

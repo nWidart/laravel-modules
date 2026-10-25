@@ -50,7 +50,7 @@ class ServiceMakeCommand extends GeneratorCommand
     {
         return [
             ['invokable', 'i', InputOption::VALUE_NONE, 'Generate an invokable service class', null],
-            ['force', 'f', InputOption::VALUE_NONE, 'su.'],
+            ['force', 'f', InputOption::VALUE_NONE, 'Overwrite the file if it already exists'],
         ];
     }
 

@@ -53,6 +53,19 @@ class GeneratorCommandTest extends BaseTestCase
         }
     }
 
+    public function test_every_generator_describes_its_force_option()
+    {
+        $generators = ConsoleServiceProvider::defaultCommands()
+            ->filter(fn (string $class) => is_subclass_of($class, GeneratorCommand::class));
+
+        foreach ($generators as $class) {
+            $description = $this->app->make($class)->getDefinition()->getOption('force')->getDescription();
+
+            // A sentence of at least four words, not a placeholder like "su.".
+            $this->assertMatchesRegularExpression('/^\p{Lu}\w*( \w+){3,}/u', $description, "{$class} --force has no real description.");
+        }
+    }
+
     public function test_force_shortcut_does_not_replace_an_existing_f_shortcut()
     {
         $definition = Artisan::all()['module:make-model']->getDefinition();

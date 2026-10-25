@@ -3,10 +3,12 @@
 namespace Nwidart\Modules\Tests\Commands\Database;
 
 use Illuminate\Contracts\Console\Kernel;
+use Nwidart\Modules\Commands\Database\SeedCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Nwidart\Modules\Tests\Commands\Database\Fixtures\FailingSeeder;
 use Nwidart\Modules\Tests\Commands\Database\Fixtures\RecordingSeeder;
+use RuntimeException;
 
 class SeedCommandTest extends BaseTestCase
 {
@@ -30,6 +32,25 @@ class SeedCommandTest extends BaseTestCase
         $this->repository->delete('Blog');
         $this->repository->delete('Shop');
         parent::tearDown();
+    }
+
+    public function test_get_module_by_name_only_uses_methods_of_the_repository_interface()
+    {
+        // A mock of the interface has no has() method, like a custom repository implementation.
+        $module = $this->repository->find('Blog');
+        $repository = $this->createStub(RepositoryInterface::class);
+        $repository->method('find')->willReturnMap([['Blog', $module], ['Unknown', null]]);
+        $this->app->instance('modules', $repository);
+
+        $command = $this->app->make(SeedCommand::class);
+        $command->setLaravel($this->app);
+
+        $this->assertSame($module, $command->getModuleByName('Blog'));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Module [Unknown] does not exists.');
+
+        $command->getModuleByName('Unknown');
     }
 
     public function test_it_succeeds_when_every_module_is_seeded()

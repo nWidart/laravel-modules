@@ -3,6 +3,7 @@
 namespace Nwidart\Modules;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\ProviderRepository;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
@@ -87,9 +88,14 @@ abstract class ModulesServiceProvider extends ServiceProvider
     {
         // On Laravel Vapor the bootstrap cache directory is read-only, but the config cache is
         // written at runtime to a writable location, so keep the module manifest next to it.
-        $cacheFile = $this->app['config']->get('modules.vapor_maintenance_mode')
-            ? $this->app->getCachedConfigPath()
-            : $this->app->getCachedServicesPath();
+        $vapor = $this->app['config']->get('modules.vapor_maintenance_mode');
+
+        if ($this->app instanceof Application) {
+            $cacheFile = $vapor ? $this->app->getCachedConfigPath() : $this->app->getCachedServicesPath();
+        } else {
+            // The Application contract has no cache path methods: use Laravel's default cache directory.
+            $cacheFile = $this->app->bootstrapPath($vapor ? 'cache/config.php' : 'cache/services.php');
+        }
 
         return dirname($cacheFile).DIRECTORY_SEPARATOR.'modules.php';
     }

@@ -42,10 +42,13 @@ class CheckLangCommand extends BaseCommand
             return;
         }
 
-        $this->checkMissingFiles($directories);
+        // Run both checks, so every missing file and key is reported, not only the first kind.
+        $missingFiles = $this->checkMissingFiles($directories);
+        $missingKeys = $this->checkMissingKeys($directories);
 
-        $this->checkMissingKeys($directories);
-
+        if ($missingFiles || $missingKeys) {
+            $this->markAsFailed();
+        }
     }
 
     public function getInfo(): ?string
@@ -87,7 +90,10 @@ class CheckLangCommand extends BaseCommand
         return collect($directories);
     }
 
-    private function checkMissingFiles(Collection $directories)
+    /**
+     * Report the language files missing from a locale. Returns whether any file is missing.
+     */
+    private function checkMissingFiles(Collection $directories): bool
     {
         // show missing files
         $missingFilesMessage = [];
@@ -122,9 +128,13 @@ class CheckLangCommand extends BaseCommand
 
         }
 
+        return count($missingFilesMessage) > 0;
     }
 
-    private function checkMissingKeys(Collection $directories)
+    /**
+     * Report the language keys missing from a locale. Returns whether any key is missing.
+     */
+    private function checkMissingKeys(Collection $directories): bool
     {
         // show missing keys
         $uniqeLangFiles = $directories->pluck('files')->flatten()->unique();
@@ -180,6 +190,8 @@ class CheckLangCommand extends BaseCommand
                 $this->newLine();
             });
         }
+
+        return count($missingKeysMessage) > 0;
     }
 
     private function getLangKeys($file)
