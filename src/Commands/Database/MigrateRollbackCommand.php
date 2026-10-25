@@ -3,11 +3,12 @@
 namespace Nwidart\Modules\Commands\Database;
 
 use Nwidart\Modules\Commands\BaseCommand;
+use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Nwidart\Modules\Migrations\Migrator;
 use Nwidart\Modules\Traits\MigrationLoaderTrait;
 use Symfony\Component\Console\Input\InputOption;
 
-class MigrateRollbackCommand extends BaseCommand
+class MigrateRollbackCommand extends BaseCommand implements ConfirmableCommand
 {
     use MigrationLoaderTrait;
 
@@ -37,6 +38,12 @@ class MigrateRollbackCommand extends BaseCommand
             $migrator->setDatabase($database);
         }
 
+        if ($this->option('pretend')) {
+            $this->pretend($migrator->rollback(pretend: true), $module->getName());
+
+            return;
+        }
+
         $migrated = $migrator->rollback();
 
         if (count($migrated)) {
@@ -49,6 +56,25 @@ class MigrateRollbackCommand extends BaseCommand
 
         $this->components->warn("Nothing to rollback on module <fg=cyan;options=bold>{$module->getName()}</>");
 
+    }
+
+    /**
+     * Show the SQL each migration would run, without running it.
+     *
+     * @param  array<string, array<int, string>>  $queries
+     */
+    protected function pretend(array $queries, string $module): void
+    {
+        if (empty($queries)) {
+            $this->components->warn("Nothing to rollback on module <fg=cyan;options=bold>{$module}</>");
+
+            return;
+        }
+
+        foreach ($queries as $migration => $sql) {
+            $this->components->twoColumnDetail($migration);
+            $this->components->bulletList($sql);
+        }
     }
 
     public function getInfo(): ?string
