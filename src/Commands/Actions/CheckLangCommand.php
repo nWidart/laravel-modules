@@ -2,13 +2,23 @@
 
 namespace Nwidart\Modules\Commands\Actions;
 
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Nwidart\Modules\Commands\BaseCommand;
+use Nwidart\Modules\Module;
 
+/**
+ * @phpstan-type LangDirectory array{name: string, module: string, path: string, files: array<string>}
+ */
 class CheckLangCommand extends BaseCommand
 {
+    /**
+     * The lang path inside a module, with a leading directory separator.
+     *
+     * @var string
+     */
     private $langPath;
 
     /**
@@ -32,6 +42,9 @@ class CheckLangCommand extends BaseCommand
         $this->langPath = DIRECTORY_SEPARATOR.config('modules.paths.generator.lang.path', 'Resources/lang');
     }
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -56,13 +69,21 @@ class CheckLangCommand extends BaseCommand
         return 'Checking languages ...';
     }
 
+    /**
+     * Get the locale directories of the module, or false when there are fewer than two.
+     *
+     * @param  Module  $module
+     * @return Collection<int, LangDirectory>|false
+     */
     private function getDirectories($module)
     {
         $moduleName = $module->getStudlyName();
         $path = $module->getPath().$this->langPath;
         $directories = [];
         if (is_dir($path)) {
-            $directories = $this->laravel['files']->directories($path);
+            // Filesystem::directories() is typed as a plain array; it holds the directory paths.
+            /** @var array<int, string> $directories */
+            $directories = $this->laravel->make(Filesystem::class)->directories($path);
             $directories = array_map(function ($directory) use ($moduleName) {
                 return [
                     'name' => basename($directory),
@@ -92,6 +113,8 @@ class CheckLangCommand extends BaseCommand
 
     /**
      * Report the language files missing from a locale. Returns whether any file is missing.
+     *
+     * @param  Collection<int, LangDirectory>  $directories
      */
     private function checkMissingFiles(Collection $directories): bool
     {
@@ -133,6 +156,8 @@ class CheckLangCommand extends BaseCommand
 
     /**
      * Report the language keys missing from a locale. Returns whether any key is missing.
+     *
+     * @param  Collection<int, LangDirectory>  $directories
      */
     private function checkMissingKeys(Collection $directories): bool
     {
@@ -194,6 +219,12 @@ class CheckLangCommand extends BaseCommand
         return count($missingKeysMessage) > 0;
     }
 
+    /**
+     * Get the dotted keys of a language file, or false when the file does not exist.
+     *
+     * @param  string  $file
+     * @return Collection<int, array-key>|false
+     */
     private function getLangKeys($file)
     {
         if (File::exists($file)) {

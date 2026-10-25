@@ -21,6 +21,9 @@ class DumpCommand extends BaseCommand
      */
     protected $description = 'Dump-autoload the specified module or for all module.';
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);

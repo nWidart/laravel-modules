@@ -19,6 +19,8 @@ class Runner implements RunableInterface
 
     /**
      * Run the given command.
+     *
+     * @return void
      */
     public function run(string $command)
     {

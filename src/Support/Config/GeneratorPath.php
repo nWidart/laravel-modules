@@ -8,12 +8,26 @@ class GeneratorPath
 {
     use PathNamespace;
 
+    /**
+     * The generator path. A legacy config holds the path itself, or false to skip the folder.
+     *
+     * @var string|bool|null
+     */
     private $path;
 
+    /**
+     * @var bool
+     */
     private $generate;
 
+    /**
+     * @var string
+     */
     private $namespace;
 
+    /**
+     * @param  array<string, mixed>|string|bool|null  $config  The modules.paths.generator.<key> config.
+     */
     public function __construct($config)
     {
         if (is_array($config)) {
@@ -30,6 +44,9 @@ class GeneratorPath
         $this->namespace = $this->path_namespace($this->strip_app_folder((string) $config));
     }
 
+    /**
+     * @return string|bool|null
+     */
     public function getPath()
     {
         return $this->path;
@@ -49,6 +66,9 @@ class GeneratorPath
         return is_null($this->path) ? $parentGenerated : $this->generate;
     }
 
+    /**
+     * @return string
+     */
     public function getNamespace()
     {
         return $this->studly_namespace($this->namespace);

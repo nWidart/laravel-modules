@@ -21,7 +21,7 @@ class CastMakeCommand extends GeneratorCommand
 
     public function getDestinationFilePath(): string
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         $filePath = GenerateConfigReader::read('casts')->getPath() ?? config('modules.paths.app_folder').'Casts';
 
@@ -30,7 +30,7 @@ class CastMakeCommand extends GeneratorCommand
 
     protected function getTemplateContents(): string
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
             'CLASS_NAMESPACE' => $this->getClassNamespace($module),
@@ -53,6 +53,9 @@ class CastMakeCommand extends GeneratorCommand
         ];
     }
 
+    /**
+     * @return string|array<int, string>
+     */
     protected function getCastName(): array|string
     {
         return Str::studly($this->argument('name'));

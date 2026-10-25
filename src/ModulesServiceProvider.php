@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules;
 
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\ProviderRepository;
@@ -12,16 +13,22 @@ abstract class ModulesServiceProvider extends ServiceProvider
 {
     /**
      * Booting the package.
+     *
+     * @return void
      */
     public function boot() {}
 
     /**
      * Register all modules.
+     *
+     * @return void
      */
     public function register() {}
 
     /**
      * Register all modules.
+     *
+     * @return void
      */
     protected function registerModules()
     {
@@ -38,6 +45,8 @@ abstract class ModulesServiceProvider extends ServiceProvider
 
     /**
      * Register package's namespaces.
+     *
+     * @return void
      */
     protected function registerNamespaces()
     {
@@ -59,11 +68,15 @@ abstract class ModulesServiceProvider extends ServiceProvider
 
     /**
      * Register the service provider.
+     *
+     * @return void
      */
     abstract protected function registerServices();
 
     /**
      * Get the services provided by the provider.
+     *
+     * @return array<int, string>
      */
     public function provides(): array
     {
@@ -72,6 +85,8 @@ abstract class ModulesServiceProvider extends ServiceProvider
 
     /**
      * Register providers.
+     *
+     * @return void
      */
     protected function registerProviders()
     {
@@ -83,12 +98,14 @@ abstract class ModulesServiceProvider extends ServiceProvider
      *
      * The file is always named modules.php and placed in the directory of a Laravel cache file,
      * so it can never take the name of that cache file (APP_SERVICES_CACHE / APP_CONFIG_CACHE may use any name).
+     *
+     * @return string
      */
     protected function getCachedModulePath()
     {
         // On Laravel Vapor the bootstrap cache directory is read-only, but the config cache is
         // written at runtime to a writable location, so keep the module manifest next to it.
-        $vapor = $this->app['config']->get('modules.vapor_maintenance_mode');
+        $vapor = $this->app->make(ConfigRepository::class)->get('modules.vapor_maintenance_mode');
 
         if ($this->app instanceof Application) {
             $cacheFile = $vapor ? $this->app->getCachedConfigPath() : $this->app->getCachedServicesPath();

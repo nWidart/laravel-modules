@@ -20,6 +20,9 @@ class EnableCommand extends BaseCommand
      */
     protected $description = 'Enable the specified module.';
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);

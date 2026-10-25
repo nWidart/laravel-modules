@@ -28,6 +28,9 @@ class MigrateStatusCommand extends BaseCommand
      */
     protected $module;
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -52,7 +55,7 @@ class MigrateStatusCommand extends BaseCommand
     /**
      * Get the console command options.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getOptions()
     {

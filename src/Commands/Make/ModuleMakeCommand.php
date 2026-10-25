@@ -2,17 +2,22 @@
 
 namespace Nwidart\Modules\Commands\Make;
 
+use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Generators\ModuleGenerator;
+use Nwidart\Modules\Traits\InteractsWithModuleRepository;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class ModuleMakeCommand extends Command implements PromptsForMissingInput
 {
+    use InteractsWithModuleRepository;
+
     /**
      * The console command name.
      *
@@ -46,10 +51,10 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
             }
 
             $code = (new ModuleGenerator($name))
-                ->setFilesystem($this->laravel['files'])
-                ->setModule($this->laravel['modules'])
-                ->setConfig($this->laravel['config'])
-                ->setActivator($this->laravel[ActivatorInterface::class])
+                ->setFilesystem($this->laravel->make(Filesystem::class))
+                ->setModule($this->moduleRepository())
+                ->setConfig($this->laravel->make(ConfigRepository::class))
+                ->setActivator($this->laravel->make(ActivatorInterface::class))
                 ->setConsole($this)
                 ->setComponent($this->components)
                 ->setForce($this->option('force'))
@@ -101,7 +106,7 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
     /**
      * Get the console command arguments.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getArguments()
     {

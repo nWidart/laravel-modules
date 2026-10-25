@@ -179,6 +179,8 @@ abstract class Publisher implements PublisherInterface
 
     /**
      * Publish something.
+     *
+     * @return void
      */
     public function publish()
     {

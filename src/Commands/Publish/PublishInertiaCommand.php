@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands\Publish;
 
 use Illuminate\Console\Command;
+use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Support\Stub;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -20,8 +21,9 @@ class PublishInertiaCommand extends Command
             default => '/inertia/app-vue.stub',
         };
         $destination = resource_path('js/app.js');
+        $files = $this->laravel->make(Filesystem::class);
 
-        if ($this->laravel['files']->exists($destination) && ! $this->option('force')) {
+        if ($files->exists($destination) && ! $this->option('force')) {
             $this->components->error('resources/js/app.js already exists. Use --force to overwrite.');
 
             return E_ERROR;
@@ -29,8 +31,8 @@ class PublishInertiaCommand extends Command
 
         $contents = (new Stub($stub))->render();
 
-        $this->laravel['files']->ensureDirectoryExists(resource_path('js'));
-        $this->laravel['files']->put($destination, $contents);
+        $files->ensureDirectoryExists(resource_path('js'));
+        $files->put($destination, $contents);
 
         $this->components->info('Published Inertia app.js to resources/js/app.js');
         $this->components->info('Make sure your vite.config.js includes resources/js/app.js as an input.');

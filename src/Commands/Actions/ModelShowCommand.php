@@ -59,6 +59,11 @@ class ModelShowCommand extends ShowModelCommand implements PromptsForMissingInpu
         return $this->module_namespace($relative_path->before('/')->toString()).'\\'.str_replace('/', '\\', $class);
     }
 
+    /**
+     * Find the models of every module whose file name matches the pattern.
+     *
+     * @return Collection<int, string> The model class names.
+     */
     public function findModels(string $model): Collection
     {
         $pattern = sprintf(

@@ -11,6 +11,9 @@ class ModuleDeleteCommand extends BaseCommand implements ConfirmableCommand
 
     protected $description = 'Delete a module from the application';
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -19,7 +22,7 @@ class ModuleDeleteCommand extends BaseCommand implements ConfirmableCommand
         });
 
         // The repository keeps its scan for the application lifetime: rescan without the deleted module.
-        $repository = $this->laravel['modules'];
+        $repository = $this->moduleRepository();
 
         if (method_exists($repository, 'resetModules')) {
             $repository->resetModules();

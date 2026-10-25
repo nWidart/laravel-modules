@@ -6,6 +6,8 @@ interface PublisherInterface
 {
     /**
      * Publish something.
+     *
+     * @return void
      */
     public function publish();
 }

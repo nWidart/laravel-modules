@@ -18,7 +18,7 @@ composer update-snapshots           # regenerate spatie snapshot files after int
 composer update-snapshots -- tests/Commands/Make/ControllerMakeCommandTest.php   # one test path only
 composer lint                       # pint (preset: laravel), fixes files
 composer lint:check                 # pint --test, reports without changing files
-composer analyse                    # phpstan + Larastan (phpstan.neon.dist, level 5, src/)
+composer analyse                    # phpstan + Larastan (phpstan.neon.dist, level 6, src/)
 composer test-coverage              # HTML report in build/coverage; needs Xdebug or PCOV
 ```
 

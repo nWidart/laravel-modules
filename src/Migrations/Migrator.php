@@ -4,8 +4,11 @@ namespace Nwidart\Modules\Migrations;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Connection;
+use Illuminate\Database\DatabaseManager;
+use Illuminate\Database\Migrations\Migrator as LaravelMigrator;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Schema\Grammars\Grammar;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Module;
@@ -64,8 +67,9 @@ class Migrator
 
     /**
      * Set the database connection to be used
+     * A value that is not a non-empty string keeps the current database.
      *
-     *
+     * @param  string|null  $database
      * @return $this
      */
     public function setDatabase($database)
@@ -123,7 +127,7 @@ class Migrator
 
         $path = $this->getMigrationsPath();
 
-        return is_dir($path) || ! empty($this->laravel['files']->glob($path));
+        return is_dir($path) || ! empty($this->laravel->make(Filesystem::class)->glob($path));
     }
 
     /**
@@ -138,12 +142,29 @@ class Migrator
     {
         $modulePath = rtrim($this->module->getPath(), '/\\');
 
+        // Migrator::paths() is documented as string[], but Migrator::path() stores any value it is given.
+        /** @var array<int, mixed> $paths */
+        $paths = $this->laravelMigrator()->paths();
+
         $registered = array_filter(
-            $this->laravel['migrator']->paths(),
+            $paths,
             fn ($path) => is_string($path) && Str::startsWith($path, [$modulePath.'/', $modulePath.DIRECTORY_SEPARATOR])
         );
 
         return array_values(array_unique([$this->getPath(), ...$registered]));
+    }
+
+    /**
+     * Get Laravel's migrator.
+     *
+     * Resolved by its 'migrator' key: Migrator::class is a non-shared binding to that key, so
+     * resolving the class would fire the Migrator resolving callbacks again on every call.
+     *
+     * @return LaravelMigrator
+     */
+    private function laravelMigrator()
+    {
+        return $this->laravel->make('migrator');
     }
 
     /**
@@ -153,7 +174,7 @@ class Migrator
      * to the migrations directory, is a directory, a single file, or a glob pattern.
      *
      * @param  bool  $reverse
-     * @return array
+     * @return array<int, string>
      */
     public function getMigrations($reverse = false)
     {
@@ -189,7 +210,7 @@ class Migrator
      */
     protected function getMigrationFiles(): array
     {
-        $files = $this->laravel['files'];
+        $files = $this->laravel->make(Filesystem::class);
 
         if (! empty($this->subpath)) {
             $path = $this->getMigrationsPath();
@@ -288,6 +309,7 @@ class Migrator
      * It runs on the migration's own connection, else the selected database, else the default.
      *
      * @param  string  $migration
+     * @return void
      */
     public function down($migration)
     {
@@ -336,7 +358,7 @@ class Migrator
     {
         $name = method_exists($migration, 'getConnection') ? $migration->getConnection() : null;
 
-        return $this->laravel['db']->connection($name ?: ($this->database ?: null));
+        return $this->laravel->make(DatabaseManager::class)->connection($name ?: ($this->database ?: null));
     }
 
     /**
@@ -347,7 +369,7 @@ class Migrator
      */
     protected function runMethod($connection, $migration, string $method): void
     {
-        $db = $this->laravel['db'];
+        $db = $this->laravel->make(DatabaseManager::class);
 
         $previousConnection = $db->getDefaultConnection();
 
@@ -366,6 +388,7 @@ class Migrator
      * It runs on the migration's own connection, else the selected database, else the default.
      *
      * @param  string  $migration
+     * @return void
      */
     public function up($migration)
     {
@@ -445,11 +468,16 @@ class Migrator
 
     /**
      * Require in all the migration files in a given path.
+     *
+     * @param  array<int, string>  $files  The migration names.
+     * @return void
      */
     public function requireFiles(array $files)
     {
+        $filesystem = $this->laravel->make(Filesystem::class);
+
         foreach ($files as $file) {
-            $this->laravel['files']->requireOnce($this->getMigrationFilePath($file));
+            $filesystem->requireOnce($this->getMigrationFilePath($file));
         }
     }
 
@@ -460,7 +488,7 @@ class Migrator
      */
     public function table()
     {
-        return $this->laravel['db']->connection($this->database ?: null)->table(config('database.migrations.table', 'migrations'));
+        return $this->laravel->make(DatabaseManager::class)->connection($this->database ?: null)->table(config('database.migrations.table', 'migrations'));
     }
 
     /**
@@ -501,7 +529,7 @@ class Migrator
     /**
      * Get the last migration batch number.
      *
-     * @param  array|null  $migrations
+     * @param  array<int, string>|null  $migrations
      * @return int
      */
     public function getLastBatchNumber($migrations = null)
@@ -518,8 +546,8 @@ class Migrator
     /**
      * Get the last migration batch.
      *
-     * @param  array  $migrations
-     * @return Collection
+     * @param  array<int, string>  $migrations
+     * @return Collection<int, mixed>
      */
     public function getLast($migrations)
     {
@@ -537,7 +565,7 @@ class Migrator
     /**
      * Get the ran migrations.
      *
-     * @return Collection
+     * @return Collection<int, mixed>
      */
     public function getRan()
     {

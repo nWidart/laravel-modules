@@ -23,6 +23,9 @@ class MigrateRefreshCommand extends BaseCommand implements ConfirmableCommand
      */
     protected $description = 'Rollback & re-migrate the modules migrations.';
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);

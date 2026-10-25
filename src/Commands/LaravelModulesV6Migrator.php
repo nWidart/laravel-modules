@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
-use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Module;
+use Nwidart\Modules\Traits\InteractsWithModuleRepository;
 
 class LaravelModulesV6Migrator extends Command
 {
+    use InteractsWithModuleRepository;
+
     protected $name = 'module:v6:migrate';
 
     protected $description = 'Migrate laravel-modules v5 modules statuses to v6.';
@@ -17,8 +19,7 @@ class LaravelModulesV6Migrator extends Command
     public function handle(): int
     {
         $moduleStatuses = [];
-        /** @var RepositoryInterface $modules */
-        $modules = $this->laravel['modules'];
+        $modules = $this->moduleRepository();
 
         $modules = $modules->all();
         /** @var Module $module */

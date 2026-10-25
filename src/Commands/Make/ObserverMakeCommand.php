@@ -36,7 +36,7 @@ class ObserverMakeCommand extends GeneratorCommand
     /**
      * Get the console command arguments.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getArguments()
     {
@@ -51,7 +51,7 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub('/observer.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
@@ -66,11 +66,11 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     public function getModelNamespace(): string
     {
-        $moduleNamespace = $this->laravel['modules']->config('namespace'); // 'Modules'
-        $moduleName = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $moduleNamespace = $this->moduleRepository()->config('namespace'); // 'Modules'
+        $moduleName = $this->moduleRepository()->findOrFail($this->getModuleName());
 
-        $path = $this->laravel['modules']->config('paths.generator.model.path', 'Entities'); // current is 'app/Models'
-        $appFolder = $this->laravel['modules']->config('paths.app_folder', 'app/');
+        $path = $this->moduleRepository()->config('paths.generator.model.path', 'Entities'); // current is 'app/Models'
+        $appFolder = $this->moduleRepository()->config('paths.app_folder', 'app/');
 
         if (str_starts_with($path, $appFolder)) {
             $path = substr($path, strlen($appFolder)); // has 'Models'
@@ -99,7 +99,7 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     protected function getDestinationFilePath()
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         $observerPath = GenerateConfigReader::read('observer');
 

@@ -44,7 +44,7 @@ class ClassMakeCommand extends GeneratorCommand
 
     public function getDestinationFilePath(): string
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         return $path.$this->typePath($this->classPath()).'/'.$this->getFileName().'.php';
     }

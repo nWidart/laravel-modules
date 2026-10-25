@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Commands\Make;
 
 use Illuminate\Console\Command;
+use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 use Nwidart\Modules\Generators\FileGenerator;
 use Nwidart\Modules\Module;
+use Nwidart\Modules\Traits\InteractsWithModuleRepository;
 use Nwidart\Modules\Traits\PathNamespace;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -14,6 +16,7 @@ use Symfony\Component\Console\Input\InputOption;
  */
 abstract class GeneratorCommand extends Command
 {
+    use InteractsWithModuleRepository;
     use PathNamespace;
 
     /**
@@ -72,8 +75,10 @@ abstract class GeneratorCommand extends Command
 
         $path = str_replace('\\', '/', $this->getDestinationFilePath());
 
-        if (! $this->laravel['files']->isDirectory($dir = dirname($path))) {
-            $this->laravel['files']->makeDirectory($dir, 0777, true);
+        $files = $this->laravel->make(Filesystem::class);
+
+        if (! $files->isDirectory($dir = dirname($path))) {
+            $files->makeDirectory($dir, 0777, true);
         }
 
         $contents = $this->getTemplateContents();
@@ -153,6 +158,6 @@ abstract class GeneratorCommand extends Command
 
     public function module(?string $name = null): Module
     {
-        return $this->laravel['modules']->findOrFail($name ?? $this->getModuleName());
+        return $this->moduleRepository()->findOrFail($name ?? $this->getModuleName());
     }
 }

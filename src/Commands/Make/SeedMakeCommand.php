@@ -55,7 +55,7 @@ class SeedMakeCommand extends GeneratorCommand
 
     protected function getTemplateContents(): mixed
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub('/seeder.stub', [
             'NAME' => $this->getSeederName(),
@@ -69,7 +69,7 @@ class SeedMakeCommand extends GeneratorCommand
     {
         $this->clearCache();
 
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         $seederPath = GenerateConfigReader::read('seeder');
 

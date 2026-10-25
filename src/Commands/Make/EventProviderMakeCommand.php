@@ -21,7 +21,7 @@ class EventProviderMakeCommand extends GeneratorCommand
 
     public function getDestinationFilePath(): string
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         $filePath = GenerateConfigReader::read('provider')->getPath();
 
@@ -30,7 +30,7 @@ class EventProviderMakeCommand extends GeneratorCommand
 
     protected function getTemplateContents(): string
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
             'NAMESPACE' => $this->getClassNamespace($module),
@@ -52,6 +52,9 @@ class EventProviderMakeCommand extends GeneratorCommand
         ];
     }
 
+    /**
+     * @return string|array<int, string>
+     */
     protected function getEventServiceProviderName(): array|string
     {
         return Str::studly('EventServiceProvider');

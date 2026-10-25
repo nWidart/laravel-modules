@@ -2,13 +2,18 @@
 
 namespace Nwidart\Modules\Traits;
 
+use Nwidart\Modules\Contracts\RepositoryInterface;
+
 trait ModuleCommandTrait
 {
     public function getModuleName(): string
     {
-        $module = $this->argument('module') ?: app('modules')->getUsedNow();
+        /** @var RepositoryInterface $modules */
+        $modules = app('modules');
 
-        $module = app('modules')->findOrFail($module);
+        $module = $this->argument('module') ?: $modules->getUsedNow();
+
+        $module = $modules->findOrFail($module);
 
         return $module->getStudlyName();
     }

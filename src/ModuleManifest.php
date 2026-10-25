@@ -17,6 +17,8 @@ class ModuleManifest
 
     /**
      * The base path.
+     *
+     * @var Collection<int, string>
      */
     public Collection $paths;
 
@@ -27,6 +29,8 @@ class ModuleManifest
 
     /**
      * The enabled modules data, sorted by priority.
+     *
+     * @var Collection<array-key, non-empty-array<string, mixed>>|null
      */
     private ?Collection $manifestData = null;
 
@@ -39,6 +43,8 @@ class ModuleManifest
 
     /**
      * The loaded manifest array.
+     *
+     * @var array<int, string>
      */
     private array $manifest = [];
 
@@ -49,6 +55,8 @@ class ModuleManifest
 
     /**
      * Create a new package manifest instance.
+     *
+     * @param  array<int, string>  $paths
      */
     public function __construct(Filesystem $files, array $paths, string $manifestPath, ActivatorInterface $activator)
     {
@@ -60,6 +68,8 @@ class ModuleManifest
 
     /**
      * Get the current package manifest.
+     *
+     * @return array<int, string> The service provider classes of the enabled modules.
      */
     public function getProviders(): array
     {
@@ -72,6 +82,8 @@ class ModuleManifest
 
     /**
      * Build the manifest and write it to disk.
+     *
+     * @return array<int, string>
      */
     public function build(): array
     {
@@ -134,6 +146,9 @@ class ModuleManifest
      *
      * When the module repository scans the same paths, the data is built from the module.json
      * files the repository already read, so each file is found and read once per application.
+     * Each entry also holds the module directory under 'module_directory'.
+     *
+     * @return Collection<array-key, non-empty-array<string, mixed>>
      */
     public function getModulesData(): Collection
     {
@@ -146,10 +161,16 @@ class ModuleManifest
                     $manifests = $this->files->glob("{$path}/module.json") ?: [];
 
                     return collect($manifests)
-                        ->map(fn ($manifest) => [
-                            'module_directory' => dirname($manifest),
-                            ...$this->files->json($manifest),
-                        ]);
+                        ->map(function ($manifest) {
+                            // Filesystem::json() is typed as a plain array; module.json holds a JSON object.
+                            /** @var array<string, mixed> $json */
+                            $json = $this->files->json($manifest);
+
+                            return [
+                                'module_directory' => dirname($manifest),
+                                ...$json,
+                            ];
+                        });
                 })
             );
         }
@@ -172,6 +193,9 @@ class ModuleManifest
 
     /**
      * Keep the enabled modules and sort them by priority.
+     *
+     * @param  Collection<array-key, non-empty-array<string, mixed>>  $modules
+     * @return Collection<array-key, non-empty-array<string, mixed>>
      */
     private function buildModulesData(Collection $modules): Collection
     {

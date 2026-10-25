@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Support;
 
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Foundation\Events\DiscoverEvents;
 use Illuminate\Support\Str;
 use SplFileInfo;
@@ -132,7 +133,7 @@ class ListenerClassNameGuesser
     {
         $this->resolved = true;
 
-        $config = app('config');
+        $config = app(ConfigRepository::class);
 
         $modulesPath = realpath((string) $config->get('modules.paths.modules'));
         $this->modulesPath = $modulesPath === false ? null : rtrim($modulesPath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;

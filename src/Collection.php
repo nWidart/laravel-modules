@@ -5,10 +5,18 @@ namespace Nwidart\Modules;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection as BaseCollection;
 
+/**
+ * @template TKey of array-key
+ * @template TValue
+ *
+ * @extends BaseCollection<TKey, TValue>
+ */
 class Collection extends BaseCollection
 {
     /**
      * Get items collections.
+     *
+     * @return array<TKey, TValue>
      */
     public function getItems(): array
     {
@@ -17,6 +25,8 @@ class Collection extends BaseCollection
 
     /**
      * Get the collection of items as a plain array.
+     *
+     * @return array<TKey, mixed>
      */
     public function toArray(): array
     {

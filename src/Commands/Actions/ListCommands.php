@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Commands\Actions;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Commands\BaseCommand;
+use Nwidart\Modules\Module;
 use Nwidart\Modules\Traits\PathNamespace;
 use ReflectionClass;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
@@ -17,6 +18,9 @@ class ListCommands extends BaseCommand
 
     protected $description = 'List all commands in the specified module(s)';
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -54,6 +58,7 @@ class ListCommands extends BaseCommand
     /**
      * Find all commands in a module
      *
+     * @param  Module  $module
      * @return list<array<string, string|null>>
      */
     protected function findCommands($module): array
@@ -121,6 +126,8 @@ class ListCommands extends BaseCommand
 
     /**
      * Get command information from class
+     *
+     * @return array<string, string|null>|null
      */
     protected function getCommandInfo(string $className): ?array
     {

@@ -10,12 +10,16 @@ class NameParser
     protected string $name;
 
     /**
-     * The array data.
+     * The array data: the migration name split on "_".
+     *
+     * @var array<int, string>
      */
     protected array $data = [];
 
     /**
      * The available schema actions.
+     *
+     * @var array<string, array<int, string>>
      */
     protected array $actions = [
         'create' => [
@@ -89,6 +93,8 @@ class NameParser
      * Get the patterns tried when the name does not match getPattern(), such as
      * "alter_users_table", "update_users_table" or names without a "_table" suffix.
      * Like Laravel's TableGuesser, the table is the part after "_to_" or "_from_".
+     *
+     * @return array<int, string>
      */
     protected function getFallbackPatterns(): array
     {
@@ -113,6 +119,8 @@ class NameParser
 
     /**
      * Get matches data from regex.
+     *
+     * @return array<int, string>
      */
     public function getMatches(): array
     {
@@ -145,6 +153,8 @@ class NameParser
 
     /**
      * Fetch the migration name to an array data.
+     *
+     * @return array<int, string>
      */
     protected function fetchData(): array
     {
@@ -153,6 +163,8 @@ class NameParser
 
     /**
      * Get the array data.
+     *
+     * @return array<int, string>
      */
     public function getData(): array
     {
@@ -161,6 +173,8 @@ class NameParser
 
     /**
      * Determine whether the given type is same with the current schema action or type.
+     *
+     * @param  string  $type
      */
     public function is($type): bool
     {

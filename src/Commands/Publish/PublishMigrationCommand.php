@@ -23,12 +23,15 @@ class PublishMigrationCommand extends BaseCommand
      */
     protected $description = "Publish a module's migrations to the application";
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
 
         $publisher = (new MigrationPublisher(new Migrator($module, $this->getLaravel())))
-            ->setRepository($this->laravel['modules'])
+            ->setRepository($this->moduleRepository())
             ->setConsole($this)
             ->setForce((bool) $this->option('force'));
 

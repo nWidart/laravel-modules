@@ -6,11 +6,14 @@ use Illuminate\Console\Command;
 use InvalidArgumentException;
 use Nwidart\Modules\Json;
 use Nwidart\Modules\Process\Installer;
+use Nwidart\Modules\Traits\InteractsWithModuleRepository;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class InstallCommand extends Command
 {
+    use InteractsWithModuleRepository;
+
     /**
      * The console command name.
      *
@@ -65,6 +68,8 @@ class InstallCommand extends Command
 
         $modules = Json::make($path);
 
+        // Each entry of the module.json "require" list holds the name, version and type of a module.
+        /** @var array<int, array<string, mixed>> $dependencies */
         $dependencies = $modules->get('require', []);
 
         $failed = false;
@@ -102,7 +107,7 @@ class InstallCommand extends Command
             $tree ?: $this->option('tree')
         );
 
-        $installer->setRepository($this->laravel['modules']);
+        $installer->setRepository($this->moduleRepository());
 
         $installer->setConsole($this);
 
@@ -133,7 +138,7 @@ class InstallCommand extends Command
         }
 
         $module = $installer->getInstalledModuleName();
-        $repository = $this->laravel['modules'];
+        $repository = $this->moduleRepository();
 
         // The repository caches its scan outside of tests: rescan to see the new module.
         if (method_exists($repository, 'resetModules')) {
@@ -162,7 +167,7 @@ class InstallCommand extends Command
     /**
      * Get the console command arguments.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getArguments()
     {
@@ -175,7 +180,7 @@ class InstallCommand extends Command
     /**
      * Get the console command options.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getOptions()
     {

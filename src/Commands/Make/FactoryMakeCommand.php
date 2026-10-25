@@ -36,7 +36,7 @@ class FactoryMakeCommand extends GeneratorCommand
     /**
      * Get the console command arguments.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getArguments()
     {
@@ -51,7 +51,7 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub('/factory.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
@@ -65,7 +65,7 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     protected function getDestinationFilePath()
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         $factoryPath = GenerateConfigReader::read('factory');
 
@@ -106,6 +106,6 @@ class FactoryMakeCommand extends GeneratorCommand
 
         $path = str_replace('/', '\\', $path);
 
-        return $this->laravel['modules']->config('namespace').'\\'.$this->laravel['modules']->findOrFail($this->getModuleName()).'\\'.$path;
+        return $this->moduleRepository()->config('namespace').'\\'.$this->moduleRepository()->findOrFail($this->getModuleName()).'\\'.$path;
     }
 }
