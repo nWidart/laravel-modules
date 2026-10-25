@@ -56,6 +56,18 @@ class MigrateCommandTest extends BaseTestCase
         $this->assertFalse(Schema::hasTable('app_widgets'));
     }
 
+    public function test_it_migrates_every_module_with_all_without_interaction()
+    {
+        $this->rebootMigrator();
+
+        $code = $this->artisan('module:migrate', ['--all' => true, '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+        $this->assertTrue(Schema::hasTable('blog_post_comments'));
+        $this->assertFalse(Schema::hasTable('app_widgets'));
+    }
+
     /**
      * Re-resolve the migrator and the artisan commands, so the auto-discovered
      * module migration paths reflect the modules created in setUp().

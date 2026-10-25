@@ -111,21 +111,27 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         }
     }
 
-    protected function promptForMissingArguments(InputInterface $input, OutputInterface $output): void
+    /**
+     * Resolve --all into the module argument. This runs for every input, unlike
+     * promptForMissingArguments(), which is skipped with --no-interaction or without a TTY.
+     */
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $modules = $this->hasOption('direction')
-            ? array_keys($this->laravel['modules']->getOrdered($input->hasOption('direction')))
-            : array_keys($this->laravel['modules']->all());
+        parent::initialize($input, $output);
 
         if ($input->getOption(strtolower(self::ALL))) {
-            $input->setArgument('module', $modules);
+            $input->setArgument('module', $this->getModuleNames($input));
+        }
+    }
 
+    protected function promptForMissingArguments(InputInterface $input, OutputInterface $output): void
+    {
+        // --all was already resolved in initialize()
+        if ($input->getOption(strtolower(self::ALL)) || ! empty($input->getArgument('module'))) {
             return;
         }
 
-        if (! empty($input->getArgument('module'))) {
-            return;
-        }
+        $modules = $this->getModuleNames($input);
 
         $selected_item = multisearch(
             label: 'Select Modules',
@@ -146,6 +152,24 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
                 ? $modules
                 : $selected_item
         );
+    }
+
+    /**
+     * Get the names of the modules that "all" stands for. Commands with a --direction
+     * option get the enabled modules sorted by priority in that direction.
+     *
+     * @return array<int, string>
+     */
+    protected function getModuleNames(InputInterface $input): array
+    {
+        if (! $this->getDefinition()->hasOption('direction')) {
+            return array_keys($this->laravel['modules']->all());
+        }
+
+        $direction = $input->getOption('direction')
+            ?? $this->getDefinition()->getOption('direction')->getDefault();
+
+        return array_keys($this->laravel['modules']->getOrdered((string) $direction));
     }
 
     protected function getModuleModel($name)

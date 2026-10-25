@@ -35,6 +35,10 @@ class MigrateResetCommandTest extends BaseTestCase
     protected function tearDown(): void
     {
         $this->repository->delete('Blog');
+
+        if ($this->repository->has('Shop')) {
+            $this->repository->delete('Shop');
+        }
         parent::tearDown();
     }
 
@@ -91,6 +95,28 @@ class MigrateResetCommandTest extends BaseTestCase
         $this->assertTrue($this->migrationIsLogged());
         $this->assertTrue($this->migrationIsLogged('tenant'));
         $this->assertSame('sqlite', DB::getDefaultConnection());
+    }
+
+    public function test_it_resets_all_modules_in_descending_priority()
+    {
+        $this->createModule('Shop');
+        $this->writeMigration(base_path('modules/Shop/database/migrations'), 'shop_orders');
+        $this->repository->find('Blog')->json()->set('priority', 1)->save();
+        $this->repository->find('Shop')->json()->set('priority', 2)->save();
+        $this->rebootMigrator();
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Shop']]);
+
+        $code = $this->artisan('module:migrate-reset', ['--all' => true]);
+        $output = $this->app[Kernel::class]->output();
+
+        $this->assertSame(0, $code);
+        $this->assertFalse(Schema::hasTable('blog_posts'));
+        $this->assertFalse(Schema::hasTable('shop_orders'));
+        $this->assertLessThan(
+            strpos($output, self::MIGRATION),
+            strpos($output, '2020_01_01_000000_create_shop_orders_table'),
+            'The higher priority module should be reset first.'
+        );
     }
 
     private function migrationIsLogged(?string $connection = null): bool
