@@ -31,7 +31,7 @@
         "laravel/framework": "^13.0",
         "laravel/pint": "^1.16",
         "spatie/phpunit-snapshot-assertions": "^5.0",
-        "phpstan/phpstan": "^2.0"
+        "larastan/larastan": "^3.9.3"
     },
     "autoload": {
         "psr-4": {

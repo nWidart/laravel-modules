@@ -45,7 +45,7 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
                 continue;
             }
 
-            $code = with(new ModuleGenerator($name))
+            $code = (new ModuleGenerator($name))
                 ->setFilesystem($this->laravel['files'])
                 ->setModule($this->laravel['modules'])
                 ->setConfig($this->laravel['config'])
