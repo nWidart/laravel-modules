@@ -195,11 +195,17 @@ class Migrator
     /**
      * Run down schema from the given migration name.
      *
+     * It runs on the migration's own connection, else the selected database, else the default.
+     *
      * @param  string  $migration
      */
     public function down($migration)
     {
-        $this->resolve($migration)->down();
+        $instance = $this->resolve($migration);
+
+        if (method_exists($instance, 'down')) {
+            $this->runMethod($this->resolveConnection($instance), $instance, 'down');
+        }
     }
 
     /**
@@ -216,17 +222,14 @@ class Migrator
     /**
      * Get all the queries that would be run for a migration method.
      *
-     * The connection is the migration's own, else the selected database, else the default.
-     * It is made the default connection during the call, so the Schema facade pretends too.
+     * The connection is made the default connection during the call, so the Schema facade pretends too.
      *
      * @param  object  $migration
      * @return array<int, string>
      */
     protected function getQueries($migration, string $method): array
     {
-        $name = method_exists($migration, 'getConnection') ? $migration->getConnection() : null;
-
-        $connection = $this->laravel['db']->connection($name ?: ($this->database ?: null));
+        $connection = $this->resolveConnection($migration);
 
         $queries = $connection->pretend(function () use ($connection, $migration, $method) {
             if (method_exists($migration, $method)) {
@@ -235,6 +238,19 @@ class Migrator
         });
 
         return array_column($queries, 'query');
+    }
+
+    /**
+     * Resolve the connection a migration runs on: its own, else the selected database, else the default.
+     *
+     * @param  object  $migration
+     * @return Connection
+     */
+    protected function resolveConnection($migration)
+    {
+        $name = method_exists($migration, 'getConnection') ? $migration->getConnection() : null;
+
+        return $this->laravel['db']->connection($name ?: ($this->database ?: null));
     }
 
     /**
