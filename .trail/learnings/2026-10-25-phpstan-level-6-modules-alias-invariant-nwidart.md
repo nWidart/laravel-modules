@@ -25,3 +25,4 @@ touches:
 
 ## Watch out
 - Level 7 had 200 errors after this change, mostly argument.type.
+- Do not let a typing pass change runtime behaviour, even where PHPStan calls a check redundant. SeedCommand::getModuleRepository() keeps its `instanceof RepositoryInterface` guard and RuntimeException; it reads `$this->laravel['modules']` into an untyped local on purpose, because moduleRepository()'s docblock type would make PHPStan flag the guard as always true. UnUseCommand keeps calling `forgetUsed($module)` although FileRepository ignores the argument: a custom repository may declare the parameter as required. The `@method forgetUsed(Module|null $module = null)` tag exists for that call.
