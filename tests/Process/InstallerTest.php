@@ -3,6 +3,8 @@
 namespace Nwidart\Modules\Tests\Process;
 
 use InvalidArgumentException;
+use LogicException;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Process\Installer;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Nwidart\Modules\Tests\Process\Concerns\CreatesLocalGitRepository;
@@ -164,5 +166,108 @@ class InstallerTest extends BaseTestCase
             $process->getCommandLine()
         );
         $this->assertSame(base_path(), $process->getWorkingDirectory());
+    }
+
+    public function test_composer_install_without_a_version_requires_dev_master()
+    {
+        $process = (new Installer('acme/blog'))->getProcess();
+
+        $this->assertSame("'composer' 'require' 'acme/blog:dev-master'", $process->getCommandLine());
+    }
+
+    public function test_composer_type_installs_via_composer()
+    {
+        $process = (new Installer('acme/blog', '^1.0', 'composer'))->getProcess();
+
+        $this->assertSame("'composer' 'require' 'acme/blog:^1.0'", $process->getCommandLine());
+    }
+
+    public function test_git_install_without_a_version_checks_out_master()
+    {
+        $this->addBranchToBareRepository('master');
+        $destination = $this->tmpDir.DIRECTORY_SEPARATOR.'Blog';
+
+        $process = (new Installer('acme/blog', null, $this->repoUrl))
+            ->setPath($destination)
+            ->getProcess();
+
+        $process->run();
+
+        $this->assertTrue($process->isSuccessful(), $process->getErrorOutput());
+        $this->assertSame('master', $process->getEnv()['MODULE_BRANCH']);
+        $this->assertSame('master', $this->currentBranch($destination));
+    }
+
+    public function test_git_install_without_a_path_uses_the_repository_module_path()
+    {
+        $repository = $this->app[RepositoryInterface::class];
+
+        $process = (new Installer('acme/blog', 'develop', $this->repoUrl))
+            ->setRepository($repository)
+            ->getProcess();
+
+        $this->assertSame($repository->getModulePath('Blog'), $process->getEnv()['MODULE_PATH']);
+    }
+
+    public function test_subtree_install_without_a_path_uses_the_module_path_relative_to_the_project()
+    {
+        $repository = $this->app[RepositoryInterface::class];
+        $this->assertSame(base_path('modules/Blog/'), $repository->getModulePath('Blog'));
+
+        $process = (new Installer('acme/blog', 'develop', $this->repoUrl, true))
+            ->setRepository($repository)
+            ->getProcess();
+
+        $this->assertSame('modules/Blog', $process->getEnv()['MODULE_PATH']);
+        $this->assertSame(base_path(), $process->getWorkingDirectory());
+    }
+
+    public function test_subtree_install_makes_an_absolute_path_inside_the_project_relative()
+    {
+        $process = (new Installer('acme/blog', 'develop', $this->repoUrl, true))
+            ->setPath(base_path('Modules/Blog/'))
+            ->getProcess();
+
+        $this->assertSame('Modules/Blog', $process->getEnv()['MODULE_PATH']);
+    }
+
+    public function test_subtree_install_rejects_an_absolute_path_outside_the_project()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('must be inside the project');
+
+        (new Installer('acme/blog', 'develop', $this->repoUrl, true))
+            ->setPath($this->tmpDir.DIRECTORY_SEPARATOR.'Blog')
+            ->getProcess();
+    }
+
+    public function test_subtree_install_rejects_a_sibling_directory_sharing_the_project_prefix()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('must be inside the project');
+
+        (new Installer('acme/blog', 'develop', $this->repoUrl, true))
+            ->setPath(rtrim(base_path(), '/').'-other/Modules/Blog')
+            ->getProcess();
+    }
+
+    public function test_git_install_without_a_path_or_repository_fails_with_a_clear_message()
+    {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Unable to resolve the destination path for module [acme/blog]');
+
+        (new Installer('acme/blog', 'develop', $this->repoUrl))->getProcess();
+    }
+
+    public function test_run_without_a_console_still_runs_the_process()
+    {
+        $destination = $this->tmpDir.DIRECTORY_SEPARATOR.'Blog';
+
+        $process = (new Installer('acme/blog', 'develop', $this->repoUrl))
+            ->setPath($destination)
+            ->run();
+
+        $this->assertTrue($process->isSuccessful(), $process->getErrorOutput());
+        $this->assertSame('develop', $this->currentBranch($destination));
     }
 }

@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Process;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use LogicException;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Symfony\Component\Process\Process;
 
@@ -16,24 +17,25 @@ class Installer
     protected string $name;
 
     /**
-     * The version of module being installed.
+     * The version of module being installed, null for the default
+     * (`dev-master` via composer, `master` via git).
      */
-    protected string $version;
+    protected ?string $version = null;
 
     /**
-     * The module repository instance.
+     * The module repository instance, used to resolve the default destination path.
      */
-    protected RepositoryInterface $repository;
+    protected ?RepositoryInterface $repository = null;
 
     /**
-     * The console command instance.
+     * The console command instance, receives the process output when set.
      */
-    protected Command $console;
+    protected ?Command $console = null;
 
     /**
-     * The destionation path.
+     * The destination path, null to use the repository module path.
      */
-    protected string $path;
+    protected ?string $path = null;
 
     /**
      * The process timeout.
@@ -110,11 +112,11 @@ class Installer
 
         $process->setTimeout($this->timeout);
 
-        if ($this->console instanceof Command) {
-            $process->run(function ($type, $line) {
-                $this->console->line($line);
-            });
-        }
+        $console = $this->console;
+
+        $process->run($console === null ? null : function ($type, $line) use ($console) {
+            $console->line($line);
+        });
 
         return $process;
     }
@@ -124,7 +126,7 @@ class Installer
      */
     public function getProcess(): Process
     {
-        if ($this->type) {
+        if ($this->type !== null && $this->type !== '' && $this->type !== 'composer') {
             if ($this->tree) {
                 return $this->installViaSubtree();
             }
@@ -137,11 +139,17 @@ class Installer
 
     /**
      * Get destination path.
+     *
+     * @throws LogicException
      */
     public function getDestinationPath(): string
     {
-        if ($this->path) {
+        if ($this->path !== null && $this->path !== '') {
             return $this->path;
+        }
+
+        if ($this->repository === null) {
+            throw new LogicException("Unable to resolve the destination path for module [{$this->name}]: call setPath() or setRepository() first.");
         }
 
         return $this->repository->getModulePath($this->getModuleName());
@@ -247,7 +255,7 @@ class Installer
             [
                 'MODULE_NAME' => $this->getModuleName(),
                 'MODULE_REPO_URL' => $this->getValidatedRepoUrl(),
-                'MODULE_PATH' => $this->getDestinationPath(),
+                'MODULE_PATH' => $this->getSubtreePrefix(),
                 'MODULE_BRANCH' => $this->getValidatedBranch(),
             ]
         );
@@ -275,6 +283,38 @@ class Installer
         }
 
         return $url;
+    }
+
+    /**
+     * Get the subtree prefix, relative to the project root.
+     *
+     * `git subtree add` runs in base_path() and rejects an absolute prefix,
+     * so an absolute destination must live inside the project.
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function getSubtreePrefix(): string
+    {
+        $destination = $this->getDestinationPath();
+        $path = str_replace('\\', '/', $destination);
+
+        if (str_starts_with($path, '/') || preg_match('#^[A-Za-z]:/#', $path) === 1) {
+            $base = rtrim(str_replace('\\', '/', base_path()), '/').'/';
+
+            if (! str_starts_with($path, $base)) {
+                throw new InvalidArgumentException("Subtree destination [{$destination}] for module [{$this->name}] must be inside the project [{$base}].");
+            }
+
+            $path = substr($path, strlen($base));
+        }
+
+        $prefix = rtrim($path, '/');
+
+        if ($prefix === '') {
+            throw new InvalidArgumentException("Invalid subtree destination [{$destination}] for module [{$this->name}].");
+        }
+
+        return $prefix;
     }
 
     /**

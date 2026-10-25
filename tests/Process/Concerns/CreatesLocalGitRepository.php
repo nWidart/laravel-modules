@@ -50,6 +50,14 @@ trait CreatesLocalGitRepository
         return 'file://'.$bare;
     }
 
+    /**
+     * Add a branch to the bare repository created by createBareRepository().
+     */
+    protected function addBranchToBareRepository(string $branch, string $from = 'main'): void
+    {
+        $this->git(['branch', $branch, $from], $this->tmpDir.DIRECTORY_SEPARATOR.'repo.git');
+    }
+
     protected function currentBranch(string $path): string
     {
         return trim($this->git(['rev-parse', '--abbrev-ref', 'HEAD'], $path));
