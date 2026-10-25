@@ -39,8 +39,13 @@ class MigrateFreshCommand extends BaseCommand implements ConfirmableCommand
         $this->migration_paths = collect($this->migrator->paths());
     }
 
-    public function handle(): void
+    public function handle(): int
     {
+        // confirm before anything destructive runs, the nested calls below are forced
+        if (! $this->canProceed()) {
+            return self::FAILURE;
+        }
+
         // drop tables
         $this->components->task('Dropping all tables', fn () => $this->callSilent('db:wipe', array_filter([
             '--database' => $this->option('database'),
@@ -66,12 +71,14 @@ class MigrateFreshCommand extends BaseCommand implements ConfirmableCommand
                 '--path' => $root_paths->toArray(),
                 '--database' => $this->option('database'),
                 '--pretend' => $this->option('pretend'),
-                '--force' => $this->option('force'),
+                '--force' => true,
                 '--realpath' => true,
             ]));
         }
 
-        parent::handle();
+        $this->executeModules();
+
+        return self::SUCCESS;
     }
 
     public function executeAction($name): void
@@ -81,7 +88,7 @@ class MigrateFreshCommand extends BaseCommand implements ConfirmableCommand
         $this->call('module:migrate', array_filter([
             'module' => $module->getStudlyName(),
             '--database' => $this->option('database'),
-            '--force' => $this->option('force'),
+            '--force' => true,
             '--seed' => $this->option('seed'),
         ]));
     }

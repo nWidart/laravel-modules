@@ -75,13 +75,31 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
      */
     public function handle()
     {
-        if ($this instanceof ConfirmableCommand) {
-            if ($this->isProhibited() ||
-                ! $this->confirmToProceed($this->getConfirmableLabel(), $this->getConfirmableCallback())) {
-                return Command::FAILURE;
-            }
+        if (! $this->canProceed()) {
+            return Command::FAILURE;
         }
 
+        $this->executeModules();
+    }
+
+    /**
+     * Run the prohibition check and the production confirmation of a confirmable command.
+     */
+    protected function canProceed(): bool
+    {
+        if (! $this instanceof ConfirmableCommand) {
+            return true;
+        }
+
+        return ! $this->isProhibited()
+            && $this->confirmToProceed($this->getConfirmableLabel(), $this->getConfirmableCallback());
+    }
+
+    /**
+     * Run the action for each of the given modules.
+     */
+    protected function executeModules(): void
+    {
         if (! is_null($info = $this->getInfo())) {
             $this->components->info($info);
         }
