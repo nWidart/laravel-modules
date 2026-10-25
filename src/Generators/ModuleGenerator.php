@@ -27,10 +27,10 @@ class ModuleGenerator extends Generator
      *
      * These are the entries in the "app/" and "app/Http/" sections of config/config.php.
      * The module composer.json maps the module namespace to paths.app_folder, so these
-     * paths must sit inside it. The other generator paths (config, database, lang,
-     * resources, routes, tests) are not checked: they hold no classes, or have their
-     * own PSR-4 entries in the composer.json stub (database/factories,
-     * database/seeders, tests).
+     * paths must sit inside it. With an empty app folder, each path must match its
+     * namespace instead. The other generator paths (config, database, lang, resources,
+     * routes, tests) are not checked: they hold no classes, or have their own PSR-4
+     * entries in the composer.json stub (database/factories, database/seeders, tests).
      */
     private const APP_FOLDER_GENERATOR_KEYS = [
         // app/
@@ -421,35 +421,34 @@ class ModuleGenerator extends Generator
     }
 
     /**
-     * Check that every class generator path sits inside paths.app_folder.
+     * Check that every class generator path can be autoloaded by the module composer.json.
      *
-     * The package composer.json stub maps the module namespace to the app folder, so a
-     * class generated outside it cannot be autoloaded. Fails before anything is written.
-     * Skipped when no composer.json is generated, or when the composer stub in use (for
-     * example an older published one) does not map anything to the app folder.
+     * The package composer.json stub maps the module namespace to paths.app_folder:
+     * - With an app folder, every class generator path must sit inside it.
+     * - With an empty app folder, the namespace maps to the module root, so every class
+     *   generator path must equal the namespace derived from it: each segment must be
+     *   StudlyCase already. "Providers" passes; "app/Providers" (namespace App\Providers) fails.
+     *
+     * Fails before anything is written. Skipped when no composer.json is generated, or when
+     * the composer stub in use (for example an older published one) does not map anything
+     * to the app folder.
      */
     protected function validateGeneratorPaths(): bool
     {
+        if (! $this->composerJsonUsesAppFolder()) {
+            return true;
+        }
+
         $appFolderConfig = (string) $this->module->config('paths.app_folder');
         $appFolder = trim($appFolderConfig, '/');
 
-        // An empty app folder maps the module namespace to the module root.
-        if ($appFolder === '' || ! $this->composerJsonUsesAppFolder()) {
-            return true;
+        if ($appFolder === '') {
+            return $this->validateGeneratorPathsAtModuleRoot();
         }
 
         $outside = [];
 
-        foreach (self::APP_FOLDER_GENERATOR_KEYS as $key) {
-            $config = $this->module->config("paths.generator.$key");
-            $path = is_array($config) ? ($config['path'] ?? null) : $config;
-
-            if (! is_string($path) || trim($path, '/') === '') {
-                continue;
-            }
-
-            $path = trim($path, '/');
-
+        foreach ($this->classGeneratorPaths() as $key => $path) {
             if ($path !== $appFolder && ! str_starts_with($path, $appFolder.'/')) {
                 $outside[] = "$key ($path)";
             }
@@ -470,6 +469,61 @@ class ModuleGenerator extends Generator
         $this->component->bulletList($outside);
 
         return false;
+    }
+
+    /**
+     * With an empty app folder, check that every class generator path equals its namespace.
+     *
+     * Generators derive the namespace from the path with path_namespace(), which
+     * StudlyCases each segment. A segment that is not StudlyCase already ("app" in
+     * "app/Providers") gives a namespace that PSR-4 cannot find at that path.
+     */
+    private function validateGeneratorPathsAtModuleRoot(): bool
+    {
+        $mismatched = [];
+
+        foreach ($this->classGeneratorPaths() as $key => $path) {
+            if ($this->path_namespace($path) !== str_replace('/', '\\', $this->clean_path($path))) {
+                $mismatched[] = "$key ($path)";
+            }
+        }
+
+        if ($mismatched === []) {
+            return true;
+        }
+
+        $namespace = $this->getModuleNamespaceReplacement().'\\'.$this->getStudlyNameReplacement().'\\';
+
+        $this->component->error(sprintf(
+            'Generator paths must match their namespaces, because paths.app_folder is empty and the module composer.json maps %s to the module root. In config/modules.php, drop the app/ prefix and use StudlyCase folders for these paths (for example app/Providers to Providers):',
+            $namespace,
+        ));
+        $this->component->bulletList($mismatched);
+
+        return false;
+    }
+
+    /**
+     * The configured paths of the class generators, keyed by generator key.
+     *
+     * Leading and trailing slashes are trimmed. Keys without a path are left out.
+     *
+     * @return array<string, string>
+     */
+    private function classGeneratorPaths(): array
+    {
+        $paths = [];
+
+        foreach (self::APP_FOLDER_GENERATOR_KEYS as $key) {
+            $config = $this->module->config("paths.generator.$key");
+            $path = is_array($config) ? ($config['path'] ?? null) : $config;
+
+            if (is_string($path) && trim($path, '/') !== '') {
+                $paths[$key] = trim($path, '/');
+            }
+        }
+
+        return $paths;
     }
 
     /**
