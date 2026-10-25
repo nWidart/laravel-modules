@@ -7,6 +7,86 @@ From 11.0.11 until the first automated release (made by `.github/workflows/relea
 
 ## 13.2.0 - 2026-10-25
 
+### Upgrade notes
+
+Most apps on the default published config need no change. Read the items below if you use custom stubs, custom generator paths, or run module commands in scripts, CI or deploys.
+
+#### Check your config and published stubs
+
+- **Custom `stubs.path` needs `stubs.enabled`.** The path is only used when `'stubs' => ['enabled' => true]`. In 13.1 a set path was used even with `'enabled' => false`. Set `enabled` to `true` to keep your stubs. Calling `Stub::setBasePath()` in an app provider's `boot()` is now overwritten (the package sets it in a `booted()` callback): use config ([#2198](https://github.com/nWidart/laravel-modules/pull/2198))
+- **Generator paths without `namespace`.** `actions`, `casts`, `enums`, `exceptions`, `helpers`, `interfaces`, `repository`, `services` and `traits` now take their namespace from `paths.generator.<key>.namespace`, else from `path` minus the app folder. A custom `'actions' => ['path' => 'app/Domain/Actions']` now generates `Modules\X\Domain\Actions`. Add `'namespace' => 'Actions'` to keep the old one. Existing files are not touched. An entry without a `generate` key now means `false` (it used to throw a `TypeError`) ([#2207](https://github.com/nWidart/laravel-modules/pull/2207))
+- **`module:make-class --type=X`** reads the plural key namespace first (for example `paths.generator.services.namespace`), then the singular one ([#2215](https://github.com/nWidart/laravel-modules/pull/2215))
+- **`module:make` validates generator paths.** When `paths.app_folder` is not empty, `composer` is in `stubs.files`, the composer stub maps `$APP_FOLDER_NAME$` and you do not pass `--plain`, every class generator path (the `app/` and `app/Http/` keys, including those with `generate => false`) must equal `app_folder` or start with `<app_folder>/`, case-sensitive. Otherwise the command exits 1, writes nothing and lists the bad keys. Examples: `app_folder => 'src/'` with the default `app/...` paths, `'App/'` against `app/...`, old string paths such as `'model' => 'Entities'`. Move all class paths under your `app_folder`. These configs never produced autoloadable modules. Existing modules and `module:make-*` commands are not affected ([#2209](https://github.com/nWidart/laravel-modules/pull/2209))
+- **`app_folder => ''`.** Every class generator path must equal its StudlyCase namespace: `app/Providers` is rejected, `Providers` is accepted. Drop the `app/` prefix and StudlyCase the folders. These setups only worked on case-insensitive filesystems ([#2225](https://github.com/nWidart/laravel-modules/pull/2225))
+- **`generate => false` also skips the stub files the key owns.** `routes` skips `routes/web` and `routes/api`, `views` skips `views/index` and `views/master`, `config` skips `scaffold/config`, `assets` skips `assets/js/app`, `assets/sass/app`, `vite` and `package`. So `assets => false` no longer writes `vite.config.js` and `package.json`. `views => false` still generates a controller returning `view('<module>::index')`. Set the key back to `true` to get those files ([#2223](https://github.com/nWidart/laravel-modules/pull/2223))
+- **Published `route-provider.stub`.** The package stub now wraps route registration in `%%START_WEB_ROUTES%%`...`%%END_WEB_ROUTES%%` and `%%START_API_ROUTES%%`...`%%END_API_ROUTES%%` blocks. They are dropped when the route file is not in `stubs.files` or `routes.generate` is false. A stub published before 13.2 has no markers and keeps the old behaviour. Copy the markers from `src/Commands/stubs/route-provider.stub`, or re-publish with `php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=stubs` (add `--force` to overwrite, which discards your edits) ([#2216](https://github.com/nWidart/laravel-modules/pull/2216))
+- **Published `scaffold/provider.stub`.** The package stub now uses `protected array $providers = [$PROVIDERS$];` and lists only the generated route and event providers. A published copy keeps its hard-coded list until you switch it to `$PROVIDERS$`. Default output is unchanged ([#2180](https://github.com/nWidart/laravel-modules/pull/2180))
+- **Stub placeholders are replaced in one pass.** A value containing `$TOKEN$` is no longer substituted again. `$MODULE_NAMESPACE$` and the provider namespace are JSON-escaped only in JSON targets: a non-JSON published stub with a `\` in `modules.namespace` now gets single backslashes (it used to get doubled ones). `ReplacementKeyCommand` output is inserted as returned: escape it yourself in JSON stubs. Unknown `stubs.replacements` keys and leftover `$TOKEN$` placeholders now log a warning ([#2213](https://github.com/nWidart/laravel-modules/pull/2213))
+- **`module:make` fails on invalid output.** It exits 1 and writes nothing when a stub renders invalid JSON. A failed `composer dump-autoload` now gives a non-zero exit ([#2214](https://github.com/nWidart/laravel-modules/pull/2214))
+- **No published `config/modules.php`: translation auto-discovery is off.** The fallback is now `false`, which matches the package default `auto-discover.translations => false`. Modules whose provider extends `Nwidart\Modules\Support\ModuleServiceProvider` still load their own translations. If you relied on the old behaviour, publish the config and set `'auto-discover' => ['translations' => true]` ([#2184](https://github.com/nWidart/laravel-modules/pull/2184))
+
+#### Scripts, CI and deploys
+
+- **A module command without a module or `--all` now fails in non-interactive mode.** `module:migrate*`, `module:seed`, `module:enable`, `module:disable`, `module:publish*`, `module:dump`, `module:lang`, `module:use`, `module:unuse`, `module:delete`, `module:update`, `module:composer-update` and `module:list-commands` print `No module given. Pass a module name or --all.` and exit 1. In 13.1 they did nothing and exited 0: `php artisan module:migrate --force -n` in a deploy migrated nothing. Add `--all` or name the modules. All module names are validated before any action runs ([#2212](https://github.com/nWidart/laravel-modules/pull/2212))
+- **Failures now exit 1.** This covers a failing seeder, a failed nested call, a `module:dump` composer failure and `module:migrate-status` without a migrations table ([#2212](https://github.com/nWidart/laravel-modules/pull/2212))
+- **`module:migrate --subpath` is honoured.** It was ignored in 13.1. A subpath that matches nothing exits 1 ([#2212](https://github.com/nWidart/laravel-modules/pull/2212))
+- **`module:migrate-fresh --pretend` is refused** (exit 1). It used to drop every table. `module:migrate --seed` seeds on `--database`, and `module:migrate-refresh` passes `--force` and `--database` to its nested calls ([#2212](https://github.com/nWidart/laravel-modules/pull/2212))
+- **`--all` works without interaction** (`-n`, no TTY, CI, scheduler). In 13.1 it resolved to no modules and exited 0. Scripts with `--all` now act: `module:delete --all --force -n` deletes every module. `module:migrate-rollback --all` and `module:migrate-reset --all` run in descending priority (`--direction=desc` is the default) ([#2187](https://github.com/nWidart/laravel-modules/pull/2187))
+- **`module:lang` exits 1** when a locale file or key is missing. It exits 0 when there is no lang directory or only one locale ([#2215](https://github.com/nWidart/laravel-modules/pull/2215))
+- **Generators.** `module:make-middleware` and `module:make-observer` exit 1 when the file exists. Every generator has `--force` (and `-f` when free). Names with `..`, a leading `/` or `\`, or a drive letter are rejected, and so are names whose studly form is not a PHP identifier. `module:make` requires `name`: without it, non-interactive runs fail with "Not enough arguments". `module:make-model --policy` and `--all` now create the policy ([#2210](https://github.com/nWidart/laravel-modules/pull/2210))
+- **`module:install`.** It exits 1 when the installed module cannot be found or `module:update` fails. It works without a version or `--path`. `"type": "composer"` now installs through composer (it took the git path before). A destination outside the project is rejected ([#2211](https://github.com/nWidart/laravel-modules/pull/2211), [#2181](https://github.com/nWidart/laravel-modules/pull/2181))
+- **`module:update-phpunit-coverage`** keeps your own `<include>` and `<exclude>` entries (it used to wipe them) and exits 97 on unparsable XML ([#2211](https://github.com/nWidart/laravel-modules/pull/2211))
+
+#### Publishing
+
+- **`module:publish-translation` and `module:publish-migration` keep existing files.** They are listed as `SKIPPED`. Pass `--force` or `-f` to overwrite. `module:publish` (assets) still overwrites ([#2199](https://github.com/nWidart/laravel-modules/pull/2199))
+- **`module:publish-translation` writes to `lang/modules/{module}`** (`lang_path('modules/{module}')`), where the module provider reads them. It used to write `resources/lang/{module}`, which was never loaded. Move old copies to `lang/modules/{module}`. If `resources/lang` held only those copies, delete it: while `resources/lang` exists, Laravel's `lang_path()` points to it and the app's `lang/` directory stops loading. A module generated with the v11 stubs reads `resource_path('lang/modules/...')` in its own `registerTranslations()`: switch it to `lang_path('modules/...')` ([#2185](https://github.com/nWidart/laravel-modules/pull/2185))
+- **Module config files other than `config.php`** now publish to `config/<module>/<file>.php`. They went to `config/<file>.php` and loaded under a top-level key the module never read. Move previously published files ([#2186](https://github.com/nWidart/laravel-modules/pull/2186))
+- **`moduleRefreshPaths()` is opt-in.** To get hot reload for module views, re-publish the loader with `php artisan vendor:publish --tag=vite --force` (this overwrites local edits to `vite-module-loader.js`), then use `refresh: [...refreshPaths, ...moduleRefreshPaths('Modules')]` in `vite.config.js` ([#2217](https://github.com/nWidart/laravel-modules/pull/2217))
+
+#### Migrations and pruning
+
+- **Rollback, reset, refresh and status include `loadMigrationsFrom()` paths.** `module:migrate-rollback`, `module:migrate-reset`, `module:migrate-refresh` and `module:migrate-status` now cover paths registered with `loadMigrationsFrom()` (or auto-discovery) inside the module. In 13.1 those migrations ran but were never rolled back or reset, so reset and refresh now drop those tables too ([#2226](https://github.com/nWidart/laravel-modules/pull/2226))
+- **Rollback and reset run `down()` on the right connection:** the migration's `$connection`, else `--database`, else the default one (it was always the default). Migrations without `down()` are skipped. If you use secondary databases, check they are in sync ([#2179](https://github.com/nWidart/laravel-modules/pull/2179))
+- **`module:prune` finds module models.** Without `--model` it found nothing in 13.1. A scheduled `module:prune` or `--all` now deletes prunable records. `--all` covers enabled modules only. An unknown module exits 1 ([#2197](https://github.com/nWidart/laravel-modules/pull/2197), [#2203](https://github.com/nWidart/laravel-modules/pull/2203))
+
+#### Events
+
+- **Module listeners are found by Laravel event discovery.** The package registers a class name guesser with `DiscoverEvents::guessClassNamesUsing()` and adds no discovery paths. If you put module folders in discovery (`withEvents(discover: [...])`, `addEventDiscoveryPaths()`), those listeners were silently skipped in 13.1 and now register. If you also registered them by hand (module `EventServiceProvider::$listen`, `Event::listen()`), they now run twice: remove one registration. A `Modules/*` glob also matches disabled modules. Remove your own `guessClassNamesUsing()` workaround. Run `php artisan event:cache` again if you cache events ([#2219](https://github.com/nWidart/laravel-modules/pull/2219))
+
+#### Runtime
+
+- **`aliases` in `module.json` are registered** for enabled modules. They were ignored in 13.1: check for clashes ([#2206](https://github.com/nWidart/laravel-modules/pull/2206))
+- **The module manifest is always `modules.php`** next to the services cache. The default `bootstrap/cache/modules.php` is unchanged; the path differs with a custom `APP_SERVICES_CACHE` ([#2206](https://github.com/nWidart/laravel-modules/pull/2206))
+- **Bad state fails loudly.** A corrupt `modules_statuses.json` throws `InvalidJsonException` naming the file. An empty file, `[]` and `{}` mean no statuses. A JSON list such as `["Blog"]` throws: the file must be an object of module name to `true`/`false`. A bad `modules.activator` config throws `InvalidActivatorClass`. `module_path('Unknown')` throws `ModuleNotFoundException`. `find()` and `has()` also match the studly name ([#2205](https://github.com/nWidart/laravel-modules/pull/2205))
+- **Module config load order.** `config.php` loads first, then the other files sorted, so `settings.php` always wins over a `settings` key inside `config.php` ([#2205](https://github.com/nWidart/laravel-modules/pull/2205))
+- **One shared repository instance** (`app('modules')`, `RepositoryInterface`, the `Module` facade, `module()`). State such as `addLocation()` now persists for the request ([#2196](https://github.com/nWidart/laravel-modules/pull/2196))
+- **`module_vite()` configures a clone of Vite.** A later `@vite` keeps the app's build directory and hot file. Module assets no longer get preload `Link` headers ([#2183](https://github.com/nWidart/laravel-modules/pull/2183))
+
+#### For code that extends the package
+
+- `Installer::$version`, `$path`, `$console`, `$repository` and `Publisher::$console` are nullable, and `Publisher::getConsole()` returns `?Command`. Subclasses that redeclare them as non-null fatal. `Publisher::getRepository()` throws when unset ([#2181](https://github.com/nWidart/laravel-modules/pull/2181), [#2211](https://github.com/nWidart/laravel-modules/pull/2211))
+- `FileRepository::install()` defaults `$version` to `''`: git and subtree check out `master`, composer still uses `dev-master` ([#2211](https://github.com/nWidart/laravel-modules/pull/2211))
+- `Publisher` defaults to `$force = false`. Call `->setForce()` to overwrite ([#2199](https://github.com/nWidart/laravel-modules/pull/2199))
+- `BaseCommand` subclasses that override `initialize()` must call `parent::initialize()` or they lose `--all`. When `executeAction()` returns `false` or a non-zero int, the command exits 1 ([#2187](https://github.com/nWidart/laravel-modules/pull/2187), [#2212](https://github.com/nWidart/laravel-modules/pull/2212))
+- `GeneratorCommand` adds a `force` option in its constructor. A subclass that adds its own `force` option hits a duplicate-option error ([#2210](https://github.com/nWidart/laravel-modules/pull/2210))
+- `MigrateCommand` has no constructor and no protected `$migrator` or `$migration_list` properties any more ([#2226](https://github.com/nWidart/laravel-modules/pull/2226))
+- Migration field rendering uses `getFields()`: overriding `parse()` no longer changes the output ([#2202](https://github.com/nWidart/laravel-modules/pull/2202))
+- `getModuleNamespaceReplacement()` and `getProviderNamespaceReplacement()` return single backslashes ([#2213](https://github.com/nWidart/laravel-modules/pull/2213))
+
+#### Deprecations
+
+These are removed in v14. They behave as before in 13.2.
+
+- `Module::boot()`, `register()`, `registerTranslation()` and `isLoadFilesOnBoot()`
+- `FileRepository::boot()` and `register()`, and the same methods on `RepositoryInterface`
+- `ModuleEvent::BOOT` and `ModuleEvent::REGISTER`
+- `Traits\MigrationLoaderTrait`
+- The config keys `modules.register.translations` and `modules.register.files` (they already had no effect)
+- `ContractsServiceProvider`: it is no longer registered and binds nothing
+
+([#2204](https://github.com/nWidart/laravel-modules/pull/2204), [#2196](https://github.com/nWidart/laravel-modules/pull/2196))
+
 ### Features
 
 - **vite:** Add moduleRefreshPaths() for hot reload of module views ([#2217](https://github.com/nWidart/laravel-modules/pull/2217)) ([fed50b9](https://github.com/nWidart/laravel-modules/commit/fed50b911033faa4862e166d3b267a59f8e331a6))
