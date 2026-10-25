@@ -86,4 +86,40 @@ jobs:
         if: env.IS_FORK != 'true'
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: PHP Linting (Pint)
+          commit_message: 'style: apply pint fixes'
+
+  commits:
+    name: Conventional Commits
+    # Dependabot writes its own commit messages, so its PRs are not checked.
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # Checks every non-merge commit the PR adds. The range starts at the current
+      # base branch, so commits merged in from it are not checked again. See CONTRIBUTING.md.
+      - name: Check commit messages
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          pattern='^(feat|fix|perf|refactor|docs|test|build|ci|chore|style|revert)(\([a-z0-9._/-]+\))?!?: .+'
+          commits=$(git log --no-merges --format='%h %s' "origin/$BASE_REF..$HEAD_SHA")
+          bad=0
+          while IFS= read -r line; do
+            [[ -n $line ]] || continue
+            subject=${line#* }
+            if [[ $subject =~ $pattern ]]; then
+              echo "ok   $line"
+            else
+              echo "::error::Not a Conventional Commit: $line"
+              bad=1
+            fi
+          done <<< "$commits"
+          if [[ $bad -ne 0 ]]; then
+            echo "Commit subjects must look like 'fix(scope): description'. See CONTRIBUTING.md. Reword them with git rebase -i and force-push."
+            exit 1
+          fi
