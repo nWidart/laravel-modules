@@ -136,6 +136,13 @@ class ModuleGenerator extends Generator
     protected ?string $vendor = null;
 
     /**
+     * Stub contents rendered by generate() before anything is written, keyed by stub name.
+     *
+     * @var array<string, string>
+     */
+    protected array $renderedStubs = [];
+
+    /**
      * The constructor.
      */
     public function __construct(
@@ -344,14 +351,22 @@ class ModuleGenerator extends Generator
             return E_ERROR;
         }
 
-        if ($this->module->has($name)) {
-            if ($this->force) {
-                $this->module->delete($name);
-            } else {
-                $this->component->error("Module [{$name}] already exists!");
+        $exists = $this->module->has($name);
 
-                return E_ERROR;
-            }
+        if ($exists && ! $this->force) {
+            $this->component->error("Module [{$name}] already exists!");
+
+            return E_ERROR;
+        }
+
+        // Render every stub up front: a stub that renders invalid JSON stops here,
+        // before the existing module is deleted or anything is written.
+        if (! $this->renderStubs($exists)) {
+            return E_ERROR;
+        }
+
+        if ($exists) {
+            $this->module->delete($name);
         }
 
         Event::dispatch(sprintf('modules.%s.%s', strtolower($name), ModuleEvent::CREATING));
@@ -484,17 +499,11 @@ class ModuleGenerator extends Generator
      */
     public function generateFiles()
     {
-        $bladeViewStubs = ['views/index', 'views/master'];
-
-        foreach ($this->getFiles() as $stub => $file) {
-            if ($this->inertia && in_array($stub, $bladeViewStubs, true)) {
-                continue;
-            }
-
+        foreach ($this->getFilesToGenerate() as $stub => $file) {
             $path = $this->module->getModulePath($this->getName()).$file;
 
             // Render before the task so stub warnings do not break the task line.
-            $contents = $this->getStubContents($stub);
+            $contents = $this->renderedStubs[$stub] ?? $this->getStubContents($stub);
 
             $this->component->task("Generating file {$path}", function () use ($contents, $path) {
                 if (! $this->filesystem->isDirectory($dir = dirname($path))) {
@@ -584,20 +593,70 @@ class ModuleGenerator extends Generator
             ));
         }
 
-        if ($this->rendersJson($stub)) {
-            json_decode($contents);
+        return $contents;
+    }
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                $this->writeWarning(sprintf(
-                    'Stub [%s] rendered invalid JSON: %s. Values returned by a %s are inserted as-is, so in JSON stubs they must be JSON-escaped.',
-                    $stub,
-                    json_last_error_msg(),
-                    class_basename(ReplacementKeyCommand::class)
-                ));
-            }
+    /**
+     * Get the stub files generateFiles() writes, keyed by stub name.
+     *
+     * Inertia modules get no Blade views.
+     *
+     * @return array<string, string>
+     */
+    protected function getFilesToGenerate(): array
+    {
+        $files = $this->getFiles();
+
+        if ($this->inertia) {
+            unset($files['views/index'], $files['views/master']);
         }
 
-        return $contents;
+        return $files;
+    }
+
+    /**
+     * Render every stub this module type writes and keep the contents for writing.
+     *
+     * Returns false, after printing an error per stub, when a JSON target renders
+     * invalid JSON. Nothing is written in that case. $overwriting tells the error
+     * that an existing module (--force) is kept as it is.
+     */
+    protected function renderStubs(bool $overwriting = false): bool
+    {
+        $targets = ['json' => 'module.json'];
+
+        if ($this->type !== 'plain') {
+            $targets += $this->getFilesToGenerate();
+        }
+
+        $this->renderedStubs = [];
+        $valid = true;
+
+        foreach ($targets as $stub => $file) {
+            $contents = $this->getStubContents($stub);
+
+            if ($this->rendersJson($stub)) {
+                json_decode($contents);
+
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    $this->component?->error(sprintf(
+                        'Stub [%s] renders invalid JSON for [%s]: %s. Values returned by a %s are inserted as-is, so in JSON stubs they must be JSON-escaped. Module [%s] was not %s.',
+                        $stub,
+                        ltrim($file, '/'),
+                        json_last_error_msg(),
+                        class_basename(ReplacementKeyCommand::class),
+                        $this->getName(),
+                        $overwriting ? 'overwritten' : 'created'
+                    ));
+
+                    $valid = false;
+                }
+            }
+
+            $this->renderedStubs[$stub] = $contents;
+        }
+
+        return $valid;
     }
 
     /**
@@ -703,7 +762,7 @@ class ModuleGenerator extends Generator
         $path = $this->module->getModulePath($this->getName()).'module.json';
 
         // Render before the task so stub warnings do not break the task line.
-        $contents = $this->getStubContents('json');
+        $contents = $this->renderedStubs['json'] ?? $this->getStubContents('json');
 
         $this->component->task("Generating file $path", function () use ($contents, $path) {
             if (! $this->filesystem->isDirectory($dir = dirname($path))) {

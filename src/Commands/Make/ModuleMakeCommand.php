@@ -34,6 +34,7 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
     {
         $names = $this->argument('name');
         $success = true;
+        $generated = false;
 
         foreach ($names as $name) {
             // ModuleGenerator::getName() studly-cases the name; it becomes the folder and the namespace.
@@ -61,13 +62,38 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
 
             if ($code === E_ERROR) {
                 $success = false;
+            } else {
+                $generated = true;
             }
         }
 
+        // Nothing was created, so there are no new service providers to discover.
+        if (! $generated) {
+            return E_ERROR;
+        }
+
         // to discover new service providers
-        Process::path(base_path())
+        $result = Process::path(base_path())
             ->command('composer dump-autoload')
-            ->run()->output();
+            ->run();
+
+        if ($result->failed()) {
+            $output = trim($result->errorOutput()) ?: trim($result->output());
+
+            // Composer ends an error with the command synopsis ("dump-autoload [-o|--optimize] ..."): drop it.
+            $output = trim((string) preg_replace('/\n\s*dump-autoload \[[^\n]*$/', '', $output));
+
+            $this->components->error('composer dump-autoload failed.');
+
+            if ($output !== '') {
+                $this->line($output);
+                $this->newLine();
+            }
+
+            $this->components->info('Fix the module (for example its composer.json), then run [composer dump-autoload].');
+
+            return E_ERROR;
+        }
 
         return $success ? 0 : E_ERROR;
     }
