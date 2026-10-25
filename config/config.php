@@ -129,8 +129,15 @@ return [
         | The app path
         |--------------------------------------------------------------------------
         |
-        | app folder name
-        | for example can change it to 'src' or 'App'
+        | The folder inside each module that holds its classes. The module
+        | composer.json maps the module namespace to this folder.
+        | For example, you can change it to 'src/' or 'domain/'.
+        |
+        | When you change it, move the class generator paths below (the
+        | 'app/...' entries) under the same folder. Otherwise module:make
+        | stops with an error.
+        |
+        | Set it to '' to map the module namespace to the module root.
         */
         'app_folder' => 'app/',
 
@@ -138,8 +145,9 @@ return [
         |--------------------------------------------------------------------------
         | Generator path
         |--------------------------------------------------------------------------
+        |
         | Customise the paths where the folders will be generated.
-        | Setting the generate key to false will not generate that folder
+        | Setting the generate key to false will not generate that folder.
         */
         'generator' => [
             // app/

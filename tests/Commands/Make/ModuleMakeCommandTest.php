@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -265,6 +266,8 @@ class ModuleMakeCommandTest extends BaseTestCase
 
     public function test_it_can_generate_module_with_old_config_format()
     {
+        // The old format predates paths.app_folder: classes live at the module root.
+        $this->app['config']->set('modules.paths.app_folder', '');
         $this->app['config']->set('modules.paths.generator', [
             'assets' => 'Assets',
             'config' => 'Config',
@@ -315,12 +318,12 @@ class ModuleMakeCommandTest extends BaseTestCase
     public function test_it_can_ignore_some_folders_to_generate_with_new_format()
     {
         $this->app['config']->set('modules.paths.generator.assets', ['path' => 'Assets', 'generate' => false]);
-        $this->app['config']->set('modules.paths.generator.emails', ['path' => 'Emails', 'generate' => false]);
+        $this->app['config']->set('modules.paths.generator.emails', ['path' => 'app/Emails', 'generate' => false]);
 
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
         $this->assertFileDoesNotExist($this->modulePath.'/Assets');
-        $this->assertFileDoesNotExist($this->modulePath.'/Emails');
+        $this->assertFileDoesNotExist($this->modulePath.'/app/Emails');
         $this->assertSame(0, $code);
     }
 
@@ -328,19 +331,19 @@ class ModuleMakeCommandTest extends BaseTestCase
     {
         $this->app['config']->set('modules.paths.generator.seeder', ['path' => 'Database/Seeders', 'generate' => false]
         );
-        $this->app['config']->set('modules.paths.generator.provider', ['path' => 'Providers', 'generate' => false]);
-        $this->app['config']->set('modules.paths.generator.route-provider', ['path' => 'Providers', 'generate' => false]
+        $this->app['config']->set('modules.paths.generator.provider', ['path' => 'app/Providers', 'generate' => false]);
+        $this->app['config']->set('modules.paths.generator.route-provider', ['path' => 'app/Providers', 'generate' => false]
         );
         $this->app['config']->set(
             'modules.paths.generator.controller',
-            ['path' => 'Http/Controllers', 'generate' => false]
+            ['path' => 'app/Http/Controllers', 'generate' => false]
         );
 
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
         $this->assertFileDoesNotExist($this->modulePath.'/Database/Seeders');
-        $this->assertFileDoesNotExist($this->modulePath.'/Providers');
-        $this->assertFileDoesNotExist($this->modulePath.'/Http/Controllers');
+        $this->assertFileDoesNotExist($this->modulePath.'/app/Providers');
+        $this->assertFileDoesNotExist($this->modulePath.'/app/Http/Controllers');
         $this->assertSame(0, $code);
     }
 
@@ -362,11 +365,11 @@ class ModuleMakeCommandTest extends BaseTestCase
 
     public function test_it_generes_module_with_new_provider_location()
     {
-        $this->app['config']->set('modules.paths.generator.provider', ['path' => 'Base/Providers', 'generate' => true]);
+        $this->app['config']->set('modules.paths.generator.provider', ['path' => 'app/Base/Providers', 'generate' => true]);
 
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertDirectoryExists($this->modulePath.'/Base/Providers');
+        $this->assertDirectoryExists($this->modulePath.'/app/Base/Providers');
         $file = $this->finder->get($this->modulePath.'/module.json');
         $this->assertMatchesSnapshot($file);
         $file = $this->finder->get($this->modulePath.'/composer.json');
@@ -610,6 +613,153 @@ class ModuleMakeCommandTest extends BaseTestCase
         foreach ($modules as $module) {
             Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATING, strtolower($module)));
             Event::assertDispatched(sprintf('modules.%s.'.ModuleEvent::CREATED, strtolower($module)));
+        }
+    }
+
+    public function test_it_fails_when_class_generator_paths_are_outside_the_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'domain/');
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+        $output = Artisan::output();
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString('Generator paths must be inside paths.app_folder [domain/]', $output);
+        $this->assertStringContainsString('Modules\Blog\\', $output);
+        $this->assertStringContainsString('model (app/Models)', $output);
+        $this->assertStringContainsString('provider (app/Providers)', $output);
+        $this->assertStringContainsString('controller (app/Http/Controllers)', $output);
+        $this->assertStringContainsString('request (app/Http/Requests)', $output);
+        $this->assertStringContainsString('Move these paths under domain/ in config/modules.php:', $output);
+        // One offending key per line.
+        $this->assertMatchesRegularExpression('#^\s*⇂ model \(app/Models\)\s*$#mu', $output);
+        $this->assertMatchesRegularExpression('#^\s*⇂ provider \(app/Providers\)\s*$#mu', $output);
+        $this->assertStringNotContainsString('seeder', $output);
+        $this->assertStringNotContainsString('routes (', $output);
+        $this->assertDirectoryDoesNotExist($this->modulePath);
+        $this->assertFalse($this->repository->has('Blog'));
+        $statusesFile = $this->activator->getStatusesFilePath();
+        $statuses = $this->finder->exists($statusesFile) ? $this->finder->json($statusesFile) : [];
+        $this->assertArrayNotHasKey('Blog', $statuses);
+    }
+
+    public function test_it_checks_class_generator_paths_with_an_explicit_namespace_or_generation_disabled()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'domain/');
+        $this->moveClassGeneratorPathsTo('domain');
+        $this->app['config']->set('modules.paths.generator.model', ['path' => 'app/Models', 'generate' => false]);
+        $this->app['config']->set('modules.paths.generator.provider', ['path' => 'app/Providers', 'generate' => true, 'namespace' => 'Providers']);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+        $output = Artisan::output();
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString('model (app/Models)', $output);
+        $this->assertStringContainsString('provider (app/Providers)', $output);
+        $this->assertStringNotContainsString('controller (', $output);
+        $this->assertDirectoryDoesNotExist($this->modulePath);
+    }
+
+    public function test_it_does_not_overwrite_an_existing_module_with_force_when_generator_paths_are_outside_the_app_folder()
+    {
+        $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->app['config']->set('modules.paths.app_folder', 'domain/');
+
+        $code = $this->artisan('module:make', ['name' => ['Blog'], '--force' => true]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertFileExists($this->modulePath.'/app/Providers/BlogServiceProvider.php');
+    }
+
+    public function test_it_generates_module_when_class_generator_paths_are_inside_a_custom_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'domain/');
+        $this->moveClassGeneratorPathsTo('domain');
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+
+        $provider = $this->modulePath.'/domain/Providers/BlogServiceProvider.php';
+        $this->assertFileExists($provider);
+        $this->assertStringContainsString('namespace Modules\Blog\Providers;', $this->finder->get($provider));
+        $this->assertDirectoryDoesNotExist($this->modulePath.'/app');
+
+        $composer = json_decode($this->finder->get($this->modulePath.'/composer.json'), true);
+        $this->assertSame('domain/', $composer['autoload']['psr-4']['Modules\\Blog\\']);
+    }
+
+    public function test_it_does_not_check_generator_paths_when_the_app_folder_is_empty()
+    {
+        $this->app['config']->set('modules.paths.app_folder', '');
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertFileExists($this->modulePath.'/app/Providers/BlogServiceProvider.php');
+    }
+
+    public function test_it_does_not_check_generator_paths_when_the_composer_stub_does_not_use_the_app_folder()
+    {
+        // An older published composer.stub that maps the module namespace to the module root.
+        $stubsPath = base_path('stubs/legacy-composer-stub');
+        $this->finder->ensureDirectoryExists($stubsPath);
+        $this->finder->put(
+            $stubsPath.'/composer.stub',
+            str_replace('"$APP_FOLDER_NAME$"', '""', $this->finder->get(__DIR__.'/../../../src/Commands/stubs/composer.stub'))
+        );
+        Stub::setBasePath($stubsPath);
+        $this->app['config']->set('modules.paths.generator.model', ['path' => 'Entities', 'generate' => true]);
+        $this->app['config']->set('modules.paths.generator.controller', ['path' => 'Http/Controllers', 'generate' => true]);
+
+        try {
+            $code = $this->artisan('module:make', ['name' => ['Blog']]);
+        } finally {
+            $this->finder->deleteDirectory($stubsPath);
+        }
+
+        $this->assertSame(0, $code);
+        $this->assertDirectoryExists($this->modulePath.'/Entities');
+        $this->assertFileExists($this->modulePath.'/Http/Controllers/BlogController.php');
+
+        $composer = json_decode($this->finder->get($this->modulePath.'/composer.json'), true);
+        $this->assertSame('', $composer['autoload']['psr-4']['Modules\\Blog\\']);
+    }
+
+    public function test_it_does_not_check_generator_paths_when_no_composer_json_is_generated()
+    {
+        $files = $this->app['config']->get('modules.stubs.files');
+        unset($files['composer']);
+        $this->app['config']->set('modules.stubs.files', $files);
+        $this->app['config']->set('modules.paths.generator.model', ['path' => 'Entities', 'generate' => true]);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertDirectoryExists($this->modulePath.'/Entities');
+        $this->assertFileDoesNotExist($this->modulePath.'/composer.json');
+    }
+
+    public function test_it_does_not_check_generator_paths_for_a_plain_module()
+    {
+        $this->app['config']->set('modules.paths.generator.model', ['path' => 'Entities', 'generate' => true]);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog'], '--plain' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertDirectoryExists($this->modulePath.'/Entities');
+    }
+
+    /**
+     * Move every "app/..." generator path under the given folder.
+     */
+    private function moveClassGeneratorPathsTo(string $folder): void
+    {
+        foreach ($this->app['config']->get('modules.paths.generator') as $key => $config) {
+            if (is_array($config) && str_starts_with($config['path'], 'app/')) {
+                $config['path'] = $folder.substr($config['path'], strlen('app'));
+                $this->app['config']->set("modules.paths.generator.$key", $config);
+            }
         }
     }
 }
