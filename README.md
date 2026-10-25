@@ -1,53 +1,49 @@
-# Laravel-Modules
+<p align="center"><img src="art/social-preview.png" alt="Laravel Modules: one app, many self-contained modules" width="100%"></p>
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/nwidart/laravel-modules.svg?style=flat-square)](https://packagist.org/packages/nwidart/laravel-modules)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Tests](https://img.shields.io/github/actions/workflow/status/nWidart/laravel-modules/php.yml?branch=master&label=tests&style=flat-square)](https://github.com/nWidart/laravel-modules/actions/workflows/php.yml)
-[![Total Downloads](https://img.shields.io/packagist/dt/nwidart/laravel-modules.svg?style=flat-square)](https://packagist.org/packages/nwidart/laravel-modules)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/nwidart/laravel-modules.svg?style=flat-square)](https://packagist.org/packages/nwidart/laravel-modules) [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md) [![Tests](https://img.shields.io/github/actions/workflow/status/nWidart/laravel-modules/php.yml?branch=master&label=tests&style=flat-square)](https://github.com/nWidart/laravel-modules/actions/workflows/php.yml) [![Total Downloads](https://img.shields.io/packagist/dt/nwidart/laravel-modules.svg?style=flat-square)](https://packagist.org/packages/nwidart/laravel-modules)
 
-| **Laravel** | **laravel-modules** |
-|-------------|---------------------|
-| 5.4         | ^1.0                |
-| 5.5         | ^2.0                |
-| 5.6         | ^3.0                |
-| 5.7         | ^4.0                |
-| 5.8         | ^5.0                |
-| 6.0         | ^6.0                |
-| 7.0         | ^7.0                |
-| 8.0         | ^8.0                |
-| 9.0         | ^9.0                |
-| 10.0        | ^10.0               |
-| 11.0        | ^11.0               |
-| 12.0        | ^12.0               |
-| 13.0        | ^13.0               |
+## What it does
 
-`nwidart/laravel-modules` is a Laravel package created to manage your large Laravel app using modules. A Module is like a Laravel package, it has some views, controllers or models. This package is supported and tested in Laravel 11.
+- Splits a large Laravel app into modules that live in `Modules/`.
+- Each module is a self-contained unit with its own service providers, routes, controllers, models, views, migrations, config and translations. It works like a small Laravel package inside your app.
+- Modules can be enabled or disabled. Only enabled modules are booted. Status is stored by an activator (a JSON file by default).
+- Artisan generators create modules and the classes inside them: `module:make`, `module:make-controller`, `module:make-model`, `module:make-migration`, and more.
 
-This package is a re-published, re-organised and maintained version of [pingpong/modules](https://github.com/pingpong-labs/modules), which isn't maintained anymore.
+`php artisan module:make Blog` generates:
 
-With one big bonus that the original package didn't have: **tests**.
+```
+Modules/Blog/
+├── app/            Http/Controllers, Providers
+├── config/
+├── database/       factories, migrations, seeders
+├── resources/      assets, views
+├── routes/         web.php, api.php
+├── tests/          Feature, Unit
+├── composer.json
+├── module.json
+├── package.json
+└── vite.config.js
+```
+
+## Requirements
+
+PHP 8.3+ and Laravel 13 for the current version. See [Versions](#versions) for older Laravel releases.
 
 ## Install
 
-To install via Composer, run:
-
-``` bash
+```bash
 composer require nwidart/laravel-modules
 ```
 
-The package will automatically register a service provider and alias.
+The service provider and alias are registered automatically. To publish the config file (optional):
 
-Optionally, publish the package's configuration file by running:
-
-``` bash
+```bash
 php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider"
 ```
 
 ### Autoloading
 
-> from v11.0 autoloading `"Modules\\": "modules/",` is no longer required, and should be removed from your composer.json if present.
-
-By default, the module classes are not loaded automatically. You can autoload your modules by adding merge-plugin to the extra section:
+Module classes are autoloaded through `wikimedia/composer-merge-plugin`. Add this to the `extra` section of your app's `composer.json`:
 
 ```json
 "extra": {
@@ -62,34 +58,53 @@ By default, the module classes are not loaded automatically. You can autoload yo
 },
 ```
 
-**Important**
+On first install, Composer asks:
 
-on the first installation you will be asked:
-
-```bash
+```
 Do you trust "wikimedia/composer-merge-plugin" to execute code and wish to enable it now? (writes "allow-plugins" to composer.json) [y,n,d,?]
 ```
 
-Answer `y` to allow the plugin to be executed. Otherwise, you will need to manually enable the following to your composer.json:
+Answer `y`. Or add it yourself:
 
 ```json
 "config": {
     "allow-plugins": {
         "wikimedia/composer-merge-plugin": true
     }
+}
 ```
 
-> if `"wikimedia/composer-merge-plugin": false` modules will not be autoloaded.
+If the plugin is set to `false`, modules are not autoloaded. After changing `composer.json`, run:
 
-**Tip: don't forget to run `composer dump-autoload` afterwards**
+```bash
+composer dump-autoload
+```
+
+> Since v11.0, the `"Modules\\": "modules/"` autoload entry is no longer needed. Remove it from your `composer.json` if present.
+
+## Quick start
+
+```bash
+php artisan module:make Blog      # create a module
+php artisan module:list           # list modules and their status
+php artisan module:disable Blog   # stop booting the module
+php artisan module:enable Blog    # boot it again
+```
+
+## Versions
+
+| Laravel | laravel-modules |
+|---------|-----------------|
+| 13      | ^13.0           |
+| 12      | ^12.0           |
+| 11      | ^11.0           |
+| 10      | ^10.0           |
+
+Older Laravel versions use the matching major: 5.4 uses ^1.0, 5.5 uses ^2.0, through Laravel 9 with ^9.0.
 
 ## Documentation
 
-You'll find installation instructions and full documentation on [https://laravelmodules.com/](https://laravelmodules.com/docs).
-
-## Community
-
-We also have a Discord community. [https://discord.gg/hkF7BRvRZK](https://discord.gg/hkF7BRvRZK) For quick help, ask questions in the appropriate channel.
+Full documentation: [https://laravelmodules.com/docs](https://laravelmodules.com/docs).
 
 ## Credits
 
@@ -98,6 +113,8 @@ We also have a Discord community. [https://discord.gg/hkF7BRvRZK](https://discor
 - [gravitano](https://github.com/gravitano)
 - [All Contributors](../../contributors)
 
+Originally based on [pingpong/modules](https://github.com/pingpong-labs/modules), which is no longer maintained.
+
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+MIT. See [LICENSE.md](LICENSE.md).
