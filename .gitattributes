@@ -11,3 +11,6 @@
 /.vscode            export-ignore
 /AGENTS.md          export-ignore
 /CLAUDE.md          export-ignore
+/RELEASING.md       export-ignore
+/cliff.toml         export-ignore
+/.github            export-ignore

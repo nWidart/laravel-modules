@@ -1,0 +1,106 @@
+# Tags a release when its release PR (opened by release.yml) is merged, then
+# creates the GitHub release from the CHANGELOG.md section. See RELEASING.md.
+#
+# The tag is pushed with GITHUB_TOKEN. That does not start other workflows, but
+# repository webhooks still fire, so Packagist picks up the new tag.
+name: Tag release
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    name: Tag and publish release
+    if: >-
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/v') &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      BASE_REF: ${{ github.event.pull_request.base.ref }}
+      MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Read version
+        id: version
+        run: |
+          if ! [[ $HEAD_REF =~ ^release/(v[0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "::error::Head branch '$HEAD_REF' is not release/vX.Y.Z."
+            exit 1
+          fi
+          tag=${BASH_REMATCH[1]}
+          if ! [[ $BASE_REF == master || $BASE_REF =~ ^[0-9]+\.x$ ]]; then
+            echo "::error::Release PRs must target master or a maintenance branch (N.x), not '$BASE_REF'."
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+
+      - name: Check tag does not exist
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" > /dev/null; then
+            echo "::error::Tag $TAG already exists on origin."
+            exit 1
+          fi
+
+      - name: Extract release notes
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          notes="$RUNNER_TEMP/notes.md"
+          awk -v heading="## $VERSION - " '
+            index($0, heading) == 1 { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md > "$notes"
+          if ! grep -q '[^[:space:]]' "$notes"; then
+            echo "::error::CHANGELOG.md has no '## $VERSION - ' section at $MERGE_SHA."
+            exit 1
+          fi
+          cat "$notes"
+
+      - name: Tag merge commit
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag -a "$TAG" -m "$TAG" "$MERGE_SHA"
+          git push origin "refs/tags/$TAG"
+
+      # Only master releases become "Latest", so a maintenance release (12.x)
+      # does not take the badge from the current major.
+      - name: Create GitHub release
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          latest=false
+          if [[ $BASE_REF == master ]]; then
+            latest=true
+          fi
+          gh release create "$TAG" --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md" --verify-tag --latest="$latest"
+
+      - name: Delete release branch
+        run: |
+          if git ls-remote --exit-code --heads origin "refs/heads/$HEAD_REF" > /dev/null; then
+            git push origin --delete "$HEAD_REF"
+          else
+            echo "$HEAD_REF is already deleted."
+          fi

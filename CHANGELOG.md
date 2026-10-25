@@ -3,8 +3,9 @@
 All Notable changes to `laravel-modules` will be documented in this file.
 
 See https://github.com/nWidart/laravel-modules/releases for the latest releases.
+From 11.0.11 until the first automated release (made by `.github/workflows/release.yml`), this file is incomplete: those releases are documented in GitHub Releases.
 
-## Next
+## 11.0.11 - 2024-06-17
 
 - [@omerbaflah](https://github.com/omerbaflah) Fixes Invokable Controller Stub
 - [@solomon-ochepa](https://github.com/solomon-ochepa) Added create module:make-class command

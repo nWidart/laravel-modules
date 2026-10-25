@@ -1,0 +1,67 @@
+# git-cliff configuration (https://git-cliff.org/docs/configuration).
+# Used by .github/workflows/release.yml to compute the next version and the
+# CHANGELOG.md section of a release. See RELEASING.md.
+
+[changelog]
+# No header or footer: the workflow inserts the generated section below the
+# existing title and intro of CHANGELOG.md.
+body = """
+{% if version -%}
+## {{ version | trim_start_matches(pat="v") }} - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else -%}
+## Unreleased
+{% endif -%}
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim }}
+
+{% for commit in commits -%}
+- {% if commit.breaking %}**BREAKING** {% endif %}\
+  {% if commit.scope %}**{{ commit.scope }}:** {% endif %}\
+  {{ commit.message | split(pat="\n") | first | trim | upper_first }} \
+  ([{{ commit.id | truncate(length=7, end="") }}](https://github.com/nWidart/laravel-modules/commit/{{ commit.id }}))
+{% endfor -%}
+{% endfor %}
+"""
+trim = true
+
+[git]
+conventional_commits = true
+# Keep commits that do not follow Conventional Commits (older history). They
+# land in the "Other" group through the catch-all parser below.
+filter_unconventional = false
+require_conventional = false
+split_commits = false
+commit_preprocessors = [
+    # Link "(#123)" in commit subjects to the pull request.
+    { pattern = '\(#([0-9]+)\)', replace = "([#${1}](https://github.com/nWidart/laravel-modules/pull/${1}))" },
+]
+# First match wins. The HTML comments only order the groups.
+commit_parsers = [
+    { message = "^Merge (pull request|branch|remote-tracking branch) ", skip = true },
+    { message = "^chore\\(release\\)", skip = true },
+    { message = "^style: apply pint fixes", skip = true },
+    { message = "^PHP Linting \\(Pint\\)", skip = true },
+    { message = "^(chore|build)\\(deps(-dev)?\\)", skip = true },
+    { field = "author.name", pattern = "^dependabot\\[bot\\]$", skip = true },
+    { message = "^feat", group = "<!-- 0 -->Features" },
+    { message = "^fix", group = "<!-- 1 -->Bug Fixes" },
+    { message = "^perf", group = "<!-- 2 -->Performance" },
+    { message = "^refactor", group = "<!-- 3 -->Refactor" },
+    { message = "^docs", group = "<!-- 4 -->Documentation" },
+    { message = ".*", group = "<!-- 9 -->Other" },
+]
+# A breaking commit is never skipped by the parsers above.
+protect_breaking_commits = true
+filter_commits = false
+# Release tags are vX.Y.Z.
+tag_pattern = "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
+# Only tags reachable from the checked-out branch count, so a 12.x release
+# starts from the latest v12 tag and never sees v13 tags.
+use_branch_tags = true
+topo_order = false
+sort_commits = "oldest"
+
+[bump]
+# feat => minor, breaking => major, anything else => patch.
+features_always_bump_minor = true
+breaking_always_bump_major = true

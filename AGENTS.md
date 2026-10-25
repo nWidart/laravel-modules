@@ -19,6 +19,8 @@ composer lint                       # pint (preset: laravel), this is what CI en
 
 CI (`.github/workflows/php.yml`) runs the test suite on PHP 8.3, 8.4, and 8.5. CI also runs Pint and auto-commits style fixes. Use only `composer lint` for formatting. Do not run `composer pcf`: its php-cs-fixer rules differ from Pint and cause style churn.
 
+Commit messages must follow Conventional Commits (`fix(scope): description`, see `CONTRIBUTING.md`); CI checks every PR commit and releases are generated from them. For releases, see `RELEASING.md`.
+
 ## Architecture
 
 ### Boot flow

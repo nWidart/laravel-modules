@@ -1,0 +1,160 @@
+# Opens a release PR: computes the next version with git-cliff, adds its
+# CHANGELOG.md section and opens a PR against the branch the workflow runs on.
+# Merging that PR tags the release (see tag-release.yml). See RELEASING.md.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump. auto: feat => minor, anything else => patch. Major releases are not made here (see RELEASING.md).'
+        type: choice
+        options:
+          - auto
+          - patch
+          - minor
+        default: auto
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  GIT_CLIFF_VERSION: '2.14.2'
+  GIT_CLIFF_SHA512: '26d1f7c8ea2400f2ccb0b2e7f321635f600b583bf4cd1f7afaa5e8c24068ad1088a2504e0a4d9f4333d4bb20a80329327d9462634343ee3af91e1a7fbdc6f18a'
+
+jobs:
+  release-pr:
+    name: Open release PR
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        # bash -eo pipefail: a failing git-cliff in a pipe fails the step.
+        shell: bash
+
+    env:
+      BRANCH: ${{ github.ref_name }}
+      # PRs and pushes made with GITHUB_TOKEN do not trigger other workflows, so
+      # a release PR opened with it shows no CI checks. Store a PAT or GitHub App
+      # token as the RELEASE_TOKEN secret to get CI on the release PR.
+      GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+
+    steps:
+      - name: Check branch
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+        run: |
+          if [[ $REF_TYPE != branch ]] || ! [[ $BRANCH == master || $BRANCH =~ ^[0-9]+\.x$ ]]; then
+            echo "::error::Run this workflow on master or on a maintenance branch (N.x), not on '$BRANCH'."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ secrets.RELEASE_TOKEN || github.token }}
+
+      - name: Install git-cliff
+        run: |
+          archive="git-cliff-${GIT_CLIFF_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          curl -fsSL -o "$RUNNER_TEMP/$archive" "https://github.com/orhun/git-cliff/releases/download/v${GIT_CLIFF_VERSION}/$archive"
+          echo "${GIT_CLIFF_SHA512}  $RUNNER_TEMP/$archive" | sha512sum -c -
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/git-cliff-${GIT_CLIFF_VERSION}" >> "$GITHUB_PATH"
+
+      # The branch major comes from composer.json extra.branch-alias (13.x-dev => 13):
+      # it is the value the Laravel upgrade PR changes. Major releases follow Laravel
+      # majors and are tagged by hand, so this workflow only makes minor and patch releases.
+      - name: Compute next version
+        id: version
+        env:
+          BUMP: ${{ inputs.bump }}
+        run: |
+          fail() { echo "::error::$1"; exit 1; }
+
+          alias=$(jq -r '.extra["branch-alias"] // {} | to_entries | first | .value // empty' composer.json)
+          [[ $alias =~ ^([0-9]+)\.x-dev$ ]] || fail "composer.json extra.branch-alias must be 'N.x-dev', found '$alias'."
+          branch_major=${BASH_REMATCH[1]}
+
+          if [[ $BRANCH =~ ^([0-9]+)\.x$ && ${BASH_REMATCH[1]} != "$branch_major" ]]; then
+            fail "Branch $BRANCH declares branch-alias $alias in composer.json. Fix the alias first."
+          fi
+
+          latest_tag=$(git tag --merged HEAD --list 'v*' --sort=-v:refname | grep -m1 -E '^v[0-9]+\.[0-9]+\.[0-9]+$' || true)
+          [[ -n $latest_tag ]] || fail "No vX.Y.Z tag is reachable from $BRANCH."
+          latest_major=${latest_tag#v}
+          latest_major=${latest_major%%.*}
+
+          if [[ $latest_major != "$branch_major" ]]; then
+            fail "composer.json declares $alias but the latest tag on $BRANCH is $latest_tag. The first release of a new major is tagged by hand, see RELEASING.md."
+          fi
+
+          commits=$(git-cliff --use-branch-tags --unreleased --context | jq '[.[].commits[]] | length')
+          if [[ $commits -eq 0 ]]; then
+            fail "No releasable commits on $BRANCH since $latest_tag."
+          fi
+
+          next=$(git-cliff --use-branch-tags --bumped-version --bump "$BUMP")
+          [[ $next =~ ^v([0-9]+)\.[0-9]+\.[0-9]+$ ]] || fail "git-cliff returned an unexpected version '$next'."
+          next_major=${BASH_REMATCH[1]}
+
+          if [[ $next_major != "$branch_major" ]]; then
+            fail "A breaking change since $latest_tag bumps the version to $next, but $BRANCH releases $branch_major.x versions (composer.json branch-alias $alias). Major releases follow Laravel majors and are made by the Laravel upgrade PR plus a manual tag. Rerun this workflow with bump=minor or bump=patch."
+          fi
+
+          if git ls-remote --exit-code --tags origin "refs/tags/$next" > /dev/null; then
+            fail "Tag $next already exists on origin."
+          fi
+          if git ls-remote --exit-code --heads origin "refs/heads/release/$next" > /dev/null; then
+            fail "Branch release/$next already exists on origin. Merge or close its PR and delete the branch first."
+          fi
+
+          echo "Releasing $next ($commits commits since $latest_tag, bump=$BUMP)."
+          echo "tag=$next" >> "$GITHUB_OUTPUT"
+
+      # git-cliff --prepend would write above the "# Changelog" title, so the new
+      # section is generated on its own and inserted before the first "## " heading.
+      - name: Update CHANGELOG.md
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          section="$RUNNER_TEMP/section.md"
+          git-cliff --use-branch-tags --unreleased --tag "$TAG" --strip all --output "$section"
+          awk -v section="$section" '
+            function emit(line) { while ((getline line < section) > 0) print line; print "" }
+            !done && /^## / { emit(); done = 1 }
+            { print }
+            END { if (!done) { print ""; emit() } }
+          ' CHANGELOG.md > "$RUNNER_TEMP/CHANGELOG.md"
+          mv "$RUNNER_TEMP/CHANGELOG.md" CHANGELOG.md
+          git diff --stat
+
+      - name: Open release PR
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "release/$TAG"
+          git add CHANGELOG.md
+          git commit -m "chore(release): $TAG"
+          git push origin "release/$TAG"
+
+          body="$RUNNER_TEMP/body.md"
+          {
+            cat "$RUNNER_TEMP/section.md"
+            echo
+            echo '---'
+            echo
+            echo '- [ ] Review the CHANGELOG.md section. Edit it on this branch if needed: the GitHub release notes are read from CHANGELOG.md when the PR is merged.'
+            echo "- [ ] Merging tags \`$TAG\` on the merge commit and creates the GitHub release (tag-release.yml). Packagist picks up the tag through its webhook."
+            echo '- No CI checks on this PR? It was opened with GITHUB_TOKEN. See RELEASE_TOKEN in RELEASING.md.'
+          } > "$body"
+
+          gh pr create --base "$BRANCH" --head "release/$TAG" --title "chore(release): $TAG" --body-file "$body"
