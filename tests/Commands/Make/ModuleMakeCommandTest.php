@@ -484,6 +484,25 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertStringContainsString('RouteServiceProvider::class', $content);
     }
 
+    public function test_it_does_not_map_web_routes_when_the_web_routes_stub_is_removed()
+    {
+        $files = $this->app['config']->get('modules.stubs.files');
+        $webRoutes = $files['routes/web'];
+        unset($files['routes/web']);
+        $this->app['config']->set('modules.stubs.files', $files);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertFileDoesNotExist($this->modulePath.'/'.$webRoutes);
+        $this->assertFileExists($this->modulePath.'/'.$files['routes/api']);
+
+        $provider = $this->finder->get($this->getModuleAppPath().'/Providers/RouteServiceProvider.php');
+
+        $this->assertStringNotContainsString('mapWebRoutes', $provider);
+        $this->assertStringContainsString('$this->mapApiRoutes();', $provider);
+    }
+
     public function test_it_generate_module_when_provider_is_enable_and_route_provider_is_disable()
     {
         $this->app['config']->set('modules.paths.generator.provider.generate', true);

@@ -66,7 +66,21 @@ class RouteProviderMakeCommand extends GeneratorCommand
             'API_ROUTES_PATH' => $this->getApiRoutesPath(),
             'LOWER_NAME' => $module->getLowerName(),
             'KEBAB_NAME' => $module->getKebabName(),
-        ]))->render();
+        ]))->sections([
+            'WEB_ROUTES' => $this->hasRoutesStub('routes/web'),
+            'API_ROUTES' => $this->hasRoutesStub('routes/api'),
+        ])->render();
+    }
+
+    /**
+     * Whether module:make generates the given routes file.
+     *
+     * A routes file removed from `modules.stubs.files` is never created, so the
+     * provider must not map it.
+     */
+    private function hasRoutesStub(string $stub): bool
+    {
+        return array_key_exists($stub, $this->laravel['modules']->config('stubs.files') ?? []);
     }
 
     /**
