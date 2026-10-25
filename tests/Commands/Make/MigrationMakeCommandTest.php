@@ -6,6 +6,7 @@ use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
+use Symfony\Component\Process\Process;
 
 class MigrationMakeCommandTest extends BaseTestCase
 {
@@ -115,5 +116,99 @@ class MigrationMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
+    }
+
+    public function test_it_generates_a_valid_create_migration_with_complex_fields()
+    {
+        $code = $this->artisan('module:make-migration', [
+            'name' => 'create_posts_table',
+            'module' => 'Blog',
+            '--fields' => "title:string:default('Hello World'), amount:decimal(8,2):default(0), starts_at:time:default('12:00'), belongsTo:user:id:users, belongsTo:category:id:categories, soft_delete, remember_token",
+        ]);
+
+        $file = $this->getGeneratedMigration();
+
+        $this->assertSame(0, $code);
+        $this->assertValidPhp($file);
+        $this->assertStringContainsString("\$table->string('title')->default('Hello World');", $file);
+        $this->assertStringContainsString("\$table->decimal('amount', 8, 2)->default(0);", $file);
+        $this->assertStringContainsString("\$table->foreign('user_id')->references('id')->on('users');", $file);
+        $this->assertStringContainsString("\$table->foreign('category_id')->references('id')->on('categories');", $file);
+        $this->assertMatchesSnapshot($file);
+    }
+
+    public function test_it_generates_a_valid_add_migration_that_reverses_its_fields()
+    {
+        $code = $this->artisan('module:make-migration', [
+            'name' => 'add_author_to_posts_table',
+            'module' => 'Blog',
+            '--fields' => "belongsTo:user:id:users, belongsTo:category:id:categories, status:string:default('in review'), soft_delete, remember_token",
+        ]);
+
+        $file = $this->getGeneratedMigration();
+
+        $this->assertSame(0, $code);
+        $this->assertValidPhp($file);
+        $this->assertStringContainsString("\$table->dropForeign(['user_id']);", $file);
+        $this->assertStringContainsString("\$table->dropForeign(['category_id']);", $file);
+        $this->assertStringContainsString('$table->dropSoftDeletes();', $file);
+        $this->assertStringContainsString('$table->dropRememberToken();', $file);
+        $this->assertMatchesSnapshot($file);
+    }
+
+    public function test_it_generates_a_valid_delete_migration_that_reverses_its_fields()
+    {
+        $code = $this->artisan('module:make-migration', [
+            'name' => 'remove_author_from_posts_table',
+            'module' => 'Blog',
+            '--fields' => 'belongsTo:user:id:users, soft_delete',
+        ]);
+
+        $file = $this->getGeneratedMigration();
+
+        $this->assertSame(0, $code);
+        $this->assertValidPhp($file);
+        $this->assertMatchesSnapshot($file);
+    }
+
+    public function test_it_finds_the_table_name_without_a_table_suffix()
+    {
+        $code = $this->artisan('module:make-migration', [
+            'name' => 'add_votes_to_posts',
+            'module' => 'Blog',
+            '--fields' => 'votes:integer',
+        ]);
+
+        $file = $this->getGeneratedMigration();
+
+        $this->assertSame(0, $code);
+        $this->assertValidPhp($file);
+        $this->assertStringContainsString("Schema::table('posts', function (Blueprint \$table) {", $file);
+        $this->assertStringNotContainsString("Schema::table('',", $file);
+    }
+
+    private function getGeneratedMigration(): string
+    {
+        $migrations = $this->finder->allFiles($this->modulePath.'/database/migrations');
+
+        $this->assertCount(1, $migrations);
+
+        return $this->finder->get($migrations[0]->getPathname());
+    }
+
+    private function assertValidPhp(string $contents): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'migration').'.php';
+        file_put_contents($path, $contents);
+
+        try {
+            $process = new Process([PHP_BINARY, '-l', $path]);
+            $process->run();
+
+            $this->assertTrue($process->isSuccessful(), 'Generated migration is not valid PHP: '.$process->getOutput().$process->getErrorOutput());
+        } finally {
+            @unlink($path);
+            @unlink(substr($path, 0, -4));
+        }
     }
 }

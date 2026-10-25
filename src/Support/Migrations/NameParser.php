@@ -70,7 +70,45 @@ class NameParser
     {
         $matches = array_reverse($this->getMatches());
 
-        return array_shift($matches);
+        $table = array_shift($matches);
+
+        if ($table !== null) {
+            return $table;
+        }
+
+        foreach ($this->getFallbackPatterns() as $pattern) {
+            if (preg_match($pattern, $this->name, $matches)) {
+                return end($matches);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the patterns tried when the name does not match getPattern(), such as
+     * "alter_users_table", "update_users_table" or names without a "_table" suffix.
+     * Like Laravel's TableGuesser, the table is the part after "_to_" or "_from_".
+     */
+    protected function getFallbackPatterns(): array
+    {
+        $action = $this->getAction();
+
+        if (in_array($action, $this->actions['add'])) {
+            $preposition = 'to';
+        } elseif (in_array($action, [...$this->actions['delete'], 'alter'])) {
+            $preposition = 'from';
+        } elseif (in_array($action, [...$this->actions['create'], ...$this->actions['drop']])) {
+            return ["/^{$action}_(.+)$/"];
+        } else {
+            return [];
+        }
+
+        return [
+            "/^{$action}_.+_{$preposition}_(.+)$/",
+            "/^{$action}_(.+)_table$/",
+            "/^{$action}_(.+)$/",
+        ];
     }
 
     /**
