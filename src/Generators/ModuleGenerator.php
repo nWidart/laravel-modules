@@ -23,6 +23,52 @@ class ModuleGenerator extends Generator
     use PathNamespace;
 
     /**
+     * Generator keys whose paths hold PSR-4 classes under the module namespace.
+     *
+     * These are the entries in the "app/" and "app/Http/" sections of config/config.php.
+     * The module composer.json maps the module namespace to paths.app_folder, so these
+     * paths must sit inside it. The other generator paths (config, database, lang,
+     * resources, routes, tests) are not checked: they hold no classes, or have their
+     * own PSR-4 entries in the composer.json stub (database/factories,
+     * database/seeders, tests).
+     */
+    private const APP_FOLDER_GENERATOR_KEYS = [
+        // app/
+        'actions',
+        'casts',
+        'channels',
+        'class',
+        'command',
+        'command_replacements',
+        'component-class',
+        'emails',
+        'event',
+        'enums',
+        'exceptions',
+        'jobs',
+        'helpers',
+        'interfaces',
+        'listener',
+        'model',
+        'notifications',
+        'observer',
+        'policies',
+        'provider',
+        'repository',
+        'resource',
+        'route-provider',
+        'rules',
+        'services',
+        'scopes',
+        'traits',
+
+        // app/Http/
+        'controller',
+        'filter',
+        'request',
+    ];
+
+    /**
      * The module name will created.
      */
     protected ?string $name = null;
@@ -294,6 +340,10 @@ class ModuleGenerator extends Generator
     {
         $name = $this->getName();
 
+        if (! $this->validateGeneratorPaths()) {
+            return E_ERROR;
+        }
+
         if ($this->module->has($name)) {
             if ($this->force) {
                 $this->module->delete($name);
@@ -332,6 +382,73 @@ class ModuleGenerator extends Generator
         $this->fireEvent(ModuleEvent::CREATED);
 
         return 0;
+    }
+
+    /**
+     * Check that every class generator path sits inside paths.app_folder.
+     *
+     * The package composer.json stub maps the module namespace to the app folder, so a
+     * class generated outside it cannot be autoloaded. Fails before anything is written.
+     * Skipped when no composer.json is generated, or when the composer stub in use (for
+     * example an older published one) does not map anything to the app folder.
+     */
+    protected function validateGeneratorPaths(): bool
+    {
+        $appFolderConfig = (string) $this->module->config('paths.app_folder');
+        $appFolder = trim($appFolderConfig, '/');
+
+        // An empty app folder maps the module namespace to the module root.
+        if ($appFolder === '' || ! $this->composerJsonUsesAppFolder()) {
+            return true;
+        }
+
+        $outside = [];
+
+        foreach (self::APP_FOLDER_GENERATOR_KEYS as $key) {
+            $config = $this->module->config("paths.generator.$key");
+            $path = is_array($config) ? ($config['path'] ?? null) : $config;
+
+            if (! is_string($path) || trim($path, '/') === '') {
+                continue;
+            }
+
+            $path = trim($path, '/');
+
+            if ($path !== $appFolder && ! str_starts_with($path, $appFolder.'/')) {
+                $outside[] = "$key ($path)";
+            }
+        }
+
+        if ($outside === []) {
+            return true;
+        }
+
+        $namespace = ($this->module->config('namespace') ?? $this->path_namespace($this->module->config('paths.modules')))
+            .'\\'.$this->getStudlyNameReplacement().'\\';
+
+        $this->component->error(sprintf(
+            'Generator paths must be inside paths.app_folder [%s], because the module composer.json maps %s to it. Move these paths under %s/ in config/modules.php:',
+            $appFolderConfig,
+            $namespace,
+            $appFolder,
+        ));
+        $this->component->bulletList($outside);
+
+        return false;
+    }
+
+    /**
+     * Whether the generated composer.json maps a namespace to $APP_FOLDER_NAME$.
+     *
+     * Reads the composer stub the same way generateFiles() resolves it.
+     */
+    private function composerJsonUsesAppFolder(): bool
+    {
+        if ($this->type === 'plain' || ! array_key_exists('composer', (array) $this->getFiles())) {
+            return false;
+        }
+
+        return str_contains((new Stub('/composer.stub'))->getContents(), '$APP_FOLDER_NAME$');
     }
 
     /**
