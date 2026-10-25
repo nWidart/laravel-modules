@@ -60,7 +60,26 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     private Filesystem $files;
 
-    private static $modules = [];
+    /**
+     * The scan paths the module.json files below were found in.
+     *
+     * @var list<string>
+     */
+    private array $scannedPaths = [];
+
+    /**
+     * The module.json files found by the last scan, in glob order: decoded once per repository instance.
+     *
+     * @var list<array{path: string, json: Json}>|null
+     */
+    private ?array $moduleJsonFiles = null;
+
+    /**
+     * The modules built from the module.json files, keyed by lower case name.
+     *
+     * @var array<string, Module>|null
+     */
+    private ?array $modules = null;
 
     /**
      * The constructor.
@@ -82,6 +101,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
     public function addLocation(string $path): self
     {
         $this->paths[] = $path;
+
+        $this->resetModules();
 
         return $this;
     }
@@ -123,31 +144,67 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get & scan all modules.
+     *
+     * The result is kept for the lifetime of this repository instance (one per application),
+     * so finding a module does not read every module.json again. Call resetModules() after
+     * adding or removing module folders without going through the repository.
      */
     public function scan(): array
     {
-        if (! empty(self::$modules) && ! $this->app->runningUnitTests()) {
-            return self::$modules;
+        if ($this->modules !== null) {
+            return $this->modules;
         }
-
-        $paths = $this->getScanPaths();
 
         $modules = [];
 
-        foreach ($paths as $key => $path) {
+        foreach ($this->getModuleJsonFiles() as $file) {
+            $json = $file['json'];
+            $name = $json->get('name');
+
+            $modules[strtolower($name)] = $this->createModule($this->app, $name, dirname($file['path']))
+                ->setJson($json);
+        }
+
+        return $this->modules = $modules;
+    }
+
+    /**
+     * Get every module.json file in the scan paths, in glob order, each decoded once.
+     *
+     * ModuleManifest builds the enabled module list from these files too, so a request
+     * finds and reads each module.json only once. The files are scanned again after
+     * resetModules(), or when the scan paths changed since the last scan (config set
+     * after the package registered, for example).
+     *
+     * @return list<array{path: string, json: Json}>
+     */
+    public function getModuleJsonFiles(): array
+    {
+        $paths = $this->getScanPaths();
+
+        if ($this->moduleJsonFiles !== null && $paths === $this->scannedPaths) {
+            return $this->moduleJsonFiles;
+        }
+
+        $this->modules = null;
+
+        $files = [];
+        $jsons = [];
+
+        foreach ($paths as $path) {
             $manifests = (array) $this->getFiles()->glob("{$path}/module.json");
 
             foreach ($manifests as $manifest) {
-                $json = Json::make($manifest);
-                $name = $json->get('name');
+                // Overlapping scan paths can list the same file twice: read it once.
+                $jsons[$manifest] ??= Json::make($manifest, $this->getFiles());
 
-                $modules[strtolower($name)] = $this->createModule($this->app, $name, dirname($manifest));
+                $files[] = ['path' => $manifest, 'json' => $jsons[$manifest]];
             }
         }
 
-        self::$modules = $modules;
+        $this->scannedPaths = $paths;
 
-        return self::$modules;
+        return $this->moduleJsonFiles = $files;
     }
 
     /**
@@ -276,6 +333,24 @@ abstract class FileRepository implements Countable, RepositoryInterface
      * {@inheritDoc}
      */
     public function find(string $name): ?Module
+    {
+        $module = $this->findScanned($name);
+
+        // The scan is kept per instance. On a miss, scan again if the scan paths changed
+        // since (config set after the scan), so a lookup never pays for the path check.
+        if ($module === null && $this->modules !== null && $this->scannedPaths !== $this->getScanPaths()) {
+            $this->resetModules();
+
+            $module = $this->findScanned($name);
+        }
+
+        return $module;
+    }
+
+    /**
+     * Find a module in the scanned modules.
+     */
+    private function findScanned(string $name): ?Module
     {
         $modules = $this->all();
 
@@ -464,7 +539,11 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function delete(string $name): bool
     {
-        return $this->findOrFail($name)->delete();
+        $deleted = $this->findOrFail($name)->delete();
+
+        $this->resetModules();
+
+        return $deleted;
     }
 
     /**
@@ -515,9 +594,14 @@ abstract class FileRepository implements Countable, RepositoryInterface
         return $this;
     }
 
+    /**
+     * Forget the scanned modules, so the next call scans the module.json files again.
+     */
     public function resetModules(): static
     {
-        self::$modules = [];
+        $this->scannedPaths = [];
+        $this->moduleJsonFiles = null;
+        $this->modules = null;
 
         return $this;
     }

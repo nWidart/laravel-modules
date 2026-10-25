@@ -226,6 +226,16 @@ abstract class Module
     }
 
     /**
+     * Cache an already decoded json file, so json() does not read it again.
+     */
+    public function setJson(Json $json, string $file = 'module.json'): static
+    {
+        $this->moduleJson[$file] = $json;
+
+        return $this;
+    }
+
+    /**
      * Get a specific data from json file by given the key.
      */
     public function get(string $key, $default = null)

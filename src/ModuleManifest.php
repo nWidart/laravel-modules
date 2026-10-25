@@ -6,6 +6,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 
 class ModuleManifest
 {
@@ -25,9 +26,16 @@ class ModuleManifest
     public ?string $manifestPath;
 
     /**
-     * The manifestData
+     * The enabled modules data, sorted by priority.
      */
-    private static ?Collection $manifestData = null;
+    private ?Collection $manifestData = null;
+
+    /**
+     * The repository module.json files the manifest data was built from.
+     *
+     * @var list<array{path: string, json: Json}>|null
+     */
+    private ?array $manifestSource = null;
 
     /**
      * The loaded manifest array.
@@ -121,28 +129,78 @@ class ModuleManifest
             });
     }
 
+    /**
+     * Get the data of every enabled module, sorted by priority.
+     *
+     * When the module repository scans the same paths, the data is built from the module.json
+     * files the repository already read, so each file is found and read once per application.
+     */
     public function getModulesData(): Collection
     {
-        if (! empty(self::$manifestData) && ! app()->runningUnitTests()) {
-            return self::$manifestData;
-        }
+        $repository = $this->repository();
 
-        self::$manifestData = $this->paths
-            ->flatMap(function ($path) {
-                // Filesystem::glob() returns false on error, despite its array return type.
-                $manifests = $this->files->glob("{$path}/module.json") ?: [];
+        if ($repository === null) {
+            return $this->manifestData ??= $this->buildModulesData(
+                $this->paths->flatMap(function ($path) {
+                    // Filesystem::glob() returns false on error, despite its array return type.
+                    $manifests = $this->files->glob("{$path}/module.json") ?: [];
 
-                return collect($manifests)
-                    ->map(function ($manifest) {
-                        return [
+                    return collect($manifests)
+                        ->map(fn ($manifest) => [
                             'module_directory' => dirname($manifest),
                             ...$this->files->json($manifest),
-                        ];
-                    });
-            })
+                        ]);
+                })
+            );
+        }
+
+        // Rebuild when the repository scanned again, for example after resetModules().
+        $files = $repository->getModuleJsonFiles();
+
+        if ($this->manifestData === null || $this->manifestSource !== $files) {
+            $this->manifestSource = $files;
+            $this->manifestData = $this->buildModulesData(
+                collect($files)->map(fn (array $file) => [
+                    'module_directory' => dirname($file['path']),
+                    ...$file['json']->getAttributes(),
+                ])
+            );
+        }
+
+        return $this->manifestData;
+    }
+
+    /**
+     * Keep the enabled modules and sort them by priority.
+     */
+    private function buildModulesData(Collection $modules): Collection
+    {
+        return $modules
             ->filter(fn ($module) => $this->activator->hasStatus($module['name'], true))
             ->sortBy(fn ($module) => $module['priority'] ?? 0);
+    }
 
-        return self::$manifestData;
+    /**
+     * Get the bound module repository when it scans the same paths as this manifest.
+     *
+     * It is resolved lazily, so the constructor keeps its arguments. A custom repository
+     * that does not extend FileRepository, or one that scans other paths, is not used:
+     * the manifest then reads the module.json files in its own paths.
+     */
+    private function repository(): ?FileRepository
+    {
+        $container = app();
+
+        if (! $container->bound(RepositoryInterface::class)) {
+            return null;
+        }
+
+        $repository = $container->make(RepositoryInterface::class);
+
+        if (! $repository instanceof FileRepository || $repository->getScanPaths() !== $this->paths->values()->all()) {
+            return null;
+        }
+
+        return $repository;
     }
 }
