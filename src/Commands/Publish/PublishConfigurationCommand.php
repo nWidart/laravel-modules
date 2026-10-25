@@ -3,7 +3,6 @@
 namespace Nwidart\Modules\Commands\Publish;
 
 use Nwidart\Modules\Commands\BaseCommand;
-use Nwidart\Modules\Facades\Module;
 use Symfony\Component\Console\Input\InputOption;
 
 class PublishConfigurationCommand extends BaseCommand
@@ -38,7 +37,7 @@ class PublishConfigurationCommand extends BaseCommand
 
     private function getServiceProviderForModule(string $module): string
     {
-        $moduleModel = Module::find($module);
+        $moduleModel = $this->getModuleModel($module);
 
         $namespace = $this->laravel['config']->get('modules.namespace');
         $moduleName = $moduleModel->getName();
