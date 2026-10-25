@@ -13,12 +13,12 @@ class LangPublisher extends Publisher
 
     /**
      * Get destination path.
+     *
+     * Must match the path read by ModuleServiceProvider::registerTranslations().
      */
     public function getDestinationPath(): string
     {
-        $name = $this->module->getLowerName();
-
-        return base_path("resources/lang/{$name}");
+        return lang_path('modules/'.$this->module->getLowerName());
     }
 
     /**
