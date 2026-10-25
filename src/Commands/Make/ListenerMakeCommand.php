@@ -76,9 +76,33 @@ class ListenerMakeCommand extends GeneratorCommand
 
     protected function getEventName(Module $module)
     {
+        $event = str_replace('/', '\\', (string) $this->option('event'));
+
+        if ($this->isQualifiedEventName($event)) {
+            return ltrim($event, '\\');
+        }
+
         $namespace = $this->module_namespace($module->getStudlyName(), $this->getEventNamespace());
 
-        return $namespace.'\\'.str_replace('/', '\\', $this->option('event'));
+        return $namespace.'\\'.$event;
+    }
+
+    /**
+     * Whether the event is already a fully qualified class name and must not get the module events namespace.
+     * Same rule as Laravel's make:listener, plus events of any module: a leading "\",
+     * or a name in the app, Illuminate, or modules namespace.
+     */
+    protected function isQualifiedEventName(string $event): bool
+    {
+        $prefixes = ['\\', $this->laravel->getNamespace(), 'Illuminate\\'];
+
+        $modulesNamespace = trim((string) config('modules.namespace', 'Modules'), '\\');
+
+        if ($modulesNamespace !== '') {
+            $prefixes[] = $modulesNamespace.'\\';
+        }
+
+        return Str::startsWith($event, $prefixes);
     }
 
     /**
