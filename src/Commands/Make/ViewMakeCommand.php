@@ -34,7 +34,7 @@ class ViewMakeCommand extends GeneratorCommand
 
     protected function getDestinationFilePath(): string
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
         $factoryPath = GenerateConfigReader::read('views');
 
         return $path.$factoryPath->getPath().'/'.$this->getFileName();

@@ -41,7 +41,7 @@ final class NotificationMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub('/notification.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
@@ -56,7 +56,7 @@ final class NotificationMakeCommand extends GeneratorCommand
      */
     protected function getDestinationFilePath()
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         $notificationPath = GenerateConfigReader::read('notifications');
 
@@ -74,7 +74,7 @@ final class NotificationMakeCommand extends GeneratorCommand
     /**
      * Get the console command arguments.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getArguments()
     {

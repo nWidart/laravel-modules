@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Foundation\Vite;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
-use Nwidart\Modules\FileRepository;
 use Nwidart\Modules\Module;
 
 if (! function_exists('module')) {
@@ -15,7 +15,7 @@ if (! function_exists('module')) {
      */
     function module(string $name, bool $instance = false): bool|Module
     {
-        /** @var FileRepository $repository */
+        /** @var RepositoryInterface $repository */
         $repository = app('modules');
 
         try {
@@ -36,7 +36,10 @@ if (! function_exists('module_path')) {
      */
     function module_path(string $name, string $path = ''): string
     {
-        $module = app('modules')->findOrFail($name);
+        /** @var RepositoryInterface $repository */
+        $repository = app('modules');
+
+        $module = $repository->findOrFail($name);
 
         return $module->getPath().($path ? DIRECTORY_SEPARATOR.$path : $path);
     }

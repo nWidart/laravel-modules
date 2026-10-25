@@ -212,7 +212,7 @@ class ModelMakeCommand extends GeneratorCommand
 
     protected function getTemplateContents(): string
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub('/model.stub', [
             'NAME' => $this->getModelName(),
@@ -222,13 +222,13 @@ class ModelMakeCommand extends GeneratorCommand
             'LOWER_NAME' => $module->getLowerName(),
             'MODULE' => $this->getModuleName(),
             'STUDLY_NAME' => $module->getStudlyName(),
-            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
+            'MODULE_NAMESPACE' => $this->moduleRepository()->config('namespace'),
         ]))->render();
     }
 
     protected function getDestinationFilePath(): string
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         $modelPath = GenerateConfigReader::read('model');
 

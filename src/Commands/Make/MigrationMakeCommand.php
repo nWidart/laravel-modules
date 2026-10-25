@@ -32,7 +32,7 @@ class MigrationMakeCommand extends GeneratorCommand
     /**
      * Get the console command arguments.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getArguments()
     {
@@ -45,7 +45,7 @@ class MigrationMakeCommand extends GeneratorCommand
     /**
      * Get the console command options.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getOptions()
     {
@@ -80,7 +80,7 @@ class MigrationMakeCommand extends GeneratorCommand
                 'table' => $parser->getTableName(),
                 'fields' => $this->getSchemaParser()->render(),
                 'module' => $this->getModuleName(),
-                'module_namespace' => $this->laravel['modules']->config('namespace'),
+                'module_namespace' => $this->moduleRepository()->config('namespace'),
             ]);
         } elseif ($parser->isAdd()) {
             return Stub::create('/migration/add.stub', [
@@ -89,7 +89,7 @@ class MigrationMakeCommand extends GeneratorCommand
                 'fields_up' => $this->getSchemaParser()->up(),
                 'fields_down' => $this->getSchemaParser()->down(),
                 'module' => $this->getModuleName(),
-                'module_namespace' => $this->laravel['modules']->config('namespace'),
+                'module_namespace' => $this->moduleRepository()->config('namespace'),
             ]);
         } elseif ($parser->isDelete()) {
             return Stub::create('/migration/delete.stub', [
@@ -98,7 +98,7 @@ class MigrationMakeCommand extends GeneratorCommand
                 'fields_down' => $this->getSchemaParser()->up(),
                 'fields_up' => $this->getSchemaParser()->down(),
                 'module' => $this->getModuleName(),
-                'module_namespace' => $this->laravel['modules']->config('namespace'),
+                'module_namespace' => $this->moduleRepository()->config('namespace'),
             ]);
         } elseif ($parser->isDrop()) {
             return Stub::create('/migration/drop.stub', [
@@ -106,7 +106,7 @@ class MigrationMakeCommand extends GeneratorCommand
                 'table' => $parser->getTableName(),
                 'fields' => $this->getSchemaParser()->render(),
                 'module' => $this->getModuleName(),
-                'module_namespace' => $this->laravel['modules']->config('namespace'),
+                'module_namespace' => $this->moduleRepository()->config('namespace'),
             ]);
         }
 
@@ -120,7 +120,7 @@ class MigrationMakeCommand extends GeneratorCommand
      */
     protected function getDestinationFilePath()
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         $generatorPath = GenerateConfigReader::read('migration');
 
@@ -136,7 +136,7 @@ class MigrationMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return array|string
+     * @return string
      */
     private function getSchemaName()
     {

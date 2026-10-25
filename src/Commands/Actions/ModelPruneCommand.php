@@ -90,6 +90,10 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
      * The selected modules are resolved first, so an unknown module fails
      * before anything is pruned, also when --model is given.
      *
+     * @return Collection<int, string> The model class names.
+     *
+     * @phpstan-return Collection<int, covariant string>
+     *
      * @throws ModuleNotFoundException
      */
     protected function models(): Collection
@@ -138,6 +142,8 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
     /**
      * Get the class names of the models in a module.
      * A missing models directory yields no models.
+     *
+     * @return Collection<int, non-falsy-string>
      */
     protected function modelsInModule(\Nwidart\Modules\Module $module): Collection
     {

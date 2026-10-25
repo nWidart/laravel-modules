@@ -23,6 +23,9 @@ class MigrateResetCommand extends BaseCommand implements ConfirmableCommand
      */
     protected $description = 'Reset the modules migrations.';
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -88,7 +91,7 @@ class MigrateResetCommand extends BaseCommand implements ConfirmableCommand
     /**
      * Get the console command options.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getOptions()
     {

@@ -22,12 +22,15 @@ class PublishTranslationCommand extends BaseCommand
      */
     protected $description = 'Publish a module\'s translations to the application';
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
 
         $publisher = (new LangPublisher($module))
-            ->setRepository($this->laravel['modules'])
+            ->setRepository($this->moduleRepository())
             ->setConsole($this)
             ->setForce((bool) $this->option('force'));
 

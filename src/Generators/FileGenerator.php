@@ -29,6 +29,8 @@ class FileGenerator extends Generator
 
     /**
      * The constructor.
+     *
+     * @param  Filesystem|null  $filesystem
      */
     public function __construct(string $path, string $contents, $filesystem = null)
     {
@@ -39,6 +41,8 @@ class FileGenerator extends Generator
 
     /**
      * Get contents.
+     *
+     * @return string
      */
     public function getContents()
     {
@@ -57,6 +61,8 @@ class FileGenerator extends Generator
 
     /**
      * Get filesystem.
+     *
+     * @return Filesystem|null
      */
     public function getFilesystem()
     {
@@ -75,6 +81,8 @@ class FileGenerator extends Generator
 
     /**
      * Get path.
+     *
+     * @return string
      */
     public function getPath()
     {
@@ -100,6 +108,10 @@ class FileGenerator extends Generator
 
     /**
      * Generate the file.
+     *
+     * @return int|bool The result of Filesystem::put().
+     *
+     * @throws FileAlreadyExistException
      */
     public function generate()
     {

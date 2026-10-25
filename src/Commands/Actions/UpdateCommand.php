@@ -20,12 +20,15 @@ class UpdateCommand extends BaseCommand
      */
     protected $description = 'Update dependencies for the specified module or for all modules.';
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
 
         $this->components->task("Updating <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
-            $this->laravel['modules']->update($module);
+            $this->moduleRepository()->update($module);
         });
     }
 

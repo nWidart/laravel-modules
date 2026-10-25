@@ -27,6 +27,9 @@ class DisableCommand extends BaseCommand
      */
     protected $description = 'Disable an array of modules.';
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);

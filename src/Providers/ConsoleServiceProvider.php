@@ -13,6 +13,9 @@ class ConsoleServiceProvider extends ServiceProvider
         $this->commands(config('modules.commands', self::defaultCommands()->toArray()));
     }
 
+    /**
+     * @return array<int, string> The command class names.
+     */
     public function provides(): array
     {
         return self::defaultCommands()->toArray();
@@ -20,6 +23,8 @@ class ConsoleServiceProvider extends ServiceProvider
 
     /**
      * Get the package default commands.
+     *
+     * @return Collection<int, string> The command class names.
      */
     public static function defaultCommands(): Collection
     {

@@ -21,11 +21,15 @@ class Json
 
     /**
      * The attributes collection.
+     *
+     * @var Collection<string, mixed>|null
      */
     protected ?Collection $attributes = null;
 
     /**
      * The constructor.
+     *
+     * @param  string  $path
      */
     public function __construct($path, ?Filesystem $filesystem = null)
     {
@@ -62,6 +66,8 @@ class Json
 
     /**
      * Set path.
+     *
+     * @param  string  $path
      */
     public function setPath($path): self
     {
@@ -89,6 +95,8 @@ class Json
     /**
      *  Decode contents as array.
      *
+     * @return array<string, mixed>
+     *
      * @throws InvalidJsonException
      */
     public function decodeContents(): array
@@ -107,6 +115,8 @@ class Json
      * Get file contents as array, either from the cache or from
      * the json content file if the cache is disabled.
      *
+     * @return array<string, mixed>
+     *
      * @throws \Exception
      */
     public function getAttributes(): array
@@ -116,6 +126,8 @@ class Json
 
     /**
      * Convert the given array data to pretty json.
+     *
+     * @param  array<string, mixed>|null  $data
      */
     public function toJsonPretty(?array $data = null): string
     {
@@ -124,6 +136,8 @@ class Json
 
     /**
      * Update json contents from array data.
+     *
+     * @param  array<string, mixed>  $data
      */
     public function update(array $data): bool
     {
@@ -134,6 +148,8 @@ class Json
 
     /**
      * Set a specific key & value.
+     *
+     * @param  mixed  $value
      */
     public function set(string $key, $value): self
     {
@@ -152,6 +168,8 @@ class Json
 
     /**
      * Handle magic method __get.
+     *
+     * @return mixed
      */
     public function __get(string $key)
     {
@@ -160,6 +178,9 @@ class Json
 
     /**
      * Get the specified attribute from json file.
+     *
+     * @param  mixed  $default
+     * @return mixed
      */
     public function get(string $key, $default = null)
     {
@@ -168,6 +189,9 @@ class Json
 
     /**
      * Handle call to __call method.
+     *
+     * @param  array<int, mixed>  $arguments
+     * @return mixed
      */
     public function __call(string $method, array $arguments = [])
     {

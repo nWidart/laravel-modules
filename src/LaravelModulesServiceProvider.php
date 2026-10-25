@@ -3,6 +3,8 @@
 namespace Nwidart\Modules;
 
 use Composer\InstalledVersions;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Translation\Translator as TranslatorContract;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Filesystem\Filesystem;
@@ -20,6 +22,8 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 {
     /**
      * Booting the package.
+     *
+     * @return void
      */
     public function boot()
     {
@@ -37,6 +41,8 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
     /**
      * Register the service provider.
+     *
+     * @return void
      */
     public function register()
     {
@@ -59,11 +65,13 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
      * The custom `modules.stubs.path` is used only when `modules.stubs.enabled` is true,
      * otherwise the package stubs are used. The path is resolved once the app is booted,
      * so the merged package config and config changed by other providers are taken into account.
+     *
+     * @return void
      */
     public function setupStubPath()
     {
-        $this->app->booted(function ($app) {
-            $config = $app['config'];
+        $this->app->booted(function (Application $app) {
+            $config = $app->make(ConfigRepository::class);
             $path = $config->get('modules.stubs.enabled') === true ? $config->get('modules.stubs.path') : null;
 
             Stub::setBasePath(is_string($path) && $path !== '' ? $path : __DIR__.'/Commands/stubs');
@@ -72,6 +80,8 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     protected function registerServices()
     {
@@ -80,9 +90,10 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->app->singleton(RepositoryInterface::class, function ($app) {
             return new Laravel\LaravelFileRepository($app);
         });
-        $this->app->singleton(ActivatorInterface::class, function ($app) {
-            $activator = $app['config']->get('modules.activator');
-            $activators = $app['config']->get('modules.activators');
+        $this->app->singleton(ActivatorInterface::class, function (Application $app) {
+            $config = $app->make(ConfigRepository::class);
+            $activator = $config->get('modules.activator');
+            $activators = $config->get('modules.activators');
 
             if (! is_string($activator) || ! is_array($activators) || ! is_array($activators[$activator] ?? null)) {
                 throw InvalidActivatorClass::unknownActivator($activator);
@@ -116,14 +127,14 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
     protected function registerMigrations(): void
     {
-        if (! $this->app['config']->get('modules.auto-discover.migrations', true)) {
+        if (! $this->app->make(ConfigRepository::class)->get('modules.auto-discover.migrations', true)) {
             return;
         }
 
         $this->app->resolving(Migrator::class, function (Migrator $migrator) {
-            $migration_path = $this->app['config']->get('modules.paths.generator.migration.path');
+            $migration_path = $this->app->make(ConfigRepository::class)->get('modules.paths.generator.migration.path');
             collect(Module::allEnabled())
-                ->each(function (Laravel\Module $module) use ($migration_path, $migrator) {
+                ->each(function (\Nwidart\Modules\Module $module) use ($migration_path, $migrator) {
                     $migrator->path($module->getExtraPath($migration_path));
                 });
         });
@@ -143,7 +154,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     protected function registerTranslations(): void
     {
         // Runs before the package config is merged, so the fallback must match the package default.
-        if (! $this->app['config']->get('modules.auto-discover.translations', false)) {
+        if (! $this->app->make(ConfigRepository::class)->get('modules.auto-discover.translations', false)) {
             return;
         }
         $this->callAfterResolving('translator', function (TranslatorContract $translator) {
@@ -152,8 +163,8 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
             }
 
             collect(Module::allEnabled())
-                ->each(function (Laravel\Module $module) use ($translator) {
-                    $path = $module->getExtraPath($this->app['config']->get('modules.paths.generator.lang.path'));
+                ->each(function (\Nwidart\Modules\Module $module) use ($translator) {
+                    $path = $module->getExtraPath($this->app->make(ConfigRepository::class)->get('modules.paths.generator.lang.path'));
                     $translator->addNamespace($module->getLowerName(), $path);
                     $translator->addJsonPath($path);
                 });

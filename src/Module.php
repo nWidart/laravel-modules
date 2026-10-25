@@ -3,6 +3,7 @@
 namespace Nwidart\Modules;
 
 use Illuminate\Container\Container;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -35,6 +36,8 @@ abstract class Module
 
     /**
      * Array of cached Json objects, keyed by filename
+     *
+     * @var array<string, Json>
      */
     protected array $moduleJson = [];
 
@@ -57,13 +60,15 @@ abstract class Module
     {
         $this->name = $name;
         $this->path = $path;
-        $this->files = $app['files'];
-        $this->activator = $app[ActivatorInterface::class];
+        $this->files = $app->make(Filesystem::class);
+        $this->activator = $app->make(ActivatorInterface::class);
         $this->app = $app;
     }
 
     /**
      * Returns an array of assets
+     *
+     * @return array<int, mixed> The src of each entrypoint in the Vite build manifest.
      */
     public static function getAssets(): array
     {
@@ -227,6 +232,9 @@ abstract class Module
 
     /**
      * Get a specific data from json file by given the key.
+     *
+     * @param  mixed  $default
+     * @return mixed
      */
     public function get(string $key, $default = null)
     {
@@ -235,6 +243,9 @@ abstract class Module
 
     /**
      * Get a specific data from composer.json file by given the key.
+     *
+     * @param  mixed  $default
+     * @return mixed
      */
     public function getComposerAttr(string $key, $default = null)
     {
@@ -265,7 +276,7 @@ abstract class Module
      */
     public function fireEvent(string $event): void
     {
-        $this->app['events']->dispatch(sprintf('modules.%s.%s', $this->getLowerName(), $event), [$this]);
+        $this->app->make(Dispatcher::class)->dispatch(sprintf('modules.%s.%s', $this->getLowerName(), $event), [$this]);
     }
 
     /**

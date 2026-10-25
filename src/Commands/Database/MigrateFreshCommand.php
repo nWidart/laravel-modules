@@ -30,6 +30,11 @@ class MigrateFreshCommand extends BaseCommand implements ConfirmableCommand
      */
     protected Migrator $migrator;
 
+    /**
+     * The migration paths registered on the migrator before the module migrations run.
+     *
+     * @var Collection<int, string>
+     */
     protected Collection $migration_paths;
 
     public function __construct()
@@ -110,6 +115,9 @@ class MigrateFreshCommand extends BaseCommand implements ConfirmableCommand
         return $this->hasFailures() ? self::FAILURE : self::SUCCESS;
     }
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);

@@ -57,7 +57,7 @@ class InertiaPageMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents(): string
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
             'STUDLY_NAME' => $module->getStudlyName(),
@@ -70,7 +70,7 @@ class InertiaPageMakeCommand extends GeneratorCommand
      */
     protected function getDestinationFilePath(): string
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
         $pagesPath = GenerateConfigReader::read('inertia')->getPath() ?? 'resources/js/Pages';
         $subDirectory = $this->getSubDirectory();
 

@@ -11,6 +11,7 @@ use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Module;
+use Nwidart\Modules\Traits\InteractsWithModuleRepository;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,6 +22,7 @@ use function Laravel\Prompts\multisearch;
 abstract class BaseCommand extends Command implements PromptsForMissingInput
 {
     use ConfirmableTrait;
+    use InteractsWithModuleRepository;
     use Prohibitable;
 
     public const ALL = 'All';
@@ -67,6 +69,7 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
      * failed for this module: the remaining modules still run, and the command exits
      * with a failure status.
      *
+     * @param  string  $name
      * @return mixed
      */
     abstract public function executeAction($name);
@@ -88,6 +91,8 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
 
     /**
      * Execute the console command.
+     *
+     * @return int
      */
     public function handle()
     {
@@ -254,20 +259,24 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
     protected function getModuleNames(InputInterface $input): array
     {
         if (! $this->getDefinition()->hasOption('direction')) {
-            return array_keys($this->laravel['modules']->all());
+            return array_keys($this->moduleRepository()->all());
         }
 
         $direction = $input->getOption('direction')
             ?? $this->getDefinition()->getOption('direction')->getDefault();
 
-        return array_keys($this->laravel['modules']->getOrdered((string) $direction));
+        return array_keys($this->moduleRepository()->getOrdered((string) $direction));
     }
 
+    /**
+     * @param  Module|string  $name
+     * @return Module
+     */
     protected function getModuleModel($name)
     {
         return $name instanceof Module
             ? $name
-            : $this->laravel['modules']->findOrFail($name);
+            : $this->moduleRepository()->findOrFail($name);
     }
 
     private function configureConfirmable(): void

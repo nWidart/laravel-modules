@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands\Database;
 
+use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Migrations\Migrator;
 use Nwidart\Modules\Module;
@@ -23,6 +24,9 @@ class MigrateCommand extends BaseCommand
      */
     protected $description = 'Migrate the migrations from the specified module or from all modules.';
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -79,7 +83,7 @@ class MigrateCommand extends BaseCommand
             // a directory, a single migration file, or a glob pattern matching migration files
             $path = $migrator->getMigrationsPath();
 
-            return is_dir($path) ? [$path] : $this->laravel['files']->glob($path);
+            return is_dir($path) ? [$path] : $this->laravel->make(Filesystem::class)->glob($path);
         }
 
         // Always includes the module's own migration path, so a disabled module (whose
@@ -90,7 +94,7 @@ class MigrateCommand extends BaseCommand
     /**
      * Get the console command options.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getOptions()
     {

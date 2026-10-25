@@ -16,6 +16,8 @@ class ModuleManifest
 
     /**
      * The base path.
+     *
+     * @var Collection<int, string>
      */
     public Collection $paths;
 
@@ -26,11 +28,15 @@ class ModuleManifest
 
     /**
      * The manifestData
+     *
+     * @var Collection<array-key, non-empty-array<string, mixed>>|null
      */
     private static ?Collection $manifestData = null;
 
     /**
      * The loaded manifest array.
+     *
+     * @var array<int, string>
      */
     private array $manifest = [];
 
@@ -41,6 +47,8 @@ class ModuleManifest
 
     /**
      * Create a new package manifest instance.
+     *
+     * @param  array<int, string>  $paths
      */
     public function __construct(Filesystem $files, array $paths, string $manifestPath, ActivatorInterface $activator)
     {
@@ -52,6 +60,8 @@ class ModuleManifest
 
     /**
      * Get the current package manifest.
+     *
+     * @return array<int, string> The service provider classes of the enabled modules.
      */
     public function getProviders(): array
     {
@@ -64,6 +74,8 @@ class ModuleManifest
 
     /**
      * Build the manifest and write it to disk.
+     *
+     * @return array<int, string>
      */
     public function build(): array
     {
@@ -121,6 +133,12 @@ class ModuleManifest
             });
     }
 
+    /**
+     * Get the module.json data of the enabled modules, sorted by priority. Each entry also
+     * holds the module directory under 'module_directory'.
+     *
+     * @return Collection<array-key, non-empty-array<string, mixed>>
+     */
     public function getModulesData(): Collection
     {
         if (! empty(self::$manifestData) && ! app()->runningUnitTests()) {
@@ -134,9 +152,13 @@ class ModuleManifest
 
                 return collect($manifests)
                     ->map(function ($manifest) {
+                        // Filesystem::json() is typed as a plain array; module.json holds a JSON object.
+                        /** @var array<string, mixed> $json */
+                        $json = $this->files->json($manifest);
+
                         return [
                             'module_directory' => dirname($manifest),
-                            ...$this->files->json($manifest),
+                            ...$json,
                         ];
                     });
             })

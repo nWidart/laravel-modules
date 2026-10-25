@@ -24,6 +24,9 @@ class ComposerUpdateCommand extends BaseCommand
      */
     protected $description = 'update autoload of composer.json file';
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);

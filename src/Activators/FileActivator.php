@@ -24,6 +24,8 @@ class FileActivator implements ActivatorInterface
 
     /**
      * Array of modules activation statuses
+     *
+     * @var array<string, bool>
      */
     private array $modulesStatuses;
 
@@ -34,8 +36,8 @@ class FileActivator implements ActivatorInterface
 
     public function __construct(Container $app)
     {
-        $this->files = $app['files'];
-        $this->config = $app['config'];
+        $this->files = $app->make(Filesystem::class);
+        $this->config = $app->make(Config::class);
         $this->statusesFile = $this->config('statuses-file');
         $this->modulesStatuses = $this->readJson();
     }
@@ -131,6 +133,8 @@ class FileActivator implements ActivatorInterface
      *
      * A file that is not valid JSON is never treated as empty: the next write would replace it and lose every status.
      *
+     * @return array<string, mixed>
+     *
      * @throws FileNotFoundException
      * @throws InvalidJsonException
      */
@@ -161,7 +165,7 @@ class FileActivator implements ActivatorInterface
     /**
      * Reads a config parameter under the 'activators.file' key
      */
-    private function config(string $key, $default = null)
+    private function config(string $key, mixed $default = null): mixed
     {
         return $this->config->get('modules.activators.file.'.$key, $default);
     }

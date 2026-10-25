@@ -21,7 +21,7 @@ class HelperMakeCommand extends GeneratorCommand
 
     public function getDestinationFilePath(): string
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         $filePath = GenerateConfigReader::read('helpers')->getPath() ?? config('modules.paths.app_folder').'Helpers';
 
@@ -30,7 +30,7 @@ class HelperMakeCommand extends GeneratorCommand
 
     protected function getTemplateContents(): string
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
             'CLASS_NAMESPACE' => $this->getClassNamespace($module),
@@ -54,6 +54,9 @@ class HelperMakeCommand extends GeneratorCommand
         ];
     }
 
+    /**
+     * @return string|array<int, string>
+     */
     protected function getHelperName(): array|string
     {
         return Str::studly($this->argument('name'));

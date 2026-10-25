@@ -146,6 +146,8 @@ class ModuleGenerator extends Generator
 
     /**
      * Module author
+     *
+     * @var array<array-key, string|null> The 'name' and 'email' set by setAuthor().
      */
     protected array $author = [
         'name', 'email',
@@ -165,6 +167,8 @@ class ModuleGenerator extends Generator
 
     /**
      * The constructor.
+     *
+     * @param  string|null  $name
      */
     public function __construct(
         $name,
@@ -337,6 +341,8 @@ class ModuleGenerator extends Generator
 
     /**
      * Get the list of folders will created.
+     *
+     * @return array<string, mixed> The modules.paths.generator config, keyed by generator key.
      */
     public function getFolders(): array
     {
@@ -345,6 +351,8 @@ class ModuleGenerator extends Generator
 
     /**
      * Get the list of files will created.
+     *
+     * @return array<string, string> The modules.stubs.files config: stub name => file path.
      */
     public function getFiles(): array
     {
@@ -542,6 +550,8 @@ class ModuleGenerator extends Generator
 
     /**
      * Generate the folders.
+     *
+     * @return void
      */
     public function generateFolders()
     {
@@ -563,6 +573,8 @@ class ModuleGenerator extends Generator
 
     /**
      * Generate git keep to the specified path.
+     *
+     * @return void
      */
     public function generateGitKeep(string $path)
     {
@@ -571,6 +583,8 @@ class ModuleGenerator extends Generator
 
     /**
      * Generate the files.
+     *
+     * @return void
      */
     public function generateFiles()
     {
@@ -592,6 +606,8 @@ class ModuleGenerator extends Generator
 
     /**
      * Generate some resources.
+     *
+     * @return void
      */
     public function generateResources()
     {
@@ -650,6 +666,8 @@ class ModuleGenerator extends Generator
 
     /**
      * Get the contents of the specified stub file by given stub name.
+     *
+     * @param  string  $stub
      */
     protected function getStubContents($stub): string
     {
@@ -759,6 +777,8 @@ class ModuleGenerator extends Generator
 
     /**
      * get the list for the replacements.
+     *
+     * @return array<string, array<array-key, string>>|null The modules.stubs.replacements config: stub name => replacement keys.
      */
     public function getReplacements()
     {
@@ -767,6 +787,9 @@ class ModuleGenerator extends Generator
 
     /**
      * Get array replacement for the specified stub.
+     *
+     * @param  string  $stub
+     * @return array<string, string|null>
      */
     protected function getReplacement($stub): array
     {
@@ -855,7 +878,7 @@ class ModuleGenerator extends Generator
     /**
      * Generate the module.json file
      */
-    private function generateModuleJsonFile()
+    private function generateModuleJsonFile(): void
     {
         $path = $this->module->getModulePath($this->getName()).'module.json';
 
@@ -875,7 +898,7 @@ class ModuleGenerator extends Generator
      * Remove the default service provider that was added in the module.json file
      * This is needed when a --plain module was created
      */
-    private function cleanModuleJsonFile()
+    private function cleanModuleJsonFile(): void
     {
         $studlyName = $this->getStudlyNameReplacement();
 

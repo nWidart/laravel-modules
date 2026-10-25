@@ -37,6 +37,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * The scanned paths.
+     *
+     * @var array<int, string>
      */
     protected array $paths = [];
 
@@ -60,6 +62,11 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     private Filesystem $files;
 
+    /**
+     * The scanned modules, keyed by lowercase module name.
+     *
+     * @var array<string, Module>
+     */
     private static $modules = [];
 
     /**
@@ -71,9 +78,9 @@ abstract class FileRepository implements Countable, RepositoryInterface
     {
         $this->app = $app;
         $this->path = $path;
-        $this->url = $app['url'];
-        $this->config = $app['config'];
-        $this->files = $app['files'];
+        $this->url = $app->make(UrlGenerator::class);
+        $this->config = $app->make(ConfigRepository::class);
+        $this->files = $app->make(Filesystem::class);
     }
 
     /**
@@ -88,6 +95,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get all additional paths.
+     *
+     * @return array<int, string>
      */
     public function getPaths(): array
     {
@@ -96,6 +105,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get scanned modules paths.
+     *
+     * @return array<int, string>
      */
     public function getScanPaths(): array
     {
@@ -123,6 +134,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get & scan all modules.
+     *
+     * @return array<string, Module>
      */
     public function scan(): array
     {
@@ -152,6 +165,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get all modules.
+     *
+     * @return array<string, Module>
      */
     public function all(): array
     {
@@ -160,6 +175,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get all modules as collection instance.
+     *
+     * @return Collection<string, Module>
      */
     public function toCollection(): Collection
     {
@@ -168,6 +185,9 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get modules by status.
+     *
+     * @param  bool|int  $status
+     * @return array<string, Module>
      */
     public function getByStatus($status): array
     {
@@ -185,6 +205,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Determine whether the given module exist.
+     *
+     * @param  string  $name
      */
     public function has($name): bool
     {
@@ -193,6 +215,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get list of enabled modules.
+     *
+     * @return array<string, Module>
      */
     public function allEnabled(): array
     {
@@ -201,6 +225,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get list of disabled modules.
+     *
+     * @return array<string, Module>
      */
     public function allDisabled(): array
     {
@@ -217,6 +243,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get all ordered modules.
+     *
+     * @return array<string, Module>
      */
     public function getOrdered(string $direction = 'asc'): array
     {
@@ -302,6 +330,9 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get all modules as laravel collection instance.
+     *
+     * @param  bool|int  $status
+     * @return Collection<string, Module>
      */
     public function collections($status = 1): Collection
     {
@@ -310,6 +341,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get module path for a specific module.
+     *
+     * @param  string  $module
      */
     public function getModulePath($module): string
     {
@@ -330,6 +363,9 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @param  mixed  $default
+     * @return mixed
      */
     public function config(string $key, $default = null)
     {
@@ -357,6 +393,9 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * Set module used for cli session.
      *
+     * @param  string  $name
+     * @return void
+     *
      * @throws ModuleNotFoundException
      */
     public function setUsed($name)
@@ -370,6 +409,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Forget the module used for cli session.
+     *
+     * @return void
      */
     public function forgetUsed()
     {
@@ -442,6 +483,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * Enabling a specific module.
      *
+     * @return void
+     *
      * @throws ModuleNotFoundException
      */
     public function enable(string $name)
@@ -451,6 +494,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Disabling a specific module.
+     *
+     * @return void
      *
      * @throws ModuleNotFoundException
      */
@@ -469,6 +514,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Update dependencies for the specified module.
+     *
+     * @return void
      */
     public function update(string $module)
     {

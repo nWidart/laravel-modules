@@ -17,6 +17,8 @@ class Stub
 
     /**
      * The replacements array.
+     *
+     * @var array<string, scalar|\Stringable|null>
      */
     protected array $replaces = [];
 
@@ -29,6 +31,8 @@ class Stub
 
     /**
      * The contructor.
+     *
+     * @param  array<string, scalar|\Stringable|null>  $replaces
      */
     public function __construct(string $path, array $replaces = [])
     {
@@ -38,6 +42,8 @@ class Stub
 
     /**
      * Create new self instance.
+     *
+     * @param  array<string, scalar|\Stringable|null>  $replaces
      */
     public static function create(string $path, array $replaces = []): self
     {
@@ -66,6 +72,8 @@ class Stub
 
     /**
      * Set base path.
+     *
+     * @return void
      */
     public static function setBasePath(string $path)
     {
@@ -118,6 +126,8 @@ class Stub
 
     /**
      * Set replacements array.
+     *
+     * @param  array<string, scalar|\Stringable|null>  $replaces
      */
     public function replace(array $replaces = []): self
     {
@@ -128,6 +138,8 @@ class Stub
 
     /**
      * Get replacements.
+     *
+     * @return array<string, scalar|\Stringable|null>
      */
     public function getReplaces(): array
     {

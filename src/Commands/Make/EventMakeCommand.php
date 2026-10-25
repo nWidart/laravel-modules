@@ -30,7 +30,7 @@ class EventMakeCommand extends GeneratorCommand
 
     public function getTemplateContents()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub('/event.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
@@ -40,7 +40,7 @@ class EventMakeCommand extends GeneratorCommand
 
     public function getDestinationFilePath()
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         $eventPath = GenerateConfigReader::read('event');
 
@@ -64,7 +64,7 @@ class EventMakeCommand extends GeneratorCommand
     /**
      * Get the console command arguments.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getArguments()
     {

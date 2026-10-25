@@ -2,7 +2,7 @@ includes:
     - vendor/larastan/larastan/extension.neon
 
 parameters:
-    level: 5
+    level: 6
     # Analyse against the package's supported PHP range (composer.json "php": "^8.3",
     # CI tests 8.3 to 8.5) instead of the PHP running PHPStan, so local runs match CI.
     # PHPStan uses min for version-dependent rules and the range for PHP_VERSION_ID checks.

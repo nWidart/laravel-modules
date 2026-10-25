@@ -11,6 +11,9 @@ class ModuleDeleteCommand extends BaseCommand implements ConfirmableCommand
 
     protected $description = 'Delete a module from the application';
 
+    /**
+     * @param  string  $name
+     */
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);

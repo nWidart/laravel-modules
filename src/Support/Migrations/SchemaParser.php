@@ -5,10 +5,15 @@ namespace Nwidart\Modules\Support\Migrations;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
 
+/**
+ * @implements Arrayable<string, array<int, string>>
+ */
 class SchemaParser implements Arrayable
 {
     /**
      * The array of custom attributes.
+     *
+     * @var array<string, string>
      */
     protected array $customAttributes = [
         'remember_token' => 'rememberToken()',
@@ -17,6 +22,8 @@ class SchemaParser implements Arrayable
 
     /**
      * The Blueprint methods that reverse the custom attributes.
+     *
+     * @var array<string, string>
      */
     protected array $customDropAttributes = [
         'remember_token' => 'dropRememberToken()',
@@ -30,6 +37,8 @@ class SchemaParser implements Arrayable
 
     /**
      * The relationship keys.
+     *
+     * @var array<int, string>
      */
     protected array $relationshipKeys = [
         'belongsTo',
@@ -49,6 +58,8 @@ class SchemaParser implements Arrayable
      * The result is keyed by column, so a column that is given more than once
      * (such as belongsTo) keeps only its last definition. Use getFields() to
      * get every field in order.
+     *
+     * @return array<string, array<int, string>>
      */
     public function parse(?string $schema): array
     {
@@ -66,7 +77,7 @@ class SchemaParser implements Arrayable
     /**
      * Get every field of the schema in order, as [column, attributes] pairs.
      *
-     * @return list<array{0: string, 1: array}>
+     * @return list<array{0: string, 1: array<int, string>}>
      */
     public function getFields(): array
     {
@@ -86,6 +97,8 @@ class SchemaParser implements Arrayable
      *
      * Fields are separated by commas. Whitespace is removed, except inside
      * quoted strings, and commas inside parentheses or quotes are kept.
+     *
+     * @return list<string>
      */
     public function getSchemas(): array
     {
@@ -100,6 +113,8 @@ class SchemaParser implements Arrayable
 
     /**
      * Convert string migration to array.
+     *
+     * @return array<string, array<int, string>>
      */
     public function toArray(): array
     {
@@ -145,6 +160,8 @@ class SchemaParser implements Arrayable
 
     /**
      * Create field.
+     *
+     * @param  array<int, string>  $attributes
      */
     public function createField(string $column, array $attributes, string $type = 'add'): string
     {
@@ -262,6 +279,8 @@ class SchemaParser implements Arrayable
 
     /**
      * Get column attributes.
+     *
+     * @return array<int, string>
      */
     public function getAttributes(string $column, string $schema): array
     {
@@ -284,6 +303,8 @@ class SchemaParser implements Arrayable
 
     /**
      * Get custom attributes value.
+     *
+     * @return array<int, string>
      */
     public function getCustomAttribute(string $column): array
     {

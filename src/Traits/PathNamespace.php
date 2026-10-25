@@ -8,6 +8,8 @@ trait PathNamespace
 {
     /**
      * Get a well-formatted StudlyCase representation of path components.
+     *
+     * @param  string  $ds  The separator.
      */
     public function studly_path(string $path, $ds = '/'): string
     {
@@ -16,6 +18,8 @@ trait PathNamespace
 
     /**
      * Get a well-formatted StudlyCase namespace.
+     *
+     * @param  string  $ds  The separator.
      */
     public function studly_namespace(string $namespace, $ds = '\\'): string
     {
@@ -44,6 +48,8 @@ trait PathNamespace
     /**
      * Clean path: remove empty segments, such as leading, trailing, or doubled separators.
      * Segments such as "0" are kept.
+     *
+     * @param  string  $ds  The separator.
      */
     public function clean_path(string $path, $ds = '/'): string
     {

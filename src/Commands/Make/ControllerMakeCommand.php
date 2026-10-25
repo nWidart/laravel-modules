@@ -41,7 +41,7 @@ class ControllerMakeCommand extends GeneratorCommand
      */
     public function getDestinationFilePath()
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         $controllerPath = GenerateConfigReader::read('controller');
 
@@ -53,7 +53,7 @@ class ControllerMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub($this->getStubName(), [
             'MODULENAME' => $module->getStudlyName(),
@@ -65,14 +65,14 @@ class ControllerMakeCommand extends GeneratorCommand
             'MODULE' => $this->getModuleName(),
             'NAME' => $this->getModuleName(),
             'STUDLY_NAME' => $module->getStudlyName(),
-            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
+            'MODULE_NAMESPACE' => $this->moduleRepository()->config('namespace'),
         ]))->render();
     }
 
     /**
      * Get the console command arguments.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getArguments()
     {
@@ -83,7 +83,7 @@ class ControllerMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getOptions()
     {
@@ -96,7 +96,7 @@ class ControllerMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @return array|string
+     * @return string
      */
     protected function getControllerName()
     {

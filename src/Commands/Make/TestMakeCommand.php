@@ -33,7 +33,7 @@ class TestMakeCommand extends GeneratorCommand
     /**
      * Get the console command arguments.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getArguments()
     {
@@ -46,7 +46,7 @@ class TestMakeCommand extends GeneratorCommand
     /**
      * Get the console command options.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getOptions()
     {
@@ -60,7 +60,7 @@ class TestMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
         $stub = '/tests/'.(($this->option('feature')) ? 'feature' : 'unit').'.stub';
 
         return (new Stub($stub, [
@@ -74,7 +74,7 @@ class TestMakeCommand extends GeneratorCommand
      */
     protected function getDestinationFilePath()
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         if ($this->option('feature')) {
             $testPath = GenerateConfigReader::read('test-feature');

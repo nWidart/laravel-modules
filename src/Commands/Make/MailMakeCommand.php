@@ -37,7 +37,7 @@ class MailMakeCommand extends GeneratorCommand
     /**
      * Get the console command arguments.
      *
-     * @return array
+     * @return array<int, array<int, mixed>>
      */
     protected function getArguments()
     {
@@ -54,7 +54,7 @@ class MailMakeCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub('/mail.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
@@ -69,7 +69,7 @@ class MailMakeCommand extends GeneratorCommand
      */
     protected function getDestinationFilePath()
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
+        $path = $this->moduleRepository()->getModulePath($this->getModuleName());
 
         $mailPath = GenerateConfigReader::read('emails');
 

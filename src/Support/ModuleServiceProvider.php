@@ -219,6 +219,8 @@ abstract class ModuleServiceProvider extends ServiceProvider
 
     /**
      * Get the paths where the module views are published.
+     *
+     * @return array<int, string>
      */
     private function getPublishableViewPaths(): array
     {
