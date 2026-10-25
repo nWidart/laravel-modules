@@ -5,6 +5,112 @@ All Notable changes to `laravel-modules` will be documented in this file.
 See https://github.com/nWidart/laravel-modules/releases for the latest releases.
 From 11.0.11 until the first automated release (made by `.github/workflows/release.yml`), this file is incomplete: those releases are documented in GitHub Releases.
 
+## 13.2.0 - 2026-10-25
+
+### Upgrade notes
+
+Most apps on the default published config need no change. Read the items below if you use custom stubs, custom generator paths, or run module commands in scripts, CI or deploys.
+
+<details>
+<summary>Show upgrade notes</summary>
+
+#### Action may be required
+
+- **Custom `stubs.path` needs `'stubs' => ['enabled' => true]`.** Without it the path is ignored ([#2198](https://github.com/nWidart/laravel-modules/pull/2198))
+- **Custom `paths.generator.<key>` without `namespace`** (`actions`, `casts`, `enums`, `exceptions`, `helpers`, `interfaces`, `repository`, `services`, `traits`) now derives the namespace from `path`. Add `namespace` to keep the old one ([#2207](https://github.com/nWidart/laravel-modules/pull/2207))
+- **`module:make` rejects generator paths outside `paths.app_folder`**, and with `app_folder => ''` paths that do not match their StudlyCase namespace (`Providers`, not `app/Providers`). It exits 1 and lists the bad keys ([#2209](https://github.com/nWidart/laravel-modules/pull/2209), [#2225](https://github.com/nWidart/laravel-modules/pull/2225))
+- **`generate => false` also skips the stub files the key owns.** `'assets' => false` no longer writes `vite.config.js` and `package.json`. Set the key to `true` to get them back ([#2223](https://github.com/nWidart/laravel-modules/pull/2223))
+- **Published `route-provider.stub` / `scaffold/provider.stub`:** old copies keep working as before. To get the new behaviour (routes dropped when not in `stubs.files` or `routes.generate` is false; provider list follows generated providers), copy the `%%START_WEB_ROUTES%%`/`%%END_WEB_ROUTES%%` and `%%START_API_ROUTES%%`/`%%END_API_ROUTES%%` markers and `protected array $providers = [$PROVIDERS$];` from `src/Commands/stubs/` ([#2216](https://github.com/nWidart/laravel-modules/pull/2216), [#2180](https://github.com/nWidart/laravel-modules/pull/2180))
+- **No published `config/modules.php`: translation auto-discovery is now off.** Publish the config and set `'auto-discover' => ['translations' => true]` if you relied on it ([#2184](https://github.com/nWidart/laravel-modules/pull/2184))
+- **`module:publish-translation` writes to `lang/modules/{module}`.** Move old copies from `resources/lang/{module}`. While `resources/lang` exists, `lang_path()` points to it and `lang/` stops loading. Modules generated with v11 stubs: use `lang_path('modules/...')` instead of `resource_path('lang/modules/...')` ([#2185](https://github.com/nWidart/laravel-modules/pull/2185))
+- **Module config files other than `config.php` publish to `config/<module>/<file>.php`.** Move files published earlier ([#2186](https://github.com/nWidart/laravel-modules/pull/2186))
+- **`modules_statuses.json` must be a JSON object** (module name to `true`/`false`). A corrupt file or a bad `modules.activator` config now throws ([#2205](https://github.com/nWidart/laravel-modules/pull/2205))
+
+#### Behaviour changes
+
+- **Scripts, CI and deploys:** a module command with no module and no `--all` in non-interactive mode prints `No module given. Pass a module name or --all.` and exits 1 (it did nothing and exited 0). Add `--all` or module names ([#2212](https://github.com/nWidart/laravel-modules/pull/2212))
+- **`--all` now runs non-interactively** (`-n`, CI, scheduler): `module:delete --all --force -n` deletes every module ([#2187](https://github.com/nWidart/laravel-modules/pull/2187))
+- **More failures exit 1:** failing seeders and nested calls, `module:lang` with missing translations, `module:make-middleware` and `module:make-observer` when the file exists ([#2212](https://github.com/nWidart/laravel-modules/pull/2212), [#2215](https://github.com/nWidart/laravel-modules/pull/2215), [#2210](https://github.com/nWidart/laravel-modules/pull/2210))
+- **`module:make` requires `name`** when non-interactive ([#2210](https://github.com/nWidart/laravel-modules/pull/2210))
+- **`module:migrate --subpath` is now honoured.** `module:migrate-fresh --pretend` is refused ([#2212](https://github.com/nWidart/laravel-modules/pull/2212))
+- **`module:publish-translation` and `module:publish-migration` skip existing files.** Pass `--force` to overwrite ([#2199](https://github.com/nWidart/laravel-modules/pull/2199))
+- **Scheduled `module:prune` now deletes records** (it found no models before) ([#2197](https://github.com/nWidart/laravel-modules/pull/2197))
+- **Reset and refresh also roll back `loadMigrationsFrom()` paths**, so those tables are dropped too ([#2226](https://github.com/nWidart/laravel-modules/pull/2226))
+- **Rollback and reset run `down()` on the migration's connection** (`$connection`, else `--database`). Check secondary databases ([#2179](https://github.com/nWidart/laravel-modules/pull/2179))
+- **Module listeners registered by hand and found by event discovery run twice.** Remove one registration and re-run `event:cache` ([#2219](https://github.com/nWidart/laravel-modules/pull/2219))
+- **`aliases` in `module.json` are now registered.** Check for clashes ([#2206](https://github.com/nWidart/laravel-modules/pull/2206))
+
+#### Extending the package
+
+- `Installer` and `Publisher` properties are nullable (redeclare them as nullable); `Publisher` defaults to `$force = false` ([#2181](https://github.com/nWidart/laravel-modules/pull/2181), [#2211](https://github.com/nWidart/laravel-modules/pull/2211), [#2199](https://github.com/nWidart/laravel-modules/pull/2199))
+- `BaseCommand` subclasses overriding `initialize()` must call `parent::initialize()` ([#2187](https://github.com/nWidart/laravel-modules/pull/2187))
+- `GeneratorCommand` adds a `force` option: remove your own ([#2210](https://github.com/nWidart/laravel-modules/pull/2210))
+- `MigrateCommand` has no constructor, `$migrator` or `$migration_list` ([#2226](https://github.com/nWidart/laravel-modules/pull/2226))
+
+#### Deprecated (removed in v14)
+
+`Module::boot()`, `register()`, `registerTranslation()`, `isLoadFilesOnBoot()`; `FileRepository::boot()` and `register()` (and on `RepositoryInterface`); `ModuleEvent::BOOT` and `REGISTER`; `Traits\MigrationLoaderTrait`; config keys `modules.register.translations` and `modules.register.files`; `ContractsServiceProvider` ([#2204](https://github.com/nWidart/laravel-modules/pull/2204), [#2196](https://github.com/nWidart/laravel-modules/pull/2196))
+
+</details>
+
+### Features
+
+- **vite:** Add moduleRefreshPaths() for hot reload of module views ([#2217](https://github.com/nWidart/laravel-modules/pull/2217)) ([fed50b9](https://github.com/nWidart/laravel-modules/commit/fed50b911033faa4862e166d3b267a59f8e331a6))
+
+### Bug Fixes
+
+- **make:** Look up created module by studly name when firing events ([d175b6a](https://github.com/nWidart/laravel-modules/commit/d175b6aeacb750866cc86cf3b6a421e16997b092))
+- **migrations:** Run rollback and reset down() on the selected connection ([#2179](https://github.com/nWidart/laravel-modules/pull/2179)) ([17eca88](https://github.com/nWidart/laravel-modules/commit/17eca88ab1ac133257f99a1f7918f1915f49a571))
+- **make:** Only list generated route/event providers in module $providers ([#2180](https://github.com/nWidart/laravel-modules/pull/2180)) ([3ac69c1](https://github.com/nWidart/laravel-modules/commit/3ac69c1b44f1e5c8240c303cc9824c264ea41faf))
+- **install:** Allow module:install without version or --path ([#2181](https://github.com/nWidart/laravel-modules/pull/2181)) ([f57a825](https://github.com/nWidart/laravel-modules/commit/f57a8259fdd8c3de101a2b7b4d02a2794dacc4b2))
+- Keep module_vite() from mutating the shared Vite instance ([#2183](https://github.com/nWidart/laravel-modules/pull/2183)) ([2dff505](https://github.com/nWidart/laravel-modules/commit/2dff50536aa3e0ae45e52b7e997bf4358f2e47c5))
+- Disable translation auto-discovery when modules config is not published ([#2184](https://github.com/nWidart/laravel-modules/pull/2184)) ([2a2cb53](https://github.com/nWidart/laravel-modules/commit/2a2cb532310ca77911333103ffa652bc507586c7))
+- Load translations published by module:publish-translation ([#2185](https://github.com/nWidart/laravel-modules/pull/2185)) ([8443999](https://github.com/nWidart/laravel-modules/commit/84439991dd07071fbc2eb869ac28d712954e19cd))
+- Publish module config files to the path of their config key ([#2186](https://github.com/nWidart/laravel-modules/pull/2186)) ([a97db87](https://github.com/nWidart/laravel-modules/commit/a97db87ab5571341015c1ad32e89cbec081ec157))
+- Resolve --all without interaction and honour --direction ([#2187](https://github.com/nWidart/laravel-modules/pull/2187)) ([8613953](https://github.com/nWidart/laravel-modules/commit/8613953ab690c1f8c06e76dad623a31bb99b3d34))
+- **publish:** Fail with ModuleNotFoundException for unknown module in module:publish-config ([#2195](https://github.com/nWidart/laravel-modules/pull/2195)) ([22c3f37](https://github.com/nWidart/laravel-modules/commit/22c3f372536e02493851e2d710dbde197053e098))
+- Register the module repository as a single shared instance ([#2196](https://github.com/nWidart/laravel-modules/pull/2196)) ([478968a](https://github.com/nWidart/laravel-modules/commit/478968aaf76665d2300ad53e58aa82bf379ea566))
+- **prune:** Discover module models and skip missing models directories ([#2197](https://github.com/nWidart/laravel-modules/pull/2197)) ([b8e7743](https://github.com/nWidart/laravel-modules/commit/b8e77437e1e84b73399db76ef174bf0cbb106774))
+- Use package stubs unless stubs.enabled is true ([#2198](https://github.com/nWidart/laravel-modules/pull/2198)) ([deedc70](https://github.com/nWidart/laravel-modules/commit/deedc701374fc98521875cdc9c4bc994ac35de58))
+- **publish:** Keep published translations and migrations unless --force is given ([#2199](https://github.com/nWidart/laravel-modules/pull/2199)) ([c96304f](https://github.com/nWidart/laravel-modules/commit/c96304ff0eb66e9ff97497dc719d0b9cea6008f3))
+- Remove the app folder as a path prefix instead of with ltrim() ([#2200](https://github.com/nWidart/laravel-modules/pull/2200)) ([a6b3ba6](https://github.com/nWidart/laravel-modules/commit/a6b3ba649bde07329247728e1b44f97728ad2dc1))
+- **make-migration:** Keep every field and reverse fields correctly in generated migrations ([#2202](https://github.com/nWidart/laravel-modules/pull/2202)) ([c00656a](https://github.com/nWidart/laravel-modules/commit/c00656aa184a6d988bd663ebd4d340e818a225b1))
+- **prune:** Resolve modules through the repository ([#2203](https://github.com/nWidart/laravel-modules/pull/2203)) ([26da9dc](https://github.com/nWidart/laravel-modules/commit/26da9dcac658db12ac2063a0a28490f9da60422b))
+- Fail clearly on bad activator config, corrupt statuses and unknown modules ([#2205](https://github.com/nWidart/laravel-modules/pull/2205)) ([c1a91e6](https://github.com/nWidart/laravel-modules/commit/c1a91e6de999e0df53c44badde2c2ff83b564d1e))
+- Build generated namespaces and paths from config ([#2207](https://github.com/nWidart/laravel-modules/pull/2207)) ([d19f7bb](https://github.com/nWidart/laravel-modules/commit/d19f7bbc5c149c7a848a57d6b0dea9a376f8ae13))
+- Register module aliases, fix module:list --only=priority and the module cache path ([#2206](https://github.com/nWidart/laravel-modules/pull/2206)) ([096ac14](https://github.com/nWidart/laravel-modules/commit/096ac1452df3b95a1bd199b3be73a326850e0a8a))
+- **make:** Stop module:make when generator paths are outside app_folder ([#2209](https://github.com/nWidart/laravel-modules/pull/2209)) ([7158607](https://github.com/nWidart/laravel-modules/commit/7158607530ab3dbed273f89a661384f455f52c7d))
+- **commands:** Return a failure status, validate modules up front and make migration commands safe ([#2212](https://github.com/nWidart/laravel-modules/pull/2212)) ([2930a41](https://github.com/nWidart/laravel-modules/commit/2930a4105bfbf9d61caea8d43266fe4b78259f97))
+- **install:** Keep composer.json and phpunit.xml intact and handle failed installs ([#2211](https://github.com/nWidart/laravel-modules/pull/2211)) ([0fb8ffb](https://github.com/nWidart/laravel-modules/commit/0fb8ffb91585eba86499fd0cdea0ffcd91e328ab))
+- **make:** Return errors from generators, add --force everywhere and reject paths outside the module ([#2210](https://github.com/nWidart/laravel-modules/pull/2210)) ([5404e9b](https://github.com/nWidart/laravel-modules/commit/5404e9b0ba2bc81e8e51c1eb772891814cff9e87))
+- **stubs:** Render stub placeholders in one pass and escape values per output format ([#2213](https://github.com/nWidart/laravel-modules/pull/2213)) ([828eb93](https://github.com/nWidart/laravel-modules/commit/828eb93d9dad1fbfeecb7f744adcb858df009fd1))
+- **make:** Stop module:make on invalid JSON stubs and report composer dump-autoload failures ([#2214](https://github.com/nWidart/laravel-modules/pull/2214)) ([824b33a](https://github.com/nWidart/laravel-modules/commit/824b33ac1e7870f86c6d2c95762bdca736ecfaca))
+- Fail module:lang on missing translations, read plural generator namespaces, fix --force help ([#2215](https://github.com/nWidart/laravel-modules/pull/2215)) ([200c8dc](https://github.com/nWidart/laravel-modules/commit/200c8dcb59af051df9f9092135b8c1c28e689196))
+- Skip routes removed from stubs.files in generated RouteServiceProvider ([#2216](https://github.com/nWidart/laravel-modules/pull/2216)) ([7155187](https://github.com/nWidart/laravel-modules/commit/71551873f956bcba17df5cbfc2839684b8fed647))
+- **events:** Discover module listeners with Laravel event discovery ([#2219](https://github.com/nWidart/laravel-modules/pull/2219)) ([2bb8b99](https://github.com/nWidart/laravel-modules/commit/2bb8b99d1bc58864b545fcbe15d280a4461abdab))
+- **make:** Skip stub files whose generator is disabled ([#2223](https://github.com/nWidart/laravel-modules/pull/2223)) ([7d77a57](https://github.com/nWidart/laravel-modules/commit/7d77a57f3b40e31202f52e864bab517d782dc4ca))
+- **make:** Reject root-mapped generator paths that mismatch their namespace ([#2225](https://github.com/nWidart/laravel-modules/pull/2225)) ([f59c6aa](https://github.com/nWidart/laravel-modules/commit/f59c6aa2d8be71ab5f9af72fcb0b4b537e40118f))
+- **make:** Keep fully qualified --event class in module:make-listener ([#2224](https://github.com/nWidart/laravel-modules/pull/2224)) ([a45a878](https://github.com/nWidart/laravel-modules/commit/a45a878d8a9b71af4e3275561f827128a179f034))
+- **migrations:** Use the same module migration paths in every module:migrate command ([#2226](https://github.com/nWidart/laravel-modules/pull/2226)) ([f273571](https://github.com/nWidart/laravel-modules/commit/f27357128d9658d929aad8a74691f73e4a20d33d))
+- **seed:** Warn when module:seed finds no seeder to run ([#2227](https://github.com/nWidart/laravel-modules/pull/2227)) ([87f0ad4](https://github.com/nWidart/laravel-modules/commit/87f0ad44620d5b024189336f46c7122620b9b96d))
+
+### Refactor
+
+- Deprecate the unused module boot/register chain and remove dead code ([#2204](https://github.com/nWidart/laravel-modules/pull/2204)) ([3a842c5](https://github.com/nWidart/laravel-modules/commit/3a842c5b8902b8232d9f48f6aab868b301298c92))
+
+### Documentation
+
+- Document the trail code map in AGENTS.md ([#2182](https://github.com/nWidart/laravel-modules/pull/2182)) ([c2818c7](https://github.com/nWidart/laravel-modules/commit/c2818c72a31e1db3430526067553768ed139bf6b))
+- Rewrite README and add social preview image ([#2194](https://github.com/nWidart/laravel-modules/pull/2194)) ([98922a5](https://github.com/nWidart/laravel-modules/commit/98922a5bd0ea40d380ced805114655de734573d9))
+- **agents:** Never use git stash in a worktree ([#2201](https://github.com/nWidart/laravel-modules/pull/2201)) ([e20271d](https://github.com/nWidart/laravel-modules/commit/e20271d7e7579e34d16e14954dfa57f758b0a4e9))
+
+### Other
+
+- Enable trail learnings ([7469469](https://github.com/nWidart/laravel-modules/commit/74694690235b90504163715afba7b80e77a2b8d4))
+- Run tests without coverage by default, add check/analyse scripts and a phpstan config ([#2208](https://github.com/nWidart/laravel-modules/pull/2208)) ([3137382](https://github.com/nWidart/laravel-modules/commit/313738282f8ebe0a078597d273ac35e24624a53c))
+- **phpstan:** Add Larastan to static analysis ([#2218](https://github.com/nWidart/laravel-modules/pull/2218)) ([44ae2d6](https://github.com/nWidart/laravel-modules/commit/44ae2d660cc060665339eabfe66551d75da8878b))
+- **phpstan:** Raise level to 5 ([#2222](https://github.com/nWidart/laravel-modules/pull/2222)) ([40a0821](https://github.com/nWidart/laravel-modules/commit/40a08212bfc0fc2ba059f709457844854aa68c75))
+
 ## 13.1.0 - 2026-10-25
 
 ### Security
