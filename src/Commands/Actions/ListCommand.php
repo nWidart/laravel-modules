@@ -68,7 +68,7 @@ class ListCommand extends Command
                 return $this->laravel['modules']->getByStatus(0);
 
             case 'priority':
-                return $this->laravel['modules']->getPriority($this->option('direction'));
+                return $this->laravel['modules']->getOrdered($this->option('direction'));
 
             default:
                 return $this->laravel['modules']->all();

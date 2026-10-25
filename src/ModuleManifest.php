@@ -3,6 +3,7 @@
 namespace Nwidart\Modules;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 
@@ -71,6 +72,34 @@ class ModuleManifest
             ->flatten()
             ->filter()
             ->toArray();
+    }
+
+    /**
+     * Get the class aliases of the enabled modules, keyed by alias name.
+     *
+     * Modules are read in priority order, so a later module wins when two modules declare the same alias.
+     *
+     * @return array<string, class-string>
+     */
+    public function getAliases(): array
+    {
+        return $this->getModulesData()
+            ->pluck('aliases')
+            ->filter(fn ($aliases) => is_array($aliases))
+            ->collapse()
+            ->all();
+    }
+
+    /**
+     * Register the class aliases of the enabled modules with Laravel's alias loader.
+     */
+    public function registerAliases(): void
+    {
+        $loader = AliasLoader::getInstance();
+
+        foreach ($this->getAliases() as $alias => $class) {
+            $loader->alias($alias, $class);
+        }
     }
 
     public function registerFiles(): void

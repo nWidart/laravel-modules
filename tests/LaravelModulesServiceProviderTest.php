@@ -2,11 +2,14 @@
 
 namespace Nwidart\Modules\Tests;
 
+use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Str;
 use Illuminate\Translation\Translator;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 use Nwidart\Modules\LaravelModulesServiceProvider;
+use Nwidart\Modules\ModuleManifest;
 use Nwidart\Modules\Support\Stub;
 use Orchestra\Testbench\Attributes\DefineEnvironment;
 use Orchestra\Testbench\Attributes\WithConfig;
@@ -109,6 +112,64 @@ class LaravelModulesServiceProviderTest extends BaseTestCase
         $this->assertSame($langPath, $translator->getLoader()->namespaces()['blog'] ?? null);
     }
 
+    public function test_it_registers_aliases_of_enabled_modules()
+    {
+        $this->createModule('Blog');
+        $this->setModuleJson('Blog', [
+            'providers' => [],
+            'aliases' => ['ModuleManifestTestBlogAlias' => Str::class],
+        ]);
+
+        $this->registerModules();
+
+        $this->assertSame(Str::class, AliasLoader::getInstance()->getAliases()['ModuleManifestTestBlogAlias'] ?? null);
+        $this->assertTrue(class_exists('ModuleManifestTestBlogAlias'));
+    }
+
+    public function test_it_does_not_register_aliases_of_disabled_modules()
+    {
+        $this->createModule('Blog');
+        $this->setModuleJson('Blog', [
+            'providers' => [],
+            'aliases' => ['ModuleManifestTestDisabledAlias' => Str::class],
+        ]);
+        $this->app[RepositoryInterface::class]->find('Blog')->disable();
+
+        $this->registerModules();
+
+        $this->assertArrayNotHasKey('ModuleManifestTestDisabledAlias', AliasLoader::getInstance()->getAliases());
+    }
+
+    public function test_module_manifest_cache_is_stored_next_to_the_services_cache_by_default()
+    {
+        $this->assertSame($this->app->bootstrapPath('cache/modules.php'), $this->cachedModulePath());
+    }
+
+    public function test_module_manifest_cache_never_overwrites_a_custom_services_cache_file()
+    {
+        // The file name does not end in "services.php", so a plain name replacement would return the services cache path.
+        $_SERVER['APP_SERVICES_CACHE'] = '/tmp/laravel-cache/services-cache.php';
+
+        try {
+            $this->assertSame('/tmp/laravel-cache/modules.php', $this->cachedModulePath());
+            $this->assertNotSame($this->app->getCachedServicesPath(), $this->cachedModulePath());
+        } finally {
+            unset($_SERVER['APP_SERVICES_CACHE']);
+        }
+    }
+
+    public function test_module_manifest_cache_is_stored_next_to_the_config_cache_in_vapor_maintenance_mode()
+    {
+        $this->app['config']->set('modules.vapor_maintenance_mode', true);
+        $_SERVER['APP_CONFIG_CACHE'] = '/tmp/storage/bootstrap/cache/config.php';
+
+        try {
+            $this->assertSame('/tmp/storage/bootstrap/cache/modules.php', $this->cachedModulePath());
+        } finally {
+            unset($_SERVER['APP_CONFIG_CACHE']);
+        }
+    }
+
     public function test_it_uses_package_stubs_when_custom_stubs_are_disabled()
     {
         // A published config sets the custom path before the provider runs.
@@ -155,6 +216,36 @@ class LaravelModulesServiceProviderTest extends BaseTestCase
     {
         $app['config']->set('modules.stubs.enabled', true);
         $app['config']->set('modules.stubs.path', __DIR__.'/stubs');
+    }
+
+    /**
+     * Run the provider's module registration again, so it picks up modules created by the test.
+     */
+    private function registerModules(): void
+    {
+        $this->app->forgetInstance(ModuleManifest::class);
+
+        $provider = $this->app->getProvider(LaravelModulesServiceProvider::class);
+
+        (fn () => $this->registerModules())->call($provider);
+    }
+
+    private function cachedModulePath(): string
+    {
+        $provider = $this->app->getProvider(LaravelModulesServiceProvider::class);
+
+        return (fn () => $this->getCachedModulePath())->call($provider);
+    }
+
+    private function setModuleJson(string $moduleName, array $attributes): void
+    {
+        $json = $this->app[RepositoryInterface::class]->find($moduleName)->json();
+
+        foreach ($attributes as $key => $value) {
+            $json->set($key, $value);
+        }
+
+        $json->save();
     }
 
     private function packageStubsPath(): string
