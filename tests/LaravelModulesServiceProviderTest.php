@@ -64,6 +64,28 @@ class LaravelModulesServiceProviderTest extends BaseTestCase
         $this->assertInstanceOf(ActivatorInterface::class, app(ActivatorInterface::class));
     }
 
+    public function test_it_throws_a_clear_exception_for_an_unknown_activator()
+    {
+        $this->app['config']->set('modules.activator', 'redis');
+        app()->forgetInstance(ActivatorInterface::class);
+
+        $this->expectException(InvalidActivatorClass::class);
+        $this->expectExceptionMessage('The modules activator [redis] is not defined.');
+
+        app(ActivatorInterface::class);
+    }
+
+    public function test_it_throws_a_clear_exception_when_the_activator_class_does_not_exist()
+    {
+        $this->app['config']->set('modules.activators.file.class', 'App\\Missing\\Activator');
+        app()->forgetInstance(ActivatorInterface::class);
+
+        $this->expectException(InvalidActivatorClass::class);
+        $this->expectExceptionMessage('The class [App\\Missing\\Activator] of the modules activator [file] does not exist.');
+
+        app(ActivatorInterface::class);
+    }
+
     public function test_it_does_not_auto_discover_module_translations_by_default()
     {
         $this->createModule('Blog');

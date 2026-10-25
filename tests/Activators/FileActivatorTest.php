@@ -4,8 +4,10 @@ namespace Nwidart\Modules\Tests\Activators;
 
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Activators\FileActivator;
+use Nwidart\Modules\Exceptions\InvalidJsonException;
 use Nwidart\Modules\Laravel\Module;
 use Nwidart\Modules\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Snapshots\MatchesSnapshots;
 
 class FileActivatorTest extends BaseTestCase
@@ -80,6 +82,63 @@ class FileActivatorTest extends BaseTestCase
     public function test_it_can_check_status_of_module_that_hasnt_been_enabled_or_disabled()
     {
         $this->assertTrue($this->activator->hasStatus($this->module, false));
+    }
+
+    public function test_it_throws_a_clear_exception_for_a_corrupt_statuses_file_and_keeps_it()
+    {
+        $path = $this->activator->getStatusesFilePath();
+        $this->finder->put($path, '{"Recipe": true,');
+
+        try {
+            new FileActivator($this->app);
+            $this->fail('A corrupt statuses file must not be read as empty.');
+        } catch (InvalidJsonException $exception) {
+            $this->assertStringContainsString("The module statuses file [{$path}] is not valid: Syntax error.", $exception->getMessage());
+        }
+
+        $this->assertSame('{"Recipe": true,', $this->finder->get($path));
+    }
+
+    public function test_it_throws_a_clear_exception_when_the_statuses_file_is_not_a_json_object()
+    {
+        $path = $this->activator->getStatusesFilePath();
+        $this->finder->put($path, '"Recipe"');
+
+        $this->expectException(InvalidJsonException::class);
+        $this->expectExceptionMessage("The module statuses file [{$path}] is not valid: Expected a JSON object.");
+
+        new FileActivator($this->app);
+    }
+
+    public function test_it_throws_a_clear_exception_when_the_statuses_file_is_a_json_list()
+    {
+        $path = $this->activator->getStatusesFilePath();
+        $this->finder->put($path, '[1,2]');
+
+        $this->expectException(InvalidJsonException::class);
+        $this->expectExceptionMessage("The module statuses file [{$path}] is not valid: Expected a JSON object.");
+
+        new FileActivator($this->app);
+    }
+
+    #[DataProvider('emptyStatusesFiles')]
+    public function test_it_reads_an_empty_statuses_file_as_no_statuses(string $contents)
+    {
+        $this->finder->put($this->activator->getStatusesFilePath(), $contents);
+
+        $activator = new FileActivator($this->app);
+
+        $this->assertTrue($activator->hasStatus($this->module, false));
+    }
+
+    public static function emptyStatusesFiles(): array
+    {
+        return [
+            'empty file' => [''],
+            'whitespace' => ["\n "],
+            'empty list' => ['[]'],
+            'empty object' => ['{}'],
+        ];
     }
 }
 

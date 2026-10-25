@@ -83,6 +83,35 @@ class LaravelFileRepositoryTest extends BaseTestCase
         $this->assertInstanceOf(Module::class, $this->repository->find('recipe'));
     }
 
+    public function test_it_finds_a_module_by_the_kebab_or_snake_name_it_was_made_with()
+    {
+        $this->createModule('zz-probe-mod');
+
+        $this->assertSame('ZzProbeMod', $this->repository->find('ZzProbeMod')?->getName());
+        $this->assertSame('ZzProbeMod', $this->repository->find('zzprobemod')?->getName());
+        $this->assertSame('ZzProbeMod', $this->repository->find('zz-probe-mod')?->getName());
+        $this->assertSame('ZzProbeMod', $this->repository->find('zz_probe_mod')?->getName());
+        $this->assertSame('ZzProbeMod', $this->repository->findOrFail('zz-probe-mod')->getName());
+        $this->assertTrue($this->repository->has('zz-probe-mod'));
+        $this->assertNull($this->repository->find('zz-other-mod'));
+        $this->assertFalse($this->repository->has('zz-other-mod'));
+    }
+
+    public function test_an_exact_module_name_match_wins_over_the_studly_fallback()
+    {
+        $this->createModule('BlogPost');
+
+        $location = sys_get_temp_dir().'/laravel-modules-'.uniqid();
+        $this->app['files']->ensureDirectoryExists($location.'/blog-post');
+        $this->app['files']->put($location.'/blog-post/module.json', json_encode(['name' => 'blog-post']));
+        $this->beforeApplicationDestroyed(fn () => $this->app['files']->deleteDirectory($location));
+        $this->repository->addLocation($location);
+
+        $this->assertSame('blog-post', $this->repository->find('blog-post')?->getName());
+        $this->assertSame('BlogPost', $this->repository->find('BlogPost')?->getName());
+        $this->assertSame('BlogPost', $this->repository->find('blog_post')?->getName());
+    }
+
     public function test_it_find_or_fail_throws_exception_if_module_not_found()
     {
         $this->expectException(ModuleNotFoundException::class);

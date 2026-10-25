@@ -80,10 +80,20 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         });
         $this->app->singleton(ActivatorInterface::class, function ($app) {
             $activator = $app['config']->get('modules.activator');
-            $class = $app['config']->get('modules.activators.'.$activator)['class'];
+            $activators = $app['config']->get('modules.activators');
+
+            if (! is_string($activator) || ! is_array($activators) || ! is_array($activators[$activator] ?? null)) {
+                throw InvalidActivatorClass::unknownActivator($activator);
+            }
+
+            $class = $activators[$activator]['class'] ?? null;
 
             if ($class === null) {
                 throw InvalidActivatorClass::missingConfig();
+            }
+
+            if (! class_exists($class)) {
+                throw InvalidActivatorClass::classNotFound($activator, $class);
             }
 
             return new $class($app);

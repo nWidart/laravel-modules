@@ -29,9 +29,14 @@ if (! function_exists('module')) {
 }
 
 if (! function_exists('module_path')) {
+    /**
+     * Get the path of a module, or of a file inside it.
+     *
+     * @throws ModuleNotFoundException
+     */
     function module_path(string $name, string $path = ''): string
     {
-        $module = app('modules')->find($name);
+        $module = app('modules')->findOrFail($name);
 
         return $module->getPath().($path ? DIRECTORY_SEPARATOR.$path : $path);
     }

@@ -183,7 +183,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function has($name): bool
     {
-        return array_key_exists(strtolower($name), $this->all());
+        return $this->find((string) $name) !== null;
     }
 
     /**
@@ -272,7 +272,11 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function find(string $name): ?Module
     {
-        return $this->all()[strtolower($name)] ?? null;
+        $modules = $this->all();
+
+        // An exact (case-insensitive) match wins. Otherwise try the studly name module:make
+        // gives a module, so kebab or snake names (blog-post, blog_post) find BlogPost.
+        return $modules[strtolower($name)] ?? $modules[strtolower(Str::studly($name))] ?? null;
     }
 
     /**
