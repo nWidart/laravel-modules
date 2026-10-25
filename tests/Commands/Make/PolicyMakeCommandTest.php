@@ -69,4 +69,16 @@ class PolicyMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+    public function test_it_uses_the_correct_namespace_for_a_lowercase_path_in_the_app_folder()
+    {
+        $this->app['config']->set('modules.paths.generator.policies.path', 'app/policies');
+
+        $code = $this->artisan('module:make-policy', ['name' => 'PostPolicy', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath.'/policies/PostPolicy.php');
+
+        $this->assertStringContainsString('namespace Modules\Blog\Policies;', $file);
+        $this->assertSame(0, $code);
+    }
 }

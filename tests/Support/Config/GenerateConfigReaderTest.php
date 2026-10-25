@@ -59,4 +59,21 @@ final class GenerateConfigReaderTest extends BaseTestCase
         $this->assertEquals('Base/Providers', $config->getPath());
         $this->assertEquals('Base\Providers', $config->getNamespace());
     }
+
+    public function test_it_strips_the_app_folder_as_a_prefix_not_a_character_set()
+    {
+        $this->app['config']->set('modules.paths.generator.actions', ['path' => 'app/actions', 'generate' => true]);
+
+        $this->assertEquals('Actions', GenerateConfigReader::read('actions')->getNamespace());
+    }
+
+    public function test_it_keeps_paths_outside_a_custom_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'domain/');
+        $this->app['config']->set('modules.paths.generator.factory', ['path' => 'database/factories', 'generate' => true]);
+        $this->app['config']->set('modules.paths.generator.model', 'domain/Models');
+
+        $this->assertEquals('Database\Factories', GenerateConfigReader::read('factory')->getNamespace());
+        $this->assertEquals('Models', GenerateConfigReader::read('model')->getNamespace());
+    }
 }

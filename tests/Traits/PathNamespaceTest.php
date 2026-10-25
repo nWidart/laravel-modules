@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Tests\Traits;
 
 use Nwidart\Modules\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class PathNamespaceTest extends BaseTestCase
 {
@@ -47,5 +48,33 @@ class PathNamespaceTest extends BaseTestCase
         $this->assertSame($configPath, $this->class->app_path());
         $this->assertSame($configPath, $this->class->app_path(null));
         $this->assertSame('app/blog/services', $this->class->app_path('blog/services'));
+    }
+
+    #[DataProvider('stripAppFolderProvider')]
+    public function test_strip_app_folder(?string $appFolder, ?string $path, string $expected)
+    {
+        $this->app['config']->set('modules.paths.app_folder', $appFolder);
+
+        $this->assertSame($expected, $this->class->strip_app_folder($path));
+    }
+
+    public static function stripAppFolderProvider(): array
+    {
+        return [
+            'prefix with trailing slash' => ['app/', 'app/Http/Controllers', 'Http/Controllers'],
+            'prefix without trailing slash' => ['app', 'app/Http/Controllers', 'Http/Controllers'],
+            'lowercase segment after prefix' => ['app/', 'app/actions', 'actions'],
+            'path equal to app folder' => ['app/', 'app', ''],
+            'path without the prefix' => ['app/', 'Http/Controllers', 'Http/Controllers'],
+            'same leading characters, other segment' => ['app/', 'application/Foo', 'application/Foo'],
+            'app folder only matches mid-path' => ['app/', 'src/app/Foo', 'src/app/Foo'],
+            'custom app folder keeps other paths' => ['domain/', 'database/factories', 'database/factories'],
+            'custom app folder is stripped' => ['domain/', 'domain/Models', 'Models'],
+            'nested app folder' => ['src/app/', 'src/app/Models', 'Models'],
+            'leading slash in app folder' => ['/src/', 'src/Models', 'Models'],
+            'null app folder' => [null, 'app/Models', 'app/Models'],
+            'empty app folder' => ['', 'app/Models', 'app/Models'],
+            'null path' => ['app/', null, ''],
+        ];
     }
 }
