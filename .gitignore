@@ -6,6 +6,7 @@ build
 coverage
 .php_cs.cache
 .phpunit.result.cache
+.phpunit.cache
 .idea
 .vscode
 .php-cs-fixer.cache

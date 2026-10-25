@@ -13,6 +13,7 @@ Please review these guidelines before submitting any pull requests.
 ## Guidelines
 
 * Format the code with `composer lint` (Pint).
+* Run `composer check` before opening a pull request.
 * Pull requests should be accompanied by passing tests.
 * Please remember ensure you commit to the correct major version, IE v11 for Laravel 11.
 * Commit messages must follow [Conventional Commits](#commit-messages).
@@ -31,7 +32,14 @@ composer lint
 ```
 CI runs Pint on every pull request. On pull requests from this repository it commits the fixes for you.
 
-Do not use `composer pcf`: its php-cs-fixer rules differ from Pint.
+To check style without changing files, run `composer lint:check`.
+
+## Before opening a pull request
+
+```bash
+composer check
+```
+This runs `composer lint:check`, `composer analyse`, and `composer test`. CI runs the same checks.
 
 ## Tests
 
@@ -40,7 +48,18 @@ Run all tests:
 composer test
 ```
 
-Check coverage:
+Run static analysis with PHPStan:
+```bash
+composer analyse
+```
+
+Rewrite the snapshot files after an intended change to generated output, then review the diff:
+```bash
+composer update-snapshots
+```
+To limit it to one test file, run `composer update-snapshots -- tests/Commands/Make/ControllerMakeCommandTest.php`.
+
+Check coverage (needs Xdebug or PCOV). The HTML report is written to `build/coverage`:
 ```bash
 composer test-coverage
 ```

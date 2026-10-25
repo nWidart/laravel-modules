@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Exceptions;
 
+/** @phpstan-consistent-constructor */
 class InvalidActivatorClass extends \Exception
 {
     public static function missingConfig()

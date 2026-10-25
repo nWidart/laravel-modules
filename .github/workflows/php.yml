@@ -44,7 +44,28 @@ jobs:
           dependency-versions: highest
 
       - name: Run test suite
-        run: vendor/bin/phpunit --no-coverage
+        run: composer test
+
+  phpstan:
+    name: PHPStan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v4
+        with:
+          dependency-versions: highest
+
+      - name: Run PHPStan
+        run: composer analyse
 
   phplint:
     name: Pint
@@ -76,11 +97,11 @@ jobs:
 
       - name: Fix code style
         if: env.IS_FORK != 'true'
-        run: vendor/bin/pint
+        run: composer lint
 
       - name: Check code style
         if: env.IS_FORK == 'true'
-        run: vendor/bin/pint --test
+        run: composer lint:check
 
       - name: Commit changes
         if: env.IS_FORK != 'true'

@@ -8,6 +8,9 @@ use Nwidart\Modules\Generators\FileGenerator;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Traits\PathNamespace;
 
+/**
+ * @method string getModuleName() Provided by Traits\ModuleCommandTrait.
+ */
 abstract class GeneratorCommand extends Command
 {
     use PathNamespace;
