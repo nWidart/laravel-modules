@@ -2,12 +2,11 @@
 
 namespace Modules\Blog\Jobs;
 
-use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class SomeJob implements ShouldQueue
+class SomeJob
 {
-    use Dispatchable, Queueable;
+    use Dispatchable;
 
     /**
      * Create a new job instance.
