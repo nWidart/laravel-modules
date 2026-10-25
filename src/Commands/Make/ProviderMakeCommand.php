@@ -86,7 +86,28 @@ class ProviderMakeCommand extends GeneratorCommand
             'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
             'PATH_CONFIG' => GenerateConfigReader::read('config')->getPath(),
             'FACTORIES_PATH' => GenerateConfigReader::read('factory')->getPath(),
+            'PROVIDERS' => $this->getProvidersReplacement(),
         ]))->render();
+    }
+
+    /**
+     * Render the entries of the master provider's $providers array,
+     * listing only the sub-providers that module:make generates.
+     */
+    private function getProvidersReplacement(): string
+    {
+        $providers = array_filter([
+            'EventServiceProvider' => GenerateConfigReader::read('event-provider')->generatesWith(true),
+            'RouteServiceProvider' => GenerateConfigReader::read('route-provider')->generatesWith(true),
+        ]);
+
+        if ($providers === []) {
+            return '';
+        }
+
+        $lines = array_map(fn (string $provider) => "        {$provider}::class,", array_keys($providers));
+
+        return "\n".implode("\n", $lines)."\n    ";
     }
 
     /**
