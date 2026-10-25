@@ -9,13 +9,20 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use InvalidArgumentException;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ModelPruneCommandTest extends BaseTestCase
 {
     private RepositoryInterface $repository;
 
     private ?Closure $autoloader = null;
+
+    /**
+     * @var array<string, string>
+     */
+    private array $autoload_map = [];
 
     protected function setUp(): void
     {
@@ -31,6 +38,11 @@ class ModelPruneCommandTest extends BaseTestCase
         }
 
         $this->repository->delete('Blog');
+
+        if ($this->repository->find('Shop')) {
+            $this->repository->delete('Shop');
+        }
+
         parent::tearDown();
     }
 
@@ -66,12 +78,109 @@ class ModelPruneCommandTest extends BaseTestCase
         $this->assertStringContainsString('No prunable models found.', $this->commandOutput());
     }
 
-    public function test_it_reports_nothing_prunable_for_an_unknown_module()
+    public function test_it_fails_for_an_unknown_module()
     {
-        $code = $this->artisan('module:prune', ['module' => ['Unknown'], '--no-interaction' => true]);
+        $this->expectException(ModuleNotFoundException::class);
+        $this->expectExceptionMessage('Module [Nope] does not exist!');
+
+        $this->artisan('module:prune', ['module' => ['Nope'], '--no-interaction' => true]);
+    }
+
+    public function test_it_fails_for_an_unknown_module_before_pruning_a_known_one()
+    {
+        $this->createPrunableModel('Modules\Blog\Models', 'KnownPost', 'app/Models');
+
+        try {
+            $this->artisan('module:prune', ['module' => ['Blog', 'Nope'], '--no-interaction' => true]);
+            $this->fail('Expected a ModuleNotFoundException.');
+        } catch (ModuleNotFoundException $e) {
+            $this->assertSame('Module [Nope] does not exist!', $e->getMessage());
+        }
+
+        $this->assertSame(1, DB::table('knownposts')->count());
+    }
+
+    public function test_it_fails_for_an_unknown_module_when_models_are_given()
+    {
+        $this->createPrunableModel('Modules\Blog\Models', 'GivenPost', 'app/Models');
+
+        try {
+            $this->artisan('module:prune', [
+                'module' => ['Nope'],
+                '--model' => ['Modules\Blog\Models\GivenPost'],
+                '--no-interaction' => true,
+            ]);
+            $this->fail('Expected a ModuleNotFoundException.');
+        } catch (ModuleNotFoundException $e) {
+            $this->assertSame('Module [Nope] does not exist!', $e->getMessage());
+        }
+
+        $this->assertSame(1, DB::table('givenposts')->count());
+    }
+
+    #[DataProvider('casedModuleNameProvider')]
+    public function test_it_resolves_a_differently_cased_module_name_to_the_module_path_and_namespace(string $name)
+    {
+        $this->createPrunableModel('Modules\Blog\Models', 'LowerPost', 'app/Models');
+
+        $code = $this->artisan('module:prune', ['module' => [$name], '--pretend' => true, '--no-interaction' => true]);
 
         $this->assertSame(0, $code);
-        $this->assertStringContainsString('No prunable models found.', $this->commandOutput());
+        $this->assertStringContainsString('1 [Modules\Blog\Models\LowerPost] records will be pruned.', $this->commandOutput());
+    }
+
+    public static function casedModuleNameProvider(): array
+    {
+        // On a case-sensitive filesystem the raw argument would point at a missing directory.
+        // "BLOG" also fails on a case-insensitive one, where the old namespace came from the argument.
+        return [
+            'lowercase' => ['blog'],
+            'uppercase' => ['BLOG'],
+        ];
+    }
+
+    public function test_all_prunes_enabled_modules_only_and_skips_disabled_modules()
+    {
+        $this->createModule('Shop');
+        $this->repository->find('Shop')->disable();
+        $this->createPrunableModel('Modules\Blog\Models', 'EnabledPost', 'app/Models');
+        $this->createPrunableModel('Modules\Shop\Models', 'DisabledOrder', 'app/Models', 'Shop');
+
+        $code = $this->artisan('module:prune', ['--all' => true, '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $output = $this->commandOutput();
+        $this->assertStringContainsString('Modules\Blog\Models\EnabledPost', $output);
+        $this->assertStringNotContainsString('DisabledOrder', $output);
+        $this->assertSame(0, DB::table('enabledposts')->count());
+        $this->assertSame(1, DB::table('disabledorders')->count());
+    }
+
+    public function test_all_with_pretend_lists_enabled_modules_only()
+    {
+        $this->createModule('Shop');
+        $this->repository->find('Shop')->disable();
+        $this->createPrunableModel('Modules\Blog\Models', 'PretendPost', 'app/Models');
+        $this->createPrunableModel('Modules\Shop\Models', 'PretendOrder', 'app/Models', 'Shop');
+
+        $code = $this->artisan('module:prune', ['--all' => true, '--pretend' => true, '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $output = $this->commandOutput();
+        $this->assertStringContainsString('1 [Modules\Blog\Models\PretendPost] records will be pruned.', $output);
+        $this->assertStringNotContainsString('PretendOrder', $output);
+    }
+
+    public function test_it_prunes_a_disabled_module_given_by_name()
+    {
+        $this->createModule('Shop');
+        $this->repository->find('Shop')->disable();
+        $this->createPrunableModel('Modules\Shop\Models', 'NamedOrder', 'app/Models', 'Shop');
+
+        $code = $this->artisan('module:prune', ['module' => ['Shop'], '--pretend' => true, '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertStringContainsString('1 [Modules\Shop\Models\NamedOrder] records will be pruned.', $this->commandOutput());
     }
 
     public function test_it_discovers_prunable_models_in_a_named_module()
@@ -176,11 +285,11 @@ class ModelPruneCommandTest extends BaseTestCase
     }
 
     /**
-     * Write a prunable model with one prunable row into the Blog module.
+     * Write a prunable model with one prunable row into a module.
      */
-    private function createPrunableModel(string $namespace, string $class, string $path): void
+    private function createPrunableModel(string $namespace, string $class, string $path, string $module = 'Blog'): void
     {
-        $this->createModel($namespace, $class, $path);
+        $this->createModel($namespace, $class, $path, module: $module);
 
         $table = strtolower($class).'s';
         Schema::create($table, fn (Blueprint $table) => $table->id());
@@ -188,15 +297,15 @@ class ModelPruneCommandTest extends BaseTestCase
     }
 
     /**
-     * Write a model into the Blog module and autoload the module root namespace from it.
+     * Write a model into a module and autoload the module root namespace from it.
      */
-    private function createModel(string $namespace, string $class, string $path, bool $prunable = true): void
+    private function createModel(string $namespace, string $class, string $path, bool $prunable = true, string $module = 'Blog'): void
     {
         $prunable_trait = $prunable ? 'use \Illuminate\Database\Eloquent\Prunable;' : '';
         $table = strtolower($class).'s';
 
-        $this->app['files']->ensureDirectoryExists(base_path("modules/Blog/{$path}"));
-        $this->app['files']->put(base_path("modules/Blog/{$path}/{$class}.php"), <<<PHP
+        $this->app['files']->ensureDirectoryExists(base_path("modules/{$module}/{$path}"));
+        $this->app['files']->put(base_path("modules/{$module}/{$path}/{$class}.php"), <<<PHP
             <?php
 
             namespace {$namespace};
@@ -217,9 +326,11 @@ class ModelPruneCommandTest extends BaseTestCase
             }
             PHP);
 
+        $root_namespace = str_contains($namespace, 'Custom') ? 'Custom\Modules' : 'Modules';
+
         $this->registerAutoloader(
-            str_contains($namespace, 'Custom') ? 'Custom\Modules\Blog\\' : 'Modules\Blog\\',
-            base_path('modules/Blog/'.strtok($path, '/'))
+            "{$root_namespace}\\{$module}\\",
+            base_path("modules/{$module}/".strtok($path, '/'))
         );
     }
 
@@ -228,19 +339,25 @@ class ModelPruneCommandTest extends BaseTestCase
      */
     private function registerAutoloader(string $prefix, string $directory): void
     {
+        $this->autoload_map[$prefix] ??= $directory;
+
         if ($this->autoloader) {
             return;
         }
 
-        $this->autoloader = function (string $class) use ($prefix, $directory) {
-            if (! str_starts_with($class, $prefix)) {
-                return;
-            }
+        $this->autoloader = function (string $class) {
+            foreach ($this->autoload_map as $prefix => $directory) {
+                if (! str_starts_with($class, $prefix)) {
+                    continue;
+                }
 
-            $file = $directory.'/'.str_replace('\\', '/', substr($class, strlen($prefix))).'.php';
+                $file = $directory.'/'.str_replace('\\', '/', substr($class, strlen($prefix))).'.php';
 
-            if (is_file($file)) {
-                require $file;
+                if (is_file($file)) {
+                    require $file;
+
+                    return;
+                }
             }
         };
 
