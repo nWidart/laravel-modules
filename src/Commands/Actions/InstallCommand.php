@@ -128,10 +128,32 @@ class InstallCommand extends Command
             return false;
         }
 
-        if (! $this->option('no-update')) {
-            $this->call('module:update', [
-                'module' => $installer->getModuleName(),
-            ]);
+        if ($this->option('no-update')) {
+            return true;
+        }
+
+        $module = $installer->getInstalledModuleName();
+        $repository = $this->laravel['modules'];
+
+        // The repository caches its scan outside of tests: rescan to see the new module.
+        if (method_exists($repository, 'resetModules')) {
+            $repository->resetModules();
+        }
+
+        if ($repository->find($module) === null) {
+            $this->error("Module [{$module}] was installed, but the modules repository cannot find it, so module:update was skipped. Make sure its folder is in a scanned modules path, then run: php artisan module:update {$module}");
+
+            return false;
+        }
+
+        $code = $this->call('module:update', [
+            'module' => $module,
+        ]);
+
+        if ($code !== self::SUCCESS) {
+            $this->error("Module [{$module}] was installed, but module:update failed (exit code {$code}).");
+
+            return false;
         }
 
         return true;

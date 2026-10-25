@@ -105,9 +105,14 @@ class Installer
 
     /**
      * Run the installation process.
+     *
+     * When a subtree install fails, the git remote it added is removed again,
+     * so the install can be retried. A remote that existed before is kept.
      */
     public function run(): Process
     {
+        $addsRemote = $this->installsViaSubtree() && $this->getSubtreeRemoteUrl() === null;
+
         $process = $this->getProcess();
 
         $process->setTimeout($this->timeout);
@@ -118,6 +123,10 @@ class Installer
             $console->line($line);
         });
 
+        if ($addsRemote && ! $process->isSuccessful()) {
+            $this->removeSubtreeRemote();
+        }
+
         return $process;
     }
 
@@ -126,7 +135,7 @@ class Installer
      */
     public function getProcess(): Process
     {
-        if ($this->type !== null && $this->type !== '' && $this->type !== 'composer') {
+        if ($this->installsViaGit()) {
             if ($this->tree) {
                 return $this->installViaSubtree();
             }
@@ -209,6 +218,31 @@ class Installer
     }
 
     /**
+     * Get the name of the installed module.
+     *
+     * For git and subtree installs, this is the `name` in the module.json of
+     * the installed folder, which may differ from the package name: the
+     * repository finds modules by that name. Otherwise, or when the file has
+     * no name, this is getModuleName().
+     */
+    public function getInstalledModuleName(): string
+    {
+        if ($this->installsViaGit()) {
+            $manifest = $this->getInstalledPath().DIRECTORY_SEPARATOR.'module.json';
+
+            if (is_file($manifest)) {
+                $name = json_decode((string) file_get_contents($manifest), true)['name'] ?? null;
+
+                if (is_string($name) && $name !== '') {
+                    return $name;
+                }
+            }
+        }
+
+        return $this->getModuleName();
+    }
+
+    /**
      * Get composer package name.
      */
     public function getPackageName(): string
@@ -245,16 +279,27 @@ class Installer
      *
      * The values are passed as process environment placeholders, so Symfony
      * escapes each one as a single argument instead of interpolating it into
-     * the shell command line.
+     * the shell command line. An existing remote with the same URL is reused.
+     *
+     * @throws InvalidArgumentException When a remote with the module name points to another URL.
      */
     public function installViaSubtree(): Process
     {
+        $url = $this->getValidatedRepoUrl();
+        $remoteUrl = $this->getSubtreeRemoteUrl();
+
+        if ($remoteUrl !== null && $remoteUrl !== $url) {
+            throw new InvalidArgumentException("The git remote [{$this->getModuleName()}] already exists with URL [{$remoteUrl}], not [{$url}]. Remove or rename it, then retry.");
+        }
+
+        $subtree = 'git subtree add --prefix="${:MODULE_PATH}" --squash "${:MODULE_NAME}" "${:MODULE_BRANCH}"';
+
         return Process::fromShellCommandline(
-            'git remote add -- "${:MODULE_NAME}" "${:MODULE_REPO_URL}" && git subtree add --prefix="${:MODULE_PATH}" --squash "${:MODULE_NAME}" "${:MODULE_BRANCH}"',
+            $remoteUrl === null ? 'git remote add -- "${:MODULE_NAME}" "${:MODULE_REPO_URL}" && '.$subtree : $subtree,
             base_path(),
             [
                 'MODULE_NAME' => $this->getModuleName(),
-                'MODULE_REPO_URL' => $this->getValidatedRepoUrl(),
+                'MODULE_REPO_URL' => $url,
                 'MODULE_PATH' => $this->getSubtreePrefix(),
                 'MODULE_BRANCH' => $this->getValidatedBranch(),
             ]
@@ -288,8 +333,9 @@ class Installer
     /**
      * Get the subtree prefix, relative to the project root.
      *
-     * `git subtree add` runs in base_path() and rejects an absolute prefix,
-     * so an absolute destination must live inside the project.
+     * `git subtree add` runs in base_path() and rejects a prefix outside the
+     * repository, so the destination must live inside the project. `.` and `..`
+     * segments are resolved first, so `../x` fails here with a clear message.
      *
      * @throws InvalidArgumentException
      */
@@ -297,10 +343,9 @@ class Installer
     {
         $destination = $this->getDestinationPath();
         $path = str_replace('\\', '/', $destination);
+        $base = rtrim(str_replace('\\', '/', base_path()), '/').'/';
 
         if (str_starts_with($path, '/') || preg_match('#^[A-Za-z]:/#', $path) === 1) {
-            $base = rtrim(str_replace('\\', '/', base_path()), '/').'/';
-
             if (! str_starts_with($path, $base)) {
                 throw new InvalidArgumentException("Subtree destination [{$destination}] for module [{$this->name}] must be inside the project [{$base}].");
             }
@@ -308,13 +353,87 @@ class Installer
             $path = substr($path, strlen($base));
         }
 
-        $prefix = rtrim($path, '/');
+        $segments = [];
 
-        if ($prefix === '') {
+        foreach (explode('/', $path) as $segment) {
+            if ($segment === '' || $segment === '.') {
+                continue;
+            }
+
+            if ($segment !== '..') {
+                $segments[] = $segment;
+
+                continue;
+            }
+
+            if ($segments === []) {
+                throw new InvalidArgumentException("Subtree destination [{$destination}] for module [{$this->name}] must be inside the project [{$base}].");
+            }
+
+            array_pop($segments);
+        }
+
+        if ($segments === []) {
             throw new InvalidArgumentException("Invalid subtree destination [{$destination}] for module [{$this->name}].");
         }
 
-        return $prefix;
+        return implode('/', $segments);
+    }
+
+    /**
+     * Get the absolute path of a git or subtree install. The processes run in
+     * base_path(), so a relative destination is relative to the project.
+     */
+    protected function getInstalledPath(): string
+    {
+        $path = $this->tree ? $this->getSubtreePrefix() : $this->getDestinationPath();
+
+        if (str_starts_with($path, '/') || str_starts_with($path, '\\') || preg_match('#^[A-Za-z]:[\\\\/]#', $path) === 1) {
+            return rtrim($path, '/\\');
+        }
+
+        return base_path(rtrim($path, '/\\'));
+    }
+
+    /**
+     * Determine whether the module is installed from a git repository.
+     */
+    protected function installsViaGit(): bool
+    {
+        return $this->type !== null && $this->type !== '' && $this->type !== 'composer';
+    }
+
+    /**
+     * Determine whether the module is installed as a git subtree.
+     */
+    protected function installsViaSubtree(): bool
+    {
+        return $this->tree && $this->installsViaGit();
+    }
+
+    /**
+     * Get the URL of the project git remote named after the module, null when there is none.
+     */
+    protected function getSubtreeRemoteUrl(): ?string
+    {
+        $process = new Process(['git', 'remote', 'get-url', '--', $this->getModuleName()], base_path());
+        $process->run();
+
+        if (! $process->isSuccessful()) {
+            return null;
+        }
+
+        $url = trim($process->getOutput());
+
+        return $url === '' ? null : $url;
+    }
+
+    /**
+     * Remove the project git remote named after the module.
+     */
+    protected function removeSubtreeRemote(): void
+    {
+        (new Process(['git', 'remote', 'remove', '--', $this->getModuleName()], base_path()))->run();
     }
 
     /**

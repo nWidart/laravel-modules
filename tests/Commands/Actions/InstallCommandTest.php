@@ -7,8 +7,10 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Laravel\LaravelFileRepository;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Nwidart\Modules\Tests\Process\Concerns\CreatesLocalGitRepository;
+use Symfony\Component\Process\Process;
 
 class InstallCommandTest extends BaseTestCase
 {
@@ -31,6 +33,9 @@ class InstallCommandTest extends BaseTestCase
         $this->repoUrl = $this->createBareRepository();
         $this->destination = $this->tmpDir.DIRECTORY_SEPARATOR.'install dir'.DIRECTORY_SEPARATOR.'Blog';
 
+        // module:install updates only modules the repository finds, so scan the install dir.
+        $this->app[RepositoryInterface::class]->addLocation(dirname($this->destination));
+
         $this->updateCommand = new class extends Command
         {
             protected $signature = 'module:update {module?*}';
@@ -38,11 +43,13 @@ class InstallCommandTest extends BaseTestCase
             /** @var list<string> */
             public array $updated = [];
 
+            public int $exitCode = self::SUCCESS;
+
             public function handle(): int
             {
                 array_push($this->updated, ...(array) $this->argument('module'));
 
-                return self::SUCCESS;
+                return $this->exitCode;
             }
         };
 
@@ -54,6 +61,7 @@ class InstallCommandTest extends BaseTestCase
         $this->deleteTmpDir();
         @unlink(base_path('modules.json'));
         (new Filesystem)->deleteDirectory($this->app[RepositoryInterface::class]->getModulePath('Blog'));
+        (new Filesystem)->deleteDirectory(base_path('modules/BlogModule'));
 
         parent::tearDown();
     }
@@ -190,5 +198,121 @@ class InstallCommandTest extends BaseTestCase
         $this->assertTrue($process->isSuccessful(), $process->getErrorOutput());
         $this->assertFileExists($destination.'module.json');
         $this->assertSame('master', $this->currentBranch($destination));
+    }
+
+    public function test_repository_install_without_a_version_checks_out_master_via_git()
+    {
+        $this->addBranchToBareRepository('master');
+        $repository = $this->app[RepositoryInterface::class];
+        $destination = $repository->getModulePath('Blog');
+
+        $process = $repository->install('acme/blog', type: $this->repoUrl);
+
+        $this->assertTrue($process->isSuccessful(), $process->getErrorOutput());
+        $this->assertSame('master', $process->getEnv()['MODULE_BRANCH']);
+        $this->assertSame('master', $this->currentBranch($destination));
+    }
+
+    public function test_repository_install_keeps_an_explicit_version()
+    {
+        $repository = $this->app[RepositoryInterface::class];
+
+        $process = $repository->install('acme/blog', 'develop', $this->repoUrl);
+
+        $this->assertTrue($process->isSuccessful(), $process->getErrorOutput());
+        $this->assertSame('develop', $this->currentBranch($repository->getModulePath('Blog')));
+    }
+
+    public function test_repository_install_subclasses_with_the_previous_signature_stay_compatible()
+    {
+        $repository = new class($this->app) extends LaravelFileRepository
+        {
+            public function install(string $name, string $version = 'dev-master', string $type = 'composer', bool $subtree = false): Process
+            {
+                return parent::install($name, $version, $type, $subtree);
+            }
+        };
+
+        $this->assertInstanceOf(LaravelFileRepository::class, $repository);
+    }
+
+    public function test_it_updates_the_module_named_in_module_json_when_the_folder_name_differs()
+    {
+        $code = $this->artisan('module:install', [
+            'name' => 'acme/blog-module',
+            'version' => 'develop',
+            '--type' => $this->repoUrl,
+        ]);
+
+        $this->assertSame(0, $code);
+        $this->assertFileExists(base_path('modules/BlogModule/module.json'));
+        $this->assertSame(['Blog'], $this->updateCommand->updated);
+    }
+
+    public function test_a_module_installed_outside_the_scanned_paths_fails_with_a_clear_message()
+    {
+        $destination = $this->tmpDir.DIRECTORY_SEPARATOR.'elsewhere'.DIRECTORY_SEPARATOR.'Blog';
+
+        $code = $this->artisan('module:install', [
+            'name' => 'acme/blog',
+            'version' => 'develop',
+            '--type' => $this->repoUrl,
+            '--path' => $destination,
+        ]);
+
+        $this->assertSame(1, $code);
+        $this->assertFileExists($destination.DIRECTORY_SEPARATOR.'module.json');
+        $this->assertStringContainsString(
+            'Module [Blog] was installed, but the modules repository cannot find it, so module:update was skipped.',
+            Artisan::output()
+        );
+        $this->assertSame([], $this->updateCommand->updated);
+    }
+
+    public function test_no_update_skips_the_module_lookup()
+    {
+        $destination = $this->tmpDir.DIRECTORY_SEPARATOR.'elsewhere'.DIRECTORY_SEPARATOR.'Blog';
+
+        $code = $this->artisan('module:install', [
+            'name' => 'acme/blog',
+            'version' => 'develop',
+            '--type' => $this->repoUrl,
+            '--path' => $destination,
+            '--no-update' => true,
+        ]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame([], $this->updateCommand->updated);
+    }
+
+    public function test_a_failed_update_exits_with_failure()
+    {
+        $this->updateCommand->exitCode = Command::FAILURE;
+
+        $code = $this->artisan('module:install', [
+            'name' => 'acme/blog',
+            'version' => 'develop',
+            '--type' => $this->repoUrl,
+            '--path' => $this->destination,
+        ]);
+
+        $this->assertSame(1, $code);
+        $this->assertSame(['Blog'], $this->updateCommand->updated);
+        $this->assertStringContainsString('Module [Blog] was installed, but module:update failed (exit code 1).', Artisan::output());
+    }
+
+    public function test_modules_json_reports_a_failed_update()
+    {
+        $this->updateCommand->exitCode = Command::FAILURE;
+        file_put_contents(base_path('modules.json'), json_encode([
+            'require' => [
+                ['name' => 'acme/blog', 'version' => 'develop', 'type' => $this->repoUrl],
+            ],
+        ]));
+
+        $code = $this->artisan('module:install', ['--path' => $this->destination]);
+
+        $this->assertSame(1, $code);
+        $this->assertSame(['Blog'], $this->updateCommand->updated);
     }
 }
