@@ -27,6 +27,24 @@ class LaravelModulesServiceProviderTest extends BaseTestCase
         $this->assertInstanceOf(RepositoryInterface::class, app('modules'));
     }
 
+    public function test_it_registers_repository_as_a_shared_instance()
+    {
+        $this->assertTrue($this->app->isShared(RepositoryInterface::class));
+        $this->assertSame(app('modules'), app('modules'));
+        $this->assertSame(app('modules'), app(RepositoryInterface::class));
+    }
+
+    public function test_shared_repository_follows_configured_modules_path()
+    {
+        $repository = app(RepositoryInterface::class);
+
+        $this->assertSame(config('modules.paths.modules'), $repository->getPath());
+
+        config(['modules.paths.modules' => base_path('custom-modules')]);
+
+        $this->assertSame(base_path('custom-modules'), app(RepositoryInterface::class)->getPath());
+    }
+
     public function test_it_binds_activator_to_activator_class()
     {
         $this->assertInstanceOf(ActivatorInterface::class, app(ActivatorInterface::class));
