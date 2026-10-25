@@ -19,14 +19,14 @@ class GeneratorPath
         if (is_array($config)) {
             $this->path = $config['path'];
             $this->generate = $config['generate'];
-            $this->namespace = $config['namespace'] ?? $this->path_namespace(ltrim($config['path'], config('modules.paths.app_folder', '')));
+            $this->namespace = $config['namespace'] ?? $this->path_namespace($this->strip_app_folder((string) $config['path']));
 
             return;
         }
 
         $this->path = $config;
         $this->generate = (bool) $config;
-        $this->namespace = $this->path_namespace(ltrim($config, config('modules.paths.app_folder', '')));
+        $this->namespace = $this->path_namespace($this->strip_app_folder((string) $config));
     }
 
     public function getPath()

@@ -72,7 +72,7 @@ class ReplacementMakeCommand extends GeneratorCommand
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.command_replacements.namespace')
-            ?? ltrim(config('modules.paths.generator.command_replacements.path', 'Console/Replacements'), config('modules.paths.app_folder', ''));
+            ?? $this->strip_app_folder(config('modules.paths.generator.command_replacements.path', 'Console/Replacements'));
     }
 
     protected function getStubName(): string

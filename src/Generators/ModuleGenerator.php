@@ -625,7 +625,7 @@ class ModuleGenerator extends Generator
         if ($this->module->config('paths.generator.controller.namespace')) {
             return $this->module->config('paths.generator.controller.namespace');
         } else {
-            return $this->path_namespace(ltrim($this->module->config('paths.generator.controller.path', 'app/Http/Controllers'), config('modules.paths.app_folder')));
+            return $this->path_namespace($this->strip_app_folder($this->module->config('paths.generator.controller.path', 'app/Http/Controllers')));
         }
     }
 

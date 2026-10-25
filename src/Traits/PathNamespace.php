@@ -50,6 +50,31 @@ trait PathNamespace
     }
 
     /**
+     * Remove the configured app folder (modules.paths.app_folder) from the start of a path.
+     *
+     * Only a whole leading segment is removed: with app folder "app/", "app/Actions" becomes
+     * "Actions", while "application/Foo" stays as it is.
+     * A null or empty app folder leaves the path unchanged.
+     */
+    public function strip_app_folder(?string $path): string
+    {
+        $path = (string) $path;
+        $app_folder = trim((string) config('modules.paths.app_folder'), '/');
+
+        if ($app_folder === '') {
+            return $path;
+        }
+
+        if ($path === $app_folder) {
+            return '';
+        }
+
+        return str_starts_with($path, $app_folder.'/')
+            ? substr($path, strlen($app_folder) + 1)
+            : $path;
+    }
+
+    /**
      * Get the app path basename.
      */
     public function app_path(?string $path = null): string
