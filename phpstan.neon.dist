@@ -3,8 +3,16 @@ includes:
 
 parameters:
     level: 5
+    # Analyse against the package's supported PHP range (composer.json "php": "^8.3",
+    # CI tests 8.3 to 8.5) instead of the PHP running PHPStan, so local runs match CI.
+    # PHPStan uses min for version-dependent rules and the range for PHP_VERSION_ID checks.
+    phpVersion:
+        min: 80300
+        max: 80599
     paths:
         - src
+    stubFiles:
+        - phpstan/stubs/Factory.stub
     ignoreErrors:
         # Lumen is supported (src/Lumen, LumenModulesServiceProvider) but cannot be installed
         # alongside Laravel in dev, so its classes are unknown to PHPStan.

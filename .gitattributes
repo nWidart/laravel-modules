@@ -6,6 +6,7 @@
 /.gitattributes     export-ignore
 /.gitignore         export-ignore
 /phpstan.neon.dist  export-ignore
+/phpstan            export-ignore
 /pint.json          export-ignore
 /phpunit.xml.dist   export-ignore
 /tests              export-ignore
