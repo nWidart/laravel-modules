@@ -106,6 +106,23 @@ metadata:
                                                     {{ $assist->artisanCommand('module:make-listener SendPostNotification Blog') }}
                                                     ```
 
+                                                    #### Event discovery
+
+                                                    Laravel's event discovery finds listeners inside modules, but the package adds no discovery paths. Add the module listener directories in `bootstrap/app.php`:
+
+                                                    ```php
+                                                    ->withEvents(discover: [
+                                                        __DIR__.'/../app/Listeners',
+                                                        __DIR__.'/../Modules/*/app/Listeners',
+                                                    ])
+                                                    ```
+
+                                                    - Check the result with `{{ $assist->artisanCommand('event:list') }}`.
+                                                    - In production, `{{ $assist->artisanCommand('event:cache') }}` (or `optimize`) caches discovery, so nothing is scanned per request.
+                                                    - The glob also matches disabled modules. Their listeners are still discovered and run if the class autoloads.
+                                                    - `$shouldDiscoverEvents` in a module `EventServiceProvider` does not discover anything. Laravel discovers only from its base `EventServiceProvider`, so use `withEvents` paths.
+                                                    - The package maps files under `modules.paths.modules` to module classes (`Modules/Blog/app/Listeners/X.php` becomes `Modules\Blog\Listeners\X`). A `DiscoverEvents::guessClassNamesUsing()` call you make later, for example in `AppServiceProvider`, replaces this mapping.
+
                                                     ### Job
 
                                                     ```bash

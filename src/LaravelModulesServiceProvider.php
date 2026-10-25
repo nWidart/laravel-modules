@@ -13,6 +13,7 @@ use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 use Nwidart\Modules\Facades\Module;
+use Nwidart\Modules\Support\ListenerClassNameGuesser;
 use Nwidart\Modules\Support\Stub;
 
 class LaravelModulesServiceProvider extends ModulesServiceProvider
@@ -45,6 +46,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
         $this->registerMigrations();
         $this->registerTranslations();
+        $this->registerEventDiscovery();
 
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'modules');
 
@@ -125,6 +127,17 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
                     $migrator->path($module->getExtraPath($migration_path));
                 });
         });
+    }
+
+    /**
+     * Let Laravel event discovery find listeners inside modules.
+     *
+     * Only the class name guessing changes: no directory is scanned and no discovery path is added.
+     * The guesser reads config on its first call, so this costs nothing when events are cached.
+     */
+    protected function registerEventDiscovery(): void
+    {
+        ListenerClassNameGuesser::register();
     }
 
     protected function registerTranslations(): void
