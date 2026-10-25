@@ -39,6 +39,8 @@ class MigrateResetCommandTest extends BaseTestCase
         if ($this->repository->has('Shop')) {
             $this->repository->delete('Shop');
         }
+        $this->app['files']->deleteDirectory(base_path('modules/BlogExtra'));
+        $this->app['files']->deleteDirectory(base_path('database/other-migrations'));
         parent::tearDown();
     }
 
@@ -143,6 +145,44 @@ class MigrateResetCommandTest extends BaseTestCase
             $this->app[Kernel::class]->output()
         );
         $this->assertTrue(Schema::hasTable('blog_posts'));
+    }
+
+    public function test_it_resets_the_migrations_of_a_path_registered_inside_the_module()
+    {
+        $extra = base_path('modules/Blog/database/migrations/feature-flags');
+        $this->writeMigration($extra, 'feature_flags');
+        $this->app['migrator']->path($extra);
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog']]);
+        $this->assertTrue(Schema::hasTable('feature_flags'));
+
+        $code = $this->artisan('module:migrate-reset', ['module' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertFalse(Schema::hasTable('feature_flags'));
+        $this->assertFalse(Schema::hasTable('blog_posts'));
+        $this->assertFalse($this->migrationIsLogged());
+    }
+
+    public function test_it_does_not_reset_registered_paths_outside_the_module()
+    {
+        $extra = base_path('modules/Blog/database/migrations/feature-flags');
+        $sibling = base_path('modules/BlogExtra/database/migrations');
+        $outside = base_path('database/other-migrations');
+        $this->writeMigration($extra, 'feature_flags');
+        $this->writeMigration($sibling, 'blog_extra_notes');
+        $this->writeMigration($outside, 'app_widgets');
+        foreach ([$extra, $sibling, $outside] as $path) {
+            $this->app['migrator']->path($path);
+        }
+        $this->app[Kernel::class]->call('migrate', ['--path' => [$extra, $sibling, $outside], '--realpath' => true]);
+
+        $code = $this->artisan('module:migrate-reset', ['module' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertFalse(Schema::hasTable('feature_flags'));
+        $this->assertFalse(Schema::hasTable('blog_posts'));
+        $this->assertTrue(Schema::hasTable('blog_extra_notes'));
+        $this->assertTrue(Schema::hasTable('app_widgets'));
     }
 
     private function migrationIsLogged(?string $connection = null): bool

@@ -114,6 +114,22 @@ class MigrateRefreshCommandTest extends BaseTestCase
         $this->repository->find('Blog')->json()->set('migration', ['seeds' => [$seeder]])->save();
     }
 
+    public function test_it_refreshes_the_migrations_of_a_path_registered_inside_the_module()
+    {
+        $extra = base_path('modules/Blog/database/migrations/feature-flags');
+        $this->writeMigration($extra, 'feature_flags');
+        $this->app['migrator']->path($extra);
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog']]);
+        DB::table('feature_flags')->insert(['id' => 1]);
+
+        $code = $this->artisan('module:migrate-refresh', ['module' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertTrue(Schema::hasTable('feature_flags'));
+        $this->assertSame(0, DB::table('feature_flags')->count());
+        $this->assertSame(0, DB::table('blog_posts')->count());
+    }
+
     /**
      * Re-resolve the migrator and the artisan commands, so the auto-discovered
      * module migration paths reflect the modules created in setUp().

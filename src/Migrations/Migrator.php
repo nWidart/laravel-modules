@@ -127,36 +127,48 @@ class Migrator
     }
 
     /**
+     * Get every migration path of the module.
+     *
+     * The configured migrations directory comes first, then each path registered on Laravel's
+     * migrator (auto-discovery, loadMigrationsFrom() in the module providers) inside the module.
+     *
+     * @return array<int, string>
+     */
+    public function getPaths(): array
+    {
+        $modulePath = rtrim($this->module->getPath(), '/\\');
+
+        $registered = array_filter(
+            $this->laravel['migrator']->paths(),
+            fn ($path) => is_string($path) && Str::startsWith($path, [$modulePath.'/', $modulePath.DIRECTORY_SEPARATOR])
+        );
+
+        return array_values(array_unique([$this->getPath(), ...$registered]));
+    }
+
+    /**
      * Get migration files.
      *
-     * The subpath, relative to the migrations directory, is a directory, a single file, or a glob pattern.
+     * Without a subpath, the files of every path of getPaths() are used. The subpath, relative
+     * to the migrations directory, is a directory, a single file, or a glob pattern.
      *
      * @param  bool  $reverse
      * @return array
      */
     public function getMigrations($reverse = false)
     {
-        $path = $this->getMigrationsPath();
+        $files = [];
 
-        $pattern = empty($this->subpath) || is_dir($path) ? $path.'/*_*.php' : $path;
-
-        $files = $this->laravel['files']->glob($pattern);
-
-        // Once we have the array of files in the directory we will just remove the
-        // extension and take the basename of the file which is all we need when
-        // finding the migrations that haven't been run against the databases.
-        if ($files === false) {
-            return [];
-        }
-
-        $files = array_map(function ($file) {
+        foreach ($this->getMigrationFiles() as $file) {
             $name = str_replace('.php', '', basename($file));
 
-            // remember where the file is, it may be in a subdirectory of the migrations directory
+            // remember where the file is, it may be in a subdirectory or in another registered path
             $this->migrationFiles[$name] = $file;
 
-            return $name;
-        }, $files);
+            $files[$name] = $name;
+        }
+
+        $files = array_values($files);
 
         // Once we have all of the formatted file names we will sort them and since
         // they all start with a timestamp this should give us the migrations in
@@ -168,6 +180,31 @@ class Migrator
         }
 
         return $files;
+    }
+
+    /**
+     * Get the migration files of the subpath, or else of every path of getPaths().
+     *
+     * @return array<int, string>
+     */
+    protected function getMigrationFiles(): array
+    {
+        $files = $this->laravel['files'];
+
+        if (! empty($this->subpath)) {
+            $path = $this->getMigrationsPath();
+
+            return $files->glob(is_dir($path) ? $path.'/*_*.php' : $path) ?: [];
+        }
+
+        // like Laravel's migrator, a path is a directory of migrations or a single migration file
+        $migrationFiles = [];
+
+        foreach ($this->getPaths() as $path) {
+            array_push($migrationFiles, ...(str_ends_with($path, '.php') ? [$path] : ($files->glob($path.'/*_*.php') ?: [])));
+        }
+
+        return $migrationFiles;
     }
 
     /**

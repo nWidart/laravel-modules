@@ -2,11 +2,8 @@
 
 namespace Nwidart\Modules\Commands\Database;
 
-use Illuminate\Database\Migrations\Migrator;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Nwidart\Modules\Commands\BaseCommand;
-use Nwidart\Modules\Migrations\Migrator as ModuleMigrator;
+use Nwidart\Modules\Migrations\Migrator;
 use Nwidart\Modules\Module;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -25,21 +22,6 @@ class MigrateCommand extends BaseCommand
      * @var string
      */
     protected $description = 'Migrate the migrations from the specified module or from all modules.';
-
-    /**
-     * The migrator instance.
-     */
-    protected Migrator $migrator;
-
-    protected Collection $migration_list;
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->migrator = app('migrator');
-        $this->migration_list = collect($this->migrator->paths());
-    }
 
     public function executeAction($name): void
     {
@@ -85,7 +67,7 @@ class MigrateCommand extends BaseCommand
      */
     protected function getMigrationPaths(Module $module): ?array
     {
-        $migrator = new ModuleMigrator($module, $this->getLaravel(), $this->option('subpath'));
+        $migrator = new Migrator($module, $this->getLaravel(), $this->option('subpath'));
 
         if ($subpath = $this->option('subpath')) {
             if (! $migrator->subpathExists()) {
@@ -100,16 +82,9 @@ class MigrateCommand extends BaseCommand
             return is_dir($path) ? [$path] : $this->laravel['files']->glob($path);
         }
 
-        $module_path = $module->getPath();
-
-        // Always include the module's own migration path, so a disabled module (whose
+        // Always includes the module's own migration path, so a disabled module (whose
         // paths are not auto-registered) never falls back to migrating the whole app.
-        return $this->migration_list
-            ->filter(fn ($path) => Str::startsWith($path, [$module_path.'/', $module_path.DIRECTORY_SEPARATOR]))
-            ->push($migrator->getPath())
-            ->unique()
-            ->values()
-            ->toArray();
+        return $migrator->getPaths();
     }
 
     /**
