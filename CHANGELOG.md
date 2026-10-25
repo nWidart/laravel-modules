@@ -5,6 +5,27 @@ All Notable changes to `laravel-modules` will be documented in this file.
 See https://github.com/nWidart/laravel-modules/releases for the latest releases.
 From 11.0.11 until the first automated release (made by `.github/workflows/release.yml`), this file is incomplete: those releases are documented in GitHub Releases.
 
+## 13.1.0 - 2026-10-25
+
+### Bug Fixes
+
+- **migrations:** Honour --pretend on module:migrate-rollback and module:migrate-reset ([d7bab5e](https://github.com/nWidart/laravel-modules/commit/d7bab5e4ce5c649b48d4290b052e07c83267c8df))
+
+### Other
+
+- Fix Module translation loading missing namespace ([aed5d54](https://github.com/nWidart/laravel-modules/commit/aed5d5434e0f5cf6b5acc1d5b2b6cb1c88626538))
+- Add laravel/boost support: core guideline ([63d90fa](https://github.com/nWidart/laravel-modules/commit/63d90fa093fda48e92d97c419b28acf5be1a0e42))
+- Add laravel/boost support: laravel-modules-development SKILL ([8dc6deb](https://github.com/nWidart/laravel-modules/commit/8dc6deb35ae4e5d76f93258f4fce2cebc74a2c66))
+- Fix module:migrate running other modules' or app migrations ([4917d29](https://github.com/nWidart/laravel-modules/commit/4917d292a85d0317a3eec4f59ffdbf1850e01065))
+- Add AGENTS.md agent guidance and ignore editor/docs files ([fe7e532](https://github.com/nWidart/laravel-modules/commit/fe7e532536e663a561ad4820d2a486b699b85ed3))
+- Fix FUNDING.yml so both sponsor accounts show ([178ca04](https://github.com/nWidart/laravel-modules/commit/178ca044608958a73139fc2612fe7f7b3a5f3175))
+- Modernize CI workflow and stop duplicate runs ([6f30986](https://github.com/nWidart/laravel-modules/commit/6f30986c545d433669c37b0e4aa6994b94fe1fc4))
+- Remove Travis CI and Scrutinizer config ([65444f8](https://github.com/nWidart/laravel-modules/commit/65444f820939fec6608415bb6db9fef2e279a118))
+- Bump phpunit in Recipe test fixture to a patched version ([cab48f1](https://github.com/nWidart/laravel-modules/commit/cab48f1cf94e417ade0ceedce9ce3ab5a2c8c765))
+- Confirm module:migrate-fresh before wiping the database ([9c27d35](https://github.com/nWidart/laravel-modules/commit/9c27d3558291a2c2ad6169aae2840d0524582f2d))
+- Stop passing module:install values through the shell ([25c4847](https://github.com/nWidart/laravel-modules/commit/25c484725bcd5a9c30f7487ec8a462d917c83b6a))
+- Add release workflows and conventional commit check ([99c5d08](https://github.com/nWidart/laravel-modules/commit/99c5d08d44eaddcea3d704f9c178e9c1e5096a4e))
+
 ## 11.0.11 - 2024-06-17
 
 - [@omerbaflah](https://github.com/omerbaflah) Fixes Invokable Controller Stub
