@@ -10,3 +10,6 @@
 /.travis.yml        export-ignore
 /phpunit.xml.dist   export-ignore
 /tests              export-ignore
+/.vscode            export-ignore
+/AGENTS.md          export-ignore
+/CLAUDE.md          export-ignore

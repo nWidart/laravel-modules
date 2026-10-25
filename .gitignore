@@ -7,7 +7,9 @@ coverage
 .php_cs.cache
 .phpunit.result.cache
 .idea
+.vscode
 .php-cs-fixer.cache
 .DS_Store
 src/.DS_Store
 tests/.DS_Store
+/docs
