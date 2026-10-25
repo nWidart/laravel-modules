@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Commands\Make;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -36,10 +38,7 @@ class ModelMakeCommand extends GeneratorCommand
 
     public function handle(): int
     {
-        if (parent::handle() === E_ERROR) {
-            return E_ERROR;
-        }
-
+        // Resolve --all before the model is rendered: the model stub depends on --factory.
         if ($this->option('all')) {
             $this->input->setOption('controller', true);
             $this->input->setOption('factory', true);
@@ -48,6 +47,10 @@ class ModelMakeCommand extends GeneratorCommand
             $this->input->setOption('resource', true);
             $this->input->setOption('policy', true);
             $this->input->setOption('seed', true);
+        }
+
+        if (parent::handle() === E_ERROR) {
+            return E_ERROR;
         }
 
         $this->handleOptionalControllerOption();
@@ -214,6 +217,9 @@ class ModelMakeCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getModuleName());
 
+        $withFactory = $this->option('factory') === true;
+        $factoryClass = $withFactory ? $this->getFactoryClass($module) : '';
+
         return (new Stub('/model.stub', [
             'NAME' => $this->getModelName(),
             'FILLABLE' => $this->getFillable(),
@@ -223,7 +229,31 @@ class ModelMakeCommand extends GeneratorCommand
             'MODULE' => $this->getModuleName(),
             'STUDLY_NAME' => $module->getStudlyName(),
             'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
-        ]))->render();
+            'FACTORY' => $withFactory ? class_basename($factoryClass) : '',
+            'FACTORY_CLASS' => $factoryClass,
+        ]))->sections([
+            'FACTORY' => $withFactory,
+        ])->render();
+    }
+
+    /**
+     * Get the fully qualified class name of the factory that module:make-factory
+     * generates for this model.
+     *
+     * The namespace comes from FactoryMakeCommand itself, so a custom module
+     * namespace or factory path/namespace config gives the same class.
+     */
+    protected function getFactoryClass(Module $module): string
+    {
+        $name = $this->getModelName();
+
+        $command = $this->laravel->make(FactoryMakeCommand::class);
+        $command->setInput(new ArrayInput(
+            ['name' => $name, 'module' => $module->getName()],
+            $command->getDefinition(),
+        ));
+
+        return $command->getClassNamespace($module).'\\'.class_basename($name).'Factory';
     }
 
     protected function getDestinationFilePath(): string
