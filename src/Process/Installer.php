@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Process;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Symfony\Component\Process\Process;
 
@@ -176,6 +177,8 @@ class Installer
                 if (filter_var($this->type, FILTER_VALIDATE_EMAIL)) {
                     return "{$this->type}:{$this->name}.git";
                 }
+
+                return null;
         }
     }
 
@@ -211,33 +214,43 @@ class Installer
 
     /**
      * Install the module via git.
+     *
+     * The values are passed as process environment placeholders, so Symfony
+     * escapes each one as a single argument instead of interpolating it into
+     * the shell command line.
      */
     public function installViaGit(): Process
     {
-        return Process::fromShellCommandline(sprintf(
-            'cd %s && git clone %s %s && cd %s && git checkout %s',
+        return Process::fromShellCommandline(
+            'git clone -- "${:MODULE_REPO_URL}" "${:MODULE_PATH}" && git -C "${:MODULE_PATH}" checkout "${:MODULE_BRANCH}"',
             base_path(),
-            $this->getRepoUrl(),
-            $this->getDestinationPath(),
-            $this->getDestinationPath(),
-            $this->getBranch()
-        ));
+            [
+                'MODULE_REPO_URL' => $this->getValidatedRepoUrl(),
+                'MODULE_PATH' => $this->getDestinationPath(),
+                'MODULE_BRANCH' => $this->getValidatedBranch(),
+            ]
+        );
     }
 
     /**
      * Install the module via git subtree.
+     *
+     * The values are passed as process environment placeholders, so Symfony
+     * escapes each one as a single argument instead of interpolating it into
+     * the shell command line.
      */
     public function installViaSubtree(): Process
     {
-        return Process::fromShellCommandline(sprintf(
-            'cd %s && git remote add %s %s && git subtree add --prefix=%s --squash %s %s',
+        return Process::fromShellCommandline(
+            'git remote add -- "${:MODULE_NAME}" "${:MODULE_REPO_URL}" && git subtree add --prefix="${:MODULE_PATH}" --squash "${:MODULE_NAME}" "${:MODULE_BRANCH}"',
             base_path(),
-            $this->getModuleName(),
-            $this->getRepoUrl(),
-            $this->getDestinationPath(),
-            $this->getModuleName(),
-            $this->getBranch()
-        ));
+            [
+                'MODULE_NAME' => $this->getModuleName(),
+                'MODULE_REPO_URL' => $this->getValidatedRepoUrl(),
+                'MODULE_PATH' => $this->getDestinationPath(),
+                'MODULE_BRANCH' => $this->getValidatedBranch(),
+            ]
+        );
     }
 
     /**
@@ -245,10 +258,38 @@ class Installer
      */
     public function installViaComposer(): Process
     {
-        return Process::fromShellCommandline(sprintf(
-            'cd %s && composer require %s',
-            base_path(),
-            $this->getPackageName()
-        ));
+        return new Process(['composer', 'require', $this->getPackageName()], base_path());
+    }
+
+    /**
+     * Get the git repo url, failing when the type does not resolve to one.
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function getValidatedRepoUrl(): string
+    {
+        $url = $this->getRepoUrl();
+
+        if ($url === null || $url === '') {
+            throw new InvalidArgumentException("Unable to resolve a git repository URL for module [{$this->name}] with type [{$this->type}].");
+        }
+
+        return $url;
+    }
+
+    /**
+     * Get the branch name, rejecting values git would parse as an option.
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function getValidatedBranch(): string
+    {
+        $branch = $this->getBranch();
+
+        if ($branch === '' || str_starts_with($branch, '-')) {
+            throw new InvalidArgumentException("Invalid version [{$branch}] for module [{$this->name}].");
+        }
+
+        return $branch;
     }
 }
