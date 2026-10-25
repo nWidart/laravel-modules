@@ -7,6 +7,7 @@ use Illuminate\Database\Console\PruneCommand;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Facades\Module;
 use Nwidart\Modules\Traits\PathNamespace;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -85,6 +86,11 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
 
     /**
      * Determine the models that should be pruned.
+     *
+     * The selected modules are resolved first, so an unknown module fails
+     * before anything is pruned, also when --model is given.
+     *
+     * @throws ModuleNotFoundException
      */
     protected function models(): Collection
     {
@@ -95,45 +101,54 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
             throw new InvalidArgumentException('The --model and --except options cannot be combined.');
         }
 
+        $modules = $this->selectedModules();
+
         if (! empty($models)) {
             return collect($models)->filter(fn ($model) => class_exists($model))->values();
         }
 
-        return $this->moduleDirectories()
-            ->flatMap(fn (string $directory) => $this->modelsInModule($directory))
+        return $modules
+            ->flatMap(fn (\Nwidart\Modules\Module $module) => $this->modelsInModule($module))
             ->when(! empty($except), fn (Collection $models) => $models->reject(fn ($model) => in_array($model, $except)))
             ->filter(fn ($model) => $this->isPrunable($model))
             ->values();
     }
 
     /**
-     * Get the root directories of the selected modules.
+     * Resolve the module argument through the module repository.
+     * "All" selects the enabled modules; a named module must exist.
+     *
+     * @return Collection<int, \Nwidart\Modules\Module>
+     *
+     * @throws ModuleNotFoundException
      */
-    protected function moduleDirectories(): Collection
+    protected function selectedModules(): Collection
     {
-        $modules_path = rtrim(config('modules.paths.modules'), '/\\');
-        $modules = collect($this->argument('module'));
+        $names = collect($this->argument('module'));
 
-        if ($modules->contains(self::ALL)) {
-            return collect(glob($modules_path.'/*', GLOB_ONLYDIR) ?: []);
-        }
+        $modules = $names->contains(self::ALL)
+            ? collect(Module::allEnabled())
+            : $names->map(fn (string $name) => Module::findOrFail($name));
 
-        return $modules->map(fn (string $module) => $modules_path.'/'.$module);
+        return $modules
+            ->unique(fn (\Nwidart\Modules\Module $module) => $module->getName())
+            ->values();
     }
 
     /**
-     * Get the class names of the models in a module directory.
+     * Get the class names of the models in a module.
      * A missing models directory yields no models.
      */
-    protected function modelsInModule(string $directory): Collection
+    protected function modelsInModule(\Nwidart\Modules\Module $module): Collection
     {
+        $directory = $module->getPath();
         $models_path = $directory.'/'.trim(config('modules.paths.generator.model.path'), '/');
 
         if (! is_dir($models_path) || ($module_root = realpath($directory)) === false) {
             return collect();
         }
 
-        $namespace = $this->module_namespace(basename($module_root));
+        $namespace = $this->module_namespace($module->getStudlyName());
         $app_folder = $this->app_path().'/';
 
         return collect(Finder::create()->in($models_path)->files()->name('*.php'))
