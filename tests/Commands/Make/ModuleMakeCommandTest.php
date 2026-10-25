@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Tests\Commands\Make;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
@@ -981,7 +982,10 @@ STUB);
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
         $this->assertSame(0, $code);
-        $this->assertStringNotContainsString('WARN', Artisan::output());
+
+        $output = Artisan::output();
+        $this->assertStringNotContainsString('WARN', $output);
+        $this->assertStringNotContainsString('ERROR', $output);
     }
 
     public function test_it_warns_about_an_unknown_replacement_key_and_still_generates_the_module()
@@ -991,10 +995,10 @@ STUB);
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
         $this->assertSame(0, $code);
-        $this->assertStringContainsString(
-            'Unknown replacement key [NOT_A_REAL_KEY] for stub [views/index]',
-            Artisan::output()
-        );
+        $this->assertSame(1, substr_count(
+            Artisan::output(),
+            'Unknown replacement key [NOT_A_REAL_KEY] for stub [views/index]'
+        ));
         $this->assertFileExists($this->modulePath.'/'.config('modules.stubs.files.views/index'));
     }
 
@@ -1011,20 +1015,135 @@ STUB);
         );
     }
 
-    public function test_it_warns_when_a_custom_replacement_renders_invalid_json()
+    public function test_it_fails_without_writing_when_a_custom_replacement_renders_invalid_composer_json()
     {
-        $keys = array_values(array_diff(config('modules.stubs.replacements.composer'), ['VENDOR']));
-        $this->app['config']->set('modules.stubs.replacements.composer', $keys + ['VENDOR' => QuotedValueReplacement::class]);
+        $this->useQuotedReplacementFor('composer', 'VENDOR');
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+        $output = Artisan::output();
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString('Stub [composer] renders invalid JSON for [composer.json]: Syntax error.', $output);
+        $this->assertStringContainsString('ReplacementKeyCommand', $output);
+        $this->assertStringContainsString('must be JSON-escaped', $output);
+        $this->assertStringContainsString('Module [Blog] was not created.', $output);
+        $this->assertModuleWasNotCreated('Blog');
+    }
+
+    public function test_it_fails_without_writing_when_a_custom_replacement_renders_invalid_module_json()
+    {
+        $this->useQuotedReplacementFor('json', 'LOWER_NAME');
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+        $output = Artisan::output();
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString('Stub [json] renders invalid JSON for [module.json]: Syntax error.', $output);
+        $this->assertModuleWasNotCreated('Blog');
+    }
+
+    public function test_it_fails_without_writing_for_a_plain_module_with_an_invalid_json_stub()
+    {
+        $this->useQuotedReplacementFor('json', 'LOWER_NAME');
+
+        $code = $this->artisan('module:make', ['name' => ['Blog'], '--plain' => true]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString('Stub [json] renders invalid JSON for [module.json]', Artisan::output());
+        $this->assertModuleWasNotCreated('Blog');
+    }
+
+    public function test_it_leaves_an_existing_module_untouched_with_force_when_a_json_stub_is_invalid()
+    {
+        $this->artisan('module:make', ['name' => ['Blog']]);
+        $composer = $this->finder->get($this->modulePath.'/composer.json');
+        $moduleJson = $this->finder->get($this->modulePath.'/module.json');
+
+        $this->useQuotedReplacementFor('composer', 'VENDOR');
+        $code = $this->artisan('module:make', ['name' => ['Blog'], '--force' => true]);
+
+        $this->assertSame(E_ERROR, $code);
+        $output = Artisan::output();
+        $this->assertStringContainsString('Stub [composer] renders invalid JSON', $output);
+        $this->assertStringContainsString('Module [Blog] was not overwritten.', $output);
+        $this->assertStringNotContainsString('was not created', $output);
+        $this->assertSame($composer, $this->finder->get($this->modulePath.'/composer.json'));
+        $this->assertSame($moduleJson, $this->finder->get($this->modulePath.'/module.json'));
+        $this->assertFileExists($this->getModuleAppPath().'/Providers/BlogServiceProvider.php');
+        $this->assertTrue($this->repository->has('Blog'));
+    }
+
+    public function test_it_does_not_fire_the_creating_event_when_a_json_stub_is_invalid()
+    {
+        Event::fake();
+        $this->useQuotedReplacementFor('composer', 'VENDOR');
 
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
-        $this->assertSame(0, $code);
+        $this->assertSame(E_ERROR, $code);
+        Event::assertNotDispatched('modules.blog.'.ModuleEvent::CREATING);
+    }
 
+    public function test_it_does_not_run_composer_dump_autoload_when_no_module_was_generated()
+    {
+        Process::fake();
+        $this->useQuotedReplacementFor('composer', 'VENDOR');
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringNotContainsString('composer dump-autoload failed', Artisan::output());
+        Process::assertNothingRan();
+    }
+
+    public function test_it_runs_composer_dump_autoload_when_at_least_one_module_was_generated()
+    {
+        Process::fake();
+
+        $code = $this->artisan('module:make', ['name' => ['Blog', '../Evil']]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertTrue($this->repository->has('Blog'));
+        Process::assertRan('composer dump-autoload');
+    }
+
+    public function test_it_fails_when_composer_dump_autoload_fails()
+    {
+        Process::fake([
+            '*dump-autoload*' => Process::result(
+                errorOutput: "\nIn JsonFile.php line 382:\n\n  \"./Modules/Blog/composer.json\" does not contain valid JSON\n  Parse error on line 2\n\n\ndump-autoload [-o|--optimize] [-a|--classmap-authoritative] [--dev] [--no-dev]\n\n",
+                exitCode: 1,
+            ),
+        ]);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
         $output = Artisan::output();
-        $this->assertStringContainsString('Stub [composer] rendered invalid JSON: Syntax error.', $output);
-        $this->assertStringContainsString('ReplacementKeyCommand', $output);
 
-        // The file is still written, with the value inserted as returned.
-        $this->assertStringContainsString('"name": "Acme\Pkg "q"/blog"', $this->finder->get($this->modulePath.'/composer.json'));
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString('composer dump-autoload failed.', $output);
+        // Composer's own lines are kept, one per line, without the trailing usage synopsis.
+        $this->assertStringContainsString("In JsonFile.php line 382:\n\n  \"./Modules/Blog/composer.json\" does not contain valid JSON\n  Parse error on line 2\n", $output);
+        $this->assertStringNotContainsString('[-o|--optimize]', $output);
+        $this->assertStringContainsString('run [composer dump-autoload]', $output);
+        Process::assertRan('composer dump-autoload');
+    }
+
+    /**
+     * Map the given token of a stub to QuotedValueReplacement, which returns an unescaped `"`.
+     */
+    private function useQuotedReplacementFor(string $stub, string $key): void
+    {
+        $keys = array_values(array_diff(config("modules.stubs.replacements.$stub"), [$key]));
+        $this->app['config']->set("modules.stubs.replacements.$stub", $keys + [$key => QuotedValueReplacement::class]);
+    }
+
+    private function assertModuleWasNotCreated(string $name): void
+    {
+        $this->assertDirectoryDoesNotExist(base_path("modules/$name"));
+        $this->assertFalse($this->repository->has($name));
+
+        $statusesFile = $this->activator->getStatusesFilePath();
+        $statuses = $this->finder->exists($statusesFile) ? $this->finder->json($statusesFile) : [];
+        $this->assertArrayNotHasKey($name, $statuses);
     }
 }
