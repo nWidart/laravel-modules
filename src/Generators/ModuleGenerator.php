@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\FileRepository;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
@@ -684,12 +685,16 @@ class ModuleGenerator extends Generator
     }
 
     /**
-     * fire the module event.
+     * Fire the module event.
+     *
+     * Modules are keyed by their studly name, so look up getName(), not the
+     * raw input. The module was just written to disk; if the repository still
+     * cannot find it, fail with a clear error instead of a null dereference.
+     *
+     * @throws ModuleNotFoundException
      */
     protected function fireEvent(string $event): void
     {
-        $module = $this->module->find($this->name);
-
-        $module->fireEvent($event);
+        $this->module->findOrFail($this->getName())->fireEvent($event);
     }
 }
