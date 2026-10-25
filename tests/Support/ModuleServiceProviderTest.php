@@ -26,6 +26,10 @@ class ModuleServiceProviderTest extends BaseTestCase
         $this->finder = $this->app['files'];
         $this->createModule();
         $this->configPath = module_path('Blog', config('modules.paths.generator.config.path'));
+
+        // Publish paths are static and keyed by provider class; the anonymous provider below keeps its class name across tests.
+        ServiceProvider::$publishes = [];
+        ServiceProvider::$publishGroups = [];
     }
 
     protected function tearDown(): void
@@ -102,6 +106,37 @@ class ModuleServiceProviderTest extends BaseTestCase
         $this->assertTrue(config('blog.extra.enabled'));
     }
 
+    public function test_cached_config_still_registers_publish_paths_in_the_console()
+    {
+        $this->writeModuleConfig('config.php', ['name' => 'Blog']);
+        $this->writeModuleConfig('settings.php', ['theme' => 'light']);
+        config(['blog' => ['name' => 'Cached Blog']]);
+        $this->app->instance('config_loaded_from_cache', true);
+
+        $provider = $this->registerModuleConfig();
+
+        // vendor:publish runs in the console and must still find the module config files.
+        $published = ServiceProvider::pathsToPublish($provider::class, 'config');
+        $this->assertSame(config_path('blog.php'), $published[$this->configPath.'/config.php']);
+        $this->assertSame(config_path('blog/settings.php'), $published[$this->configPath.'/settings.php']);
+
+        // Cached values are left untouched.
+        $this->assertSame(['name' => 'Cached Blog'], config('blog'));
+    }
+
+    public function test_views_are_published_in_the_console()
+    {
+        $provider = $this->moduleProvider();
+        $provider->registerModuleViews();
+
+        $sourcePath = module_path('Blog', config('modules.paths.generator.views.path'));
+
+        $this->assertSame(
+            [$sourcePath => resource_path('views/modules/blog')],
+            ServiceProvider::pathsToPublish($provider::class, 'blog-module-views')
+        );
+    }
+
     private function writeModuleConfig(string $file, array $values): void
     {
         $path = $this->configPath.'/'.$file;
@@ -112,7 +147,15 @@ class ModuleServiceProviderTest extends BaseTestCase
 
     private function registerModuleConfig(): ModuleServiceProvider
     {
-        $provider = new class($this->app) extends ModuleServiceProvider
+        $provider = $this->moduleProvider();
+        $provider->registerModuleConfig();
+
+        return $provider;
+    }
+
+    private function moduleProvider(): ModuleServiceProvider
+    {
+        return new class($this->app) extends ModuleServiceProvider
         {
             protected string $name = 'Blog';
 
@@ -122,10 +165,11 @@ class ModuleServiceProviderTest extends BaseTestCase
             {
                 $this->registerConfig();
             }
+
+            public function registerModuleViews(): void
+            {
+                $this->registerViews();
+            }
         };
-
-        $provider->registerModuleConfig();
-
-        return $provider;
     }
 }
