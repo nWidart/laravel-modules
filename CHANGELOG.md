@@ -11,6 +11,9 @@ From 11.0.11 until the first automated release (made by `.github/workflows/relea
 
 Most apps on the default published config need no change. Read the items below if you use custom stubs, custom generator paths, or run module commands in scripts, CI or deploys.
 
+<details>
+<summary>Show upgrade notes</summary>
+
 #### Action may be required
 
 - **Custom `stubs.path` needs `'stubs' => ['enabled' => true]`.** Without it the path is ignored ([#2198](https://github.com/nWidart/laravel-modules/pull/2198))
@@ -47,6 +50,8 @@ Most apps on the default published config need no change. Read the items below i
 #### Deprecated (removed in v14)
 
 `Module::boot()`, `register()`, `registerTranslation()`, `isLoadFilesOnBoot()`; `FileRepository::boot()` and `register()` (and on `RepositoryInterface`); `ModuleEvent::BOOT` and `REGISTER`; `Traits\MigrationLoaderTrait`; config keys `modules.register.translations` and `modules.register.files`; `ContractsServiceProvider` ([#2204](https://github.com/nWidart/laravel-modules/pull/2204), [#2196](https://github.com/nWidart/laravel-modules/pull/2196))
+
+</details>
 
 ### Features
 
