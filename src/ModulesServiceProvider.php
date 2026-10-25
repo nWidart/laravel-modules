@@ -7,7 +7,6 @@ use Illuminate\Foundation\ProviderRepository;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
-use Nwidart\Modules\Providers\ContractsServiceProvider;
 
 abstract class ModulesServiceProvider extends ServiceProvider
 {
@@ -75,7 +74,6 @@ abstract class ModulesServiceProvider extends ServiceProvider
     protected function registerProviders()
     {
         $this->app->register(ConsoleServiceProvider::class);
-        $this->app->register(ContractsServiceProvider::class);
     }
 
     protected function getCachedModulePath()

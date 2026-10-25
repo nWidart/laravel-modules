@@ -73,10 +73,10 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
      */
     protected function registerServices()
     {
+        // No fixed path: the repository is resolved during register(), and getPath() must keep
+        // reading modules.paths.modules lazily so later config changes are still picked up.
         $this->app->singleton(RepositoryInterface::class, function ($app) {
-            $path = $app['config']->get('modules.paths.modules');
-
-            return new Laravel\LaravelFileRepository($app, $path);
+            return new Laravel\LaravelFileRepository($app);
         });
         $this->app->singleton(ActivatorInterface::class, function ($app) {
             $activator = $app['config']->get('modules.activator');

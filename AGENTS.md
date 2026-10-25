@@ -50,7 +50,7 @@ Query commands refresh a stale map first; `--no-refresh` answers from the map as
 
 1. Binds singletons: `RepositoryInterface` (alias `modules`, implemented by `Laravel\LaravelFileRepository`), `ActivatorInterface` (class chosen from `modules.activator` / `modules.activators` config, default `FileActivator`), and `ModuleManifest`.
 2. Sets the `Stub` base path to `modules.stubs.path` if that key is set, else `src/Commands/stubs`. This happens before the package config is merged, so only a published config sets the key here. A `booted()` callback then sets the path to `modules.stubs.path` again, but only when `stubs.enabled` is true.
-3. Registers `ConsoleServiceProvider` (all artisan commands) and `ContractsServiceProvider`.
+3. Registers `ConsoleServiceProvider` (all artisan commands). `ContractsServiceProvider` is deprecated, binds nothing, and is no longer registered.
 4. Hooks module migration paths into the `Migrator` and module lang paths into the `translator`. Config keys `modules.auto-discover.migrations` (default true) and `modules.auto-discover.translations` (default false) control this. Separately, `Module::boot()` registers each module's translations when `modules.register.translations` is true (the default). To stop module translations from loading, set both keys to false.
 5. `registerModules()`: `ModuleManifest` globs `module.json` in the scan paths. It keeps only modules the activator marks enabled and sorts them by `priority`. Then it loads their `providers` through Laravel's `ProviderRepository` (cached at `bootstrap/cache/modules.php`) and includes their `files`.
 
