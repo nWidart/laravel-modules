@@ -105,6 +105,22 @@ class MigratorTest extends BaseTestCase
         $connection->setSchemaGrammar(new TransactionalSQLiteGrammar($connection));
     }
 
+    public function test_find_returns_only_the_rows_of_the_given_migration()
+    {
+        $repository = $this->app['migration.repository'];
+        if (! $repository->repositoryExists()) {
+            $repository->createRepository();
+        }
+
+        $migrator = $this->migrator();
+        $migrator->log(self::MIGRATION);
+        $migrator->log('2020_01_02_000000_create_blog_tags_table');
+
+        $this->assertSame(1, $migrator->find(self::MIGRATION)->count());
+        $this->assertSame(self::MIGRATION, $migrator->find(self::MIGRATION)->value('migration'));
+        $this->assertSame(0, $migrator->find('2020_01_03_000000_unknown')->count());
+    }
+
     private function migrator(): Migrator
     {
         return new Migrator($this->repository->find('Blog'), $this->app);

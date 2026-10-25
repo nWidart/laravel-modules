@@ -91,12 +91,14 @@ class SeedCommand extends BaseCommand
      */
     public function getModuleByName($name)
     {
-        $modules = $this->getModuleRepository();
-        if ($modules->has($name) === false) {
+        // find() is declared on RepositoryInterface; has() is not, so custom repositories may lack it.
+        $module = $this->getModuleRepository()->find((string) $name);
+
+        if ($module === null) {
             throw new RuntimeException("Module [$name] does not exists.");
         }
 
-        return $modules->find($name);
+        return $module;
     }
 
     /**

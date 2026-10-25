@@ -429,7 +429,7 @@ class Migrator
      */
     public function find($migration)
     {
-        return $this->table()->whereMigration($migration);
+        return $this->table()->where('migration', $migration);
     }
 
     /**

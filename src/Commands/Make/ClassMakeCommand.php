@@ -91,13 +91,16 @@ class ClassMakeCommand extends GeneratorCommand
     /**
      * The namespace follows the folder the class is written to: "Classes" for the default type,
      * the plural type for other types (e.g. "Services" for --type=service).
-     * A namespace configured for the type (modules.paths.generator.<type>.namespace) takes precedence.
+     * A namespace configured for the type takes precedence. The generator config keys are
+     * plural for some types and singular for others (services, interfaces, but class, repository),
+     * so the plural key is read first, then the singular one.
      */
     public function getDefaultNamespace(): string
     {
         $type = $this->type();
 
-        return config("modules.paths.generator.{$type}.namespace")
+        return config('modules.paths.generator.'.Str::plural($type).'.namespace')
+            ?? config("modules.paths.generator.{$type}.namespace")
             ?? $this->typePath($this->strip_app_folder($this->classPath()));
     }
 }

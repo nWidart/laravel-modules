@@ -187,6 +187,16 @@ class LaravelModuleTest extends BaseTestCase
         );
     }
 
+    public function test_its_providers_manifest_is_next_to_the_config_cache_in_vapor_maintenance_mode()
+    {
+        $this->app['config']->set('modules.vapor_maintenance_mode', true);
+
+        $this->assertEquals(
+            dirname($this->app->getCachedConfigPath())."/{$this->module->getSnakeName()}_module.php",
+            $this->module->getCachedServicesPath()
+        );
+    }
+
     public function test_it_makes_a_manifest_file_when_providers_are_loaded()
     {
         $cachedServicesPath = $this->module->getCachedServicesPath();

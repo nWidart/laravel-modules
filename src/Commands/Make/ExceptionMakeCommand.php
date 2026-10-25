@@ -51,7 +51,7 @@ class ExceptionMakeCommand extends GeneratorCommand
         return [
             ['render', '', InputOption::VALUE_NONE, 'Create the exception with an empty render method', null],
             ['report', '', InputOption::VALUE_NONE, 'Create the exception with an empty report method', null],
-            ['force', 'f', InputOption::VALUE_NONE, 'su.'],
+            ['force', 'f', InputOption::VALUE_NONE, 'Overwrite the file if it already exists'],
         ];
     }
 
