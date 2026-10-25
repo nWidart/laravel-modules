@@ -21,7 +21,7 @@ class AssetPublisher extends Publisher
      */
     public function getDestinationPath(): string
     {
-        return $this->repository->assetPath($this->module->getLowerName());
+        return $this->getRepository()->assetPath($this->module->getLowerName());
     }
 
     /**

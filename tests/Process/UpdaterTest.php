@@ -90,6 +90,77 @@ class UpdaterTest extends BaseTestCase
         $this->assertSame([], $this->runUpdater());
     }
 
+    public function test_it_adds_a_scripts_section_when_the_app_composer_json_has_none()
+    {
+        $this->writeAppComposer(['name' => 'acme/app', 'require-dev' => new \stdClass]);
+        $this->writeModuleComposer(['scripts' => ['post-update-cmd' => ['@php artisan blog:sync']]]);
+
+        $this->runUpdater();
+
+        $composer = $this->readAppComposer();
+        $this->assertSame(['post-update-cmd' => ['@php artisan blog:sync']], $composer['scripts']);
+        // An empty object stays an object.
+        $this->assertStringContainsString('"require-dev": {}', file_get_contents(base_path('composer.json')));
+    }
+
+    public function test_it_merges_scripts_defined_as_strings()
+    {
+        $this->writeAppComposer(['scripts' => [
+            'post-update-cmd' => '@php artisan vendor:publish',
+            'test' => 'phpunit',
+        ]]);
+        $this->writeModuleComposer(['scripts' => [
+            'post-update-cmd' => '@php artisan blog:sync',
+            'test' => ['phpunit', 'pint --test'],
+            'blog' => '@php artisan blog:run',
+        ]]);
+
+        $this->runUpdater();
+
+        $this->assertSame([
+            'post-update-cmd' => ['@php artisan vendor:publish', '@php artisan blog:sync'],
+            'test' => ['phpunit', 'pint --test'],
+            'blog' => '@php artisan blog:run',
+        ], $this->readAppComposer()['scripts']);
+    }
+
+    public function test_merged_scripts_are_written_as_a_json_list()
+    {
+        $this->writeAppComposer(['scripts' => ['post-autoload-dump' => ['@php artisan package:discover', '@php artisan blog:sync']]]);
+        $this->writeModuleComposer(['scripts' => ['post-autoload-dump' => ['@php artisan package:discover', '@php artisan blog:cache']]]);
+
+        $this->runUpdater();
+
+        $contents = file_get_contents(base_path('composer.json'));
+        $this->assertSame(
+            ['@php artisan package:discover', '@php artisan blog:sync', '@php artisan blog:cache'],
+            $this->readAppComposer()['scripts']['post-autoload-dump']
+        );
+        $this->assertStringNotContainsString('"2":', $contents);
+        $this->assertStringEndsWith("}\n", $contents);
+    }
+
+    public function test_it_leaves_the_app_composer_json_untouched_without_module_scripts()
+    {
+        $this->writeAppComposer(['name' => 'acme/app', 'require-dev' => new \stdClass]);
+        $before = file_get_contents(base_path('composer.json'));
+        $this->writeModuleComposer([]);
+
+        $this->runUpdater();
+
+        $this->assertSame($before, file_get_contents(base_path('composer.json')));
+    }
+
+    private function writeAppComposer(array $attributes): void
+    {
+        file_put_contents(base_path('composer.json'), json_encode($attributes, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+
+    private function readAppComposer(): array
+    {
+        return json_decode(file_get_contents(base_path('composer.json')), true);
+    }
+
     private function writeModuleComposer(array $attributes): void
     {
         file_put_contents(

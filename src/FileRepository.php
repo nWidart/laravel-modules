@@ -472,10 +472,14 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Install the specified module.
+     *
+     * An empty version installs the Installer default: `dev-master` via composer,
+     * `master` via git. The parameter stays a non-nullable string, so subclasses
+     * that override this method with the previous signature remain compatible.
      */
-    public function install(string $name, string $version = 'dev-master', string $type = 'composer', bool $subtree = false): Process
+    public function install(string $name, string $version = '', string $type = 'composer', bool $subtree = false): Process
     {
-        $installer = new Installer($name, $version, $type, $subtree);
+        $installer = new Installer($name, $version === '' ? null : $version, $type, $subtree);
 
         return $installer->setRepository($this)->run();
     }

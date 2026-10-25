@@ -30,7 +30,7 @@ class MigrationPublisher extends AssetPublisher
      */
     public function getDestinationPath(): string
     {
-        return $this->repository->config('paths.migration');
+        return $this->getRepository()->config('paths.migration');
     }
 
     /**

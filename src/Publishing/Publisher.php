@@ -7,6 +7,7 @@ use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Contracts\PublisherInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Module;
+use RuntimeException;
 
 abstract class Publisher implements PublisherInterface
 {
@@ -16,9 +17,9 @@ abstract class Publisher implements PublisherInterface
     protected Module $module;
 
     /**
-     * The modules repository instance.
+     * The modules repository instance, required by publish().
      */
-    protected RepositoryInterface $repository;
+    protected ?RepositoryInterface $repository = null;
 
     /**
      * The laravel console instance, required by publish().
@@ -28,7 +29,7 @@ abstract class Publisher implements PublisherInterface
     /**
      * The success message will displayed at console.
      */
-    protected string $success;
+    protected string $success = '';
 
     /**
      * The error message will displayed at console.
@@ -128,9 +129,15 @@ abstract class Publisher implements PublisherInterface
 
     /**
      * Get modules repository instance.
+     *
+     * @throws RuntimeException
      */
     public function getRepository(): RepositoryInterface
     {
+        if ($this->repository === null) {
+            throw new RuntimeException("The 'repository' property is not set: call setRepository() on the publisher of module [{$this->module->getName()}].");
+        }
+
         return $this->repository;
     }
 
@@ -157,7 +164,7 @@ abstract class Publisher implements PublisherInterface
      */
     public function getFilesystem(): Filesystem
     {
-        return $this->repository->getFiles();
+        return $this->getRepository()->getFiles();
     }
 
     /**
@@ -178,7 +185,7 @@ abstract class Publisher implements PublisherInterface
         if ($this->console === null) {
             $message = "The 'console' property must instance of \\Illuminate\\Console\\Command.";
 
-            throw new \RuntimeException($message);
+            throw new RuntimeException($message);
         }
 
         if (! $this->getFilesystem()->isDirectory($sourcePath = $this->getSourcePath())) {
