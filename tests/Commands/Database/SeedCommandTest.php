@@ -65,6 +65,54 @@ class SeedCommandTest extends BaseTestCase
         $this->assertSame(2, RecordingSeeder::$runs);
         $this->assertStringContainsString('DONE', $output);
         $this->assertStringNotContainsString('FAIL', $output);
+        $this->assertStringNotContainsString('WARN', $output);
+    }
+
+    public function test_it_seeds_the_conventional_database_seeder_without_a_warning()
+    {
+        if (! class_exists('Modules\Shop\Database\Seeders\ShopDatabaseSeeder')) {
+            class_alias(RecordingSeeder::class, 'Modules\Shop\Database\Seeders\ShopDatabaseSeeder');
+        }
+
+        $code = $this->artisan('module:seed', ['module' => ['Shop']]);
+        $output = $this->app[Kernel::class]->output();
+
+        $this->assertSame(0, $code);
+        $this->assertSame(1, RecordingSeeder::$runs);
+        $this->assertStringContainsString('DONE', $output);
+        $this->assertStringNotContainsString('WARN', $output);
+    }
+
+    public function test_it_warns_when_a_module_has_no_database_seeder()
+    {
+        $code = $this->artisan('module:seed', ['module' => ['Blog']]);
+        $output = $this->app[Kernel::class]->output();
+
+        $this->assertSame(0, $code);
+        $this->assertSame(0, RecordingSeeder::$runs);
+        $this->assertStringContainsString('DONE', $output);
+        $this->assertStringContainsString('Module [Blog] has no seeder: class [Modules\Blog\Database\Seeders\BlogDatabaseSeeder] not found.', $output);
+        // The warning is printed after the task line, so the line still ends with its status.
+        $this->assertMatchesRegularExpression('/Seeding Blog Module \.+ [^\n]*DONE\n/', $output);
+    }
+
+    public function test_it_warns_for_each_listed_seeder_that_does_not_exist_and_runs_the_others()
+    {
+        $this->repository->find('Blog')->json()->set('migration', ['seeds' => [
+            'Modules\Blog\Database\Seeders\MissingSeeder',
+            RecordingSeeder::class,
+            'Modules\Blog\Database\Seeders\OtherMissingSeeder',
+        ]])->save();
+
+        $code = $this->artisan('module:seed', ['module' => ['Blog']]);
+        $output = $this->app[Kernel::class]->output();
+
+        $this->assertSame(0, $code);
+        $this->assertSame(1, RecordingSeeder::$runs);
+        $this->assertStringContainsString('DONE', $output);
+        $this->assertStringContainsString('Module [Blog] seeder [Modules\Blog\Database\Seeders\MissingSeeder] not found, skipped.', $output);
+        $this->assertStringContainsString('Module [Blog] seeder [Modules\Blog\Database\Seeders\OtherMissingSeeder] not found, skipped.', $output);
+        $this->assertStringNotContainsString('has no seeder', $output);
     }
 
     public function test_it_fails_when_a_module_seeder_throws_and_still_seeds_the_other_modules()

@@ -38,9 +38,17 @@ class SeedCommand extends BaseCommand
      */
     private bool $seederFailed = false;
 
+    /**
+     * Warnings about missing seeders, printed after the task line so they do not split it.
+     *
+     * @var array<int, string>
+     */
+    private array $warnings = [];
+
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
+        $this->warnings = [];
 
         $this->components->task("Seeding <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
             $this->seederFailed = false;
@@ -64,6 +72,10 @@ class SeedCommand extends BaseCommand
 
             return $this->seederFailed ? TaskResult::Failure->value : TaskResult::Success->value;
         });
+
+        foreach ($this->warnings as $warning) {
+            $this->components->warn($warning);
+        }
     }
 
     public function getInfo(): ?string
@@ -114,15 +126,17 @@ class SeedCommand extends BaseCommand
             foreach ((array) $config['seeds'] as $class) {
                 if (class_exists($class)) {
                     $seeders[] = $class;
+                } else {
+                    $this->warnings[] = "Module [$name] seeder [$class] not found, skipped.";
                 }
             }
         } else {
             $class = $this->getSeederName($name); // legacy support
 
-            $class = implode('\\', array_map('ucwords', explode('\\', $class)));
+            $seederName = implode('\\', array_map('ucwords', explode('\\', $class)));
 
-            if (class_exists($class)) {
-                $seeders[] = $class;
+            if (class_exists($seederName)) {
+                $seeders[] = $seederName;
             } else {
                 // look at other namespaces
                 $classes = $this->getSeederNames($name);
@@ -130,6 +144,10 @@ class SeedCommand extends BaseCommand
                     if (class_exists($class)) {
                         $seeders[] = $class;
                     }
+                }
+
+                if (count($seeders) === 0) {
+                    $this->warnings[] = "Module [$name] has no seeder: class [$seederName] not found.";
                 }
             }
         }
