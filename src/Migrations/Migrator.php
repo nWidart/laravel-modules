@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Migrations;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -129,42 +130,41 @@ class Migrator
     }
 
     /**
-     * Rollback migration.
+     * Rollback the last batch of migrations.
      *
-     * @return array
+     * Without $pretend, returns the names of the rolled back migrations. With $pretend,
+     * nothing is run or deleted, and the SQL each down() would run is returned instead,
+     * keyed by migration name.
+     *
+     * @return array<int, string>|array<string, array<int, string>>
      */
-    public function rollback()
+    public function rollback(bool $pretend = false)
     {
-        $migrations = $this->getLast($this->getMigrations(true));
-
-        $this->requireFiles($migrations->toArray());
-
-        $migrated = [];
-
-        foreach ($migrations as $migration) {
-            $data = $this->find($migration);
-
-            if ($data->count()) {
-                $migrated[] = $migration;
-
-                $this->down($migration);
-
-                $data->delete();
-            }
-        }
-
-        return $migrated;
+        return $this->rollbackMigrations($this->getLast($this->getMigrations(true))->toArray(), $pretend);
     }
 
     /**
-     * Reset migration.
+     * Reset all the migrations.
      *
-     * @return array
+     * Without $pretend, returns the names of the rolled back migrations. With $pretend,
+     * nothing is run or deleted, and the SQL each down() would run is returned instead,
+     * keyed by migration name.
+     *
+     * @return array<int, string>|array<string, array<int, string>>
      */
-    public function reset()
+    public function reset(bool $pretend = false)
     {
-        $migrations = $this->getMigrations(true);
+        return $this->rollbackMigrations($this->getMigrations(true), $pretend);
+    }
 
+    /**
+     * Roll back the given migrations that have been run.
+     *
+     * @param  array<int, string>  $migrations
+     * @return array<int, string>|array<string, array<int, string>>
+     */
+    protected function rollbackMigrations(array $migrations, bool $pretend)
+    {
         $this->requireFiles($migrations);
 
         $migrated = [];
@@ -172,13 +172,21 @@ class Migrator
         foreach ($migrations as $migration) {
             $data = $this->find($migration);
 
-            if ($data->count()) {
-                $migrated[] = $migration;
-
-                $this->down($migration);
-
-                $data->delete();
+            if (! $data->count()) {
+                continue;
             }
+
+            if ($pretend) {
+                $migrated[$migration] = $this->pretendDown($migration);
+
+                continue;
+            }
+
+            $migrated[] = $migration;
+
+            $this->down($migration);
+
+            $data->delete();
         }
 
         return $migrated;
@@ -192,6 +200,62 @@ class Migrator
     public function down($migration)
     {
         $this->resolve($migration)->down();
+    }
+
+    /**
+     * Get the SQL queries the down schema of the given migration would run, without running them.
+     *
+     * @param  string  $migration
+     * @return array<int, string>
+     */
+    public function pretendDown($migration): array
+    {
+        return $this->getQueries($this->resolve($migration), 'down');
+    }
+
+    /**
+     * Get all the queries that would be run for a migration method.
+     *
+     * The connection is the migration's own, else the selected database, else the default.
+     * It is made the default connection during the call, so the Schema facade pretends too.
+     *
+     * @param  object  $migration
+     * @return array<int, string>
+     */
+    protected function getQueries($migration, string $method): array
+    {
+        $name = method_exists($migration, 'getConnection') ? $migration->getConnection() : null;
+
+        $connection = $this->laravel['db']->connection($name ?: ($this->database ?: null));
+
+        $queries = $connection->pretend(function () use ($connection, $migration, $method) {
+            if (method_exists($migration, $method)) {
+                $this->runMethod($connection, $migration, $method);
+            }
+        });
+
+        return array_column($queries, 'query');
+    }
+
+    /**
+     * Run a migration method with the given connection as the default connection.
+     *
+     * @param  Connection  $connection
+     * @param  object  $migration
+     */
+    protected function runMethod($connection, $migration, string $method): void
+    {
+        $db = $this->laravel['db'];
+
+        $previousConnection = $db->getDefaultConnection();
+
+        try {
+            $db->setDefaultConnection($connection->getNameWithReadWriteType());
+
+            $migration->{$method}();
+        } finally {
+            $db->setDefaultConnection($previousConnection);
+        }
     }
 
     /**

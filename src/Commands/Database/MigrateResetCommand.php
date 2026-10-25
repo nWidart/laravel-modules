@@ -38,6 +38,12 @@ class MigrateResetCommand extends BaseCommand implements ConfirmableCommand
             $migrator->setDatabase($database);
         }
 
+        if ($this->option('pretend')) {
+            $this->pretend($migrator->reset(pretend: true), $module->getName());
+
+            return;
+        }
+
         $migrated = $migrator->reset();
 
         if (count($migrated)) {
@@ -49,6 +55,25 @@ class MigrateResetCommand extends BaseCommand implements ConfirmableCommand
         }
 
         $this->components->warn("Nothing to rollback on module <fg=cyan;options=bold>{$module->getName()}</>");
+    }
+
+    /**
+     * Show the SQL each migration would run, without running it.
+     *
+     * @param  array<string, array<int, string>>  $queries
+     */
+    protected function pretend(array $queries, string $module): void
+    {
+        if (empty($queries)) {
+            $this->components->warn("Nothing to rollback on module <fg=cyan;options=bold>{$module}</>");
+
+            return;
+        }
+
+        foreach ($queries as $migration => $sql) {
+            $this->components->twoColumnDetail($migration);
+            $this->components->bulletList($sql);
+        }
     }
 
     public function getInfo(): ?string
