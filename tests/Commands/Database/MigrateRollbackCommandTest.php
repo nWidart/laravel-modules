@@ -39,6 +39,10 @@ class MigrateRollbackCommandTest extends BaseTestCase
         $this->app['env'] = 'testing';
 
         $this->repository->delete('Blog');
+
+        if ($this->repository->has('Shop')) {
+            $this->repository->delete('Shop');
+        }
         parent::tearDown();
     }
 
@@ -159,6 +163,38 @@ PHP);
 
         $this->mockConsoleOutput = true;
         $this->artisan('module:migrate-rollback', ['module' => ['Blog'], '--force' => true])
+            ->assertSuccessful();
+
+        $this->assertFalse(Schema::hasTable('blog_posts'));
+        $this->assertFalse($this->migrationIsLogged());
+    }
+
+    public function test_it_rolls_back_all_modules_in_descending_priority()
+    {
+        $this->createModule('Shop');
+        $this->writeMigration(base_path('modules/Shop/database/migrations'), 'shop_orders');
+        $this->repository->find('Blog')->json()->set('priority', 1)->save();
+        $this->repository->find('Shop')->json()->set('priority', 2)->save();
+        $this->rebootMigrator();
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Shop']]);
+
+        $code = $this->artisan('module:migrate-rollback', ['--all' => true]);
+        $output = $this->app[Kernel::class]->output();
+
+        $this->assertSame(0, $code);
+        $this->assertFalse(Schema::hasTable('blog_posts'));
+        $this->assertFalse(Schema::hasTable('shop_orders'));
+        $this->assertLessThan(
+            strpos($output, self::MIGRATION),
+            strpos($output, '2020_01_01_000000_create_shop_orders_table'),
+            'The higher priority module should be rolled back first.'
+        );
+    }
+
+    public function test_it_rolls_back_every_module_with_all_without_interaction()
+    {
+        $this->mockConsoleOutput = true;
+        $this->artisan('module:migrate-rollback', ['--all' => true, '--no-interaction' => true])
             ->assertSuccessful();
 
         $this->assertFalse(Schema::hasTable('blog_posts'));

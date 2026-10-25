@@ -42,14 +42,21 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
      */
     protected $description = 'Prune models by module that are no longer needed';
 
+    /**
+     * Resolve --all into the module argument. This runs for every input and before the
+     * required module argument is validated, unlike promptForMissingArguments().
+     */
+    protected function initialize(InputInterface $input, OutputInterface $output): void
+    {
+        parent::initialize($input, $output);
+
+        if ($input->getOption('all')) {
+            $input->setArgument('module', [self::ALL]);
+        }
+    }
+
     protected function promptForMissingArguments(InputInterface $input, OutputInterface $output): void
     {
-        if ($this->option('all')) {
-            $input->setArgument('module', [self::ALL]);
-
-            return;
-        }
-
         if (! empty($input->getArgument('module'))) {
             return;
         }
