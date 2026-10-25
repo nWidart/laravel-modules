@@ -135,35 +135,56 @@ abstract class ModuleServiceProvider extends ServiceProvider
     {
         $configPath = module_path($this->name, config('modules.paths.generator.config.path'));
 
-        if (is_dir($configPath)) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
+        if (! is_dir($configPath)) {
+            return;
+        }
 
-            foreach ($iterator as $file) {
-                if ($file->isFile() && $file->getExtension() === 'php') {
-                    $config = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
-                    $configKey = str_replace(DIRECTORY_SEPARATOR, '.', $config);
-                    $configKey = str_replace('.php', '', $configKey);
+        foreach ($this->moduleConfigFiles($configPath) as $config => $path) {
+            $configKey = str_replace(DIRECTORY_SEPARATOR, '.', $config);
+            $configKey = str_replace('.php', '', $configKey);
 
-                    $segments = explode('.', $this->nameLower.'.'.$configKey);
+            $segments = explode('.', $this->nameLower.'.'.$configKey);
 
-                    // Remove duplicated adjacent segments
-                    $normalized = [];
-                    foreach ($segments as $segment) {
-                        if (end($normalized) !== $segment) {
-                            $normalized[] = $segment;
-                        }
-                    }
-
-                    $key = ($config === 'config.php') ? $this->nameLower : implode('.', $normalized);
-
-                    // Publish to the file Laravel's config loader maps back to $key (a.b.c => config/a/b/c.php).
-                    $publishPath = config_path(str_replace('.', DIRECTORY_SEPARATOR, $key).'.php');
-                    $this->publishes([$file->getPathname() => $publishPath], 'config');
-
-                    $this->merge_config_from($file->getPathname(), $key);
+            // Remove duplicated adjacent segments
+            $normalized = [];
+            foreach ($segments as $segment) {
+                if (end($normalized) !== $segment) {
+                    $normalized[] = $segment;
                 }
             }
+
+            $key = ($config === 'config.php') ? $this->nameLower : implode('.', $normalized);
+
+            // Publish to the file Laravel's config loader maps back to $key (a.b.c => config/a/b/c.php).
+            $publishPath = config_path(str_replace('.', DIRECTORY_SEPARATOR, $key).'.php');
+            $this->publishes([$path => $publishPath], 'config');
+
+            $this->merge_config_from($path, $key);
         }
+    }
+
+    /**
+     * The module's config files, keyed by path relative to the config directory.
+     *
+     * config.php comes first, then the other files sorted by path. A dedicated file such as
+     * settings.php therefore always wins over a "settings" key in config.php, whatever the
+     * order the filesystem lists the files in.
+     *
+     * @return array<string, string>
+     */
+    private function moduleConfigFiles(string $configPath): array
+    {
+        $files = [];
+
+        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath)) as $file) {
+            if ($file->isFile() && $file->getExtension() === 'php') {
+                $files[str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname())] = $file->getPathname();
+            }
+        }
+
+        uksort($files, fn (string $a, string $b) => [$a !== 'config.php', $a] <=> [$b !== 'config.php', $b]);
+
+        return $files;
     }
 
     /**

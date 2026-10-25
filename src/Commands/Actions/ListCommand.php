@@ -50,7 +50,7 @@ class ListCommand extends Command
             $rows[] = [
                 $module->getName(),
                 $module->isEnabled() ? '<fg=green>Enabled</>' : '<fg=red>Disabled</>',
-                $module->get('priority'),
+                $module->getPriority(),
                 $module->getPath(),
             ];
         }

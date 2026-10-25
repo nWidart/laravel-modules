@@ -142,11 +142,13 @@ class CheckLangCommand extends BaseCommand
 
                     if ($directory['name'] != $langDirectory) {
 
-                        $basePath = str_replace($directory['name'], $langDirectory, $directory['path']);
+                        // Swap only the locale directory: the locale can also appear elsewhere in the path (en in /home/ben/).
+                        $basePath = dirname($directory['path']).DIRECTORY_SEPARATOR.$langDirectory;
 
                         $otherLangKeys = $this->getLangKeys($basePath.DIRECTORY_SEPARATOR.$file);
 
                         if ($otherLangKeys == false) {
+                            // The file is missing in this locale; checkMissingFiles() already reported it.
                             return;
                         }
 

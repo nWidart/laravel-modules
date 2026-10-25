@@ -72,6 +72,22 @@ class LaravelModuleTest extends BaseTestCase
         $this->assertEquals('recipe module', $this->module->getDescription());
     }
 
+    public function test_it_defaults_priority_and_description_when_module_json_has_none()
+    {
+        $module = $this->moduleWithJson(['name' => 'Bare']);
+
+        $this->assertSame('0', $module->getPriority());
+        $this->assertSame('', $module->getDescription());
+    }
+
+    public function test_it_gets_priority_and_description_from_module_json()
+    {
+        $module = $this->moduleWithJson(['name' => 'Bare', 'priority' => 5, 'description' => 'A bare module']);
+
+        $this->assertSame('5', $module->getPriority());
+        $this->assertSame('A bare module', $module->getDescription());
+    }
+
     public function test_it_gets_module_path()
     {
         $this->assertEquals(__DIR__.'/stubs/valid/Recipe', $this->module->getPath());
@@ -215,6 +231,16 @@ class LaravelModuleTest extends BaseTestCase
     public function test_it_can_load_assets_is_empty_when_no_manifest_exists()
     {
         $this->assertEquals([], $this->module->getAssets());
+    }
+
+    private function moduleWithJson(array $json): TestingModule
+    {
+        $path = sys_get_temp_dir().'/laravel-modules-'.uniqid();
+        $this->app['files']->ensureDirectoryExists($path);
+        $this->app['files']->put($path.'/module.json', json_encode($json));
+        $this->beforeApplicationDestroyed(fn () => $this->app['files']->deleteDirectory($path));
+
+        return new TestingModule($this->app, $json['name'], $path);
     }
 }
 

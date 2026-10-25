@@ -54,6 +54,26 @@ class ModuleServiceProviderTest extends BaseTestCase
         $this->assertTrue(config('blog.settings.cache'));
     }
 
+    public function test_a_dedicated_config_file_wins_over_the_same_key_in_config_php()
+    {
+        // Written in this order so a directory listing in creation order would load config.php last.
+        $this->writeModuleConfig('settings.php', ['theme' => 'light']);
+        $this->writeModuleConfig('nested/options.php', ['enabled' => true]);
+        $this->writeModuleConfig('config.php', [
+            'name' => 'Blog',
+            'settings' => ['theme' => 'dark', 'per_page' => 10],
+            'nested' => ['options' => ['enabled' => false, 'driver' => 'file']],
+        ]);
+
+        $this->registerModuleConfig();
+
+        $this->assertSame('Blog', config('blog.name'));
+        $this->assertSame('light', config('blog.settings.theme'));
+        $this->assertSame(10, config('blog.settings.per_page'));
+        $this->assertTrue(config('blog.nested.options.enabled'));
+        $this->assertSame('file', config('blog.nested.options.driver'));
+    }
+
     public function test_config_files_are_published_to_the_path_of_their_config_key()
     {
         $this->writeModuleConfig('config.php', ['name' => 'Blog']);

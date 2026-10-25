@@ -127,19 +127,19 @@ abstract class Module
     }
 
     /**
-     * Get description.
+     * Get description, or an empty string when module.json has none.
      */
     public function getDescription(): string
     {
-        return $this->get('description');
+        return (string) ($this->get('description') ?? '');
     }
 
     /**
-     * Get priority.
+     * Get priority, or '0' when module.json has none (the default ModuleManifest also sorts by).
      */
     public function getPriority(): string
     {
-        return $this->get('priority');
+        return (string) ($this->get('priority') ?? 0);
     }
 
     /**
