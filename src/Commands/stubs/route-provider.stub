@@ -24,9 +24,14 @@ class $CLASS$ extends ServiceProvider
      */
     public function map(): void
     {
+        %%START_API_ROUTES%%
         $this->mapApiRoutes();
+        %%END_API_ROUTES%%
+        %%START_WEB_ROUTES%%
         $this->mapWebRoutes();
+        %%END_WEB_ROUTES%%
     }
+    %%START_WEB_ROUTES%%
 
     /**
      * Define the "web" routes for the application.
@@ -37,6 +42,8 @@ class $CLASS$ extends ServiceProvider
     {
         Route::middleware('web')->group(module_path($this->name, '$WEB_ROUTES_PATH$'));
     }
+    %%END_WEB_ROUTES%%
+    %%START_API_ROUTES%%
 
     /**
      * Define the "api" routes for the application.
@@ -47,4 +54,5 @@ class $CLASS$ extends ServiceProvider
     {
         Route::middleware('api')->prefix('api')->name('api.')->group(module_path($this->name, '$API_ROUTES_PATH$'));
     }
+    %%END_API_ROUTES%%
 }
