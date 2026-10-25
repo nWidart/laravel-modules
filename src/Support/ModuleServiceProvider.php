@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use ReflectionMethod;
 
 abstract class ModuleServiceProvider extends ServiceProvider
 {
@@ -83,10 +84,13 @@ abstract class ModuleServiceProvider extends ServiceProvider
 
     /**
      * Register command Schedules.
+     *
+     * The Schedule is resolved only when the module overrides configureSchedules(),
+     * so modules without schedules do not resolve it on every request.
      */
     protected function registerCommandSchedules(): void
     {
-        if (! method_exists($this, 'configureSchedules')) {
+        if ((new ReflectionMethod($this, 'configureSchedules'))->getDeclaringClass()->getName() === self::class) {
             return;
         }
 

@@ -172,6 +172,10 @@ abstract class Module
 
     /**
      * Bootstrap the application events.
+     *
+     * @deprecated The package no longer calls this method: enabled modules are loaded through
+     *             ModuleManifest, and each module's ModuleServiceProvider registers its translations.
+     *             Will be removed in v14.
      */
     public function boot(): void
     {
@@ -188,6 +192,10 @@ abstract class Module
 
     /**
      * Register module's translation.
+     *
+     * @deprecated Only called by the deprecated Module::boot(). Load translations in the module's
+     *             ModuleServiceProvider::registerTranslations(), or enable modules.auto-discover.translations.
+     *             Will be removed in v14.
      */
     protected function registerTranslation(): void
     {
@@ -232,6 +240,9 @@ abstract class Module
 
     /**
      * Register the module.
+     *
+     * @deprecated The package no longer calls this method: module providers and files are loaded
+     *             by the package service provider through ModuleManifest. Will be removed in v14.
      */
     public function register(): void
     {
@@ -369,6 +380,9 @@ abstract class Module
 
     /**
      * Check can load files of module on boot method.
+     *
+     * @deprecated Only called by the deprecated Module::boot() and Module::register(). Module files are
+     *             loaded by ModuleManifest::registerFiles(). Will be removed in v14.
      */
     protected function isLoadFilesOnBoot(): bool
     {

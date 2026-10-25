@@ -51,17 +51,6 @@ class CheckLangCommand extends BaseCommand
         return 'Checking languages ...';
     }
 
-    private function getLangFiles($module)
-    {
-        $files = [];
-        $path = $module->getPath().$this->langPath;
-        if (is_dir($path)) {
-            $files = array_merge($files, $this->laravel['files']->all($path));
-        }
-
-        return $files;
-    }
-
     private function getDirectories($module)
     {
         $moduleName = $module->getStudlyName();

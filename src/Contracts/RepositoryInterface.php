@@ -83,11 +83,18 @@ interface RepositoryInterface
 
     /**
      * Boot the modules.
+     *
+     * @deprecated The package no longer calls this method: enabled modules are loaded through
+     *             ModuleManifest, and each module boots through its own service providers.
+     *             Will be removed in v14.
      */
     public function boot(): void;
 
     /**
      * Register the modules.
+     *
+     * @deprecated The package no longer calls this method: enabled modules are registered by the
+     *             package service provider through ModuleManifest. Will be removed in v14.
      */
     public function register(): void;
 

@@ -5,13 +5,10 @@ namespace Nwidart\Modules\Commands\Database;
 use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Nwidart\Modules\Migrations\Migrator;
-use Nwidart\Modules\Traits\MigrationLoaderTrait;
 use Symfony\Component\Console\Input\InputOption;
 
 class MigrateRollbackCommand extends BaseCommand implements ConfirmableCommand
 {
-    use MigrationLoaderTrait;
-
     /**
      * The console command name.
      *
