@@ -48,4 +48,33 @@ async function collectModuleAssetsPaths(paths, modulesPath) {
   return paths;
 }
 
+/**
+ * Full-reload globs for every module, relative to the app root.
+ *
+ * Mirrors laravel-vite-plugin's default `refreshPaths`, one directory below
+ * `modulesPath`, so Blade, lang, and route changes in modules trigger a
+ * reload when Vite runs from the app root.
+ *
+ * @example
+ * import laravel, { refreshPaths } from 'laravel-vite-plugin';
+ * import collectModuleAssetsPaths, { moduleRefreshPaths } from './vite-module-loader.js';
+ *
+ * laravel({ input: inputPaths, refresh: [...refreshPaths, ...moduleRefreshPaths('Modules')] })
+ *
+ * @param {string} [modulesPath='Modules'] Modules directory, relative to the app root.
+ * @returns {string[]}
+ */
+export function moduleRefreshPaths(modulesPath = 'Modules') {
+  const base = modulesPath.replace(/\/+$/, '');
+
+  return [
+    'app/Livewire/**',
+    'app/View/Components/**',
+    'lang/**',
+    'resources/lang/**',
+    'resources/views/**',
+    'routes/**',
+  ].map((glob) => `${base}/*/${glob}`);
+}
+
 export default collectModuleAssetsPaths;
