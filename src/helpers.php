@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Foundation\Vite;
-use Illuminate\Support\Facades\Vite as ViteFacade;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\FileRepository;
 use Nwidart\Modules\Module;
@@ -60,10 +59,12 @@ if (! function_exists('public_path')) {
 
 if (! function_exists('module_vite')) {
     /**
-     * support for vite
+     * Get a Vite instance configured for a module's build.
+     *
+     * Configures a clone so the shared Vite instance used by `@vite` stays untouched.
      */
     function module_vite(string $module, string $asset, ?string $hotFilePath = null): Vite
     {
-        return ViteFacade::useHotFile($hotFilePath ?: storage_path('vite.hot'))->useBuildDirectory($module)->withEntryPoints([$asset]);
+        return (clone app(Vite::class))->useHotFile($hotFilePath ?: storage_path('vite.hot'))->useBuildDirectory($module)->withEntryPoints([$asset]);
     }
 }
