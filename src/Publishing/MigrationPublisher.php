@@ -12,6 +12,11 @@ class MigrationPublisher extends AssetPublisher
     private Migrator $migrator;
 
     /**
+     * Published migrations may be edited by the app, so existing files are kept unless forced.
+     */
+    protected bool $force = false;
+
+    /**
      * MigrationPublisher constructor.
      */
     public function __construct(Migrator $migrator)

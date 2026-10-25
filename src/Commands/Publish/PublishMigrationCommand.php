@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Commands\Publish;
 use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Migrations\Migrator;
 use Nwidart\Modules\Publishing\MigrationPublisher;
+use Symfony\Component\Console\Input\InputOption;
 
 class PublishMigrationCommand extends BaseCommand
 {
@@ -26,16 +27,25 @@ class PublishMigrationCommand extends BaseCommand
     {
         $module = $this->getModuleModel($name);
 
-        $this->components->task("Publishing Migration <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
-            with(new MigrationPublisher(new Migrator($module, $this->getLaravel())))
-                ->setRepository($this->laravel['modules'])
-                ->setConsole($this)
-                ->publish();
-        });
+        $publisher = (new MigrationPublisher(new Migrator($module, $this->getLaravel())))
+            ->setRepository($this->laravel['modules'])
+            ->setConsole($this)
+            ->setForce((bool) $this->option('force'));
+
+        $this->components->task("Publishing Migration <fg=cyan;options=bold>{$module->getName()}</> Module", fn () => $publisher->publish());
+
+        $publisher->reportSkippedFiles();
     }
 
     public function getInfo(): ?string
     {
         return 'Publishing module migrations ...';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            ['force', 'f', InputOption::VALUE_NONE, 'Overwrite migrations that were already published'],
+        ];
     }
 }

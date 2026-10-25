@@ -41,6 +41,18 @@ abstract class Publisher implements PublisherInterface
     protected bool $showMessage = true;
 
     /**
+     * Determine whether existing files at the destination are overwritten.
+     */
+    protected bool $force = false;
+
+    /**
+     * The destination files the last publish() kept because they already existed.
+     *
+     * @var array<int, string>
+     */
+    protected array $skippedFiles = [];
+
+    /**
      * The constructor.
      */
     public function __construct(Module $module)
@@ -66,6 +78,34 @@ abstract class Publisher implements PublisherInterface
         $this->showMessage = false;
 
         return $this;
+    }
+
+    /**
+     * Overwrite existing files at the destination, or keep them.
+     */
+    public function setForce(bool $force = true): self
+    {
+        $this->force = $force;
+
+        return $this;
+    }
+
+    /**
+     * Determine whether existing files at the destination are overwritten.
+     */
+    public function isForced(): bool
+    {
+        return $this->force;
+    }
+
+    /**
+     * Get the destination files the last publish() kept because they already existed.
+     *
+     * @return array<int, string>
+     */
+    public function getSkippedFiles(): array
+    {
+        return $this->skippedFiles;
     }
 
     /**
@@ -149,13 +189,70 @@ abstract class Publisher implements PublisherInterface
             $this->getFilesystem()->makeDirectory($destinationPath, 0775, true);
         }
 
-        if ($this->getFilesystem()->copyDirectory($sourcePath, $destinationPath)) {
+        $this->skippedFiles = [];
+
+        $copied = $this->force
+            ? $this->getFilesystem()->copyDirectory($sourcePath, $destinationPath)
+            : $this->copyMissingFiles($sourcePath, $destinationPath);
+
+        if ($copied) {
             if ($this->showMessage === true) {
-                $this->console->components->task($this->module->getStudlyName(), fn () => true);
+                $this->console->outputComponents()->task($this->module->getStudlyName(), fn () => true);
             }
         } else {
-            $this->console->components->task($this->module->getStudlyName(), fn () => false);
-            $this->console->components->error($this->error);
+            $this->console->outputComponents()->task($this->module->getStudlyName(), fn () => false);
+            $this->console->outputComponents()->error($this->error);
         }
+    }
+
+    /**
+     * Print the files the last publish() kept, with a hint to use --force.
+     * Call it outside of a console task, so the lines do not break the task output.
+     */
+    public function reportSkippedFiles(): void
+    {
+        if ($this->console === null || $this->skippedFiles === []) {
+            return;
+        }
+
+        foreach ($this->skippedFiles as $file) {
+            $this->console->outputComponents()->twoColumnDetail(
+                sprintf('File [%s] already exists', str_replace(base_path().'/', '', $file)),
+                '<fg=yellow;options=bold>SKIPPED</>'
+            );
+        }
+
+        $this->console->outputComponents()->warn('Existing files were kept. Use --force to overwrite them.');
+    }
+
+    /**
+     * Copy each source file that does not exist at the destination yet, and record the others as skipped.
+     * .gitkeep placeholders are neither copied nor reported.
+     */
+    protected function copyMissingFiles(string $sourcePath, string $destinationPath): bool
+    {
+        $filesystem = $this->getFilesystem();
+
+        foreach ($filesystem->allFiles($sourcePath, true) as $file) {
+            if ($file->getFilename() === '.gitkeep') {
+                continue;
+            }
+
+            $target = $destinationPath.DIRECTORY_SEPARATOR.$file->getRelativePathname();
+
+            if ($filesystem->exists($target)) {
+                $this->skippedFiles[] = $target;
+
+                continue;
+            }
+
+            $filesystem->ensureDirectoryExists(dirname($target));
+
+            if (! $filesystem->copy($file->getPathname(), $target)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
