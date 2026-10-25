@@ -119,7 +119,8 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
     protected function registerTranslations(): void
     {
-        if (! $this->app['config']->get('modules.auto-discover.translations', true)) {
+        // Runs before the package config is merged, so the fallback must match the package default.
+        if (! $this->app['config']->get('modules.auto-discover.translations', false)) {
             return;
         }
         $this->callAfterResolving('translator', function (TranslatorContract $translator) {
