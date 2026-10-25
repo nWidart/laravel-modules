@@ -5,7 +5,6 @@ namespace Nwidart\Modules;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\ProviderRepository;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
 
 abstract class ModulesServiceProvider extends ServiceProvider
@@ -26,6 +25,8 @@ abstract class ModulesServiceProvider extends ServiceProvider
     protected function registerModules()
     {
         $manifest = app(ModuleManifest::class);
+
+        $manifest->registerAliases();
 
         (new ProviderRepository($this->app, new Filesystem, $this->getCachedModulePath()))
             ->load($manifest->getProviders());
@@ -76,8 +77,20 @@ abstract class ModulesServiceProvider extends ServiceProvider
         $this->app->register(ConsoleServiceProvider::class);
     }
 
+    /**
+     * Get the path of the module providers manifest.
+     *
+     * The file is always named modules.php and placed in the directory of a Laravel cache file,
+     * so it can never take the name of that cache file (APP_SERVICES_CACHE / APP_CONFIG_CACHE may use any name).
+     */
     protected function getCachedModulePath()
     {
-        return Str::replaceLast('services.php', 'modules.php', $this->app->getCachedServicesPath());
+        // On Laravel Vapor the bootstrap cache directory is read-only, but the config cache is
+        // written at runtime to a writable location, so keep the module manifest next to it.
+        $cacheFile = $this->app['config']->get('modules.vapor_maintenance_mode')
+            ? $this->app->getCachedConfigPath()
+            : $this->app->getCachedServicesPath();
+
+        return dirname($cacheFile).DIRECTORY_SEPARATOR.'modules.php';
     }
 }
