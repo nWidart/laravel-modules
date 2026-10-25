@@ -21,9 +21,9 @@ abstract class Publisher implements PublisherInterface
     protected RepositoryInterface $repository;
 
     /**
-     * The laravel console instance.
+     * The laravel console instance, required by publish().
      */
-    protected Command $console;
+    protected ?Command $console = null;
 
     /**
      * The success message will displayed at console.
@@ -107,7 +107,7 @@ abstract class Publisher implements PublisherInterface
     /**
      * Get console instance.
      */
-    public function getConsole(): Command
+    public function getConsole(): ?Command
     {
         return $this->console;
     }
@@ -135,7 +135,7 @@ abstract class Publisher implements PublisherInterface
      */
     public function publish()
     {
-        if (! $this->console instanceof Command) {
+        if ($this->console === null) {
             $message = "The 'console' property must instance of \\Illuminate\\Console\\Command.";
 
             throw new \RuntimeException($message);

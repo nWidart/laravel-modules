@@ -466,7 +466,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     {
         $installer = new Installer($name, $version, $type, $subtree);
 
-        return $installer->run();
+        return $installer->setRepository($this)->run();
     }
 
     /**

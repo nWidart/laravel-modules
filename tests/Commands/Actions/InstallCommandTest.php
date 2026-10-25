@@ -4,7 +4,9 @@ namespace Nwidart\Modules\Tests\Commands\Actions;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Nwidart\Modules\Tests\Process\Concerns\CreatesLocalGitRepository;
 
@@ -51,6 +53,7 @@ class InstallCommandTest extends BaseTestCase
     {
         $this->deleteTmpDir();
         @unlink(base_path('modules.json'));
+        (new Filesystem)->deleteDirectory($this->app[RepositoryInterface::class]->getModulePath('Blog'));
 
         parent::tearDown();
     }
@@ -142,5 +145,50 @@ class InstallCommandTest extends BaseTestCase
 
         $this->assertSame(0, $code);
         $this->assertSame(['Blog'], $this->updateCommand->updated);
+    }
+
+    public function test_it_installs_the_master_branch_when_no_version_is_given()
+    {
+        $this->addBranchToBareRepository('master');
+
+        $code = $this->artisan('module:install', [
+            'name' => 'acme/blog',
+            '--type' => $this->repoUrl,
+            '--path' => $this->destination,
+        ]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame('master', $this->currentBranch($this->destination));
+        $this->assertSame(['Blog'], $this->updateCommand->updated);
+    }
+
+    public function test_it_installs_into_the_modules_path_when_no_path_is_given()
+    {
+        $destination = $this->app[RepositoryInterface::class]->getModulePath('Blog');
+        $this->assertDirectoryDoesNotExist($destination);
+
+        $code = $this->artisan('module:install', [
+            'name' => 'acme/blog',
+            'version' => 'develop',
+            '--type' => $this->repoUrl,
+        ]);
+
+        $this->assertSame(0, $code);
+        $this->assertFileExists($destination.'module.json');
+        $this->assertSame('develop', $this->currentBranch($destination));
+        $this->assertSame(['Blog'], $this->updateCommand->updated);
+    }
+
+    public function test_repository_install_runs_and_installs_into_the_modules_path()
+    {
+        $this->addBranchToBareRepository('master');
+        $repository = $this->app[RepositoryInterface::class];
+        $destination = $repository->getModulePath('Blog');
+
+        $process = $repository->install('acme/blog', 'master', $this->repoUrl);
+
+        $this->assertTrue($process->isSuccessful(), $process->getErrorOutput());
+        $this->assertFileExists($destination.'module.json');
+        $this->assertSame('master', $this->currentBranch($destination));
     }
 }

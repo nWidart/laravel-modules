@@ -88,12 +88,12 @@ class InstallCommand extends Command
      * Install the specified module.
      *
      * @param  string  $name
-     * @param  string  $version
-     * @param  string  $type
+     * @param  string|null  $version  Null installs the Installer default.
+     * @param  string|null  $type
      * @param  bool  $tree
      * @return bool Whether the installation succeeded.
      */
-    protected function install($name, $version = 'dev-master', $type = 'composer', $tree = false): bool
+    protected function install($name, $version = null, $type = null, $tree = false): bool
     {
         $installer = new Installer(
             $name,
