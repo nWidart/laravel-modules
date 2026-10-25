@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands\Make;
 
+use Nwidart\Modules\Generators\ModuleGenerator;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -75,12 +76,14 @@ class RouteProviderMakeCommand extends GeneratorCommand
     /**
      * Whether module:make generates the given routes file.
      *
-     * A routes file removed from `modules.stubs.files` is never created, so the
+     * A routes file removed from `modules.stubs.files`, or skipped because
+     * `paths.generator.routes.generate` is false, is never created, so the
      * provider must not map it.
      */
     private function hasRoutesStub(string $stub): bool
     {
-        return array_key_exists($stub, $this->laravel['modules']->config('stubs.files') ?? []);
+        return array_key_exists($stub, $this->laravel['modules']->config('stubs.files') ?? [])
+            && ModuleGenerator::stubIsGenerated($stub);
     }
 
     /**

@@ -149,6 +149,9 @@ return [
         |
         | Customise the paths where the folders will be generated.
         | Setting the generate key to false will not generate that folder.
+        | It also skips the stubs.files that the key owns: routes (routes/web,
+        | routes/api), views (index, master layout), config (config/config.php)
+        | and assets (the asset files, vite.config.js and package.json).
         */
         'generator' => [
             // app/
