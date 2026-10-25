@@ -73,7 +73,8 @@ class CommandMakeCommand extends GeneratorCommand
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub('/command.stub', [
-            'COMMAND_NAME' => $this->getCommandName(),
+            // The stub puts the signature in a single-quoted PHP string.
+            'COMMAND_NAME' => addcslashes($this->getCommandName(), '\\\''),
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS' => $this->getClass(),
         ]))->render();
