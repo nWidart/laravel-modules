@@ -69,6 +69,27 @@ class ModuleGenerator extends Generator
     ];
 
     /**
+     * The generator key that owns each default stub in modules.stubs.files.
+     *
+     * A stub is not written when its owner has "generate" set to false. vite and package
+     * belong to assets: the vite.config.js stub builds resources/assets/{js,sass}, and
+     * package.json only exists for that build. Stubs not listed here (composer, custom
+     * stubs) are always written. Keys are matched by stub name, not by file path, so a
+     * changed generator path does not change which stubs it owns.
+     */
+    private const STUB_GENERATOR_KEYS = [
+        'routes/web' => 'routes',
+        'routes/api' => 'routes',
+        'views/index' => 'views',
+        'views/master' => 'views',
+        'scaffold/config' => 'config',
+        'assets/js/app' => 'assets',
+        'assets/sass/app' => 'assets',
+        'vite' => 'assets',
+        'package' => 'assets',
+    ];
+
+    /**
      * The module name will created.
      */
     protected ?string $name = null;
@@ -599,7 +620,8 @@ class ModuleGenerator extends Generator
     /**
      * Get the stub files generateFiles() writes, keyed by stub name.
      *
-     * Inertia modules get no Blade views.
+     * Inertia modules get no Blade views. Stubs whose generator key has "generate"
+     * set to false are skipped, see STUB_GENERATOR_KEYS.
      *
      * @return array<string, string>
      */
@@ -611,7 +633,29 @@ class ModuleGenerator extends Generator
             unset($files['views/index'], $files['views/master']);
         }
 
-        return $files;
+        return array_filter(
+            $files,
+            fn (string $stub) => static::stubIsGenerated($stub),
+            ARRAY_FILTER_USE_KEY
+        );
+    }
+
+    /**
+     * Whether module:make writes the given stub, according to its generator key.
+     *
+     * A stub without an owner in STUB_GENERATOR_KEYS is always written. So is a stub
+     * whose owner is missing from paths.generator (a config published before the key
+     * existed), as before the flag was checked.
+     */
+    public static function stubIsGenerated(string $stub): bool
+    {
+        $key = self::STUB_GENERATOR_KEYS[$stub] ?? null;
+
+        if ($key === null || config("modules.paths.generator.$key") === null) {
+            return true;
+        }
+
+        return GenerateConfigReader::read($key)->generate();
     }
 
     /**

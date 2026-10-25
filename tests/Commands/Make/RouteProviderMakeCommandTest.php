@@ -163,6 +163,16 @@ class RouteProviderMakeCommandTest extends BaseTestCase
         $this->assertStringNotContainsString('mapApiRoutes', $file);
     }
 
+    public function test_it_maps_no_routes_when_routes_generation_is_disabled(): void
+    {
+        $this->app['config']->set('modules.paths.generator.routes.generate', false);
+
+        $file = $this->generateRouteProvider();
+
+        $this->assertStringNotContainsString('mapWebRoutes', $file);
+        $this->assertStringNotContainsString('mapApiRoutes', $file);
+    }
+
     private function removeStubFiles(string ...$stubs): void
     {
         $files = $this->app['config']->get('modules.stubs.files');

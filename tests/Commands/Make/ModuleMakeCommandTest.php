@@ -365,6 +365,99 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_does_not_generate_asset_files_when_assets_generation_is_disabled()
+    {
+        $this->app['config']->set('modules.paths.generator.assets.generate', false);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertDirectoryDoesNotExist($this->modulePath.'/resources/assets');
+        $this->assertFileDoesNotExist($this->modulePath.'/resources/assets/js/app.js');
+        $this->assertFileDoesNotExist($this->modulePath.'/resources/assets/sass/app.scss');
+        $this->assertFileDoesNotExist($this->modulePath.'/vite.config.js');
+        $this->assertFileDoesNotExist($this->modulePath.'/package.json');
+        $this->assertFileExists($this->modulePath.'/composer.json');
+        $this->assertFileExists($this->modulePath.'/module.json');
+    }
+
+    public function test_it_does_not_generate_view_files_when_views_generation_is_disabled()
+    {
+        $this->app['config']->set('modules.paths.generator.views.generate', false);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertFileDoesNotExist($this->modulePath.'/resources/views/index.blade.php');
+        $this->assertFileDoesNotExist($this->modulePath.'/resources/views/components/layouts/master.blade.php');
+    }
+
+    public function test_it_does_not_generate_route_files_when_routes_generation_is_disabled()
+    {
+        $this->app['config']->set('modules.paths.generator.routes.generate', false);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertFileDoesNotExist($this->modulePath.'/routes/web.php');
+        $this->assertFileDoesNotExist($this->modulePath.'/routes/api.php');
+        $this->assertDirectoryDoesNotExist($this->modulePath.'/routes');
+
+        // The route provider must not load route files that were not written.
+        $provider = $this->finder->get($this->getModuleAppPath().'/Providers/RouteServiceProvider.php');
+        $this->assertStringNotContainsString('mapWebRoutes', $provider);
+        $this->assertStringNotContainsString('mapApiRoutes', $provider);
+    }
+
+    public function test_it_does_not_generate_the_config_file_when_config_generation_is_disabled()
+    {
+        $this->app['config']->set('modules.paths.generator.config.generate', false);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertFileDoesNotExist($this->modulePath.'/config/config.php');
+        $this->assertDirectoryDoesNotExist($this->modulePath.'/config');
+    }
+
+    public function test_it_generates_stub_files_whose_generator_key_is_not_configured()
+    {
+        // A config published before a generator key existed: the stubs it owns are still written.
+        $this->app['config']->set('modules.paths.generator', array_diff_key(
+            $this->app['config']->get('modules.paths.generator'),
+            array_flip(['routes', 'views', 'config', 'assets'])
+        ));
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+
+        foreach (config('modules.stubs.files') as $file) {
+            $this->assertFileExists($this->modulePath.'/'.$file);
+        }
+
+        $this->assertStringContainsString('mapWebRoutes', $this->finder->get($this->getModuleAppPath().'/Providers/RouteServiceProvider.php'));
+    }
+
+    public function test_it_generates_a_custom_stub_file_when_every_generator_is_disabled()
+    {
+        $this->finder->ensureDirectoryExists(base_path('custom-stubs/custom'));
+        $this->finder->put(base_path('custom-stubs/custom/readme.stub'), '# $STUDLY_NAME$');
+        Stub::setBasePath(base_path('custom-stubs'));
+        $this->app['config']->set('modules.stubs.files.custom/readme', 'docs/README.md');
+        $this->app['config']->set('modules.stubs.replacements.custom/readme', ['STUDLY_NAME']);
+
+        foreach (['routes', 'views', 'config', 'assets'] as $key) {
+            $this->app['config']->set("modules.paths.generator.$key.generate", false);
+        }
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame('# Blog', $this->finder->get($this->modulePath.'/docs/README.md'));
+        $this->assertFileExists($this->modulePath.'/composer.json');
+    }
+
     public function test_it_generates_enabled_module()
     {
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
