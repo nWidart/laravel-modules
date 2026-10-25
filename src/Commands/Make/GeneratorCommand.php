@@ -7,6 +7,7 @@ use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 use Nwidart\Modules\Generators\FileGenerator;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Traits\PathNamespace;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * @method string getModuleName() Provided by Traits\ModuleCommandTrait.
@@ -37,10 +38,38 @@ abstract class GeneratorCommand extends Command
     abstract protected function getDestinationFilePath();
 
     /**
+     * Create a new generator command instance.
+     *
+     * Every generator accepts --force. Commands that declare their own
+     * --force option keep it; -f is added only when no other option uses it.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $definition = $this->getDefinition();
+
+        if (! $definition->hasOption('force')) {
+            $this->addOption(
+                'force',
+                $definition->hasShortcut('f') ? null : 'f',
+                InputOption::VALUE_NONE,
+                'Overwrite the file if it already exists',
+            );
+        }
+    }
+
+    /**
      * Execute the console command.
      */
     public function handle(): int
     {
+        if (($error = $this->validateNameArgument()) !== null) {
+            $this->components->error($error);
+
+            return E_ERROR;
+        }
+
         $path = str_replace('\\', '/', $this->getDestinationFilePath());
 
         if (! $this->laravel['files']->isDirectory($dir = dirname($path))) {
@@ -61,6 +90,34 @@ abstract class GeneratorCommand extends Command
         }
 
         return 0;
+    }
+
+    /**
+     * Reject a name that would write outside the module: an absolute path or
+     * a path with a ".." segment. Returns the error message, or null when valid.
+     */
+    protected function validateNameArgument(): ?string
+    {
+        if ($this->argumentName === '' || ! $this->hasArgument($this->argumentName)) {
+            return null;
+        }
+
+        $name = $this->argument($this->argumentName);
+
+        if (! is_string($name) || $name === '') {
+            return null;
+        }
+
+        $normalized = str_replace('\\', '/', $name);
+
+        $isAbsolute = str_starts_with($normalized, '/') || preg_match('/^[A-Za-z]:/', $normalized) === 1;
+        $hasParentSegment = in_array('..', explode('/', $normalized), true);
+
+        if ($isAbsolute || $hasParentSegment) {
+            return "The {$this->argumentName} [{$name}] must not be an absolute path or contain \"..\" segments.";
+        }
+
+        return null;
     }
 
     /**

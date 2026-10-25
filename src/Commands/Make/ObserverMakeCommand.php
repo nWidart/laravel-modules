@@ -121,9 +121,7 @@ class ObserverMakeCommand extends GeneratorCommand
     {
         $this->components->info('Creating observer...');
 
-        parent::handle();
-
-        return 0;
+        return parent::handle();
     }
 
     /**

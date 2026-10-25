@@ -11,7 +11,9 @@ use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Snapshots\MatchesSnapshots;
+use Symfony\Component\Console\Exception\RuntimeException;
 
 class ModuleMakeCommandTest extends BaseTestCase
 {
@@ -774,5 +776,95 @@ class ModuleMakeCommandTest extends BaseTestCase
                 $this->app['config']->set("modules.paths.generator.$key", $config);
             }
         }
+    }
+
+    public function test_it_fails_without_a_name_in_non_interactive_mode()
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Not enough arguments (missing: "name").');
+
+        $this->artisan('module:make', ['--no-interaction' => true]);
+    }
+
+    public function test_it_prompts_for_the_name_in_interactive_mode()
+    {
+        $this->mockConsoleOutput = true;
+
+        $this->artisan('module:make')
+            ->expectsQuestion('What is the name of the module?', 'Blog')
+            ->assertExitCode(0);
+
+        $this->assertDirectoryExists($this->modulePath);
+    }
+
+    public static function invalidModuleNames(): array
+    {
+        return [
+            'parent segment' => ['../Evil'],
+            'nested path' => ['Evil/Nested'],
+            'backslash' => ['..\\Evil'],
+            'double dot' => ['Evil..'],
+            'empty' => [''],
+            'only a space' => [' '],
+            'dot' => ['Foo.Bar'],
+            'leading digit' => ['1Blog'],
+        ];
+    }
+
+    #[DataProvider('invalidModuleNames')]
+    public function test_it_rejects_module_names_that_are_not_valid_identifiers(string $name)
+    {
+        $before = $this->modulesFiles();
+
+        $code = $this->artisan('module:make', ['name' => [$name]]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString("The module name [{$name}] is not valid.", Artisan::output());
+        $this->assertSame($before, $this->modulesFiles());
+        $this->assertDirectoryDoesNotExist(base_path('Evil'));
+        $this->assertFileDoesNotExist($this->activator->getStatusesFilePath());
+    }
+
+    public static function acceptedModuleNames(): array
+    {
+        return [
+            'kebab' => ['zz-probe-mod', 'ZzProbeMod'],
+            'snake' => ['snake_mod', 'SnakeMod'],
+            'spaced' => ['Spaced Mod', 'SpacedMod'],
+            'with digits' => ['Blog2', 'Blog2'],
+        ];
+    }
+
+    #[DataProvider('acceptedModuleNames')]
+    public function test_it_accepts_names_that_studly_case_to_valid_identifiers(string $name, string $studly)
+    {
+        $code = $this->artisan('module:make', ['name' => [$name]]);
+
+        $this->assertSame(0, $code);
+        $this->assertFileExists(base_path("modules/{$studly}/module.json"));
+    }
+
+    public function test_it_still_creates_valid_modules_next_to_a_rejected_name()
+    {
+        $code = $this->artisan('module:make', ['name' => ['../Evil', 'Blog']]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertDirectoryExists($this->modulePath);
+        $this->assertDirectoryDoesNotExist(base_path('Evil'));
+        $this->assertSame(['Blog' => true], json_decode($this->finder->get($this->activator->getStatusesFilePath()), true));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function modulesFiles(): array
+    {
+        $modulesPath = base_path('modules');
+
+        if (! $this->finder->isDirectory($modulesPath)) {
+            return [];
+        }
+
+        return array_map(fn ($file) => $file->getPathname(), $this->finder->allFiles($modulesPath, true));
     }
 }
