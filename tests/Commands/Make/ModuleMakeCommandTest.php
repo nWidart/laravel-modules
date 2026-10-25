@@ -11,6 +11,7 @@ use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Tests\BaseTestCase;
+use Nwidart\Modules\Tests\Support\Fixtures\QuotedValueReplacement;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Exception\RuntimeException;
@@ -51,6 +52,7 @@ class ModuleMakeCommandTest extends BaseTestCase
     protected function tearDown(): void
     {
         $this->artisan('module:delete', ['--all' => true, '--force' => true]);
+        $this->finder->deleteDirectory(base_path('custom-stubs'));
 
         $this->activator->reset();
         parent::tearDown();
@@ -866,5 +868,163 @@ class ModuleMakeCommandTest extends BaseTestCase
         }
 
         return array_map(fn ($file) => $file->getPathname(), $this->finder->allFiles($modulesPath, true));
+    }
+
+    public function test_it_generates_valid_json_and_routes_with_a_nested_module_namespace()
+    {
+        $this->app['config']->set('modules.namespace', 'App\Modules');
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+
+        $moduleJson = json_decode($this->finder->get($this->modulePath.'/module.json'), true, flags: JSON_THROW_ON_ERROR);
+        $this->assertSame(['App\Modules\Blog\Providers\BlogServiceProvider'], $moduleJson['providers']);
+
+        $composerJson = json_decode($this->finder->get($this->modulePath.'/composer.json'), true, flags: JSON_THROW_ON_ERROR);
+        $this->assertSame([
+            'App\Modules\Blog\\' => 'app/',
+            'App\Modules\Blog\Database\Factories\\' => 'database/factories/',
+            'App\Modules\Blog\Database\Seeders\\' => 'database/seeders/',
+        ], $composerJson['autoload']['psr-4']);
+        $this->assertSame(['App\Modules\Blog\Tests\\' => 'tests/'], $composerJson['autoload-dev']['psr-4']);
+
+        foreach (['routes/web', 'routes/api'] as $stub) {
+            $routes = $this->finder->get($this->modulePath.'/'.config('modules.stubs.files.'.$stub));
+
+            $this->assertStringContainsString('use App\Modules\Blog\Http\Controllers\BlogController;', $routes);
+            $this->assertStringNotContainsString('\\\\', $routes);
+        }
+    }
+
+    public function test_it_escapes_replacements_by_output_format_in_published_stubs()
+    {
+        $this->app['config']->set('modules.namespace', 'App\Modules');
+        $this->app['config']->set('modules.stubs.replacements.views/index', ['MODULE_NAMESPACE', 'STUDLY_NAME']);
+        $this->app['config']->set('modules.stubs.replacements.package', ['MODULE_NAMESPACE', 'STUDLY_NAME']);
+
+        $this->finder->ensureDirectoryExists(base_path('custom-stubs/views'));
+        $this->finder->put(base_path('custom-stubs/views/index.stub'), '{{-- $MODULE_NAMESPACE$\$STUDLY_NAME$ --}}');
+        $this->finder->put(base_path('custom-stubs/package.stub'), '{"namespace": "$MODULE_NAMESPACE$\\\\$STUDLY_NAME$"}');
+        Stub::setBasePath(base_path('custom-stubs'));
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+
+        $view = $this->finder->get($this->modulePath.'/'.config('modules.stubs.files.views/index'));
+        $this->assertSame('{{-- App\Modules\Blog --}}', $view);
+
+        $package = json_decode($this->finder->get($this->modulePath.'/package.json'), true, flags: JSON_THROW_ON_ERROR);
+        $this->assertSame('App\Modules\Blog', $package['namespace']);
+    }
+
+    public function test_it_generates_a_plain_module_with_valid_json_and_no_providers()
+    {
+        $code = $this->artisan('module:make', ['name' => ['Blog'], '--plain' => true]);
+
+        $this->assertSame(0, $code);
+
+        $content = $this->finder->get($this->modulePath.'/module.json');
+        $json = json_decode($content, true, flags: JSON_THROW_ON_ERROR);
+
+        $this->assertSame([], $json['providers']);
+        $this->assertSame('Blog', $json['name']);
+        $this->assertStringContainsString('    "providers": [],', $content);
+    }
+
+    public function test_it_keeps_user_listed_providers_in_a_plain_module()
+    {
+        $this->app['config']->set('modules.paths.generator.provider', ['path' => 'Base/Providers', 'generate' => true]);
+
+        $this->finder->ensureDirectoryExists(base_path('custom-stubs'));
+        $this->finder->put(base_path('custom-stubs/json.stub'), <<<'STUB'
+{
+    "name": "$STUDLY_NAME$",
+    "alias": "$LOWER_NAME$",
+    "providers": [
+        "$MODULE_NAMESPACE$\\$STUDLY_NAME$\\$PROVIDER_NAMESPACE$\\$STUDLY_NAME$ServiceProvider",
+        "Acme\\Shared\\SharedServiceProvider"
+    ],
+    "files": []
+}
+
+STUB);
+        Stub::setBasePath(base_path('custom-stubs'));
+
+        $code = $this->artisan('module:make', ['name' => ['Blog'], '--plain' => true]);
+
+        $this->assertSame(0, $code);
+
+        $json = json_decode($this->finder->get($this->modulePath.'/module.json'), true, flags: JSON_THROW_ON_ERROR);
+
+        $this->assertSame(['Acme\Shared\SharedServiceProvider'], $json['providers']);
+    }
+
+    public function test_it_generates_valid_json_with_no_providers_when_provider_generation_is_disabled()
+    {
+        $this->app['config']->set('modules.paths.generator.provider.generate', false);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+
+        $content = $this->finder->get($this->modulePath.'/module.json');
+        $json = json_decode($content, true, flags: JSON_THROW_ON_ERROR);
+
+        $this->assertSame([], $json['providers']);
+        $this->assertSame('blog', $json['alias']);
+    }
+
+    public function test_it_generates_a_module_without_stub_warnings_for_the_default_config()
+    {
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertStringNotContainsString('WARN', Artisan::output());
+    }
+
+    public function test_it_warns_about_an_unknown_replacement_key_and_still_generates_the_module()
+    {
+        $this->app['config']->set('modules.stubs.replacements.views/index', ['LOWER_NAME', 'NOT_A_REAL_KEY']);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertStringContainsString(
+            'Unknown replacement key [NOT_A_REAL_KEY] for stub [views/index]',
+            Artisan::output()
+        );
+        $this->assertFileExists($this->modulePath.'/'.config('modules.stubs.files.views/index'));
+    }
+
+    public function test_it_warns_about_unreplaced_tokens_in_a_rendered_stub()
+    {
+        $this->app['config']->set('modules.stubs.replacements.views/master', ['STUDLY_NAME', 'KEBAB_NAME']);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertStringContainsString(
+            'Stub [views/master] still contains unreplaced tokens: $LOWER_NAME$',
+            Artisan::output()
+        );
+    }
+
+    public function test_it_warns_when_a_custom_replacement_renders_invalid_json()
+    {
+        $keys = array_values(array_diff(config('modules.stubs.replacements.composer'), ['VENDOR']));
+        $this->app['config']->set('modules.stubs.replacements.composer', $keys + ['VENDOR' => QuotedValueReplacement::class]);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+
+        $output = Artisan::output();
+        $this->assertStringContainsString('Stub [composer] rendered invalid JSON: Syntax error.', $output);
+        $this->assertStringContainsString('ReplacementKeyCommand', $output);
+
+        // The file is still written, with the value inserted as returned.
+        $this->assertStringContainsString('"name": "Acme\Pkg "q"/blog"', $this->finder->get($this->modulePath.'/composer.json'));
     }
 }

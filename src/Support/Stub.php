@@ -75,16 +75,22 @@ class Stub
 
     /**
      * Get stub contents.
+     *
+     * All tokens are replaced in a single pass, so a replacement value that
+     * itself contains a `$TOKEN$` is written as-is and never substituted again.
      */
     public function getContents(): string
     {
         $contents = file_get_contents($this->getPath());
 
+        $tokens = [];
+
         foreach ($this->replaces as $search => $replace) {
-            $contents = str_replace('$'.strtoupper($search).'$', $replace, $contents);
+            // The first value for a token wins, as with the former sequential replacement.
+            $tokens['$'.strtoupper($search).'$'] ??= (string) $replace;
         }
 
-        return $contents;
+        return strtr($contents, $tokens);
     }
 
     /**
