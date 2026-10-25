@@ -103,12 +103,47 @@ class PublishTranslationCommandTest extends BaseTestCase
         $this->assertSame('Hello from resources/lang', __('blog::messages.greeting'));
     }
 
-    private function putModuleTranslation(string $greeting): void
+    public function test_it_keeps_edited_translations_and_publishes_new_files_when_published_again()
+    {
+        $this->putModuleTranslation('Hello from the module');
+        $this->artisan('module:publish-translation', ['module' => 'Blog']);
+
+        $publishedFile = lang_path('modules/blog/en/messages.php');
+        $this->finder->put($publishedFile, "<?php\n\nreturn ['greeting' => 'Hello from the app'];\n");
+        $this->putModuleTranslation('Hello again from the module', 'en/new.php');
+
+        $this->mockConsoleOutput = true;
+        $this->artisan('module:publish-translation', ['module' => 'Blog'])
+            ->expectsOutputToContain('already exists')
+            ->expectsOutputToContain('Use --force to overwrite them.')
+            ->assertSuccessful();
+
+        $this->assertStringContainsString('Hello from the app', $this->finder->get($publishedFile));
+        $this->assertStringContainsString('Hello again from the module', $this->finder->get(lang_path('modules/blog/en/new.php')));
+    }
+
+    public function test_it_overwrites_edited_translations_with_force()
+    {
+        $this->putModuleTranslation('Hello from the module');
+        $this->artisan('module:publish-translation', ['module' => 'Blog']);
+
+        $publishedFile = lang_path('modules/blog/en/messages.php');
+        $this->finder->put($publishedFile, "<?php\n\nreturn ['greeting' => 'Hello from the app'];\n");
+
+        $this->mockConsoleOutput = true;
+        $this->artisan('module:publish-translation', ['module' => 'Blog', '--force' => true])
+            ->doesntExpectOutputToContain('already exists')
+            ->assertSuccessful();
+
+        $this->assertStringContainsString('Hello from the module', $this->finder->get($publishedFile));
+    }
+
+    private function putModuleTranslation(string $greeting, string $file = 'en/messages.php'): void
     {
         $moduleLangPath = $this->getModuleBasePath().'/'.config('modules.paths.generator.lang.path');
-        $this->finder->ensureDirectoryExists($moduleLangPath.'/en');
+        $this->finder->ensureDirectoryExists(dirname($moduleLangPath.'/'.$file));
         $this->finder->put(
-            $moduleLangPath.'/en/messages.php',
+            $moduleLangPath.'/'.$file,
             "<?php\n\nreturn ['greeting' => '{$greeting}'];\n"
         );
     }

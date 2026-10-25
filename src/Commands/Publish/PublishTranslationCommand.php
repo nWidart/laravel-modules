@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Commands\Publish;
 
 use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Publishing\LangPublisher;
+use Symfony\Component\Console\Input\InputOption;
 
 class PublishTranslationCommand extends BaseCommand
 {
@@ -25,16 +26,25 @@ class PublishTranslationCommand extends BaseCommand
     {
         $module = $this->getModuleModel($name);
 
-        $this->components->task("Publishing Translations <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
-            with(new LangPublisher($module))
-                ->setRepository($this->laravel['modules'])
-                ->setConsole($this)
-                ->publish();
-        });
+        $publisher = (new LangPublisher($module))
+            ->setRepository($this->laravel['modules'])
+            ->setConsole($this)
+            ->setForce((bool) $this->option('force'));
+
+        $this->components->task("Publishing Translations <fg=cyan;options=bold>{$module->getName()}</> Module", fn () => $publisher->publish());
+
+        $publisher->reportSkippedFiles();
     }
 
     public function getInfo(): ?string
     {
         return 'Publishing module translations ...';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            ['force', 'f', InputOption::VALUE_NONE, 'Overwrite translations that were already published'],
+        ];
     }
 }

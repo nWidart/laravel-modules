@@ -12,6 +12,11 @@ class AssetPublisher extends Publisher
     protected bool $showMessage = false;
 
     /**
+     * Assets are build output, so publishing refreshes them.
+     */
+    protected bool $force = true;
+
+    /**
      * Get destination path.
      */
     public function getDestinationPath(): string
