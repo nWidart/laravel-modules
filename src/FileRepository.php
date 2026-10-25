@@ -23,9 +23,10 @@ abstract class FileRepository implements Countable, RepositoryInterface
     use Macroable;
 
     /**
-     * Application instance.
+     * Application instance (Laravel or Lumen). The constructor accepts any Container for
+     * backwards compatibility, but the repository calls application methods on it.
      *
-     * @var \Illuminate\Contracts\Foundation\Application|Application
+     * @var (Container&\Illuminate\Contracts\Foundation\Application)|(Container&Application)
      */
     protected $app;
 
@@ -63,6 +64,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * The constructor.
+     *
+     * @param  (Container&\Illuminate\Contracts\Foundation\Application)|(Container&Application)  $app
      */
     public function __construct(Container $app, ?string $path = null)
     {
@@ -113,6 +116,8 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Creates a new Module instance
+     *
+     * @param  (Container&\Illuminate\Contracts\Foundation\Application)|(Container&Application)  $app
      */
     abstract protected function createModule(Container $app, string $name, string $path): Module;
 

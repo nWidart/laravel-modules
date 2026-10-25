@@ -2,6 +2,16 @@ includes:
     - vendor/larastan/larastan/extension.neon
 
 parameters:
-    level: 1
+    level: 5
     paths:
         - src
+    ignoreErrors:
+        # Lumen is supported (src/Lumen, LumenModulesServiceProvider) but cannot be installed
+        # alongside Laravel in dev, so its classes are unknown to PHPStan.
+        -
+            identifier: class.notFound
+            message: '#Laravel\\Lumen\\#'
+        # Deprecated and unused by the package, kept for BC with apps that use it; removed in v14.
+        -
+            identifier: trait.unused
+            path: src/Traits/MigrationLoaderTrait.php

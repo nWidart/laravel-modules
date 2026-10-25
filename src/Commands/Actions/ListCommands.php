@@ -54,7 +54,7 @@ class ListCommands extends BaseCommand
     /**
      * Find all commands in a module
      *
-     * @return array<string, array<string, string|null>>
+     * @return list<array<string, string|null>>
      */
     protected function findCommands($module): array
     {
