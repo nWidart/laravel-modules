@@ -10,14 +10,19 @@ Guidance for AI coding agents working in this repository.
 
 ```bash
 composer install
-composer test                       # phpunit, full suite
+composer check                      # lint:check + analyse + test, the same checks CI runs
+composer test                       # phpunit, full suite, no coverage
 vendor/bin/phpunit tests/Commands/Make/ControllerMakeCommandTest.php
 vendor/bin/phpunit --filter test_it_generated_correct_file_with_content
 composer update-snapshots           # regenerate spatie snapshot files after intended output changes
-composer lint                       # pint (preset: laravel), this is what CI enforces
+composer update-snapshots -- tests/Commands/Make/ControllerMakeCommandTest.php   # one test path only
+composer lint                       # pint (preset: laravel), fixes files
+composer lint:check                 # pint --test, reports without changing files
+composer analyse                    # phpstan (phpstan.neon.dist, level 1, src/)
+composer test-coverage              # HTML report in build/coverage; needs Xdebug or PCOV
 ```
 
-CI (`.github/workflows/php.yml`) runs the test suite on PHP 8.3, 8.4, and 8.5. CI also runs Pint and auto-commits style fixes. Use only `composer lint` for formatting. Do not run `composer pcf`: its php-cs-fixer rules differ from Pint and cause style churn.
+CI (`.github/workflows/php.yml`) runs `composer test` on PHP 8.3, 8.4, and 8.5, and `composer analyse` on PHP 8.3. CI also runs Pint with `composer lint` and auto-commits style fixes; on pull requests from forks it runs `composer lint:check` instead. Plain test runs need no coverage setup, even with Xdebug loaded. Only `composer test-coverage` needs Xdebug or PCOV. Do not add coverage reports back to `phpunit.xml.dist`.
 
 Commit messages must follow Conventional Commits (`fix(scope): description`, see `CONTRIBUTING.md`); CI checks every PR commit and releases are generated from them. For releases, see `RELEASING.md`.
 

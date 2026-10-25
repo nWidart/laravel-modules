@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" backupGlobals="false" backupStaticProperties="false" colors="true" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.2/phpunit.xsd">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         cacheDirectory=".phpunit.cache"
+         colors="true"
+>
   <testsuites>
     <testsuite name="Laravel Modules Test Suite">
       <directory>tests</directory>
     </testsuite>
   </testsuites>
-  <coverage>
-    <report>
-      <clover outputFile="build/logs/clover.xml"/>
-      <html outputDirectory="build/coverage"/>
-      <text outputFile="build/coverage.txt"/>
-    </report>
-  </coverage>
-  <logging>
-    <junit outputFile="build/report.junit.xml"/>
-  </logging>
+  <!-- Coverage is opt-in: `composer test-coverage` asks for the reports, so plain runs work without a coverage driver. -->
   <source>
     <include>
       <directory suffix=".php">src/</directory>

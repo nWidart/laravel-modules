@@ -6,6 +6,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Exceptions\InvalidJsonException;
 
+/** @phpstan-consistent-constructor */
 class Json
 {
     /**

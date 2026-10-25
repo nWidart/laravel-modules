@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Support;
 
+/** @phpstan-consistent-constructor */
 class Stub
 {
     /**

@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Exceptions;
 
+/** @phpstan-consistent-constructor */
 class InvalidAssetPath extends \Exception
 {
     public static function missingModuleName($asset)

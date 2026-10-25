@@ -2,7 +2,9 @@
 
 namespace Nwidart\Modules\Commands\Actions;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 use Nwidart\Modules\Commands\BaseCommand;
 
 class CheckLangCommand extends BaseCommand
@@ -65,7 +67,7 @@ class CheckLangCommand extends BaseCommand
                     'path' => $directory,
                     'files' => array_map(function ($file) {
                         return basename($file);
-                    }, \File::glob($directory.DIRECTORY_SEPARATOR.'*')),
+                    }, File::glob($directory.DIRECTORY_SEPARATOR.'*')),
                 ];
             }, $directories);
         }
@@ -182,10 +184,10 @@ class CheckLangCommand extends BaseCommand
 
     private function getLangKeys($file)
     {
-        if (\File::exists($file)) {
-            $lang = \File::getRequire($file);
+        if (File::exists($file)) {
+            $lang = File::getRequire($file);
 
-            return collect(\Arr::dot($lang))->keys();
+            return collect(Arr::dot($lang))->keys();
         } else {
             return false;
         }

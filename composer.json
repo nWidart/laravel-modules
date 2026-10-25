@@ -25,10 +25,9 @@
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^12.0.",
+        "phpunit/phpunit": "^12.0",
         "mockery/mockery": "^1.6",
         "orchestra/testbench": "^11.0",
-        "friendsofphp/php-cs-fixer": "^v3.52",
         "laravel/framework": "^13.0",
         "laravel/pint": "^1.16",
         "spatie/phpunit-snapshot-assertions": "^5.0",
@@ -67,11 +66,37 @@
         }
     },
     "scripts": {
-        "update-snapshots": "phpunit --no-coverage -d --update-snapshots",
+        "test": [
+            "Composer\\Config::disableProcessTimeout",
+            "phpunit --no-coverage"
+        ],
+        "test-coverage": [
+            "Composer\\Config::disableProcessTimeout",
+            "@putenv XDEBUG_MODE=coverage",
+            "phpunit --coverage-html build/coverage --coverage-text --only-summary-for-coverage-text"
+        ],
+        "update-snapshots": [
+            "Composer\\Config::disableProcessTimeout",
+            "@putenv UPDATE_SNAPSHOTS=true",
+            "phpunit --no-coverage"
+        ],
         "lint": "pint",
-        "test": "phpunit",
-        "test-coverage": "phpunit --coverage-html coverage",
-        "pcf": "vendor/bin/php-cs-fixer fix --verbose"
+        "lint:check": "pint --test",
+        "analyse": "phpstan analyse",
+        "check": [
+            "@lint:check",
+            "@analyse",
+            "@test"
+        ]
+    },
+    "scripts-descriptions": {
+        "test": "Run the test suite without code coverage.",
+        "test-coverage": "Run the test suite with code coverage (needs Xdebug or PCOV). HTML report in build/coverage.",
+        "update-snapshots": "Run the test suite and rewrite the snapshot files.",
+        "lint": "Fix code style with Pint.",
+        "lint:check": "Check code style with Pint without changing files.",
+        "analyse": "Run PHPStan (config: phpstan.neon.dist).",
+        "check": "Run lint:check, analyse and test. Run this before opening a pull request."
     },
     "minimum-stability": "dev",
     "prefer-stable": true
