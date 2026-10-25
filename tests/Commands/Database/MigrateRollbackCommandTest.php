@@ -6,7 +6,10 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Tests\BaseTestCase;
+use Nwidart\Modules\Tests\Migrations\Fixtures\TransactionalSQLiteGrammar;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class MigrateRollbackCommandTest extends BaseTestCase
 {
@@ -201,6 +204,134 @@ PHP);
         $this->assertFalse($this->migrationIsLogged());
     }
 
+    public function test_it_rolls_back_a_failing_down_inside_a_transaction()
+    {
+        $this->supportSchemaTransactions();
+        $this->writeFailingRollback(withinTransaction: true);
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog']]);
+        $this->assertTrue(Schema::hasTable('blog_tags'));
+
+        try {
+            $this->app[Kernel::class]->call('module:migrate-rollback', ['module' => ['Blog']]);
+            $this->fail('The rollback should have thrown.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('Rolling back failed on purpose.', $e->getMessage());
+        }
+
+        $this->assertTrue(Schema::hasTable('blog_tags'));
+    }
+
+    public function test_it_does_not_use_a_transaction_when_the_migration_opts_out()
+    {
+        $this->supportSchemaTransactions();
+        $this->writeFailingRollback(withinTransaction: false);
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog']]);
+        $this->assertTrue(Schema::hasTable('blog_tags'));
+
+        try {
+            $this->app[Kernel::class]->call('module:migrate-rollback', ['module' => ['Blog']]);
+            $this->fail('The rollback should have thrown.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('Rolling back failed on purpose.', $e->getMessage());
+        }
+
+        $this->assertFalse(Schema::hasTable('blog_tags'));
+    }
+
+    public function test_it_fails_without_a_module_when_not_interactive()
+    {
+        $code = $this->artisan('module:migrate-rollback', ['--no-interaction' => true]);
+
+        $this->assertSame(1, $code);
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+    }
+
+    private function supportSchemaTransactions(): void
+    {
+        $connection = DB::connection();
+        $connection->setSchemaGrammar(new TransactionalSQLiteGrammar($connection));
+    }
+
+    private function writeFailingRollback(bool $withinTransaction): void
+    {
+        $within = $withinTransaction ? 'true' : 'false';
+
+        $this->app['files']->put(base_path('modules/Blog/database/migrations/2020_01_02_000000_create_blog_tags_table.php'), <<<PHP
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use PHPUnit\Framework\Attributes\DataProvider;
+
+return new class extends Migration
+{
+    public \$withinTransaction = $within;
+
+    public function up(): void
+    {
+        Schema::create('blog_tags', fn (Blueprint \$table) => \$table->id());
+    }
+
+    public function down(): void
+    {
+        Schema::drop('blog_tags');
+
+        throw new RuntimeException('Rolling back failed on purpose.');
+    }
+};
+PHP);
+    }
+
+    public function test_it_rolls_back_nothing_when_a_module_does_not_exist()
+    {
+        try {
+            $this->artisan('module:migrate-rollback', ['module' => ['Blog', 'Typo']]);
+            $this->fail('An unknown module should have thrown.');
+        } catch (ModuleNotFoundException $e) {
+            $this->assertStringContainsString('Typo', $e->getMessage());
+        }
+
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+        $this->assertTrue($this->migrationIsLogged());
+    }
+
+    #[DataProvider('subpaths')]
+    public function test_it_rolls_back_the_migrations_of_the_given_subpath(string $subpath)
+    {
+        $this->writeMigration(base_path('modules/Blog/database/migrations/v2'), 'blog_tags');
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog'], '--subpath' => 'v2']);
+        $this->assertTrue(Schema::hasTable('blog_tags'));
+
+        $code = $this->artisan('module:migrate-rollback', ['module' => ['Blog'], '--subpath' => $subpath]);
+
+        $this->assertSame(0, $code);
+        $this->assertFalse(Schema::hasTable('blog_tags'));
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+        $this->assertTrue($this->migrationIsLogged());
+    }
+
+    public static function subpaths(): array
+    {
+        return [
+            'directory' => ['v2'],
+            'file' => ['v2/2020_01_01_000000_create_blog_tags_table.php'],
+            'glob pattern' => ['v2/*.php'],
+        ];
+    }
+
+    public function test_it_fails_when_the_subpath_does_not_exist()
+    {
+        $code = $this->artisan('module:migrate-rollback', ['module' => ['Blog'], '--subpath' => 'missing']);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString(
+            'Migration subpath [missing] does not exist in module [Blog].',
+            $this->app[Kernel::class]->output()
+        );
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+    }
+
     private function migrationIsLogged(?string $connection = null): bool
     {
         return DB::connection($connection)->table('migrations')->where('migration', self::MIGRATION)->exists();
@@ -234,6 +365,7 @@ PHP);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 return new class extends Migration
 {

@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands\Database;
 
 use ErrorException;
+use Illuminate\Console\View\TaskResult;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Commands\BaseCommand;
@@ -32,25 +33,36 @@ class SeedCommand extends BaseCommand
      */
     protected $description = 'Run database seeder from the specified module or from all modules.';
 
+    /**
+     * Whether a db:seed call failed for the module being seeded.
+     */
+    private bool $seederFailed = false;
+
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
 
         $this->components->task("Seeding <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
+            $this->seederFailed = false;
+
             try {
                 $this->moduleSeed($module);
             } catch (\Error $e) {
                 $e = new ErrorException($e->getMessage(), $e->getCode(), 1, $e->getFile(), $e->getLine(), $e);
                 $this->reportException($e);
                 $this->renderException($this->getOutput(), $e);
+                $this->markAsFailed();
 
-                return false;
+                return TaskResult::Failure->value;
             } catch (\Exception $e) {
                 $this->reportException($e);
                 $this->renderException($this->getOutput(), $e);
+                $this->markAsFailed();
 
-                return false;
+                return TaskResult::Failure->value;
             }
+
+            return $this->seederFailed ? TaskResult::Failure->value : TaskResult::Success->value;
         });
     }
 
@@ -147,7 +159,10 @@ class SeedCommand extends BaseCommand
             $params['--force'] = $option;
         }
 
-        $this->call('db:seed', $params);
+        if ($this->call('db:seed', $params) !== self::SUCCESS) {
+            $this->seederFailed = true;
+            $this->markAsFailed();
+        }
     }
 
     /**

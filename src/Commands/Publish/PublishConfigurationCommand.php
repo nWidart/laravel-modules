@@ -23,11 +23,13 @@ class PublishConfigurationCommand extends BaseCommand
 
     public function executeAction($name): void
     {
-        $this->call('vendor:publish', [
+        if ($this->call('vendor:publish', [
             '--provider' => $this->getServiceProviderForModule($name),
             '--force' => $this->option('force'),
             '--tag' => ['config'],
-        ]);
+        ]) !== self::SUCCESS) {
+            $this->markAsFailed();
+        }
     }
 
     public function getInfo(): ?string

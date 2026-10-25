@@ -34,10 +34,12 @@ class MigrateStatusCommand extends BaseCommand
 
         $path = str_replace(base_path(), '', (new Migrator($module, $this->getLaravel()))->getPath());
 
-        $this->call('migrate:status', [
+        if ($this->call('migrate:status', [
             '--path' => $path,
             '--database' => $this->option('database'),
-        ]);
+        ]) !== self::SUCCESS) {
+            $this->markAsFailed();
+        }
     }
 
     public function getInfo(): ?string

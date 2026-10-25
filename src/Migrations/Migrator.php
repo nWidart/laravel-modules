@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Migrations;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Schema\Grammars\Grammar;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Module;
@@ -34,6 +35,13 @@ class Migrator
      * @example subpath 2000_01_01_000000_create_example_table.php
      */
     protected $subpath = '';
+
+    /**
+     * The migration files found by getMigrations(), keyed by migration name.
+     *
+     * @var array<string, string>
+     */
+    protected $migrationFiles = [];
 
     /**
      * The database connection to be used
@@ -93,18 +101,46 @@ class Migrator
     }
 
     /**
+     * Get the path the migrations are read from: the migrations directory, or the subpath inside it.
+     */
+    public function getMigrationsPath(): string
+    {
+        if (empty($this->subpath)) {
+            return $this->getPath();
+        }
+
+        return rtrim($this->getPath(), '/\\').'/'.ltrim($this->subpath, '/\\');
+    }
+
+    /**
+     * Whether the subpath is a directory or matches at least one file. Always true without a subpath.
+     */
+    public function subpathExists(): bool
+    {
+        if (empty($this->subpath)) {
+            return true;
+        }
+
+        $path = $this->getMigrationsPath();
+
+        return is_dir($path) || ! empty($this->laravel['files']->glob($path));
+    }
+
+    /**
      * Get migration files.
+     *
+     * The subpath, relative to the migrations directory, is a directory, a single file, or a glob pattern.
      *
      * @param  bool  $reverse
      * @return array
      */
     public function getMigrations($reverse = false)
     {
-        if (! empty($this->subpath)) {
-            $files = $this->laravel['files']->glob($this->getPath().'/'.$this->subpath);
-        } else {
-            $files = $this->laravel['files']->glob($this->getPath().'/*_*.php');
-        }
+        $path = $this->getMigrationsPath();
+
+        $pattern = empty($this->subpath) || is_dir($path) ? $path.'/*_*.php' : $path;
+
+        $files = $this->laravel['files']->glob($pattern);
 
         // Once we have the array of files in the directory we will just remove the
         // extension and take the basename of the file which is all we need when
@@ -114,7 +150,12 @@ class Migrator
         }
 
         $files = array_map(function ($file) {
-            return str_replace('.php', '', basename($file));
+            $name = str_replace('.php', '', basename($file));
+
+            // remember where the file is, it may be in a subdirectory of the migrations directory
+            $this->migrationFiles[$name] = $file;
+
+            return $name;
         }, $files);
 
         // Once we have all of the formatted file names we will sort them and since
@@ -127,6 +168,18 @@ class Migrator
         }
 
         return $files;
+    }
+
+    /**
+     * Get the file path of the given migration name.
+     */
+    protected function getMigrationFilePath(string $migration): string
+    {
+        if (! isset($this->migrationFiles[$migration])) {
+            $this->getMigrations();
+        }
+
+        return $this->migrationFiles[$migration] ?? $this->getPath().'/'.$migration.'.php';
     }
 
     /**
@@ -201,11 +254,7 @@ class Migrator
      */
     public function down($migration)
     {
-        $instance = $this->resolve($migration);
-
-        if (method_exists($instance, 'down')) {
-            $this->runMethod($this->resolveConnection($instance), $instance, 'down');
-        }
+        $this->runMigration($this->resolve($migration), 'down');
     }
 
     /**
@@ -277,11 +326,58 @@ class Migrator
     /**
      * Run up schema from the given migration name.
      *
+     * It runs on the migration's own connection, else the selected database, else the default.
+     *
      * @param  string  $migration
      */
     public function up($migration)
     {
-        $this->resolve($migration)->up();
+        $this->runMigration($this->resolve($migration), 'up');
+    }
+
+    /**
+     * Run a migration method on its connection, like Laravel's migrator: inside a
+     * transaction when the migration asks for one and the schema grammar supports it.
+     * Migrations without the method are skipped.
+     *
+     * @param  object  $migration
+     */
+    protected function runMigration($migration, string $method): void
+    {
+        if (! method_exists($migration, $method)) {
+            return;
+        }
+
+        $connection = $this->resolveConnection($migration);
+
+        $callback = fn () => $this->runMethod($connection, $migration, $method);
+
+        if ($this->getSchemaGrammar($connection)->supportsSchemaTransactions()
+            && property_exists($migration, 'withinTransaction')
+            && $migration->withinTransaction) {
+            $connection->transaction($callback);
+
+            return;
+        }
+
+        $callback();
+    }
+
+    /**
+     * Get the schema grammar of the connection.
+     *
+     * @param  Connection  $connection
+     * @return Grammar
+     */
+    protected function getSchemaGrammar($connection)
+    {
+        if (is_null($grammar = $connection->getSchemaGrammar())) {
+            $connection->useDefaultSchemaGrammar();
+
+            $grammar = $connection->getSchemaGrammar();
+        }
+
+        return $grammar;
     }
 
     /**
@@ -296,8 +392,10 @@ class Migrator
 
         $class = Str::studly($name);
 
-        if (! class_exists($class) && file_exists($this->getPath().'/'.$file.'.php')) {
-            return include $this->getPath().'/'.$file.'.php';
+        $path = $this->getMigrationFilePath($file);
+
+        if (! class_exists($class) && file_exists($path)) {
+            return include $path;
         }
 
         return new $class;
@@ -308,9 +406,8 @@ class Migrator
      */
     public function requireFiles(array $files)
     {
-        $path = $this->getPath();
         foreach ($files as $file) {
-            $this->laravel['files']->requireOnce($path.'/'.$file.'.php');
+            $this->laravel['files']->requireOnce($this->getMigrationFilePath($file));
         }
     }
 

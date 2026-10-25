@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands\Database;
 
+use Illuminate\Console\View\TaskResult;
 use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Symfony\Component\Console\Input\InputOption;
@@ -26,26 +27,30 @@ class MigrateRefreshCommand extends BaseCommand implements ConfirmableCommand
     {
         $module = $this->getModuleModel($name);
 
+        // handle() already confirmed, so the nested calls are forced and do not ask again
         $this->components->task("Refreshing Migration {$module->getName()} module", function () use ($module) {
-            $this->call('module:migrate-reset', [
-                'module' => $module->getStudlyName(),
-                '--database' => $this->option('database'),
-                '--force' => $this->option('force'),
-            ]);
-
-            $this->call('module:migrate', [
-                'module' => $module->getStudlyName(),
-                '--database' => $this->option('database'),
-                '--force' => $this->option('force'),
-            ]);
+            $calls = ['module:migrate-reset', 'module:migrate'];
 
             if ($this->option('seed')) {
-                $this->call('module:seed', [
-                    'module' => $module->getStudlyName(),
-                ]);
+                $calls[] = 'module:seed';
             }
-        });
 
+            foreach ($calls as $command) {
+                $status = $this->call($command, array_filter([
+                    'module' => $module->getStudlyName(),
+                    '--database' => $this->option('database'),
+                    '--force' => true,
+                ]));
+
+                if ($status !== self::SUCCESS) {
+                    $this->markAsFailed();
+
+                    return TaskResult::Failure->value;
+                }
+            }
+
+            return TaskResult::Success->value;
+        });
     }
 
     /**
