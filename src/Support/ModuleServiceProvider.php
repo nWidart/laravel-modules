@@ -148,7 +148,9 @@ abstract class ModuleServiceProvider extends ServiceProvider
                     }
 
                     $key = ($config === 'config.php') ? $this->nameLower : implode('.', $normalized);
-                    $publishPath = ($config === 'config.php') ? config_path($this->nameLower.'.php') : config_path($config);
+
+                    // Publish to the file Laravel's config loader maps back to $key (a.b.c => config/a/b/c.php).
+                    $publishPath = config_path(str_replace('.', DIRECTORY_SEPARATOR, $key).'.php');
                     $this->publishes([$file->getPathname() => $publishPath], 'config');
 
                     $this->merge_config_from($file->getPathname(), $key);
