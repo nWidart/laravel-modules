@@ -60,6 +60,22 @@ class MigrateResetCommandTest extends BaseTestCase
         $this->assertTrue($this->migrationIsLogged());
     }
 
+    public function test_it_resets_the_migrations_on_the_selected_database()
+    {
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog'], '--database' => 'tenant']);
+        $this->assertTrue(Schema::connection('tenant')->hasTable('blog_posts'));
+
+        $this->mockConsoleOutput = true;
+        $this->artisan('module:migrate-reset', ['module' => ['Blog'], '--database' => 'tenant'])
+            ->assertSuccessful();
+
+        $this->assertFalse(Schema::connection('tenant')->hasTable('blog_posts'));
+        $this->assertFalse($this->migrationIsLogged('tenant'));
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+        $this->assertTrue($this->migrationIsLogged());
+        $this->assertSame('sqlite', DB::getDefaultConnection());
+    }
+
     public function test_it_runs_nothing_on_any_connection_when_pretending_on_another_database()
     {
         $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog'], '--database' => 'tenant']);

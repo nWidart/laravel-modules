@@ -64,6 +64,52 @@ class MigrateRollbackCommandTest extends BaseTestCase
         $this->assertTrue($this->migrationIsLogged());
     }
 
+    public function test_it_rolls_back_the_migrations_on_the_selected_database()
+    {
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog'], '--database' => 'tenant']);
+        $this->assertTrue(Schema::connection('tenant')->hasTable('blog_posts'));
+
+        $this->mockConsoleOutput = true;
+        $this->artisan('module:migrate-rollback', ['module' => ['Blog'], '--database' => 'tenant'])
+            ->assertSuccessful();
+
+        $this->assertFalse(Schema::connection('tenant')->hasTable('blog_posts'));
+        $this->assertFalse($this->migrationIsLogged('tenant'));
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+        $this->assertTrue($this->migrationIsLogged());
+        $this->assertSame('sqlite', DB::getDefaultConnection());
+    }
+
+    public function test_it_restores_the_default_connection_when_a_migration_fails()
+    {
+        $this->app['files']->put(base_path('modules/Blog/database/migrations/2020_01_02_000000_fail_on_rollback.php'), <<<'PHP'
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration
+{
+    public function up(): void {}
+
+    public function down(): void
+    {
+        throw new RuntimeException('Rolling back on '.DB::getDefaultConnection());
+    }
+};
+PHP);
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog'], '--database' => 'tenant']);
+
+        try {
+            $this->app[Kernel::class]->call('module:migrate-rollback', ['module' => ['Blog'], '--database' => 'tenant']);
+            $this->fail('The rollback should have thrown.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('Rolling back on tenant', $e->getMessage());
+        }
+
+        $this->assertSame('sqlite', DB::getDefaultConnection());
+    }
+
     public function test_it_runs_nothing_on_any_connection_when_pretending_on_another_database()
     {
         $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog'], '--database' => 'tenant']);
