@@ -104,4 +104,47 @@ class ClassMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+    public function test_it_uses_the_type_folder_as_namespace()
+    {
+        $code = $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog', '--type' => 'service']);
+
+        $file = $this->finder->get($this->modulePath.'/Services/Demo.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Services;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_uses_the_configured_type_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.service.namespace', 'Support\\Services');
+
+        $code = $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog', '--type' => 'service']);
+
+        $file = $this->finder->get($this->modulePath.'/Services/Demo.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Support\\Services;', $file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_derives_the_type_namespace_from_a_custom_class_path()
+    {
+        $this->app['config']->set('modules.paths.generator.class.path', 'app/Domain/Classes');
+
+        $code = $this->artisan('module:make-class', ['name' => 'Demo', 'module' => 'Blog', '--type' => 'contract']);
+
+        $file = $this->finder->get($this->modulePath.'/Domain/Contracts/Demo.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Contracts;', $file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_keeps_the_class_name_when_it_contains_classes()
+    {
+        $code = $this->artisan('module:make-class', ['name' => 'Classes', 'module' => 'Blog', '--type' => 'service']);
+
+        $this->assertTrue(is_file($this->modulePath.'/Services/Classes.php'));
+        $this->assertSame(0, $code);
+    }
 }

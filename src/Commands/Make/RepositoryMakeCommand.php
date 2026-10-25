@@ -66,7 +66,8 @@ class RepositoryMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.repository.namespace', 'Repositories');
+        return config('modules.paths.generator.repository.namespace')
+            ?? $this->strip_app_folder(config('modules.paths.generator.repository.path', 'Repositories'));
     }
 
     protected function getStubName(): string

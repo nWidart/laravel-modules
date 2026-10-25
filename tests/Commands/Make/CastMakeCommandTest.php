@@ -80,4 +80,43 @@ class CastMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+    public function test_it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.casts.path', 'app/Domain/Casts');
+
+        $code = $this->artisan('module:make-cast', ['name' => 'MyCast', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/app/Domain/Casts/MyCast.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Casts;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.casts.namespace', 'Support\\Casts');
+
+        $code = $this->artisan('module:make-cast', ['name' => 'MyCast', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath.'/Casts/MyCast.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Support\\Casts;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_derives_the_namespace_from_a_path_in_a_custom_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'src/');
+        $this->app['config']->set('modules.paths.generator.casts.path', 'src/Domain/Casts');
+
+        $code = $this->artisan('module:make-cast', ['name' => 'MyCast', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/src/Domain/Casts/MyCast.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Casts;', $file);
+        $this->assertSame(0, $code);
+    }
 }

@@ -65,7 +65,8 @@ class InterfaceMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.interfaces.namespace', 'Interfaces');
+        return config('modules.paths.generator.interfaces.namespace')
+            ?? $this->strip_app_folder(config('modules.paths.generator.interfaces.path', 'Interfaces'));
     }
 
     protected function getStubName(): string

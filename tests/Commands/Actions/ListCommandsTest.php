@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Tests\Commands\Actions;
 
 use Illuminate\Filesystem\Filesystem;
+use Nwidart\Modules\Commands\Actions\ListCommands;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 
@@ -117,6 +118,49 @@ class ListCommandsTest extends BaseTestCase
 
         // We just want to make sure the command runs without errors
         $this->assertSame(0, $code);
+    }
+
+    public function test_it_lists_each_command_once()
+    {
+        $this->createModuleCommand('OnlyOnceCommand', 'app/Console/Commands');
+
+        $this->assertSame(
+            ['Modules\\Blog\\Console\\Commands\\OnlyOnceCommand'],
+            array_column($this->findCommands(), 'class')
+        );
+    }
+
+    public function test_it_lists_each_command_once_when_the_module_has_no_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'missing/');
+        $this->createModuleCommand('RootCommand', 'Commands');
+
+        $this->assertSame(
+            ['Modules\\Blog\\Commands\\RootCommand'],
+            array_column($this->findCommands(), 'class')
+        );
+    }
+
+    public function test_it_strips_a_custom_app_folder_from_the_class_name()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'src/');
+        $this->createModuleCommand('SrcCommand', 'src/Console/Commands');
+
+        $this->assertSame(
+            ['Modules\\Blog\\Console\\Commands\\SrcCommand'],
+            array_column($this->findCommands(), 'class')
+        );
+    }
+
+    /**
+     * Run ListCommands::findCommands() for the Blog module.
+     */
+    private function findCommands(): array
+    {
+        $command = $this->app->make(ListCommands::class);
+        $method = new \ReflectionMethod($command, 'findCommands');
+
+        return $method->invoke($command, $this->app['modules']->findOrFail('Blog'));
     }
 
     /**

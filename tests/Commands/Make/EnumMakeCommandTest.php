@@ -80,4 +80,43 @@ class EnumMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+    public function test_it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.enums.path', 'app/Domain/Enums');
+
+        $code = $this->artisan('module:make-enum', ['name' => 'MyEnum', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/app/Domain/Enums/MyEnum.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Enums;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.enums.namespace', 'Support\\Enums');
+
+        $code = $this->artisan('module:make-enum', ['name' => 'MyEnum', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath.'/Enums/MyEnum.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Support\\Enums;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_derives_the_namespace_from_a_path_in_a_custom_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'src/');
+        $this->app['config']->set('modules.paths.generator.enums.path', 'src/Domain/Enums');
+
+        $code = $this->artisan('module:make-enum', ['name' => 'MyEnum', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/src/Domain/Enums/MyEnum.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Enums;', $file);
+        $this->assertSame(0, $code);
+    }
 }

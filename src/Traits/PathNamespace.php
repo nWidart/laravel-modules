@@ -36,17 +36,18 @@ trait PathNamespace
     public function module_namespace(string $module, ?string $path = null): string
     {
         $module_namespace = config('modules.namespace', $this->path_namespace(config('modules.paths.modules'))).'\\'.($module);
-        $module_namespace .= strlen($path) ? '\\'.$this->path_namespace($path) : '';
+        $module_namespace .= ($path !== null && $path !== '') ? '\\'.$this->path_namespace($path) : '';
 
         return $this->studly_namespace($module_namespace);
     }
 
     /**
-     * Clean path
+     * Clean path: remove empty segments, such as leading, trailing, or doubled separators.
+     * Segments such as "0" are kept.
      */
     public function clean_path(string $path, $ds = '/'): string
     {
-        return Str::of($path)->explode($ds)->reject(empty($path))->implode($ds);
+        return Str::of($path)->explode($ds)->reject(fn (string $segment) => $segment === '')->implode($ds);
     }
 
     /**
@@ -79,17 +80,27 @@ trait PathNamespace
      */
     public function app_path(?string $path = null): string
     {
-        $config_path = config('modules.paths.app_folder');
+        $config_path = (string) config('modules.paths.app_folder');
 
         // Get modules config app path or use Laravel default app path.
-        $app_path = strlen($config_path) ? $config_path : 'app/';
+        $app_path = $this->clean_path(strlen($config_path) ? $config_path : 'app/');
 
         if ($path) {
-            // Replace duplicate custom|default app paths
-            $replaces = array_unique([$this->clean_path($app_path).'/', 'app/']);
+            // Remove leading custom|default app folders, compared as whole path segments.
+            // The path gets shorter on every pass, so the loop always ends.
+            $prefixes = array_filter(array_unique([$app_path, 'app']), 'strlen');
+
             do {
-                $path = Str::of($path)->replaceStart($app_path, '')->replaceStart('app/', '');
-            } while (Str::of($path)->startsWith($replaces));
+                $previous = $path;
+
+                foreach ($prefixes as $prefix) {
+                    if ($path === $prefix) {
+                        $path = '';
+                    } elseif (str_starts_with($path, $prefix.'/')) {
+                        $path = substr($path, strlen($prefix) + 1);
+                    }
+                }
+            } while ($path !== '' && $path !== $previous);
 
             // Append additional path
             $app_path .= strlen($path) ? '/'.$path : '';

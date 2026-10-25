@@ -104,4 +104,43 @@ class ExceptionMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+    public function test_it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.exceptions.path', 'app/Domain/Exceptions');
+
+        $code = $this->artisan('module:make-exception', ['name' => 'MyException', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/app/Domain/Exceptions/MyException.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Exceptions;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.exceptions.namespace', 'Support\\Exceptions');
+
+        $code = $this->artisan('module:make-exception', ['name' => 'MyException', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath.'/Exceptions/MyException.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Support\\Exceptions;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_derives_the_namespace_from_a_path_in_a_custom_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'src/');
+        $this->app['config']->set('modules.paths.generator.exceptions.path', 'src/Domain/Exceptions');
+
+        $code = $this->artisan('module:make-exception', ['name' => 'MyException', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/src/Domain/Exceptions/MyException.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Exceptions;', $file);
+        $this->assertSame(0, $code);
+    }
 }

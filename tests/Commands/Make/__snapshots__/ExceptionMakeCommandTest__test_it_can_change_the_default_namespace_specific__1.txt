@@ -1,0 +1,7 @@
+<?php
+
+namespace Modules\Blog\Support\Exceptions;
+
+use Exception;
+
+class MyException extends Exception {}

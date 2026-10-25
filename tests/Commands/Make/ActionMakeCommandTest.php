@@ -88,4 +88,43 @@ class ActionMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+    public function test_it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.actions.path', 'app/Domain/Actions');
+
+        $code = $this->artisan('module:make-action', ['name' => 'MyAction', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/app/Domain/Actions/MyAction.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Actions;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.actions.namespace', 'Support\\Actions');
+
+        $code = $this->artisan('module:make-action', ['name' => 'MyAction', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath.'/Actions/MyAction.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Support\\Actions;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_derives_the_namespace_from_a_path_in_a_custom_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'src/');
+        $this->app['config']->set('modules.paths.generator.actions.path', 'src/Domain/Actions');
+
+        $code = $this->artisan('module:make-action', ['name' => 'MyAction', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/src/Domain/Actions/MyAction.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Actions;', $file);
+        $this->assertSame(0, $code);
+    }
 }

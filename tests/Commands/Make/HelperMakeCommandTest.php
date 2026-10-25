@@ -88,4 +88,43 @@ class HelperMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+    public function test_it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.helpers.path', 'app/Domain/Helpers');
+
+        $code = $this->artisan('module:make-helper', ['name' => 'MyHelper', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/app/Domain/Helpers/MyHelper.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Helpers;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.helpers.namespace', 'Support\\Helpers');
+
+        $code = $this->artisan('module:make-helper', ['name' => 'MyHelper', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath.'/Helpers/MyHelper.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Support\\Helpers;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_derives_the_namespace_from_a_path_in_a_custom_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'src/');
+        $this->app['config']->set('modules.paths.generator.helpers.path', 'src/Domain/Helpers');
+
+        $code = $this->artisan('module:make-helper', ['name' => 'MyHelper', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/src/Domain/Helpers/MyHelper.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Helpers;', $file);
+        $this->assertSame(0, $code);
+    }
 }

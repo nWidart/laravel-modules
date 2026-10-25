@@ -76,12 +76,19 @@ class ListenerMakeCommand extends GeneratorCommand
 
     protected function getEventName(Module $module)
     {
-        $namespace = $this->laravel['modules']->config('namespace').'\\'.$module->getStudlyName();
-        $eventPath = GenerateConfigReader::read('event');
+        $namespace = $this->module_namespace($module->getStudlyName(), $this->getEventNamespace());
 
-        $eventName = $namespace.'\\'.$eventPath->getPath().'\\'.$this->option('event');
+        return $namespace.'\\'.str_replace('/', '\\', $this->option('event'));
+    }
 
-        return str_replace('/', '\\', $eventName);
+    /**
+     * Get the namespace of the module's events, relative to the module namespace.
+     * Same rule as module:make-event: the configured namespace, else the event path without the app folder.
+     */
+    protected function getEventNamespace(): string
+    {
+        return config('modules.paths.generator.event.namespace')
+            ?? $this->strip_app_folder(config('modules.paths.generator.event.path', 'Events'));
     }
 
     protected function getShortEventName()

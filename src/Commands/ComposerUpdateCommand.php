@@ -3,9 +3,13 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Facades\File;
+use Nwidart\Modules\Traits\PathNamespace;
+use stdClass;
 
 class ComposerUpdateCommand extends BaseCommand
 {
+    use PathNamespace;
+
     /**
      * The console command name.
      *
@@ -28,27 +32,52 @@ class ComposerUpdateCommand extends BaseCommand
 
             $composer_path = $module->getPath().DIRECTORY_SEPARATOR.'composer.json';
 
-            $composer = json_decode(File::get($composer_path), true);
+            $contents = File::get($composer_path);
 
-            $autoload = data_get($composer, 'autoload.psr-4');
+            // Decode as objects so empty objects ("aliases": {}) and key order survive the round trip.
+            $composer = json_decode($contents);
 
-            if (! $autoload) {
+            $autoload = $composer->autoload->{'psr-4'} ?? null;
+
+            if (! $autoload instanceof stdClass) {
                 return;
             }
 
-            $key_name_with_app = sprintf('Modules\\%s\\App\\', $module->getStudlyName());
+            $module_namespace = $this->module_namespace($module->getStudlyName());
+            $app_folder = (string) config('modules.paths.app_folder') ?: 'app/';
 
-            if (! array_key_exists($key_name_with_app, $autoload)) {
+            // Legacy layout: the app folder is part of the namespace, e.g. "Modules\Blog\App\" => "app/".
+            $key_name_with_app = collect([
+                $module_namespace.'\\App\\',
+                $module_namespace.'\\'.$this->path_namespace($app_folder).'\\',
+            ])->first(fn (string $key) => property_exists($autoload, $key));
+
+            if ($key_name_with_app === null) {
                 return;
             }
 
-            unset($autoload[$key_name_with_app]);
-            $key_name_with_out_app = sprintf('Modules\\%s\\', $module->getStudlyName());
-            $autoload[$key_name_with_out_app] = 'app/';
+            $key_name_with_out_app = $module_namespace.'\\';
 
-            data_set($composer, 'autoload.psr-4', $autoload);
+            // The classes stay where they are: keep the folder of the legacy entry.
+            $folder = $autoload->{$key_name_with_app} ?: $app_folder;
 
-            file_put_contents($composer_path, json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            // Replace the legacy entry in place, so the other entries keep their order.
+            $updated = new stdClass;
+
+            foreach (get_object_vars($autoload) as $key => $value) {
+                if ($key === $key_name_with_app) {
+                    $updated->{$key_name_with_out_app} = $folder;
+                } elseif ($key !== $key_name_with_out_app) {
+                    $updated->{$key} = $value;
+                }
+            }
+
+            $composer->autoload->{'psr-4'} = $updated;
+
+            // Same flags as composer; keep the trailing newline of the original file.
+            $json = json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+            File::put($composer_path, $json.(str_ends_with($contents, "\n") ? "\n" : ''));
 
         });
     }

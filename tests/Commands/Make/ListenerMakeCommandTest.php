@@ -153,4 +153,49 @@ class ListenerMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+    public function test_it_uses_the_configured_event_path_for_the_event_import()
+    {
+        $this->app['config']->set('modules.paths.generator.event.path', 'app/Domain/Events');
+
+        $code = $this->artisan(
+            'module:make-listener',
+            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'User/WasCreated']
+        );
+
+        $file = $this->finder->get($this->modulePath.'/Listeners/NotifyUsersOfANewPost.php');
+
+        $this->assertStringContainsString('use Modules\\Blog\\Domain\\Events\\User\\WasCreated;', $file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_uses_the_configured_event_namespace_for_the_event_import()
+    {
+        $this->app['config']->set('modules.paths.generator.event.namespace', 'Domain\\Events');
+
+        $code = $this->artisan(
+            'module:make-listener',
+            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated']
+        );
+
+        $file = $this->finder->get($this->modulePath.'/Listeners/NotifyUsersOfANewPost.php');
+
+        $this->assertStringContainsString('use Modules\\Blog\\Domain\\Events\\UserWasCreated;', $file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_uses_the_configured_module_namespace_for_the_event_import()
+    {
+        $this->app['config']->set('modules.namespace', 'Domains');
+
+        $code = $this->artisan(
+            'module:make-listener',
+            ['name' => 'NotifyUsersOfANewPost', 'module' => 'Blog', '--event' => 'UserWasCreated']
+        );
+
+        $file = $this->finder->get($this->modulePath.'/Listeners/NotifyUsersOfANewPost.php');
+
+        $this->assertStringContainsString('use Domains\\Blog\\Events\\UserWasCreated;', $file);
+        $this->assertSame(0, $code);
+    }
 }
