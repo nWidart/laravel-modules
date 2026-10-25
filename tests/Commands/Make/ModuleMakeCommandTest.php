@@ -819,14 +819,63 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertSame('domain/', $composer['autoload']['psr-4']['Modules\\Blog\\']);
     }
 
-    public function test_it_does_not_check_generator_paths_when_the_app_folder_is_empty()
+    public function test_it_fails_when_the_app_folder_is_empty_and_class_generator_paths_keep_the_app_prefix()
+    {
+        // The namespace of "app/Providers" is App\Providers, but the composer.json maps
+        // the module namespace to the module root, so PSR-4 looks in App/Providers.
+        $this->app['config']->set('modules.paths.app_folder', '');
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+        $output = Artisan::output();
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString('Generator paths must match their namespaces, because paths.app_folder is empty', $output);
+        $this->assertStringContainsString('Modules\Blog\\', $output);
+        $this->assertStringContainsString('drop the app/ prefix', $output);
+        $this->assertStringContainsString('app/Providers to Providers', $output);
+        $this->assertMatchesRegularExpression('#^\s*⇂ model \(app/Models\)\s*$#mu', $output);
+        $this->assertMatchesRegularExpression('#^\s*⇂ provider \(app/Providers\)\s*$#mu', $output);
+        $this->assertMatchesRegularExpression('#^\s*⇂ controller \(app/Http/Controllers\)\s*$#mu', $output);
+        $this->assertMatchesRegularExpression('#^\s*⇂ request \(app/Http/Requests\)\s*$#mu', $output);
+        $this->assertStringNotContainsString('seeder', $output);
+        $this->assertDirectoryDoesNotExist($this->modulePath);
+        $this->assertFalse($this->repository->has('Blog'));
+    }
+
+    public function test_it_fails_when_the_app_folder_is_empty_and_a_class_generator_path_is_not_studly_case()
     {
         $this->app['config']->set('modules.paths.app_folder', '');
+        $this->moveClassGeneratorPathsTo('');
+        $this->app['config']->set('modules.paths.generator.model', ['path' => 'entities', 'generate' => false]);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+        $output = Artisan::output();
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertMatchesRegularExpression('#^\s*⇂ model \(entities\)\s*$#mu', $output);
+        $this->assertStringNotContainsString('provider (', $output);
+        $this->assertDirectoryDoesNotExist($this->modulePath);
+    }
+
+    public function test_it_generates_module_when_the_app_folder_is_empty_and_class_generator_paths_are_studly_case()
+    {
+        $this->app['config']->set('modules.paths.app_folder', '');
+        $this->moveClassGeneratorPathsTo('');
 
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
 
         $this->assertSame(0, $code);
-        $this->assertFileExists($this->modulePath.'/app/Providers/BlogServiceProvider.php');
+
+        $provider = $this->modulePath.'/Providers/BlogServiceProvider.php';
+        $this->assertFileExists($provider);
+        $this->assertStringContainsString('namespace Modules\Blog\Providers;', $this->finder->get($provider));
+        $controller = $this->modulePath.'/Http/Controllers/BlogController.php';
+        $this->assertFileExists($controller);
+        $this->assertStringContainsString('namespace Modules\Blog\Http\Controllers;', $this->finder->get($controller));
+        $this->assertDirectoryDoesNotExist($this->modulePath.'/app');
+
+        $composer = json_decode($this->finder->get($this->modulePath.'/composer.json'), true);
+        $this->assertSame('', $composer['autoload']['psr-4']['Modules\\Blog\\']);
     }
 
     public function test_it_does_not_check_generator_paths_when_the_composer_stub_does_not_use_the_app_folder()
@@ -881,13 +930,13 @@ class ModuleMakeCommandTest extends BaseTestCase
     }
 
     /**
-     * Move every "app/..." generator path under the given folder.
+     * Move every "app/..." generator path under the given folder ('' for the module root).
      */
     private function moveClassGeneratorPathsTo(string $folder): void
     {
         foreach ($this->app['config']->get('modules.paths.generator') as $key => $config) {
             if (is_array($config) && str_starts_with($config['path'], 'app/')) {
-                $config['path'] = $folder.substr($config['path'], strlen('app'));
+                $config['path'] = ltrim($folder.substr($config['path'], strlen('app')), '/');
                 $this->app['config']->set("modules.paths.generator.$key", $config);
             }
         }

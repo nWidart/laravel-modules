@@ -138,7 +138,8 @@ return [
         | 'app/...' entries) under the same folder. Otherwise module:make
         | stops with an error.
         |
-        | Set it to '' to map the module namespace to the module root.
+        | Set it to '' to map the module namespace to the module root. Then
+        | drop the 'app/' prefix from those paths (for example 'Providers').
         */
         'app_folder' => 'app/',
 
