@@ -1,49 +1,89 @@
 name: PHP Pipeline
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+      - '*.x'
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-
+  tests:
+    name: PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
 
     strategy:
-      max-parallel: 2
+      fail-fast: false
       matrix:
-        php-versions: ['8.3', '8.4', '8.5']
-
-    name: PHP ${{ matrix.php-versions }}
+        php: ['8.3', '8.4', '8.5']
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@master
-      with:
-        php-version: ${{ matrix.php-versions }}
-        coverage: xdebug
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate
+      - name: Validate composer.json
+        run: composer validate
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
+      # composer.lock is not committed, so this resolves the highest versions allowed by composer.json.
+      - name: Install dependencies
+        uses: ramsey/composer-install@v4
+        with:
+          dependency-versions: highest
 
-    - name: Run test suite
-      run: composer run-script test
+      - name: Run test suite
+        run: vendor/bin/phpunit --no-coverage
+
   phplint:
-      permissions:
-          contents: write
-      runs-on: ubuntu-latest
-      steps:
-          - uses: actions/checkout@v3
-          - name: "laravel-pint"
-            uses: aglipanci/laravel-pint-action@latest
-            with:
-                configPath: './pint.json'
+    name: Pint
+    runs-on: ubuntu-latest
 
-          - name: Commit changes
-            uses: stefanzweifel/git-auto-commit-action@v4
-            with:
-                commit_message: PHP Linting (Pint)
-                skip_fetch: true
+    permissions:
+      contents: write
+
+    env:
+      # Fork PRs get a read-only token, so fixes cannot be pushed back: check style instead.
+      IS_FORK: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+
+    steps:
+      # Same-repo PRs check out the head branch so the fix commit lands on it. Push and fork PR events use the default ref.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref || '' }}
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v4
+        with:
+          dependency-versions: highest
+
+      - name: Fix code style
+        if: env.IS_FORK != 'true'
+        run: vendor/bin/pint
+
+      - name: Check code style
+        if: env.IS_FORK == 'true'
+        run: vendor/bin/pint --test
+
+      - name: Commit changes
+        if: env.IS_FORK != 'true'
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: PHP Linting (Pint)
