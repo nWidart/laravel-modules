@@ -549,7 +549,10 @@ class ModuleGenerator extends Generator
         $namespace = $this->getModuleNamespaceReplacement();
         $studlyName = $this->getStudlyNameReplacement();
 
-        $provider = '"'.$namespace.'\\\\'.$studlyName.'\\\\Providers\\\\'.$studlyName.'ServiceProvider"';
+        // Same value as the json stub: $MODULE_NAMESPACE$\\$STUDLY_NAME$\\$PROVIDER_NAMESPACE$\\$STUDLY_NAME$ServiceProvider
+        $providerNamespace = $this->getProviderNamespaceReplacement();
+
+        $provider = '"'.$namespace.'\\\\'.$studlyName.'\\\\'.$providerNamespace.'\\\\'.$studlyName.'ServiceProvider"';
 
         $content = str_replace($provider, '', $content);
 

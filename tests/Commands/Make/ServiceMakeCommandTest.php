@@ -88,4 +88,43 @@ class ServiceMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+    public function test_it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.services.path', 'app/Domain/Services');
+
+        $code = $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/app/Domain/Services/MyService.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Services;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.services.namespace', 'Support\\Services');
+
+        $code = $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath.'/Services/MyService.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Support\\Services;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_derives_the_namespace_from_a_path_in_a_custom_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'src/');
+        $this->app['config']->set('modules.paths.generator.services.path', 'src/Domain/Services');
+
+        $code = $this->artisan('module:make-service', ['name' => 'MyService', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/src/Domain/Services/MyService.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Services;', $file);
+        $this->assertSame(0, $code);
+    }
 }

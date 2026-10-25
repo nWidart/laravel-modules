@@ -5,11 +5,14 @@ namespace Nwidart\Modules\Commands\Actions;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Commands\BaseCommand;
+use Nwidart\Modules\Traits\PathNamespace;
 use ReflectionClass;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
 class ListCommands extends BaseCommand
 {
+    use PathNamespace;
+
     protected $name = 'module:list-commands';
 
     protected $description = 'List all commands in the specified module(s)';
@@ -68,29 +71,26 @@ class ListCommands extends BaseCommand
             $module->getAppPath().'/Console/Commands',
         ];
 
-        foreach ($possiblePaths as $path) {
-            if (! is_dir($path)) {
-                continue;
-            }
+        // The paths overlap (Console contains Console/Commands, and the app path is the
+        // module root when the app folder does not exist), so list each file only once.
+        $files = collect($possiblePaths)
+            ->filter(fn (string $path) => is_dir($path))
+            ->flatMap(fn (string $path) => File::allFiles($path))
+            ->filter(fn ($file) => $file->getExtension() === 'php')
+            ->unique(fn ($file) => $file->getRealPath());
 
-            $files = File::allFiles($path);
+        $modulePath = str_replace('\\', '/', realpath($module->getPath()) ?: $module->getPath());
 
-            foreach ($files as $file) {
-                // Skip if not a PHP file
-                if ($file->getExtension() !== 'php') {
-                    continue;
-                }
+        foreach ($files as $file) {
+            // Get the class name from the file path, relative to the module root
+            $relativePath = Str::after(str_replace('\\', '/', $file->getRealPath()), $modulePath.'/');
+            $className = $this->getClassNameFromPath($relativePath, $moduleNamespace);
 
-                // Get the class name from the file path
-                $relativePath = str_replace($module->getPath().'/', '', $file->getPathname());
-                $className = $this->getClassNameFromPath($relativePath, $moduleNamespace);
+            // Try to get command information
+            $commandInfo = $this->getCommandInfo($className);
 
-                // Try to get command information
-                $commandInfo = $this->getCommandInfo($className);
-
-                if ($commandInfo) {
-                    $commands[] = $commandInfo;
-                }
+            if ($commandInfo) {
+                $commands[] = $commandInfo;
             }
         }
 
@@ -110,20 +110,13 @@ class ListCommands extends BaseCommand
      */
     protected function getClassNameFromPath(string $path, string $moduleNamespace): string
     {
-        // Remove .php extension
-        $path = str_replace('.php', '', $path);
+        // Normalise separators and remove the .php extension
+        $path = Str::of(str_replace('\\', '/', $path))->chopEnd('.php')->toString();
 
-        // Convert directory separators to namespace separators
-        $path = str_replace('/', '\\', $path);
+        // Classes in the app folder (modules.paths.app_folder) sit directly under the module namespace
+        $path = $this->strip_app_folder($path);
 
-        // If the path starts with app/, remove it and prepend the module namespace
-        if (Str::startsWith($path, 'app\\')) {
-            $path = $moduleNamespace.'\\'.Str::after($path, 'app\\');
-        } else {
-            $path = $moduleNamespace.'\\'.$path;
-        }
-
-        return $path;
+        return $moduleNamespace.'\\'.str_replace('/', '\\', $path);
     }
 
     /**

@@ -67,7 +67,8 @@ class ExceptionMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.exceptions.namespace', 'Exceptions');
+        return config('modules.paths.generator.exceptions.namespace')
+            ?? $this->strip_app_folder(config('modules.paths.generator.exceptions.path', 'Exceptions'));
     }
 
     protected function getStubName(): string

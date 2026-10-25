@@ -80,4 +80,43 @@ class TraitMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+    public function test_it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.traits.path', 'app/Domain/Traits');
+
+        $code = $this->artisan('module:make-trait', ['name' => 'MyTrait', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/app/Domain/Traits/MyTrait.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Traits;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.traits.namespace', 'Support\\Traits');
+
+        $code = $this->artisan('module:make-trait', ['name' => 'MyTrait', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath.'/Traits/MyTrait.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Support\\Traits;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_derives_the_namespace_from_a_path_in_a_custom_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'src/');
+        $this->app['config']->set('modules.paths.generator.traits.path', 'src/Domain/Traits');
+
+        $code = $this->artisan('module:make-trait', ['name' => 'MyTrait', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/src/Domain/Traits/MyTrait.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Traits;', $file);
+        $this->assertSame(0, $code);
+    }
 }

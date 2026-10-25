@@ -1,0 +1,8 @@
+<?php
+
+namespace Modules\Blog\Domain\Services;
+
+class MyService
+{
+    public function handle() {}
+}

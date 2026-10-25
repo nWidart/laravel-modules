@@ -76,4 +76,27 @@ final class GenerateConfigReaderTest extends BaseTestCase
         $this->assertEquals('Database\Factories', GenerateConfigReader::read('factory')->getNamespace());
         $this->assertEquals('Models', GenerateConfigReader::read('model')->getNamespace());
     }
+
+    public function test_it_does_not_generate_an_entry_without_a_generate_key()
+    {
+        $this->app['config']->set('modules.paths.generator.actions', ['path' => 'app/Domain/Actions']);
+
+        $config = GenerateConfigReader::read('actions');
+
+        $this->assertEquals('app/Domain/Actions', $config->getPath());
+        $this->assertFalse($config->generate());
+        $this->assertEquals('Domain\Actions', $config->getNamespace());
+    }
+
+    public function test_it_reads_an_entry_with_only_a_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.actions', ['namespace' => 'Domain\Actions']);
+
+        $config = GenerateConfigReader::read('actions');
+
+        $this->assertNull($config->getPath());
+        $this->assertFalse($config->generate());
+        $this->assertTrue($config->generatesWith(true));
+        $this->assertEquals('Domain\Actions', $config->getNamespace());
+    }
 }

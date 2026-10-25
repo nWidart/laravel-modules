@@ -80,4 +80,43 @@ class InterfaceMakeCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
     }
+
+    public function test_it_can_change_the_default_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.interfaces.path', 'app/Domain/Interfaces');
+
+        $code = $this->artisan('module:make-interface', ['name' => 'MyInterface', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/app/Domain/Interfaces/MyInterface.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Interfaces;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_can_change_the_default_namespace_specific()
+    {
+        $this->app['config']->set('modules.paths.generator.interfaces.namespace', 'Support\\Interfaces');
+
+        $code = $this->artisan('module:make-interface', ['name' => 'MyInterface', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath.'/Interfaces/MyInterface.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Support\\Interfaces;', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_derives_the_namespace_from_a_path_in_a_custom_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'src/');
+        $this->app['config']->set('modules.paths.generator.interfaces.path', 'src/Domain/Interfaces');
+
+        $code = $this->artisan('module:make-interface', ['name' => 'MyInterface', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->getModuleBasePath().'/src/Domain/Interfaces/MyInterface.php');
+
+        $this->assertStringContainsString('namespace Modules\\Blog\\Domain\\Interfaces;', $file);
+        $this->assertSame(0, $code);
+    }
 }

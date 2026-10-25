@@ -237,6 +237,19 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_generates_plain_module_with_no_service_provider_when_provider_path_is_custom()
+    {
+        $this->app['config']->set('modules.paths.generator.provider', ['path' => 'app/Base/Providers', 'generate' => true]);
+
+        $code = $this->artisan('module:make', ['name' => ['ModuleName'], '--plain' => true]);
+
+        $path = base_path('modules/ModuleName').'/module.json';
+        $content = json_decode($this->finder->get($path));
+
+        $this->assertCount(0, $content->providers);
+        $this->assertSame(0, $code);
+    }
+
     public function test_it_outputs_error_when_module_exists()
     {
         $this->artisan('module:make', ['name' => ['Blog']]);

@@ -66,7 +66,8 @@ class ServiceMakeCommand extends GeneratorCommand
 
     public function getDefaultNamespace(): string
     {
-        return config('modules.paths.generator.services.namespace', 'Services');
+        return config('modules.paths.generator.services.namespace')
+            ?? $this->strip_app_folder(config('modules.paths.generator.services.path', 'Services'));
     }
 
     protected function getStubName(): string

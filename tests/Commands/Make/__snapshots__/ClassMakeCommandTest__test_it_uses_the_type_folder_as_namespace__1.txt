@@ -1,0 +1,8 @@
+<?php
+
+namespace Modules\Blog\Services;
+
+class Demo
+{
+    public function __construct() {}
+}

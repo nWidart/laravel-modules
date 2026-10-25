@@ -17,9 +17,10 @@ class GeneratorPath
     public function __construct($config)
     {
         if (is_array($config)) {
-            $this->path = $config['path'];
-            $this->generate = $config['generate'];
-            $this->namespace = $config['namespace'] ?? $this->path_namespace($this->strip_app_folder((string) $config['path']));
+            // A missing "generate" key means the folder is not scaffolded by module:make.
+            $this->path = $config['path'] ?? null;
+            $this->generate = (bool) ($config['generate'] ?? false);
+            $this->namespace = $config['namespace'] ?? $this->path_namespace($this->strip_app_folder((string) $this->path));
 
             return;
         }

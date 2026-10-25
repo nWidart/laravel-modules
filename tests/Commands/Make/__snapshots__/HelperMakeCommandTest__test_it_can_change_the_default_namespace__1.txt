@@ -1,0 +1,8 @@
+<?php
+
+namespace Modules\Blog\Domain\Helpers;
+
+class MyHelper
+{
+    public function handle() {}
+}
