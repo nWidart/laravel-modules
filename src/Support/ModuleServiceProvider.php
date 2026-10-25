@@ -85,8 +85,11 @@ abstract class ModuleServiceProvider extends ServiceProvider
     /**
      * Register command Schedules.
      *
-     * The Schedule is resolved only when the module overrides configureSchedules(),
-     * so modules without schedules do not resolve it on every request.
+     * Modules that do not override configureSchedules() register nothing. For the others,
+     * configureSchedules() runs when something resolves the Schedule (schedule:run,
+     * schedule:list, ...), so web requests and other commands never build it. If the
+     * Schedule is already resolved once the app has booted, it runs right away. Each new
+     * Schedule instance gets the module's events once.
      */
     protected function registerCommandSchedules(): void
     {
@@ -94,9 +97,9 @@ abstract class ModuleServiceProvider extends ServiceProvider
             return;
         }
 
+        // Wait for boot so configureSchedules() still runs after every provider has booted.
         $this->app->booted(function () {
-            $schedule = $this->app->make(Schedule::class);
-            $this->configureSchedules($schedule);
+            $this->callAfterResolving(Schedule::class, fn (Schedule $schedule) => $this->configureSchedules($schedule));
         });
     }
 
