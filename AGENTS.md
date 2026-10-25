@@ -21,6 +21,27 @@ CI (`.github/workflows/php.yml`) runs the test suite on PHP 8.3, 8.4, and 8.5. C
 
 Commit messages must follow Conventional Commits (`fix(scope): description`, see `CONTRIBUTING.md`); CI checks every PR commit and releases are generated from them. For releases, see `RELEASING.md`.
 
+## Code map (trail)
+
+With trail installed, `trail build` writes a code map to `.trail/cache/`. The map is generated and local only (`.trail/.gitignore` lists it). Never commit or hand-edit it; rebuild it instead. Without trail, `.trail/cache/` does not exist: use plain grep and file reads.
+
+- Start at `.trail/cache/INDEX.md`. One card per source file mirrors the tree: `.trail/cache/src/Module.md` covers `src/Module.php`, and the same holds for `tests/`, `config/`, and `scripts/`. Each card lists every symbol with its kind, line span (`L53-L60`), and signature.
+- Grep a symbol or filename under `.trail/cache/` to find its card, then open the source only at that span.
+- INDEX.md and some `--help` texts still say `graft/`, trail's old name. The map lives in `.trail/cache/`.
+- Call edges live only in `.trail/cache/.graph/wiring.json`. Read them with `trail callers`, not by opening the file. `.trail/cache/.cache/` is trail's internal state; skip it.
+- The graph misses calls through chained receivers: `trail callers Stub.render` lists only `Stub::__toString`, while most generators call `Stub::create(...)->render()`. Confirm a short caller list with `trail grep`.
+
+```bash
+trail ask "<task>" [--source]   # ranked file:line answer plus matching learnings; --source inlines the code
+trail grep <pattern>            # every hit, grouped by enclosing symbol
+trail skeleton <file>           # one file's symbols and line spans
+trail callers <symbol>          # callers; --direction out for callees, --depth N|all for blast radius
+trail map                       # directories, hubs, hotspots
+trail build                     # rebuild .trail/cache/; --check exits 1 when the map is stale
+```
+
+Query commands refresh a stale map first; `--no-refresh` answers from the map as it is. Before exploring, read the `.trail/learnings/` files that bear on your task. Run `trail check` before you commit or open a PR.
+
 ## Architecture
 
 ### Boot flow
