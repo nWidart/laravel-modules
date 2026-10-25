@@ -106,10 +106,13 @@ abstract class ModuleServiceProvider extends ServiceProvider
 
     /**
      * Register translations.
+     *
+     * Published translations (module:publish-translation) live in lang_path('modules/{name}').
+     * lang_path() is resources/lang when that directory exists, so apps that published there keep working.
      */
     protected function registerTranslations(): void
     {
-        $langPath = resource_path('lang/modules/'.$this->nameLower);
+        $langPath = lang_path('modules/'.$this->nameLower);
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $this->nameLower);
