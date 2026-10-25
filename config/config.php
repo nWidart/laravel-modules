@@ -67,7 +67,8 @@ return [
              * ],
              *
              * The command class must extend ReplacementKeyCommand and implement handle(): string
-             * to return the replacement text.
+             * to return the replacement text. The text is inserted as returned: in JSON stubs
+             * (json, composer, ...) escape it yourself, for example `\` as `\\` and `"` as `\"`.
              *
              * Note: Keys should be in UPPERCASE.
              */

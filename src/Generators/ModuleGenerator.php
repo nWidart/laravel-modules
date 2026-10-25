@@ -423,8 +423,7 @@ class ModuleGenerator extends Generator
             return true;
         }
 
-        $namespace = ($this->module->config('namespace') ?? $this->path_namespace($this->module->config('paths.modules')))
-            .'\\'.$this->getStudlyNameReplacement().'\\';
+        $namespace = $this->getModuleNamespaceReplacement().'\\'.$this->getStudlyNameReplacement().'\\';
 
         $this->component->error(sprintf(
             'Generator paths must be inside paths.app_folder [%s], because the module composer.json maps %s to it. Move these paths under %s/ in config/modules.php:',
@@ -494,12 +493,15 @@ class ModuleGenerator extends Generator
 
             $path = $this->module->getModulePath($this->getName()).$file;
 
-            $this->component->task("Generating file {$path}", function () use ($stub, $path) {
+            // Render before the task so stub warnings do not break the task line.
+            $contents = $this->getStubContents($stub);
+
+            $this->component->task("Generating file {$path}", function () use ($contents, $path) {
                 if (! $this->filesystem->isDirectory($dir = dirname($path))) {
                     $this->filesystem->makeDirectory($dir, 0775, true);
                 }
 
-                $this->filesystem->put($path, $this->getStubContents($stub));
+                $this->filesystem->put($path, $contents);
             });
         }
     }
@@ -525,13 +527,8 @@ class ModuleGenerator extends Generator
                 '--master' => true,
             ]);
         } else {
-            // delete register ServiceProvider on module.json
-            $path = $this->module->getModulePath($this->getName()).DIRECTORY_SEPARATOR.'module.json';
-            $module_file = $this->filesystem->get($path);
-            $this->filesystem->put(
-                $path,
-                preg_replace('/"providers": \[.*?\],/s', '"providers": [ ],', $module_file)
-            );
+            // No service provider is generated, so module.json must not register one.
+            $this->clearModuleJsonProviders();
         }
 
         if (GenerateConfigReader::read('event-provider')->generatesWith($providerGenerator->generate())) {
@@ -572,11 +569,35 @@ class ModuleGenerator extends Generator
      */
     protected function getStubContents($stub): string
     {
-        return (new Stub(
+        $contents = (new Stub(
             '/'.$stub.'.stub',
             $this->getReplacement($stub)
         )
         )->render();
+
+        if (preg_match_all('/\$[A-Z_]+\$/', $contents, $matches) > 0) {
+            $this->writeWarning(sprintf(
+                'Stub [%s] still contains unreplaced tokens: %s. List them in [modules.stubs.replacements.%s].',
+                $stub,
+                implode(', ', array_unique($matches[0])),
+                $stub
+            ));
+        }
+
+        if ($this->rendersJson($stub)) {
+            json_decode($contents);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $this->writeWarning(sprintf(
+                    'Stub [%s] rendered invalid JSON: %s. Values returned by a %s are inserted as-is, so in JSON stubs they must be JSON-escaped.',
+                    $stub,
+                    json_last_error_msg(),
+                    class_basename(ReplacementKeyCommand::class)
+                ));
+            }
+        }
+
+        return $contents;
     }
 
     /**
@@ -619,23 +640,59 @@ class ModuleGenerator extends Generator
             }
         }
 
+        $escapeForJson = $this->rendersJson($stub);
+
         foreach ($keys as $key => $value) {
             if (class_exists($value) && is_subclass_of($value, ReplacementKeyCommand::class)) {
+                // Custom commands own their output and are inserted as returned.
                 $replaces[strtoupper($key)] = (new $value($this))->handle();
             } elseif (method_exists($this, $method = 'get'.ucfirst(Str::studly(strtolower($value))).'Replacement')) {
-                $replace = $this->$method();
+                $replace = (string) $this->$method();
 
-                if ($stub === 'routes/web' || $stub === 'routes/api') {
-                    $replace = str_replace('\\\\', '\\', $replace);
-                }
-
-                $replaces[$value] = $replace;
+                $replaces[$value] = $escapeForJson ? $this->escapeJsonString($replace) : $replace;
             } else {
+                $this->writeWarning(is_string($key)
+                    ? sprintf('Replacement [%s] for stub [%s] maps to [%s], which is not a %s class. It was left empty.', $key, $stub, $value, class_basename(ReplacementKeyCommand::class))
+                    : sprintf('Unknown replacement key [%s] for stub [%s]. It was replaced with an empty string.', $value, $stub)
+                );
+
                 $replaces[$value] = null;
             }
         }
 
         return $replaces;
+    }
+
+    /**
+     * Whether the given stub renders a JSON file.
+     */
+    protected function rendersJson(string $stub): bool
+    {
+        if ($stub === 'json') {
+            return true;
+        }
+
+        $file = ($this->module->config('stubs.files') ?? [])[$stub] ?? null;
+
+        return is_string($file) && str_ends_with(strtolower($file), '.json');
+    }
+
+    /**
+     * Escape a value for use inside a JSON string literal.
+     */
+    protected function escapeJsonString(string $value): string
+    {
+        $encoded = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+
+        return $encoded === false ? $value : substr($encoded, 1, -1);
+    }
+
+    /**
+     * Write a console warning, when a console component is available.
+     */
+    protected function writeWarning(string $message): void
+    {
+        $this->component?->warn($message);
     }
 
     /**
@@ -645,12 +702,15 @@ class ModuleGenerator extends Generator
     {
         $path = $this->module->getModulePath($this->getName()).'module.json';
 
-        $this->component->task("Generating file $path", function () use ($path) {
+        // Render before the task so stub warnings do not break the task line.
+        $contents = $this->getStubContents('json');
+
+        $this->component->task("Generating file $path", function () use ($contents, $path) {
             if (! $this->filesystem->isDirectory($dir = dirname($path))) {
                 $this->filesystem->makeDirectory($dir, 0775, true);
             }
 
-            $this->filesystem->put($path, $this->getStubContents('json'));
+            $this->filesystem->put($path, $contents);
         });
     }
 
@@ -660,20 +720,60 @@ class ModuleGenerator extends Generator
      */
     private function cleanModuleJsonFile()
     {
+        $studlyName = $this->getStudlyNameReplacement();
+
+        $defaultProvider = implode('\\', [
+            $this->getModuleNamespaceReplacement(),
+            $studlyName,
+            $this->getProviderNamespaceReplacement(),
+            $studlyName.'ServiceProvider',
+        ]);
+
+        $this->filterModuleJsonProviders(fn ($provider) => $provider !== $defaultProvider);
+    }
+
+    /**
+     * Empty the "providers" list of the generated module.json file.
+     */
+    private function clearModuleJsonProviders(): void
+    {
+        $this->filterModuleJsonProviders(fn () => false);
+    }
+
+    /**
+     * Keep only the module.json providers that pass the given filter.
+     *
+     * The file is decoded as objects (not arrays) so empty objects stay `{}`,
+     * and re-encoded in the stub's format: 4-space indent, unescaped slashes.
+     */
+    private function filterModuleJsonProviders(callable $keep): void
+    {
         $path = $this->module->getModulePath($this->getName()).'module.json';
 
         $content = $this->filesystem->get($path);
-        $namespace = $this->getModuleNamespaceReplacement();
-        $studlyName = $this->getStudlyNameReplacement();
+        $json = json_decode($content);
 
-        // Same value as the json stub: $MODULE_NAMESPACE$\\$STUDLY_NAME$\\$PROVIDER_NAMESPACE$\\$STUDLY_NAME$ServiceProvider
-        $providerNamespace = $this->getProviderNamespaceReplacement();
+        if (! $json instanceof \stdClass) {
+            $this->writeWarning(sprintf('Could not remove the service providers from [%s]: %s.', $path, json_last_error_msg()));
 
-        $provider = '"'.$namespace.'\\\\'.$studlyName.'\\\\'.$providerNamespace.'\\\\'.$studlyName.'ServiceProvider"';
+            return;
+        }
 
-        $content = str_replace($provider, '', $content);
+        if (! property_exists($json, 'providers') || ! is_array($json->providers)) {
+            return;
+        }
 
-        $this->filesystem->put($path, $content);
+        $providers = array_values(array_filter($json->providers, $keep));
+
+        if ($providers === $json->providers) {
+            return;
+        }
+
+        $json->providers = $providers;
+
+        $encoded = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        $this->filesystem->put($path, $encoded.(str_ends_with($content, "\n") ? "\n" : ''));
     }
 
     /**
@@ -734,7 +834,7 @@ class ModuleGenerator extends Generator
      */
     protected function getModuleNamespaceReplacement(): string
     {
-        return str_replace('\\', '\\\\', $this->module->config('namespace') ?? $this->path_namespace($this->module->config('paths.modules')));
+        return $this->module->config('namespace') ?? $this->path_namespace($this->module->config('paths.modules'));
     }
 
     /**
@@ -775,7 +875,7 @@ class ModuleGenerator extends Generator
 
     protected function getProviderNamespaceReplacement(): string
     {
-        return str_replace('\\', '\\\\', GenerateConfigReader::read('provider')->getNamespace());
+        return GenerateConfigReader::read('provider')->getNamespace();
     }
 
     /**

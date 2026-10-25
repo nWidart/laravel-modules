@@ -26,6 +26,7 @@ class StubTest extends BaseTestCase
             base_path('my-command.php'),
             base_path('stub-override-exists.php'),
             base_path('stub-override-not-exists.php'),
+            base_path('stub-single-pass.stub'),
         ]);
     }
 
@@ -100,5 +101,25 @@ class StubTest extends BaseTestCase
 
         $this->assertTrue($this->finder->exists(base_path('stub-override-exists.php')));
         $this->assertEquals('stub-override', $this->finder->get(base_path('stub-override-exists.php')));
+    }
+
+    public function test_it_does_not_replace_tokens_inside_replacement_values()
+    {
+        $this->finder->put(base_path('stub-single-pass.stub'), '$FIRST$ $SECOND$');
+        Stub::setBasePath(base_path());
+
+        $stub = new Stub('/stub-single-pass.stub', [
+            'FIRST' => 'literal $SECOND$',
+            'SECOND' => 'second',
+        ]);
+
+        $this->assertSame('literal $SECOND$ second', $stub->render());
+
+        $stub->replace([
+            'SECOND' => 'second',
+            'FIRST' => 'literal $SECOND$',
+        ]);
+
+        $this->assertSame('literal $SECOND$ second', $stub->render());
     }
 }
