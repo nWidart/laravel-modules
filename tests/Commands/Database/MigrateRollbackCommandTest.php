@@ -46,6 +46,8 @@ class MigrateRollbackCommandTest extends BaseTestCase
         if ($this->repository->has('Shop')) {
             $this->repository->delete('Shop');
         }
+        $this->app['files']->deleteDirectory(base_path('modules/BlogExtra'));
+        $this->app['files']->deleteDirectory(base_path('database/other-migrations'));
         parent::tearDown();
     }
 
@@ -329,6 +331,61 @@ PHP);
             'Migration subpath [missing] does not exist in module [Blog].',
             $this->app[Kernel::class]->output()
         );
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+    }
+
+    public function test_it_rolls_back_the_migrations_of_a_path_registered_inside_the_module()
+    {
+        $extra = base_path('modules/Blog/database/migrations/feature-flags');
+        $this->writeMigration($extra, 'feature_flags');
+        $this->app['migrator']->path($extra);
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog']]);
+        $this->assertTrue(Schema::hasTable('feature_flags'));
+
+        $code = $this->artisan('module:migrate-rollback', ['module' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertStringContainsString('2020_01_01_000000_create_feature_flags_table', $this->app[Kernel::class]->output());
+        $this->assertFalse(Schema::hasTable('feature_flags'));
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+        $this->assertTrue($this->migrationIsLogged());
+    }
+
+    public function test_it_rolls_back_a_migration_file_registered_inside_the_module()
+    {
+        $extra = base_path('modules/Blog/database/migrations/feature-flags');
+        $this->writeMigration($extra, 'feature_flags');
+        $this->app['migrator']->path($extra.'/2020_01_01_000000_create_feature_flags_table.php');
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Blog']]);
+        $this->assertTrue(Schema::hasTable('feature_flags'));
+
+        $code = $this->artisan('module:migrate-rollback', ['module' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertFalse(Schema::hasTable('feature_flags'));
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+    }
+
+    public function test_it_does_not_roll_back_registered_paths_outside_the_module()
+    {
+        $extra = base_path('modules/Blog/database/migrations/feature-flags');
+        $sibling = base_path('modules/BlogExtra/database/migrations');
+        $outside = base_path('database/other-migrations');
+        $this->writeMigration($extra, 'feature_flags');
+        $this->writeMigration($sibling, 'blog_extra_notes');
+        $this->writeMigration($outside, 'app_widgets');
+        foreach ([$extra, $sibling, $outside] as $path) {
+            $this->app['migrator']->path($path);
+        }
+        // one batch, so a rollback of the module could reach the other paths too
+        $this->app[Kernel::class]->call('migrate', ['--path' => [$extra, $sibling, $outside], '--realpath' => true]);
+
+        $code = $this->artisan('module:migrate-rollback', ['module' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertFalse(Schema::hasTable('feature_flags'));
+        $this->assertTrue(Schema::hasTable('blog_extra_notes'));
+        $this->assertTrue(Schema::hasTable('app_widgets'));
         $this->assertTrue(Schema::hasTable('blog_posts'));
     }
 

@@ -121,6 +121,19 @@ class MigratorTest extends BaseTestCase
         $this->assertSame(0, $migrator->find('2020_01_03_000000_unknown')->count());
     }
 
+    public function test_get_paths_returns_the_configured_path_and_the_registered_paths_inside_the_module()
+    {
+        $configured = base_path('modules/Blog/database/migrations');
+        $extra = $configured.'/feature-flags';
+        $file = base_path('modules/Blog/database/other/2020_01_01_000000_create_blog_tags_table.php');
+
+        foreach ([$extra, base_path('modules/BlogExtra/database/migrations'), base_path('database/other-migrations'), $file, $configured] as $path) {
+            $this->app['migrator']->path($path);
+        }
+
+        $this->assertSame([$configured, $extra, $file], $this->migrator()->getPaths());
+    }
+
     private function migrator(): Migrator
     {
         return new Migrator($this->repository->find('Blog'), $this->app);

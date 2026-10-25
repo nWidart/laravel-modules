@@ -32,11 +32,13 @@ class MigrateStatusCommand extends BaseCommand
     {
         $module = $this->getModuleModel($name);
 
-        $path = str_replace(base_path(), '', (new Migrator($module, $this->getLaravel()))->getPath());
+        // the same paths module:migrate, module:migrate-rollback and module:migrate-reset use
+        $paths = (new Migrator($module, $this->getLaravel()))->getPaths();
 
         if ($this->call('migrate:status', [
-            '--path' => $path,
+            '--path' => $paths,
             '--database' => $this->option('database'),
+            '--realpath' => true,
         ]) !== self::SUCCESS) {
             $this->markAsFailed();
         }
