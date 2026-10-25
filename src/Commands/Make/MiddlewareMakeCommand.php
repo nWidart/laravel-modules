@@ -108,8 +108,6 @@ class MiddlewareMakeCommand extends GeneratorCommand
 
         $this->components->info('Creating middleware...');
 
-        parent::handle();
-
-        return 0;
+        return parent::handle();
     }
 }

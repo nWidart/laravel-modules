@@ -50,7 +50,11 @@ class ComponentClassMakeCommand extends GeneratorCommand
      */
     protected function writeComponentViewTemplate()
     {
-        $this->call('module:make-component-view', ['name' => $this->argument('name'), 'module' => $this->argument('module')]);
+        $this->call('module:make-component-view', [
+            'name' => $this->argument('name'),
+            'module' => $this->argument('module'),
+            '--force' => $this->option('force'),
+        ]);
     }
 
     public function getDefaultNamespace(): string

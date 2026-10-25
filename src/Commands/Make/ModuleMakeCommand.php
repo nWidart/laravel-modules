@@ -3,13 +3,15 @@
 namespace Nwidart\Modules\Commands\Make;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Str;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Generators\ModuleGenerator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-class ModuleMakeCommand extends Command
+class ModuleMakeCommand extends Command implements PromptsForMissingInput
 {
     /**
      * The console command name.
@@ -34,6 +36,14 @@ class ModuleMakeCommand extends Command
         $success = true;
 
         foreach ($names as $name) {
+            // ModuleGenerator::getName() studly-cases the name; it becomes the folder and the namespace.
+            if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', Str::studly($name)) !== 1) {
+                $this->components->error("The module name [{$name}] is not valid. Use letters, digits, \"-\", \"_\" or spaces, starting with a letter.");
+                $success = false;
+
+                continue;
+            }
+
             $code = with(new ModuleGenerator($name))
                 ->setFilesystem($this->laravel['files'])
                 ->setModule($this->laravel['modules'])
@@ -70,7 +80,14 @@ class ModuleMakeCommand extends Command
     protected function getArguments()
     {
         return [
-            ['name', InputArgument::IS_ARRAY, 'The names of modules will be created.'],
+            ['name', InputArgument::IS_ARRAY | InputArgument::REQUIRED, 'The names of modules will be created.'],
+        ];
+    }
+
+    protected function promptForMissingArgumentsUsing(): array
+    {
+        return [
+            'name' => 'What is the name of the module?',
         ];
     }
 
