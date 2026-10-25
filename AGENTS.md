@@ -21,6 +21,16 @@ CI (`.github/workflows/php.yml`) runs the test suite on PHP 8.3, 8.4, and 8.5. C
 
 Commit messages must follow Conventional Commits (`fix(scope): description`, see `CONTRIBUTING.md`); CI checks every PR commit and releases are generated from them. For releases, see `RELEASING.md`.
 
+## Git worktrees
+
+Never use `git stash` in a git worktree of this repo. The stash list is stored once per repository and shared by every worktree. When agents work in parallel worktrees, one agent's `git stash pop` can apply another agent's changes. This has happened.
+
+Instead:
+
+- Compare against the base with `git diff origin/master` or `git diff <base>...HEAD`.
+- Save work with a temporary commit: `git commit -m "wip"`, then `git reset --soft HEAD~1` to undo it.
+- Use a separate worktree.
+
 ## Code map (trail)
 
 With trail installed, `trail build` writes a code map to `.trail/cache/`. The map is generated and local only (`.trail/.gitignore` lists it). Never commit or hand-edit it; rebuild it instead. Without trail, `.trail/cache/` does not exist: use plain grep and file reads.
