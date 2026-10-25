@@ -27,7 +27,7 @@ class ModuleManifest
     /**
      * The manifestData
      */
-    private static ?Collection $manifestData;
+    private static ?Collection $manifestData = null;
 
     /**
      * The loaded manifest array.
@@ -83,11 +83,15 @@ class ModuleManifest
      */
     public function getAliases(): array
     {
-        return $this->getModulesData()
+        // Collection::collapse() is documented as static<int, mixed>, but it keeps the alias-name keys.
+        /** @var array<string, class-string> $aliases */
+        $aliases = $this->getModulesData()
             ->pluck('aliases')
             ->filter(fn ($aliases) => is_array($aliases))
             ->collapse()
             ->all();
+
+        return $aliases;
     }
 
     /**
@@ -125,8 +129,8 @@ class ModuleManifest
 
         self::$manifestData = $this->paths
             ->flatMap(function ($path) {
-                $manifests = $this->files->glob("{$path}/module.json");
-                is_array($manifests) || $manifests = [];
+                // Filesystem::glob() returns false on error, despite its array return type.
+                $manifests = $this->files->glob("{$path}/module.json") ?: [];
 
                 return collect($manifests)
                     ->map(function ($manifest) {

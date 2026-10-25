@@ -23,7 +23,7 @@ class Migrator
     /**
      * Laravel Application instance.
      *
-     * @var Application.
+     * @var Application
      */
     protected $laravel;
 
@@ -371,7 +371,12 @@ class Migrator
      */
     protected function getSchemaGrammar($connection)
     {
-        if (is_null($grammar = $connection->getSchemaGrammar())) {
+        // Connection::getSchemaGrammar() is documented as Grammar, but the grammar stays null
+        // until the connection builds a schema builder or sets the default grammar.
+        /** @var Grammar|null $grammar */
+        $grammar = $connection->getSchemaGrammar();
+
+        if (is_null($grammar)) {
             $connection->useDefaultSchemaGrammar();
 
             $grammar = $connection->getSchemaGrammar();

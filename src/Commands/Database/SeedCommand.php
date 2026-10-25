@@ -210,7 +210,6 @@ class SeedCommand extends BaseCommand
      * Report the exception to the exception handler.
      *
      * @param  OutputInterface  $output
-     * @param  \Throwable  $e
      * @return void
      */
     protected function renderException($output, \Exception $e)
@@ -221,7 +220,6 @@ class SeedCommand extends BaseCommand
     /**
      * Report the exception to the exception handler.
      *
-     * @param  \Throwable  $e
      * @return void
      */
     protected function reportException(\Exception $e)

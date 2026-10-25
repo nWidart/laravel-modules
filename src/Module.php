@@ -16,9 +16,10 @@ abstract class Module
     use Macroable;
 
     /**
-     * The laravel|lumen application instance.
+     * The laravel|lumen application instance. The constructor accepts any Container for
+     * backwards compatibility, but the module calls application methods on it.
      *
-     * @var \Illuminate\Contracts\Foundation\Application|Application
+     * @var (Container&\Illuminate\Contracts\Foundation\Application)|(Container&Application)
      */
     protected $app;
 
@@ -49,6 +50,8 @@ abstract class Module
 
     /**
      * The constructor.
+     *
+     * @param  (Container&\Illuminate\Contracts\Foundation\Application)|(Container&Application)  $app
      */
     public function __construct(Container $app, string $name, string $path)
     {

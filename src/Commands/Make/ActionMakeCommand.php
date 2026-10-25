@@ -59,7 +59,7 @@ class ActionMakeCommand extends GeneratorCommand
         return Str::studly($this->argument('name'));
     }
 
-    private function getClassNameWithoutNamespace(): array|string
+    private function getClassNameWithoutNamespace(): string
     {
         return class_basename($this->getActionName());
     }

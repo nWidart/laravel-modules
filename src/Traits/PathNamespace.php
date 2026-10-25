@@ -88,7 +88,7 @@ trait PathNamespace
         if ($path) {
             // Remove leading custom|default app folders, compared as whole path segments.
             // The path gets shorter on every pass, so the loop always ends.
-            $prefixes = array_filter(array_unique([$app_path, 'app']), 'strlen');
+            $prefixes = array_filter(array_unique([$app_path, 'app']), fn (string $prefix) => $prefix !== '');
 
             do {
                 $previous = $path;
