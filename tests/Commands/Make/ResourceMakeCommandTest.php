@@ -63,6 +63,48 @@ class ResourceMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_can_generate_a_json_api_resource_class()
+    {
+        $code = $this->artisan('module:make-resource', ['name' => 'PostResource', 'module' => 'Blog', '--json-api' => true]);
+
+        $file = $this->finder->get($this->modulePath.'/Transformers/PostResource.php');
+
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_can_generate_a_json_api_resource_class_with_the_shortcut()
+    {
+        $code = $this->artisan('module:make-resource', ['name' => 'PostResource', 'module' => 'Blog', '-j' => true]);
+
+        $file = $this->finder->get($this->modulePath.'/Transformers/PostResource.php');
+
+        $this->assertStringContainsString('class PostResource extends JsonApiResource', $file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_collection_option_takes_precedence_over_json_api()
+    {
+        $code = $this->artisan('module:make-resource', ['name' => 'PostResource', 'module' => 'Blog', '--json-api' => true, '--collection' => true]);
+
+        $file = $this->finder->get($this->modulePath.'/Transformers/PostResource.php');
+
+        $this->assertStringContainsString('class PostResource extends ResourceCollection', $file);
+        $this->assertStringNotContainsString('JsonApiResource', $file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_collection_name_takes_precedence_over_json_api()
+    {
+        $code = $this->artisan('module:make-resource', ['name' => 'PostCollection', 'module' => 'Blog', '--json-api' => true]);
+
+        $file = $this->finder->get($this->modulePath.'/Transformers/PostCollection.php');
+
+        $this->assertStringContainsString('class PostCollection extends ResourceCollection', $file);
+        $this->assertStringNotContainsString('JsonApiResource', $file);
+        $this->assertSame(0, $code);
+    }
+
     public function test_it_can_change_the_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.resource.path', 'app/Http/Resources');

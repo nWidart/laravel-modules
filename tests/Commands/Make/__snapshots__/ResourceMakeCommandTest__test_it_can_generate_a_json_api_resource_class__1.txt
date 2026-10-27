@@ -1,0 +1,22 @@
+<?php
+
+namespace Modules\Blog\Transformers;
+
+use Illuminate\Http\Resources\JsonApi\JsonApiResource;
+
+class PostResource extends JsonApiResource
+{
+    /**
+     * The resource's attributes.
+     */
+    public $attributes = [
+        // ...
+    ];
+
+    /**
+     * The resource's relationships.
+     */
+    public $relationships = [
+        // ...
+    ];
+}

@@ -42,6 +42,7 @@ class ResourceMakeCommand extends GeneratorCommand
     {
         return [
             ['collection', 'c', InputOption::VALUE_NONE, 'Create a resource collection.'],
+            ['json-api', 'j', InputOption::VALUE_NONE, 'Create a JSON:API resource.'],
         ];
     }
 
@@ -89,10 +90,10 @@ class ResourceMakeCommand extends GeneratorCommand
 
     protected function getStubName(): string
     {
-        if ($this->collection()) {
-            return '/resource-collection.stub';
-        }
-
-        return '/resource.stub';
+        return match (true) {
+            $this->collection() => '/resource-collection.stub',
+            $this->option('json-api') => '/resource-json-api.stub',
+            default => '/resource.stub',
+        };
     }
 }
