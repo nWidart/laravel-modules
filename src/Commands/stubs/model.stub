@@ -2,6 +2,9 @@
 
 namespace $NAMESPACE$;
 
+%%START_ATTRIBUTES%%
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+%%END_ATTRIBUTES%%
 %%START_FACTORY%%
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,15 +17,22 @@ use $FACTORY_CLASS$;
 %%START_FACTORY%%
 #[UseFactory($FACTORY$::class)]
 %%END_FACTORY%%
+%%START_ATTRIBUTES%%
+#[Fillable($FILLABLE$)]
+%%END_ATTRIBUTES%%
 class $CLASS$ extends Model
 {
 %%START_FACTORY%%
     /** @use HasFactory<$FACTORY$> */
     use HasFactory;
+%%END_FACTORY%%
+%%START_PROPERTIES%%
+%%START_FACTORY%%
 
 %%END_FACTORY%%
     /**
      * The attributes that are mass assignable.
      */
     protected $fillable = $FILLABLE$;
+%%END_PROPERTIES%%
 }

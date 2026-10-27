@@ -1,0 +1,11 @@
+<?php
+
+namespace Modules\Blog\Models;
+
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Model;
+
+#[Fillable([])]
+class Post extends Model
+{
+}
