@@ -127,7 +127,10 @@ metadata:
 
                                                     ```bash
                                                     {{ $assist->artisanCommand('module:make-job ProcessPost Blog') }}
+                                                    {{ $assist->artisanCommand('module:make-job-middleware RateLimited Blog') }}
                                                     ```
+
+                                                    Job middleware lands in `Modules/Blog/app/Jobs/Middleware` (namespace `Modules\Blog\Jobs\Middleware`).
 
                                                     ### Middleware
 
@@ -160,6 +163,14 @@ metadata:
                                                     # Generate a JSON:API resource (Laravel 13+; --collection wins over --json-api)
                                                     {{ $assist->artisanCommand('module:make-resource PostResource Blog --json-api') }}
                                                     ```
+
+                                                    ### Config
+
+                                                    ```bash
+                                                    {{ $assist->artisanCommand('module:make-config stripe Blog') }}
+                                                    ```
+
+                                                    Creates `Modules/Blog/config/stripe.php`, read as `config('blog.stripe.key')`. Nested names work: `services/stripe` becomes `config('blog.services.stripe')`.
 
                                                     ## Running Module Migrations
 

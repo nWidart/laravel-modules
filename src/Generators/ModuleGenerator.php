@@ -46,6 +46,7 @@ class ModuleGenerator extends Generator
         'enums',
         'exceptions',
         'jobs',
+        'job-middleware',
         'helpers',
         'interfaces',
         'listener',
