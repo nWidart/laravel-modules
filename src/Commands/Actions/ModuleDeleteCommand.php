@@ -14,6 +14,7 @@ class ModuleDeleteCommand extends BaseCommand implements ConfirmableCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -29,16 +30,19 @@ class ModuleDeleteCommand extends BaseCommand implements ConfirmableCommand
         }
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return 'deleting module ...';
     }
 
+    #[\Override]
     public function getConfirmableLabel(): string
     {
         return 'Warning: Do you want to remove the module?';
     }
 
+    #[\Override]
     public function getConfirmableCallback(): \Closure|bool|null
     {
         return true;

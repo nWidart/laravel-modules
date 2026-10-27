@@ -34,6 +34,7 @@ class CommandMakeCommand extends GeneratorCommand
      */
     protected $description = 'Generate new Artisan command for the specified module.';
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.command.namespace')
@@ -45,6 +46,7 @@ class CommandMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -58,6 +60,7 @@ class CommandMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [
@@ -68,6 +71,7 @@ class CommandMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -91,6 +95,7 @@ class CommandMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());

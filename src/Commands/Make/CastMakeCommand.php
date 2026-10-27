@@ -19,6 +19,7 @@ class CastMakeCommand extends GeneratorCommand
 
     protected $description = 'Create a new Eloquent cast class for the specified module.';
 
+    #[\Override]
     public function getDestinationFilePath(): string
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -28,6 +29,7 @@ class CastMakeCommand extends GeneratorCommand
         return $path.$filePath.'/'.$this->getCastName().'.php';
     }
 
+    #[\Override]
     protected function getTemplateContents(): string
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -38,6 +40,7 @@ class CastMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
+    #[\Override]
     protected function getArguments(): array
     {
         return [
@@ -46,6 +49,7 @@ class CastMakeCommand extends GeneratorCommand
         ];
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [
@@ -66,6 +70,7 @@ class CastMakeCommand extends GeneratorCommand
         return class_basename($this->getCastName());
     }
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.casts.namespace')

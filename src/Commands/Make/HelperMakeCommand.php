@@ -19,6 +19,7 @@ class HelperMakeCommand extends GeneratorCommand
 
     protected $description = 'Create a new helper class for the specified module.';
 
+    #[\Override]
     public function getDestinationFilePath(): string
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -28,6 +29,7 @@ class HelperMakeCommand extends GeneratorCommand
         return $path.$filePath.'/'.$this->getHelperName().'.php';
     }
 
+    #[\Override]
     protected function getTemplateContents(): string
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -38,6 +40,7 @@ class HelperMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
+    #[\Override]
     protected function getArguments(): array
     {
         return [
@@ -46,6 +49,7 @@ class HelperMakeCommand extends GeneratorCommand
         ];
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [
@@ -67,6 +71,7 @@ class HelperMakeCommand extends GeneratorCommand
         return class_basename($this->getHelperName());
     }
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.helpers.namespace')

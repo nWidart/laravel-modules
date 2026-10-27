@@ -14,6 +14,7 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public function getCachedServicesPath(): string
     {
         // This checks if we are running on a Laravel Vapor managed instance
@@ -45,6 +46,7 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public function registerProviders(): void
     {
         (new ProviderRepository($this->app, new Filesystem, $this->getCachedServicesPath()))
@@ -54,6 +56,7 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public function registerAliases(): void
     {
         $loader = AliasLoader::getInstance();

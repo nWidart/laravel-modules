@@ -24,6 +24,7 @@ class DumpCommand extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -72,6 +73,7 @@ class DumpCommand extends BaseCommand
         return $code;
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return 'Generating optimized autoload modules';

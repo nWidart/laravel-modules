@@ -39,6 +39,7 @@ class ControllerMakeCommand extends GeneratorCommand
      *
      * @return string
      */
+    #[\Override]
     public function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -51,6 +52,7 @@ class ControllerMakeCommand extends GeneratorCommand
     /**
      * @return string
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -74,6 +76,7 @@ class ControllerMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -85,6 +88,7 @@ class ControllerMakeCommand extends GeneratorCommand
     /**
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [
@@ -114,6 +118,7 @@ class ControllerMakeCommand extends GeneratorCommand
         return class_basename($this->getControllerName());
     }
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.controller.namespace')

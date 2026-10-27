@@ -38,6 +38,7 @@ class ObserverMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -49,6 +50,7 @@ class ObserverMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -97,6 +99,7 @@ class ObserverMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -114,6 +117,7 @@ class ObserverMakeCommand extends GeneratorCommand
         return Str::studly($this->argument('name')).'Observer.php';
     }
 
+    #[\Override]
     public function handle(): int
     {
         $this->components->info('Creating observer...');
@@ -124,6 +128,7 @@ class ObserverMakeCommand extends GeneratorCommand
     /**
      * Get default namespace.
      */
+    #[\Override]
     public function getDefaultNamespace(): string
     {
 

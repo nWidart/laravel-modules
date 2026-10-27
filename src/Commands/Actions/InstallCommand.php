@@ -169,6 +169,7 @@ class InstallCommand extends Command
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -182,6 +183,7 @@ class InstallCommand extends Command
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [

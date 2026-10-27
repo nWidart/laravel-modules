@@ -53,6 +53,7 @@ class FileActivator implements ActivatorInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function reset(): void
     {
         if ($this->files->exists($this->statusesFile)) {
@@ -64,6 +65,7 @@ class FileActivator implements ActivatorInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function enable(Module $module): void
     {
         $this->setActiveByName($module->getName(), true);
@@ -72,6 +74,7 @@ class FileActivator implements ActivatorInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function disable(Module $module): void
     {
         $this->setActiveByName($module->getName(), false);
@@ -80,6 +83,7 @@ class FileActivator implements ActivatorInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function hasStatus(Module|string $module, bool $status): bool
     {
         $name = $module instanceof Module ? $module->getName() : $module;
@@ -94,6 +98,7 @@ class FileActivator implements ActivatorInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function setActive(Module $module, bool $active): void
     {
         $this->setActiveByName($module->getName(), $active);
@@ -102,6 +107,7 @@ class FileActivator implements ActivatorInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function setActiveByName(string $name, bool $status): void
     {
         $this->modulesStatuses[$name] = $status;
@@ -111,6 +117,7 @@ class FileActivator implements ActivatorInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function delete(Module $module): void
     {
         if (! isset($this->modulesStatuses[$module->getName()])) {

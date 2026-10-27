@@ -124,6 +124,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      *
      * @return array<int, string>
      */
+    #[\Override]
     public function getScanPaths(): array
     {
         $paths = $this->paths;
@@ -134,9 +135,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
             $paths = array_merge($paths, $this->config('scan.paths'));
         }
 
-        $paths = array_map(function ($path) {
-            return Str::endsWith($path, '/*') ? $path : Str::finish($path, '/*');
-        }, $paths);
+        $paths = array_map(fn ($path) => Str::endsWith($path, '/*') ? $path : Str::finish($path, '/*'), $paths);
 
         return $paths;
     }
@@ -157,6 +156,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      *
      * @return array<string, Module>
      */
+    #[\Override]
     public function scan(): array
     {
         if ($this->modules !== null) {
@@ -220,6 +220,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      *
      * @return array<string, Module>
      */
+    #[\Override]
     public function all(): array
     {
         return $this->scan();
@@ -230,6 +231,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      *
      * @return Collection<string, Module>
      */
+    #[\Override]
     public function toCollection(): Collection
     {
         return new Collection($this->scan());
@@ -241,6 +243,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      * @param  bool|int  $status
      * @return array<string, Module>
      */
+    #[\Override]
     public function getByStatus($status): array
     {
         $modules = [];
@@ -270,6 +273,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      *
      * @return array<string, Module>
      */
+    #[\Override]
     public function allEnabled(): array
     {
         return $this->getByStatus(true);
@@ -280,6 +284,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      *
      * @return array<string, Module>
      */
+    #[\Override]
     public function allDisabled(): array
     {
         return $this->getByStatus(false);
@@ -288,6 +293,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * Get count from all modules.
      */
+    #[\Override]
     public function count(): int
     {
         return count($this->all());
@@ -298,6 +304,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      *
      * @return array<string, Module>
      */
+    #[\Override]
     public function getOrdered(string $direction = 'asc'): array
     {
         $modules = $this->allEnabled();
@@ -320,6 +327,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function getPath(): string
     {
         return $this->path ?: $this->config('paths.modules', base_path('Modules'));
@@ -331,6 +339,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      * @deprecated The package no longer calls this method: enabled modules are registered by the
      *             package service provider through ModuleManifest. Will be removed in v14.
      */
+    #[\Override]
     public function register(): void
     {
         foreach ($this->getOrdered() as $module) {
@@ -345,6 +354,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      *             ModuleManifest, and each module boots through its own service providers.
      *             Will be removed in v14.
      */
+    #[\Override]
     public function boot(): void
     {
         foreach ($this->getOrdered() as $module) {
@@ -355,6 +365,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function find(string $name): ?Module
     {
         $module = $this->findScanned($name);
@@ -387,6 +398,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      *
      * @throws ModuleNotFoundException
      */
+    #[\Override]
     public function findOrFail(string $name): Module
     {
         $module = $this->find($name);
@@ -414,6 +426,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      *
      * @param  string  $module
      */
+    #[\Override]
     public function getModulePath($module): string
     {
         try {
@@ -426,6 +439,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function assetPath(string $module): string
     {
         return $this->config('paths.assets').'/'.$module;
@@ -437,6 +451,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      * @param  mixed  $default
      * @return mixed
      */
+    #[\Override]
     public function config(string $key, $default = null)
     {
         return $this->config->get('modules.'.$key, $default);
@@ -502,6 +517,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * Get laravel filesystem instance.
      */
+    #[\Override]
     public function getFiles(): Filesystem
     {
         return $this->files;
@@ -537,6 +553,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function isEnabled(string $name): bool
     {
         return $this->findOrFail($name)->isEnabled();
@@ -545,6 +562,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function isDisabled(string $name): bool
     {
         return ! $this->isEnabled($name);
@@ -577,6 +595,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function delete(string $name): bool
     {
         $deleted = $this->findOrFail($name)->delete();

@@ -23,6 +23,7 @@ class UnUseCommand extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -32,6 +33,7 @@ class UnUseCommand extends BaseCommand
         });
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return 'Forget Using Module ...';

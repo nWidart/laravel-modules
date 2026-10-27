@@ -8,31 +8,31 @@ class ModuleEvent
      * @deprecated Only fired by the deprecated Module::boot(), which the package no longer calls.
      *             Will be removed in v14.
      */
-    const BOOT = 'boot';
+    const string BOOT = 'boot';
 
     /**
      * @deprecated Only fired by the deprecated Module::register(), which the package no longer calls.
      *             Will be removed in v14.
      */
-    const REGISTER = 'register';
+    const string REGISTER = 'register';
 
-    const DISABLING = 'disabling';
+    const string DISABLING = 'disabling';
 
-    const DISABLED = 'disabled';
+    const string DISABLED = 'disabled';
 
-    const ENABLING = 'enabling';
+    const string ENABLING = 'enabling';
 
-    const ENABLED = 'enabled';
+    const string ENABLED = 'enabled';
 
-    const CREATING = 'creating';
+    const string CREATING = 'creating';
 
-    const CREATED = 'created';
+    const string CREATED = 'created';
 
-    const DELETING = 'deleting';
+    const string DELETING = 'deleting';
 
-    const DELETED = 'deleted';
+    const string DELETED = 'deleted';
 
-    const USED = 'used';
+    const string USED = 'used';
 
-    const UNUSED = 'unused';
+    const string UNUSED = 'unused';
 }

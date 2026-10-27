@@ -169,32 +169,31 @@ class Installer
      */
     public function getRepoUrl(): ?string
     {
-        switch ($this->type) {
-            case 'github':
-                return "git@github.com:{$this->name}.git";
+        return match ($this->type) {
+            'github' => "git@github.com:{$this->name}.git",
+            'github-https' => "https://github.com/{$this->name}.git",
+            'gitlab' => "git@gitlab.com:{$this->name}.git",
+            'bitbucket' => "git@bitbucket.org:{$this->name}.git",
+            default => $this->getCustomRepoUrl(),
+        };
+    }
 
-            case 'github-https':
-                return "https://github.com/{$this->name}.git";
-
-            case 'gitlab':
-                return "git@gitlab.com:{$this->name}.git";
-
-            case 'bitbucket':
-                return "git@bitbucket.org:{$this->name}.git";
-
-            default:
-                // Check of type 'scheme://host/path'
-                if (filter_var($this->type, FILTER_VALIDATE_URL)) {
-                    return $this->type;
-                }
-
-                // Check of type 'user@host'
-                if (filter_var($this->type, FILTER_VALIDATE_EMAIL)) {
-                    return "{$this->type}:{$this->name}.git";
-                }
-
-                return null;
+    /**
+     * Get the git repo url when the type is itself a url ('scheme://host/path') or a 'user@host' address.
+     */
+    private function getCustomRepoUrl(): ?string
+    {
+        // Check of type 'scheme://host/path'
+        if (filter_var($this->type, FILTER_VALIDATE_URL)) {
+            return $this->type;
         }
+
+        // Check of type 'user@host'
+        if (filter_var($this->type, FILTER_VALIDATE_EMAIL)) {
+            return "{$this->type}:{$this->name}.git";
+        }
+
+        return null;
     }
 
     /**

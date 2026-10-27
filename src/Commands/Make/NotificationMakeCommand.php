@@ -28,6 +28,7 @@ final class NotificationMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new notification class for the specified module.';
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.notifications.namespace')
@@ -39,6 +40,7 @@ final class NotificationMakeCommand extends GeneratorCommand
      *
      * @return string
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -54,6 +56,7 @@ final class NotificationMakeCommand extends GeneratorCommand
      *
      * @return string
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -76,6 +79,7 @@ final class NotificationMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [

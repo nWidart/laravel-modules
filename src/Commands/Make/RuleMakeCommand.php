@@ -34,6 +34,7 @@ class RuleMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new validation rule for the specified module.';
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.rules.namespace')
@@ -45,6 +46,7 @@ class RuleMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -58,6 +60,7 @@ class RuleMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [
@@ -68,6 +71,7 @@ class RuleMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -85,6 +89,7 @@ class RuleMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());

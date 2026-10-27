@@ -192,6 +192,7 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
      * Resolve --all into the module argument. This runs for every input, unlike
      * promptForMissingArguments(), which is skipped with --no-interaction or without a TTY.
      */
+    #[\Override]
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         parent::initialize($input, $output);
@@ -203,6 +204,7 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         }
     }
 
+    #[\Override]
     protected function promptForMissingArguments(InputInterface $input, OutputInterface $output): void
     {
         // --all was already resolved in initialize()

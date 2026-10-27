@@ -19,6 +19,7 @@ class ServiceMakeCommand extends GeneratorCommand
 
     protected $description = 'Create a new service class for the specified module.';
 
+    #[\Override]
     public function getDestinationFilePath(): string
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -28,6 +29,7 @@ class ServiceMakeCommand extends GeneratorCommand
         return $path.$filePath.'/'.$this->getServiceName().'.php';
     }
 
+    #[\Override]
     protected function getTemplateContents(): string
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -38,6 +40,7 @@ class ServiceMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
+    #[\Override]
     protected function getArguments(): array
     {
         return [
@@ -46,6 +49,7 @@ class ServiceMakeCommand extends GeneratorCommand
         ];
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [
@@ -67,6 +71,7 @@ class ServiceMakeCommand extends GeneratorCommand
         return class_basename($this->getServiceName());
     }
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.services.namespace')

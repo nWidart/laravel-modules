@@ -10,20 +10,12 @@ class GeneratorPath
 
     /**
      * The generator path. A legacy config holds the path itself, or false to skip the folder.
-     *
-     * @var string|bool|null
      */
-    private $path;
+    private readonly string|bool|null $path;
 
-    /**
-     * @var bool
-     */
-    private $generate;
+    private readonly bool $generate;
 
-    /**
-     * @var string
-     */
-    private $namespace;
+    private readonly string $namespace;
 
     /**
      * @param  array<string, mixed>|string|bool|null  $config  The modules.paths.generator.<key> config.

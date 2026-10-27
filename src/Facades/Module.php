@@ -45,6 +45,7 @@ class Module extends Facade
         MigrateResetCommand::prohibit($prohibit);
     }
 
+    #[\Override]
     protected static function getFacadeAccessor(): string
     {
         return 'modules';

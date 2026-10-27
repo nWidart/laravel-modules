@@ -27,6 +27,7 @@ class MigrateCommand extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -96,6 +97,7 @@ class MigrateCommand extends BaseCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [

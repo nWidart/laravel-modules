@@ -35,6 +35,7 @@ class ListenerMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -48,6 +49,7 @@ class ListenerMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [
@@ -56,6 +58,7 @@ class ListenerMakeCommand extends GeneratorCommand
         ];
     }
 
+    #[\Override]
     protected function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -68,6 +71,7 @@ class ListenerMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.listener.namespace')
@@ -126,6 +130,7 @@ class ListenerMakeCommand extends GeneratorCommand
         return class_basename($this->option('event'));
     }
 
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());

@@ -225,9 +225,7 @@ abstract class Module
             $file = 'module.json';
         }
 
-        return Arr::get($this->moduleJson, $file, function () use ($file) {
-            return $this->moduleJson[$file] = new Json($this->getPath().'/'.$file, $this->files);
-        });
+        return Arr::get($this->moduleJson, $file, fn () => $this->moduleJson[$file] = new Json($this->getPath().'/'.$file, $this->files));
     }
 
     /**
@@ -317,6 +315,7 @@ abstract class Module
     /**
      * Handle call __toString.
      */
+    #[\Override]
     public function __toString(): string
     {
         return $this->getStudlyName();

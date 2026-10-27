@@ -134,21 +134,13 @@ class NameParser
      */
     public function getPattern(): string
     {
-        switch ($action = $this->getAction()) {
-            case 'add':
-            case 'append':
-            case 'update':
-            case 'insert':
-                return "/{$action}_(.*)_to_(.*)_table/";
+        $action = $this->getAction();
 
-            case 'delete':
-            case 'remove':
-            case 'alter':
-                return "/{$action}_(.*)_from_(.*)_table/";
-
-            default:
-                return "/{$action}_(.*)_table/";
-        }
+        return match ($action) {
+            'add', 'append', 'update', 'insert' => "/{$action}_(.*)_to_(.*)_table/",
+            'delete', 'remove', 'alter' => "/{$action}_(.*)_from_(.*)_table/",
+            default => "/{$action}_(.*)_table/",
+        };
     }
 
     /**

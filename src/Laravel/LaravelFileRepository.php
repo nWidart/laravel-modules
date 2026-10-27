@@ -10,6 +10,7 @@ class LaravelFileRepository extends FileRepository
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     protected function createModule(Container $app, string $name, string $path): Module
     {
         return new Module($app, $name, $path);

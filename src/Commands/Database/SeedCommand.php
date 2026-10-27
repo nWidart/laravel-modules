@@ -48,6 +48,7 @@ class SeedCommand extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -81,6 +82,7 @@ class SeedCommand extends BaseCommand
         }
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return 'Seeding module ...';
@@ -158,7 +160,7 @@ class SeedCommand extends BaseCommand
         }
 
         if (count($seeders) > 0) {
-            array_walk($seeders, [$this, 'dbSeed']);
+            array_walk($seeders, $this->dbSeed(...));
             $this->info("Module [$name] seeded.");
         }
     }
@@ -256,6 +258,7 @@ class SeedCommand extends BaseCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [

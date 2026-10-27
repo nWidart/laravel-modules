@@ -16,6 +16,7 @@ class LangPublisher extends Publisher
      *
      * Must match the path read by ModuleServiceProvider::registerTranslations().
      */
+    #[\Override]
     public function getDestinationPath(): string
     {
         return lang_path('modules/'.$this->module->getLowerName());
@@ -24,6 +25,7 @@ class LangPublisher extends Publisher
     /**
      * Get source path.
      */
+    #[\Override]
     public function getSourcePath(): string
     {
         return $this->getModule()->getExtraPath(

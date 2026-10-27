@@ -24,6 +24,7 @@ class PublishCommand extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -37,6 +38,7 @@ class PublishCommand extends BaseCommand
 
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return 'Publishing module asset files ...';

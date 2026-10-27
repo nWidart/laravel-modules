@@ -28,6 +28,7 @@ class EventMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new event class for the specified module';
 
+    #[\Override]
     public function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -38,6 +39,7 @@ class EventMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
+    #[\Override]
     public function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -55,6 +57,7 @@ class EventMakeCommand extends GeneratorCommand
         return Str::studly($this->argument('name'));
     }
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.event.namespace')
@@ -66,6 +69,7 @@ class EventMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [

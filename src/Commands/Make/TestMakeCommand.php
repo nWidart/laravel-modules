@@ -19,6 +19,7 @@ class TestMakeCommand extends GeneratorCommand
 
     protected $description = 'Create a new test class for the specified module.';
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         if ($this->option('feature')) {
@@ -35,6 +36,7 @@ class TestMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -48,6 +50,7 @@ class TestMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [
@@ -58,6 +61,7 @@ class TestMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -72,6 +76,7 @@ class TestMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());

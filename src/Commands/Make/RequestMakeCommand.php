@@ -33,6 +33,7 @@ class RequestMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new form request class for the specified module.';
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.request.namespace')
@@ -44,6 +45,7 @@ class RequestMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -55,6 +57,7 @@ class RequestMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -68,6 +71,7 @@ class RequestMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());

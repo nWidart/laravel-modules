@@ -19,6 +19,7 @@ class JobMiddlewareMakeCommand extends GeneratorCommand
 
     protected $description = 'Create a new job middleware class for the specified module.';
 
+    #[\Override]
     public function getDestinationFilePath(): string
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -26,6 +27,7 @@ class JobMiddlewareMakeCommand extends GeneratorCommand
         return $path.$this->getJobMiddlewarePath().'/'.$this->getJobMiddlewareName().'.php';
     }
 
+    #[\Override]
     protected function getTemplateContents(): string
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -39,6 +41,7 @@ class JobMiddlewareMakeCommand extends GeneratorCommand
     /**
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments(): array
     {
         return [
@@ -50,6 +53,7 @@ class JobMiddlewareMakeCommand extends GeneratorCommand
     /**
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions(): array
     {
         return [
@@ -72,6 +76,7 @@ class JobMiddlewareMakeCommand extends GeneratorCommand
      * (a config published before the key existed), it follows the jobs
      * namespace: <jobs namespace>\Middleware.
      */
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         if ($this->hasJobMiddlewareConfig()) {

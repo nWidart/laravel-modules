@@ -28,6 +28,7 @@ class MailMakeCommand extends GeneratorCommand
 
     protected $argumentName = 'name';
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.emails.namespace')
@@ -39,6 +40,7 @@ class MailMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -52,6 +54,7 @@ class MailMakeCommand extends GeneratorCommand
      *
      * @return string
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -67,6 +70,7 @@ class MailMakeCommand extends GeneratorCommand
      *
      * @return string
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());

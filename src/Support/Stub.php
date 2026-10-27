@@ -203,6 +203,7 @@ class Stub
     /**
      * Handle magic method __toString.
      */
+    #[\Override]
     public function __toString(): string
     {
         return $this->render();

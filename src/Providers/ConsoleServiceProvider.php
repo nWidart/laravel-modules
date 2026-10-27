@@ -8,6 +8,7 @@ use Nwidart\Modules\Commands;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
+    #[\Override]
     public function register(): void
     {
         $this->commands(config('modules.commands', self::defaultCommands()->toArray()));
@@ -16,6 +17,7 @@ class ConsoleServiceProvider extends ServiceProvider
     /**
      * @return array<int, string> The command class names.
      */
+    #[\Override]
     public function provides(): array
     {
         return self::defaultCommands()->toArray();

@@ -34,6 +34,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -41,6 +42,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
         ];
     }
 
+    #[\Override]
     protected function getOptions()
     {
         return [
@@ -53,6 +55,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
      *
      * @return string
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -99,6 +102,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
      *
      * @return string
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -124,6 +128,7 @@ class RouteProviderMakeCommand extends GeneratorCommand
         return '/'.$this->moduleRepository()->config('stubs.files.routes/api', 'Routes/api.php');
     }
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.provider.namespace')

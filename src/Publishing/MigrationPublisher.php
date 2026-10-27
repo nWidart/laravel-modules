@@ -28,6 +28,7 @@ class MigrationPublisher extends AssetPublisher
     /**
      * Get destination path.
      */
+    #[\Override]
     public function getDestinationPath(): string
     {
         return $this->getRepository()->config('paths.migration');
@@ -36,6 +37,7 @@ class MigrationPublisher extends AssetPublisher
     /**
      * Get source path.
      */
+    #[\Override]
     public function getSourcePath(): string
     {
         return $this->migrator->getPath();

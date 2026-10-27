@@ -26,6 +26,7 @@ class MigrateRollbackCommand extends BaseCommand implements ConfirmableCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -84,6 +85,7 @@ class MigrateRollbackCommand extends BaseCommand implements ConfirmableCommand
         }
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return null;
@@ -94,6 +96,7 @@ class MigrateRollbackCommand extends BaseCommand implements ConfirmableCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [
