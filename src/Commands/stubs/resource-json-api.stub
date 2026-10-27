@@ -1,0 +1,22 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use Illuminate\Http\Resources\JsonApi\JsonApiResource;
+
+class $CLASS$ extends JsonApiResource
+{
+    /**
+     * The resource's attributes.
+     */
+    public $attributes = [
+        // ...
+    ];
+
+    /**
+     * The resource's relationships.
+     */
+    public $relationships = [
+        // ...
+    ];
+}

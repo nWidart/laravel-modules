@@ -150,7 +150,15 @@ metadata:
                                                     ### Resource
 
                                                     ```bash
+                                                    # Generate a resource
                                                     {{ $assist->artisanCommand('module:make-resource PostResource Blog') }}
+
+                                                    # Generate a resource collection (--collection, or a name ending in "Collection")
+                                                    {{ $assist->artisanCommand('module:make-resource PostCollection Blog') }}
+                                                    {{ $assist->artisanCommand('module:make-resource Posts Blog --collection') }}
+
+                                                    # Generate a JSON:API resource (Laravel 13+; --collection wins over --json-api)
+                                                    {{ $assist->artisanCommand('module:make-resource PostResource Blog --json-api') }}
                                                     ```
 
                                                     ## Running Module Migrations
