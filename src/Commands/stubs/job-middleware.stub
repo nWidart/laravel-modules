@@ -1,0 +1,18 @@
+<?php
+
+namespace $CLASS_NAMESPACE$;
+
+use Closure;
+
+class $CLASS$
+{
+    /**
+     * Process the queued job.
+     *
+     * @param  Closure(object): void  $next
+     */
+    public function handle(object $job, Closure $next): void
+    {
+        $next($job);
+    }
+}
