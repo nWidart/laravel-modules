@@ -178,6 +178,16 @@ class StubTest extends BaseTestCase
         $this->assertSame(['A.B' => false], $stub->getSections());
     }
 
+    public function test_it_handles_a_section_nested_in_a_section_with_another_tag()
+    {
+        $stub = $this->sectionsStub("a\n%%START_FOO%%\nfoo\n%%START_BAR%%\nbar\n%%END_BAR%%\n%%END_FOO%%\nb\n");
+
+        $this->assertSame("a\nfoo\nbar\nb\n", $stub->sections(['FOO' => true, 'BAR' => true])->render());
+        $this->assertSame("a\nfoo\nb\n", $stub->sections(['FOO' => true, 'BAR' => false])->render());
+        $this->assertSame("a\nb\n", $stub->sections(['FOO' => false, 'BAR' => true])->render());
+        $this->assertSame("a\nb\n", $stub->sections(['BAR' => true, 'FOO' => false])->render());
+    }
+
     private function sectionsStub(string $contents): Stub
     {
         $this->finder->put(base_path('stub-sections.stub'), $contents);

@@ -73,6 +73,7 @@ metadata:
                                                     ```bash
                                                     {{ $assist->artisanCommand('module:make-model Post Blog') }}
                                                     {{ $assist->artisanCommand('module:make-model Post Blog --migration') }}
+                                                    {{ $assist->artisanCommand('module:make-model Post Blog --attributes --fillable=title,slug') }}
                                                     ```
 
                                                     ### Migration

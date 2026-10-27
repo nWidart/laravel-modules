@@ -103,6 +103,7 @@ class ModelMakeCommand extends GeneratorCommand
     {
         return [
             ['all', 'a', InputOption::VALUE_NONE, 'Flag to create all associated files', null],
+            ['attributes', null, InputOption::VALUE_NONE, 'Use Eloquent attributes such as #[Fillable] instead of model properties', null],
             ['controller', 'c', InputOption::VALUE_NONE, 'Flag to create associated controllers', null],
             ['fillable', null, InputOption::VALUE_OPTIONAL, 'The fillable attributes.', null],
             ['factory', 'f', InputOption::VALUE_NONE, 'Create a new factory for the model', null],
@@ -218,6 +219,7 @@ class ModelMakeCommand extends GeneratorCommand
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         $withFactory = $this->option('factory') === true;
+        $withAttributes = $this->option('attributes') === true;
         $factoryClass = $withFactory ? $this->getFactoryClass($module) : '';
 
         return (new Stub('/model.stub', [
@@ -232,7 +234,9 @@ class ModelMakeCommand extends GeneratorCommand
             'FACTORY' => $withFactory ? class_basename($factoryClass) : '',
             'FACTORY_CLASS' => $factoryClass,
         ]))->sections([
+            'ATTRIBUTES' => $withAttributes,
             'FACTORY' => $withFactory,
+            'PROPERTIES' => ! $withAttributes,
         ])->render();
     }
 

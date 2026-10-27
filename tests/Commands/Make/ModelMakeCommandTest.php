@@ -316,6 +316,71 @@ class ModelMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_uses_the_fillable_attribute_with_attributes_option()
+    {
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--attributes' => true]);
+
+        $file = $this->finder->get($this->modulePath.'/Models/Post.php');
+
+        $this->assertStringContainsString('#[Fillable([])]', $file);
+        $this->assertStringNotContainsString('$fillable', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_uses_the_fillable_attribute_with_attributes_and_fillable_options()
+    {
+        $code = $this->artisan('module:make-model', [
+            'model' => 'Post',
+            'module' => 'Blog',
+            '--attributes' => true,
+            '--fillable' => 'title,slug',
+        ]);
+
+        $file = $this->finder->get($this->modulePath.'/Models/Post.php');
+
+        $this->assertStringContainsString('#[Fillable(["title","slug"])]', $file);
+        $this->assertStringNotContainsString('$fillable', $file);
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_it_uses_the_fillable_and_factory_attributes_with_attributes_and_factory_options()
+    {
+        $code = $this->artisan('module:make-model', [
+            'model' => 'Post',
+            'module' => 'Blog',
+            '--attributes' => true,
+            '--fillable' => 'title,slug',
+            '--factory' => true,
+        ]);
+
+        $file = $this->finder->get($this->modulePath.'/Models/Post.php');
+
+        $this->assertStringContainsString("#[UseFactory(PostFactory::class)]\n#[Fillable([\"title\",\"slug\"])]\nclass Post", $file);
+        $this->assertStringNotContainsString('$fillable', $file);
+        $this->assertSame($this->generatedFactoryClass('PostFactory.php'), $this->factoryClassUsedBy($file));
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_generated_model_with_attributes_option_reads_its_fillable_attribute()
+    {
+        $code = $this->artisan('module:make-model', [
+            'model' => 'Comment',
+            'module' => 'Blog',
+            '--attributes' => true,
+            '--fillable' => 'title,slug',
+        ]);
+
+        $this->registerModuleAutoloader();
+
+        $model = 'Modules\\Blog\\Models\\Comment';
+
+        $this->assertSame(['title', 'slug'], (new $model)->getFillable());
+        $this->assertSame(0, $code);
+    }
+
     public function test_a_published_model_stub_without_factory_placeholders_keeps_its_output()
     {
         $stubs = sys_get_temp_dir().'/laravel-modules-old-model-stub-'.getmypid();

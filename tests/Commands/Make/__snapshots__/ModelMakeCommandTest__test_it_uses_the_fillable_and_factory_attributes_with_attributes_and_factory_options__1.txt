@@ -1,0 +1,17 @@
+<?php
+
+namespace Modules\Blog\Models;
+
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Blog\Database\Factories\PostFactory;
+
+#[UseFactory(PostFactory::class)]
+#[Fillable(["title","slug"])]
+class Post extends Model
+{
+    /** @use HasFactory<PostFactory> */
+    use HasFactory;
+}
