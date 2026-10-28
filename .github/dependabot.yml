@@ -1,0 +1,39 @@
+# Dependabot version updates. Options reference:
+# https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
+version: 2
+
+updates:
+  - package-ecosystem: composer
+    # Root composer.json only. tests/stubs holds fixture manifests that are not installed.
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    # Wait a week after a release before proposing it.
+    cooldown:
+      default-days: 7
+    # "chore(deps): ..." and "chore(deps-dev): ...": cliff.toml leaves these out of the CHANGELOG.
+    commit-message:
+      prefix: chore
+      include: scope
+    ignore:
+      # The package major tracks the Laravel major: moving to a new Laravel major is a manual release.
+      - dependency-name: laravel/framework
+        update-types: ["version-update:semver-major"]
+      - dependency-name: orchestra/testbench
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: chore
+      include: scope
+    # One pull request for all action updates.
+    groups:
+      github-actions:
+        patterns: ["*"]
