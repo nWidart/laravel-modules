@@ -15,6 +15,8 @@ class MigrationMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
 
+    protected $argumentName = 'name';
+
     /**
      * The console command name.
      *

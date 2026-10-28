@@ -55,6 +55,26 @@ class SeedMakeCommand extends GeneratorCommand
         ];
     }
 
+    /**
+     * Also reject a name that resolves to a class named "Seeder": the generated
+     * class would clash with the Illuminate\Database\Seeder class it extends.
+     */
+    #[\Override]
+    protected function validateNameArgument(): ?string
+    {
+        if (($error = parent::validateNameArgument()) !== null) {
+            return $error;
+        }
+
+        $name = $this->argument('name');
+
+        if (class_basename($this->getSeederName()) === 'Seeder') {
+            return "The name [{$name}] resolves to the class [Seeder], which clashes with the Illuminate\\Database\\Seeder base class.";
+        }
+
+        return null;
+    }
+
     #[\Override]
     protected function getTemplateContents(): mixed
     {
