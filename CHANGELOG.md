@@ -31,9 +31,7 @@ From 11.0.11 until the first automated release (made by `.github/workflows/relea
 
 ### Other
 
-- **trail:** Add learning on boot cost with many modules ([#2240](https://github.com/nWidart/laravel-modules/pull/2240)) ([27e3988](https://github.com/nWidart/laravel-modules/commit/27e398830671a3aeea6c23d627a47f8b8415167a))
 - **phpstan:** Raise level to 6 and type container access ([#2232](https://github.com/nWidart/laravel-modules/pull/2232)) ([4ecea46](https://github.com/nWidart/laravel-modules/commit/4ecea467f0a99bbdb31a915e30e25320609c4325))
-- **trail:** Add learning on generator name validation ([#2247](https://github.com/nWidart/laravel-modules/pull/2247)) ([5594f81](https://github.com/nWidart/laravel-modules/commit/5594f816fdd28452318c724b2e0d21be465dbe94))
 
 ## 13.2.0 - 2026-10-25
 
