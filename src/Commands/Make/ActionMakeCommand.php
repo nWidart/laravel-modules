@@ -19,6 +19,7 @@ class ActionMakeCommand extends GeneratorCommand
 
     protected $description = 'Create a new action class for the specified module.';
 
+    #[\Override]
     public function getDestinationFilePath(): string
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -28,6 +29,7 @@ class ActionMakeCommand extends GeneratorCommand
         return $path.$filePath.'/'.$this->getActionName().'.php';
     }
 
+    #[\Override]
     protected function getTemplateContents(): string
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -38,6 +40,7 @@ class ActionMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
+    #[\Override]
     protected function getArguments(): array
     {
         return [
@@ -46,6 +49,7 @@ class ActionMakeCommand extends GeneratorCommand
         ];
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [
@@ -67,6 +71,7 @@ class ActionMakeCommand extends GeneratorCommand
         return class_basename($this->getActionName());
     }
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.actions.namespace')

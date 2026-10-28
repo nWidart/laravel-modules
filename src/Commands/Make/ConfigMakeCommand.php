@@ -23,6 +23,7 @@ class ConfigMakeCommand extends GeneratorCommand
      * The file keeps the name as given, like make:config: "services/stripe"
      * writes config/services/stripe.php, and a ".php" suffix is not doubled.
      */
+    #[\Override]
     public function getDestinationFilePath(): string
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -32,6 +33,7 @@ class ConfigMakeCommand extends GeneratorCommand
         return $path.(is_string($configPath) ? $configPath : 'config').'/'.Str::finish($this->argument('name'), '.php');
     }
 
+    #[\Override]
     protected function getTemplateContents(): string
     {
         return Stub::create($this->getStubName())->render();
@@ -40,6 +42,7 @@ class ConfigMakeCommand extends GeneratorCommand
     /**
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments(): array
     {
         return [
@@ -51,6 +54,7 @@ class ConfigMakeCommand extends GeneratorCommand
     /**
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions(): array
     {
         return [

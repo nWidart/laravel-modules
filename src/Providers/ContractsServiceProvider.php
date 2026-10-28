@@ -17,5 +17,6 @@ class ContractsServiceProvider extends ServiceProvider
      * The repository used to be bound here with a non-shared bind(), which replaced
      * the singleton registered by the package service provider (issue #2192).
      */
+    #[\Override]
     public function register() {}
 }

@@ -108,6 +108,7 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -115,6 +116,7 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
         ];
     }
 
+    #[\Override]
     protected function promptForMissingArgumentsUsing(): array
     {
         return [
@@ -122,6 +124,7 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
         ];
     }
 
+    #[\Override]
     protected function getOptions()
     {
         return [

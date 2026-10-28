@@ -29,6 +29,7 @@ class JobMakeCommand extends GeneratorCommand
 
     protected $argumentName = 'name';
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.jobs.namespace')
@@ -40,6 +41,7 @@ class JobMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -53,6 +55,7 @@ class JobMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [
@@ -65,6 +68,7 @@ class JobMakeCommand extends GeneratorCommand
      *
      * @return string
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -80,6 +84,7 @@ class JobMakeCommand extends GeneratorCommand
      *
      * @return string
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());

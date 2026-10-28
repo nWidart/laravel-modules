@@ -28,6 +28,7 @@ class Collection extends BaseCollection
      *
      * @return array<TKey, mixed>
      */
+    #[\Override]
     public function toArray(): array
     {
         return array_map(function ($value) {

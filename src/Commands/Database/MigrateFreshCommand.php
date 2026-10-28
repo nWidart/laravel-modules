@@ -45,6 +45,7 @@ class MigrateFreshCommand extends BaseCommand implements ConfirmableCommand
         $this->migration_paths = collect($this->migrator->paths());
     }
 
+    #[\Override]
     public function handle(): int
     {
         // db:wipe cannot pretend, and pretending the migrations on the current database would
@@ -118,6 +119,7 @@ class MigrateFreshCommand extends BaseCommand implements ConfirmableCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -135,6 +137,7 @@ class MigrateFreshCommand extends BaseCommand implements ConfirmableCommand
     /**
      * Get the console command options.
      */
+    #[\Override]
     protected function getOptions(): array
     {
         return [

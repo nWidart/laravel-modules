@@ -19,6 +19,7 @@ class EventProviderMakeCommand extends GeneratorCommand
 
     protected $description = 'Create a new event service provider class for the specified module.';
 
+    #[\Override]
     public function getDestinationFilePath(): string
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -28,6 +29,7 @@ class EventProviderMakeCommand extends GeneratorCommand
         return $path.$filePath.'/'.$this->getEventServiceProviderName().'.php';
     }
 
+    #[\Override]
     protected function getTemplateContents(): string
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -38,6 +40,7 @@ class EventProviderMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
+    #[\Override]
     protected function getArguments(): array
     {
         return [
@@ -45,6 +48,7 @@ class EventProviderMakeCommand extends GeneratorCommand
         ];
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [
@@ -65,6 +69,7 @@ class EventProviderMakeCommand extends GeneratorCommand
         return class_basename($this->getEventServiceProviderName());
     }
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.provider.namespace')

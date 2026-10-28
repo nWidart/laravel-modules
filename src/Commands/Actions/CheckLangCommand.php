@@ -16,10 +16,8 @@ class CheckLangCommand extends BaseCommand
 {
     /**
      * The lang path inside a module, with a leading directory separator.
-     *
-     * @var string
      */
-    private $langPath;
+    private readonly string $langPath;
 
     /**
      * The console command name.
@@ -45,6 +43,7 @@ class CheckLangCommand extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -64,6 +63,7 @@ class CheckLangCommand extends BaseCommand
         }
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return 'Checking languages ...';
@@ -84,16 +84,12 @@ class CheckLangCommand extends BaseCommand
             // Filesystem::directories() is typed as a plain array; it holds the directory paths.
             /** @var array<int, string> $directories */
             $directories = $this->laravel->make(Filesystem::class)->directories($path);
-            $directories = array_map(function ($directory) use ($moduleName) {
-                return [
-                    'name' => basename($directory),
-                    'module' => $moduleName,
-                    'path' => $directory,
-                    'files' => array_map(function ($file) {
-                        return basename($file);
-                    }, File::glob($directory.DIRECTORY_SEPARATOR.'*')),
-                ];
-            }, $directories);
+            $directories = array_map(fn ($directory) => [
+                'name' => basename($directory),
+                'module' => $moduleName,
+                'path' => $directory,
+                'files' => array_map(fn ($file) => basename($file), File::glob($directory.DIRECTORY_SEPARATOR.'*')),
+            ], $directories);
         }
 
         if (count($directories) == 0) {

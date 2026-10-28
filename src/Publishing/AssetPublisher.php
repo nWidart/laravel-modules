@@ -19,6 +19,7 @@ class AssetPublisher extends Publisher
     /**
      * Get destination path.
      */
+    #[\Override]
     public function getDestinationPath(): string
     {
         return $this->getRepository()->assetPath($this->module->getLowerName());
@@ -27,6 +28,7 @@ class AssetPublisher extends Publisher
     /**
      * Get source path.
      */
+    #[\Override]
     public function getSourcePath(): string
     {
         return $this->getModule()->getExtraPath(

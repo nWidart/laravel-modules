@@ -19,6 +19,7 @@ class ExceptionMakeCommand extends GeneratorCommand
 
     protected $description = 'Create a new exception class for the specified module.';
 
+    #[\Override]
     public function getDestinationFilePath(): string
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -28,6 +29,7 @@ class ExceptionMakeCommand extends GeneratorCommand
         return $path.$filePath.'/'.$this->getExceptionName().'.php';
     }
 
+    #[\Override]
     protected function getTemplateContents(): string
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -38,6 +40,7 @@ class ExceptionMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
+    #[\Override]
     protected function getArguments(): array
     {
         return [
@@ -46,6 +49,7 @@ class ExceptionMakeCommand extends GeneratorCommand
         ];
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [
@@ -68,6 +72,7 @@ class ExceptionMakeCommand extends GeneratorCommand
         return class_basename($this->getExceptionName());
     }
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.exceptions.namespace')

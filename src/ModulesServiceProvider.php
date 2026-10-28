@@ -23,6 +23,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
      *
      * @return void
      */
+    #[\Override]
     public function register() {}
 
     /**
@@ -78,6 +79,7 @@ abstract class ModulesServiceProvider extends ServiceProvider
      *
      * @return array<int, string>
      */
+    #[\Override]
     public function provides(): array
     {
         return [Contracts\RepositoryInterface::class, 'modules'];

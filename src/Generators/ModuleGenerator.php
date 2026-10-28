@@ -752,22 +752,18 @@ class ModuleGenerator extends Generator
         foreach ($targets as $stub => $file) {
             $contents = $this->getStubContents($stub);
 
-            if ($this->rendersJson($stub)) {
-                json_decode($contents);
+            if ($this->rendersJson($stub) && ! json_validate($contents)) {
+                $this->component?->error(sprintf(
+                    'Stub [%s] renders invalid JSON for [%s]: %s. Values returned by a %s are inserted as-is, so in JSON stubs they must be JSON-escaped. Module [%s] was not %s.',
+                    $stub,
+                    ltrim($file, '/'),
+                    json_last_error_msg(),
+                    class_basename(ReplacementKeyCommand::class),
+                    $this->getName(),
+                    $overwriting ? 'overwritten' : 'created'
+                ));
 
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    $this->component?->error(sprintf(
-                        'Stub [%s] renders invalid JSON for [%s]: %s. Values returned by a %s are inserted as-is, so in JSON stubs they must be JSON-escaped. Module [%s] was not %s.',
-                        $stub,
-                        ltrim($file, '/'),
-                        json_last_error_msg(),
-                        class_basename(ReplacementKeyCommand::class),
-                        $this->getName(),
-                        $overwriting ? 'overwritten' : 'created'
-                    ));
-
-                    $valid = false;
-                }
+                $valid = false;
             }
 
             $this->renderedStubs[$stub] = $contents;

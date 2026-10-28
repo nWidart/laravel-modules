@@ -31,6 +31,7 @@ class MigrateStatusCommand extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -47,6 +48,7 @@ class MigrateStatusCommand extends BaseCommand
         }
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return null;
@@ -57,6 +59,7 @@ class MigrateStatusCommand extends BaseCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [

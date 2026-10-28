@@ -25,6 +25,7 @@ class PublishConfigurationCommand extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         if ($this->call('vendor:publish', [
@@ -36,6 +37,7 @@ class PublishConfigurationCommand extends BaseCommand
         }
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return 'Publishing module config files ...';
@@ -55,6 +57,7 @@ class PublishConfigurationCommand extends BaseCommand
         return "$namespace\\$moduleName\\$provider\\{$moduleName}ServiceProvider";
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [

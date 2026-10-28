@@ -33,6 +33,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new component-class for the specified module.';
 
+    #[\Override]
     public function handle(): int
     {
         if (parent::handle() === E_ERROR) {
@@ -57,6 +58,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
         ]);
     }
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.component-class.namespace')
@@ -68,6 +70,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -79,6 +82,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -94,6 +98,7 @@ class ComponentClassMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());

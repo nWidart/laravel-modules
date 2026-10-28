@@ -25,6 +25,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
      *
      * @return void
      */
+    #[\Override]
     public function boot()
     {
         $this->registerNamespaces();
@@ -34,9 +35,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         ]);
 
         // Create @module() blade directive.
-        Blade::if('module', function (string $name) {
-            return module($name);
-        });
+        Blade::if('module', fn (string $name) => module($name));
     }
 
     /**
@@ -44,6 +43,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
      *
      * @return void
      */
+    #[\Override]
     public function register()
     {
         $this->registerServices();
@@ -83,13 +83,12 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
      *
      * @return void
      */
+    #[\Override]
     protected function registerServices()
     {
         // No fixed path: the repository is resolved during register(), and getPath() must keep
         // reading modules.paths.modules lazily so later config changes are still picked up.
-        $this->app->singleton(RepositoryInterface::class, function ($app) {
-            return new Laravel\LaravelFileRepository($app);
-        });
+        $this->app->singleton(RepositoryInterface::class, fn ($app) => new Laravel\LaravelFileRepository($app));
         $this->app->singleton(ActivatorInterface::class, function (Application $app) {
             $config = $app->make(ConfigRepository::class);
             $activator = $config->get('modules.activator');

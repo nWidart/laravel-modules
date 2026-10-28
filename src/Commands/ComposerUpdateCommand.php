@@ -27,6 +27,7 @@ class ComposerUpdateCommand extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -85,6 +86,7 @@ class ComposerUpdateCommand extends BaseCommand
         });
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return 'Updating Composer.json of modules...';

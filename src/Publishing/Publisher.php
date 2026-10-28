@@ -182,6 +182,7 @@ abstract class Publisher implements PublisherInterface
      *
      * @return void
      */
+    #[\Override]
     public function publish()
     {
         if ($this->console === null) {

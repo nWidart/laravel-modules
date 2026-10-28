@@ -32,6 +32,7 @@ class InertiaPageMakeCommand extends GeneratorCommand
     /**
      * Get the console command arguments.
      */
+    #[\Override]
     protected function getArguments(): array
     {
         return [
@@ -43,6 +44,7 @@ class InertiaPageMakeCommand extends GeneratorCommand
     /**
      * Get the console command options.
      */
+    #[\Override]
     protected function getOptions(): array
     {
         return [
@@ -55,6 +57,7 @@ class InertiaPageMakeCommand extends GeneratorCommand
     /**
      * Get template contents.
      */
+    #[\Override]
     protected function getTemplateContents(): string
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -68,6 +71,7 @@ class InertiaPageMakeCommand extends GeneratorCommand
     /**
      * Get the destination file path.
      */
+    #[\Override]
     protected function getDestinationFilePath(): string
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -143,6 +147,7 @@ class InertiaPageMakeCommand extends GeneratorCommand
     /**
      * Get default namespace.
      */
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.inertia.namespace')

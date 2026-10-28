@@ -10,6 +10,7 @@ class LumenFileRepository extends FileRepository
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     protected function createModule(Container $app, string $name, ?string $path = null): Module
     {
         return new Module($app, $name, $path);

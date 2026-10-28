@@ -21,6 +21,7 @@ class ListCommands extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -224,6 +225,7 @@ class ListCommands extends BaseCommand
         return implode('/', array_slice($parts, -2, 2));
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return 'Listing commands...';

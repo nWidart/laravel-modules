@@ -116,6 +116,7 @@ class SchemaParser implements Arrayable
      *
      * @return array<string, array<int, string>>
      */
+    #[\Override]
     public function toArray(): array
     {
         return $this->parse($this->schema);

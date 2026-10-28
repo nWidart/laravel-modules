@@ -26,6 +26,7 @@ class MigrateRefreshCommand extends BaseCommand implements ConfirmableCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -59,6 +60,7 @@ class MigrateRefreshCommand extends BaseCommand implements ConfirmableCommand
     /**
      * Get the console command options.
      */
+    #[\Override]
     protected function getOptions(): array
     {
         return [

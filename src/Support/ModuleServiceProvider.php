@@ -67,6 +67,7 @@ abstract class ModuleServiceProvider extends ServiceProvider
     /**
      * Register the service providers.
      */
+    #[\Override]
     public function register(): void
     {
         foreach ($this->providers as $provider) {

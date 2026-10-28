@@ -557,9 +557,7 @@ class Migrator
 
         $result = $query->orderBy('migration', 'desc')->get();
 
-        return collect($result)->map(function ($item) {
-            return (array) $item;
-        })->pluck('migration');
+        return collect($result)->map(fn ($item) => (array) $item)->pluck('migration');
     }
 
     /**

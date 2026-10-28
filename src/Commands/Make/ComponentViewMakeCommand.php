@@ -39,6 +39,7 @@ class ComponentViewMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -50,6 +51,7 @@ class ComponentViewMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         return (new Stub('/component-view.stub', ['QUOTE' => Inspiring::quote()]))->render();
@@ -58,6 +60,7 @@ class ComponentViewMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());

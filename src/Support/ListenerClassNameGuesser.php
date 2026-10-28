@@ -95,7 +95,7 @@ class ListenerClassNameGuesser
         }
 
         if ($this->previous !== null) {
-            return call_user_func($this->previous, $file, $basePath);
+            return ($this->previous)($file, $basePath);
         }
 
         return static::laravelClassFromFile($file, $basePath);

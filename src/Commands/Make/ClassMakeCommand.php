@@ -29,6 +29,7 @@ class ClassMakeCommand extends GeneratorCommand
 
     protected $argumentName = 'name';
 
+    #[\Override]
     public function getTemplateContents(): string
     {
         return (new Stub($this->stub(), [
@@ -42,6 +43,7 @@ class ClassMakeCommand extends GeneratorCommand
         return $this->option('invokable') ? '/class-invoke.stub' : '/class.stub';
     }
 
+    #[\Override]
     public function getDestinationFilePath(): string
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -95,6 +97,7 @@ class ClassMakeCommand extends GeneratorCommand
      * plural for some types and singular for others (services, interfaces, but class, repository),
      * so the plural key is read first, then the singular one.
      */
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         $type = $this->type();

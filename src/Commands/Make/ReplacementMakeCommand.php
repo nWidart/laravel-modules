@@ -25,6 +25,7 @@ class ReplacementMakeCommand extends GeneratorCommand
 
     protected $argumentName = 'name';
 
+    #[\Override]
     public function getDestinationFilePath(): string
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -34,6 +35,7 @@ class ReplacementMakeCommand extends GeneratorCommand
         return $path.$filePath.'/'.$this->getFileName().'.php';
     }
 
+    #[\Override]
     protected function getTemplateContents(): string
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -44,6 +46,7 @@ class ReplacementMakeCommand extends GeneratorCommand
         ]))->render();
     }
 
+    #[\Override]
     protected function getArguments(): array
     {
         return [
@@ -52,6 +55,7 @@ class ReplacementMakeCommand extends GeneratorCommand
         ];
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [
@@ -69,6 +73,7 @@ class ReplacementMakeCommand extends GeneratorCommand
         return class_basename($this->getFileName());
     }
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.command_replacements.namespace')

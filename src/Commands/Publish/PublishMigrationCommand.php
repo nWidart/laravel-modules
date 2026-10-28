@@ -26,6 +26,7 @@ class PublishMigrationCommand extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -40,11 +41,13 @@ class PublishMigrationCommand extends BaseCommand
         $publisher->reportSkippedFiles();
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return 'Publishing module migrations ...';
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [

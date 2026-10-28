@@ -36,6 +36,7 @@ class ModelMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new model for the specified module.';
 
+    #[\Override]
     public function handle(): int
     {
         // Resolve --all before the model is rendered: the model stub depends on --factory.
@@ -88,6 +89,7 @@ class ModelMakeCommand extends GeneratorCommand
     /**
      * Get the console command arguments.
      */
+    #[\Override]
     protected function getArguments(): array
     {
         return [
@@ -99,6 +101,7 @@ class ModelMakeCommand extends GeneratorCommand
     /**
      * Get the console command options.
      */
+    #[\Override]
     protected function getOptions(): array
     {
         return [
@@ -214,6 +217,7 @@ class ModelMakeCommand extends GeneratorCommand
         }
     }
 
+    #[\Override]
     protected function getTemplateContents(): string
     {
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
@@ -260,6 +264,7 @@ class ModelMakeCommand extends GeneratorCommand
         return $command->getClassNamespace($module).'\\'.class_basename($name).'Factory';
     }
 
+    #[\Override]
     protected function getDestinationFilePath(): string
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -290,6 +295,7 @@ class ModelMakeCommand extends GeneratorCommand
     /**
      * Get default namespace.
      */
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.model.namespace')

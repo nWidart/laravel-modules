@@ -23,6 +23,7 @@ class EnableCommand extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -36,6 +37,7 @@ class EnableCommand extends BaseCommand
         });
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return 'Enabling module ...';

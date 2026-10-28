@@ -35,6 +35,7 @@ class ProviderMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new service provider class for the specified module.';
 
+    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.provider.namespace')
@@ -46,6 +47,7 @@ class ProviderMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -59,6 +61,7 @@ class ProviderMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [
@@ -69,6 +72,7 @@ class ProviderMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $stub = $this->option('master') ? 'scaffold/provider' : 'provider';
@@ -113,6 +117,7 @@ class ProviderMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());

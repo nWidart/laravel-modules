@@ -196,15 +196,16 @@ class Json
     public function __call(string $method, array $arguments = [])
     {
         if (method_exists($this, $method)) {
-            return call_user_func_array([$this, $method], $arguments);
+            return $this->$method(...$arguments);
         }
 
-        return call_user_func_array([$this->attributes, $method], $arguments);
+        return $this->attributes->$method(...$arguments);
     }
 
     /**
      * Handle call to __toString method.
      */
+    #[\Override]
     public function __toString(): string
     {
         return $this->getContents();

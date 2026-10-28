@@ -34,6 +34,7 @@ class MigrationMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getArguments()
     {
         return [
@@ -47,6 +48,7 @@ class MigrationMakeCommand extends GeneratorCommand
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [
@@ -70,6 +72,7 @@ class MigrationMakeCommand extends GeneratorCommand
      *
      * @throws \InvalidArgumentException
      */
+    #[\Override]
     protected function getTemplateContents()
     {
         $parser = new NameParser($this->argument('name'));
@@ -118,6 +121,7 @@ class MigrationMakeCommand extends GeneratorCommand
     /**
      * @return mixed
      */
+    #[\Override]
     protected function getDestinationFilePath()
     {
         $path = $this->moduleRepository()->getModulePath($this->getModuleName());
@@ -151,6 +155,7 @@ class MigrationMakeCommand extends GeneratorCommand
         return Str::studly($this->argument('name'));
     }
 
+    #[\Override]
     public function getClass()
     {
         return $this->getClassName();
@@ -159,6 +164,7 @@ class MigrationMakeCommand extends GeneratorCommand
     /**
      * Run the command.
      */
+    #[\Override]
     public function handle(): int
     {
 

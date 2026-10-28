@@ -25,6 +25,7 @@ class PublishTranslationCommand extends BaseCommand
     /**
      * @param  string  $name
      */
+    #[\Override]
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
@@ -39,11 +40,13 @@ class PublishTranslationCommand extends BaseCommand
         $publisher->reportSkippedFiles();
     }
 
+    #[\Override]
     public function getInfo(): ?string
     {
         return 'Publishing module translations ...';
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [

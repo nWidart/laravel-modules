@@ -51,6 +51,7 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
      * Resolve --all into the module argument. This runs for every input and before the
      * required module argument is validated, unlike promptForMissingArguments().
      */
+    #[\Override]
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         parent::initialize($input, $output);
@@ -60,6 +61,7 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
         }
     }
 
+    #[\Override]
     protected function promptForMissingArguments(InputInterface $input, OutputInterface $output): void
     {
         if (! empty($input->getArgument('module'))) {
@@ -96,6 +98,7 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
      *
      * @throws ModuleNotFoundException
      */
+    #[\Override]
     protected function models(): Collection
     {
         $models = $this->option('model');

@@ -55,6 +55,7 @@ class PublishInertiaCommand extends Command
         return config('modules.inertia.frontend', 'vue');
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [

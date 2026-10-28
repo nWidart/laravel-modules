@@ -68,19 +68,12 @@ class ListCommand extends Command
      */
     public function getModules()
     {
-        switch ($this->option('only')) {
-            case 'enabled':
-                return $this->moduleRepository()->getByStatus(1);
-
-            case 'disabled':
-                return $this->moduleRepository()->getByStatus(0);
-
-            case 'priority':
-                return $this->moduleRepository()->getOrdered($this->option('direction'));
-
-            default:
-                return $this->moduleRepository()->all();
-        }
+        return match ($this->option('only')) {
+            'enabled' => $this->moduleRepository()->getByStatus(1),
+            'disabled' => $this->moduleRepository()->getByStatus(0),
+            'priority' => $this->moduleRepository()->getOrdered($this->option('direction')),
+            default => $this->moduleRepository()->all(),
+        };
     }
 
     /**
@@ -88,6 +81,7 @@ class ListCommand extends Command
      *
      * @return array<int, array<int, mixed>>
      */
+    #[\Override]
     protected function getOptions()
     {
         return [
