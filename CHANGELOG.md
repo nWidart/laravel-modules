@@ -5,6 +5,36 @@ All Notable changes to `laravel-modules` will be documented in this file.
 See https://github.com/nWidart/laravel-modules/releases for the latest releases.
 From 11.0.11 until the first automated release (made by `.github/workflows/release.yml`), this file is incomplete: those releases are documented in GitHub Releases.
 
+## 13.3.0 - 2026-10-28
+
+### Features
+
+- **stubs:** Align command and job stubs with Laravel 13 ([#2238](https://github.com/nWidart/laravel-modules/pull/2238)) ([b28dee5](https://github.com/nWidart/laravel-modules/commit/b28dee5f9b0f505e03cc874c7c4ce692dbdfc3d8))
+- **make:** Add --json-api option to module:make-resource ([#2241](https://github.com/nWidart/laravel-modules/pull/2241)) ([485c3e3](https://github.com/nWidart/laravel-modules/commit/485c3e30d2347a4ff85f041520ce87c46987ea0c))
+- **commands:** Add module:make-config and module:make-job-middleware ([#2242](https://github.com/nWidart/laravel-modules/pull/2242)) ([63c7d24](https://github.com/nWidart/laravel-modules/commit/63c7d24df69105726ab1cf15f3bdc833d626e6e7))
+- **make-model:** Add --attributes flag for attribute-style models ([#2243](https://github.com/nWidart/laravel-modules/pull/2243)) ([36557a8](https://github.com/nWidart/laravel-modules/commit/36557a86c18024b22f64cb36c6019a61832085f8))
+
+### Bug Fixes
+
+- **make:** Add #[UseFactory] to module models generated with --factory ([#2237](https://github.com/nWidart/laravel-modules/pull/2237)) ([db74e5f](https://github.com/nWidart/laravel-modules/commit/db74e5f4ab597866b80db1549f6b75b6a7347c01))
+- **make:** Reject empty generator names and seeders named Seeder ([#2246](https://github.com/nWidart/laravel-modules/pull/2246)) ([90db932](https://github.com/nWidart/laravel-modules/commit/90db932e1a18cdd6b6cf80765505362078c22106))
+
+### Performance
+
+- **providers:** Skip module config scan on cached web requests ([#2230](https://github.com/nWidart/laravel-modules/pull/2230)) ([82f948e](https://github.com/nWidart/laravel-modules/commit/82f948eae5545db8cd91f001ef2b6dc7bdfe4eda))
+- **repository:** Read module.json once per app and cache scans in tests ([#2231](https://github.com/nWidart/laravel-modules/pull/2231)) ([721cbb8](https://github.com/nWidart/laravel-modules/commit/721cbb8a8acaffb75c79cc7020a92f0e32eafa25))
+- **provider:** Register module schedules only when Schedule resolves ([#2239](https://github.com/nWidart/laravel-modules/pull/2239)) ([99c3e36](https://github.com/nWidart/laravel-modules/commit/99c3e3655c37b9102fea5101f3b155c6a7b51c1e))
+
+### Refactor
+
+- Adopt PHP 8.3 idioms across src ([#2244](https://github.com/nWidart/laravel-modules/pull/2244)) ([2d39159](https://github.com/nWidart/laravel-modules/commit/2d39159a33642a73b4ecb1046596ee2d2d06a6b7))
+
+### Other
+
+- **trail:** Add learning on boot cost with many modules ([#2240](https://github.com/nWidart/laravel-modules/pull/2240)) ([27e3988](https://github.com/nWidart/laravel-modules/commit/27e398830671a3aeea6c23d627a47f8b8415167a))
+- **phpstan:** Raise level to 6 and type container access ([#2232](https://github.com/nWidart/laravel-modules/pull/2232)) ([4ecea46](https://github.com/nWidart/laravel-modules/commit/4ecea467f0a99bbdb31a915e30e25320609c4325))
+- **trail:** Add learning on generator name validation ([#2247](https://github.com/nWidart/laravel-modules/pull/2247)) ([5594f81](https://github.com/nWidart/laravel-modules/commit/5594f816fdd28452318c724b2e0d21be465dbe94))
+
 ## 13.2.0 - 2026-10-25
 
 ### Upgrade notes
