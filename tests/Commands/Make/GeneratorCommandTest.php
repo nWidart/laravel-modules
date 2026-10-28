@@ -148,6 +148,7 @@ class GeneratorCommandTest extends BaseTestCase
             'trailing parent segment' => ['module:make-view', 'name', 'Escaped/..'],
             'absolute unix path' => ['module:make-policy', 'name', '/tmp/Escaped/Pwned'],
             'absolute windows path' => ['module:make-job', 'name', 'C:\\Escaped\\Pwned'],
+            'migration parent segments' => ['module:make-migration', 'name', '../../../../Escaped/create_pwned_table'],
         ];
     }
 
@@ -163,6 +164,61 @@ class GeneratorCommandTest extends BaseTestCase
         $this->assertSame($before, $this->moduleFiles());
         $this->assertDirectoryDoesNotExist(base_path('Escaped'));
         $this->assertDirectoryDoesNotExist(base_path('modules/Escaped'));
+    }
+
+    public static function emptyNames(): array
+    {
+        $cases = [];
+
+        foreach (['empty' => '', 'whitespace only' => "  \t"] as $label => $name) {
+            $cases["seed, {$label}"] = ['module:make-seed', 'name', $name];
+            $cases["request, {$label}"] = ['module:make-request', 'name', $name];
+            $cases["controller, {$label}"] = ['module:make-controller', 'controller', $name];
+            $cases["model, {$label}"] = ['module:make-model', 'model', $name];
+            $cases["migration, {$label}"] = ['module:make-migration', 'name', $name];
+            $cases["component, {$label}"] = ['module:make-component', 'name', $name];
+        }
+
+        return $cases;
+    }
+
+    #[DataProvider('emptyNames')]
+    public function test_it_rejects_an_empty_name(string $command, string $argument, string $name)
+    {
+        $before = $this->moduleFiles();
+
+        $code = $this->artisan($command, [$argument => $name, 'module' => 'Blog']);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString("The {$argument} argument must not be empty.", Artisan::output());
+        $this->assertSame($before, $this->moduleFiles());
+    }
+
+    public function test_it_rejects_an_empty_module_argument_for_providers_named_by_module()
+    {
+        $before = $this->moduleFiles();
+
+        $code = $this->artisan('module:route-provider', ['module' => '']);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString('The module argument must not be empty.', Artisan::output());
+        $this->assertSame($before, $this->moduleFiles());
+    }
+
+    public function test_providers_named_by_module_still_use_the_current_module_when_none_is_given()
+    {
+        $path = $this->modulePath.'/Providers/RouteServiceProvider.php';
+        $this->finder->delete($path);
+        $this->app[RepositoryInterface::class]->setUsed('Blog');
+
+        try {
+            $code = $this->artisan('module:route-provider');
+        } finally {
+            $this->app[RepositoryInterface::class]->forgetUsed();
+        }
+
+        $this->assertSame(0, $code);
+        $this->assertFileExists($path);
     }
 
     public function test_it_accepts_names_with_dots_that_are_not_parent_segments()

@@ -98,8 +98,9 @@ abstract class GeneratorCommand extends Command
     }
 
     /**
-     * Reject a name that would write outside the module: an absolute path or
-     * a path with a ".." segment. Returns the error message, or null when valid.
+     * Reject an empty name, or a name that would write outside the module: an
+     * absolute path or a path with a ".." segment. Returns the error message,
+     * or null when valid.
      */
     protected function validateNameArgument(): ?string
     {
@@ -109,8 +110,12 @@ abstract class GeneratorCommand extends Command
 
         $name = $this->argument($this->argumentName);
 
-        if (! is_string($name) || $name === '') {
+        if (! is_string($name)) {
             return null;
+        }
+
+        if (trim($name) === '') {
+            return "The {$this->argumentName} argument must not be empty.";
         }
 
         $normalized = str_replace('\\', '/', $name);
