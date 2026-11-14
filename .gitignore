@@ -14,4 +14,3 @@ coverage
 src/.DS_Store
 tests/.DS_Store
 /docs
-/graft
