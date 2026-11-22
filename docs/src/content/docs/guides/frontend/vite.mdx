@@ -83,11 +83,12 @@ Use this way to run one Vite build, from the application root, for the applicati
 
    Write the paths relative to the application root.
 
-3. Change your root `vite.config.js`. Keep its plugins and options, and wrap the config in the async `getConfig()`. `collectModuleAssetsPaths(paths, 'Modules')` appends the `paths` of every enabled module to the list you give it. This is the Laravel 13 default with the added lines marked; `tailwindcss()` stays:
+3. Change your root `vite.config.js`. Keep its plugins and options, and wrap the config in the async `getConfig()`. `collectModuleAssetsPaths(paths, 'Modules')` appends the `paths` of every enabled module to the list you give it. The file below is the default of a new Laravel 13 app with the added lines marked. The `input` and `refresh` lines of the default file are replaced (lines 17 and 18), and `refreshPaths` is added to the import on line 2. Everything else is the default file. If your file differs, keep your own plugins and options.
 
-   ```js title="vite.config.js" ins={2-3,6-11,13,16-17,27,29}
+   ```js title="vite.config.js" ins={2,4,7-12,14,17-18,32,34}
    import { defineConfig } from 'vite';
    import laravel, { refreshPaths } from 'laravel-vite-plugin';
+   import { bunny } from 'laravel-vite-plugin/fonts';
    import collectModuleAssetsPaths, { moduleRefreshPaths } from './vite-module-loader.js';
    import tailwindcss from '@tailwindcss/vite';
 
@@ -103,6 +104,11 @@ Use this way to run one Vite build, from the application root, for the applicati
                laravel({
                    input: allPaths,
                    refresh: [...refreshPaths, ...moduleRefreshPaths('Modules')],
+                   fonts: [
+                       bunny('Instrument Sans', {
+                           weights: [400, 500, 600],
+                       }),
+                   ],
                }),
                tailwindcss(),
            ],
@@ -116,6 +122,8 @@ Use this way to run one Vite build, from the application root, for the applicati
 
    export default getConfig();
    ```
+
+   Vite 8 prints a warning about `__dirname` in `vite-module-loader.js`. The build still completes.
 
    The loader reads `modules_statuses.json` in the application root. It adds only the modules whose status is `true`. `moduleRefreshPaths('Modules')` returns the Blade, `lang` and `routes` globs of every module, so a change in a module reloads the page.
 

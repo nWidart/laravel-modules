@@ -5,7 +5,7 @@ description: Scan more folders for modules with scan.paths, or add a folder at r
 
 import { Steps } from '@astrojs/starlight/components';
 
-To use modules that live outside `paths.modules`, for example in `plugins/`, tell the package which extra folders to scan. A folder you add holds the modules as sub-folders: `plugins/Acme/module.json` is the module `Acme`.
+To use modules that live outside `paths.modules`, for example in `plugins/`, tell the package which extra folders to scan. A folder you add holds the modules as sub-folders: `plugins/Acme/module.json` is the module `Acme`. The folder holds a module you copied, cloned or moved there, for example with `mv Modules/Acme plugins/Acme`, with its `module.json` at `plugins/Acme/module.json`.
 
 ## Scan extra folders from the config
 
