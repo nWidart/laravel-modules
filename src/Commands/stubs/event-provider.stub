@@ -7,21 +7,21 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 class $CLASS$ extends ServiceProvider
 {
     /**
-     * The event handler mappings for the application.
+     * The event handler mappings for the module.
+     *
+     * Laravel discovers listeners only in the application's own event service provider, not in this one.
+     * List the module's listeners here, or add the module's Listeners directory to the application's
+     * discovery paths with withEvents(discover: [...]) in bootstrap/app.php.
      *
      * @var array<string, array<int, string>>
      */
     protected $listen = [];
 
     /**
-     * Indicates if events should be discovered.
+     * Keep Laravel's email verification listener from being registered once more for this module.
      *
-     * @var bool
-     */
-    protected static $shouldDiscoverEvents = true;
-
-    /**
-     * Configure the proper event listeners for email verification.
+     * The application's event service provider already registers it; without this override,
+     * each module would send the verification email again.
      */
     protected function configureEmailVerification(): void {}
 }

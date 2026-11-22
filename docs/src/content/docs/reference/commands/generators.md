@@ -443,6 +443,8 @@ This command has no options besides `--force`.
 - Writes `EventServiceProvider.php` to the `provider` generator path (`paths.generator.provider.path`, default `app/Providers`).
 - Stub: `event-provider.stub`.
 - The command has no `name` argument. The `event-provider` generator key is not in `config/config.php`. `module:make` treats a missing key as following the `provider` entry.
+- The generated provider registers only the listeners in its `$listen` array. It never discovers listeners. See [Listener discovery](/laravel-modules/reference/commands/generators/#listener-discovery).
+- The provider overrides `configureEmailVerification()` with an empty body. The application already registers `SendEmailVerificationNotification` on `Registered`; without the override, each module provider registers it again and users get one extra verification email per module.
 
 ```bash
 php artisan module:make-event-provider Blog
@@ -731,6 +733,26 @@ php artisan module:make-listener <name> [<module>] [-e|--event=EVENT] [--queued]
 php artisan module:make-listener SendNotification Blog --event=PostPublished --queued
 # Modules/Blog/app/Listeners/SendNotification.php
 ```
+
+### Listener discovery
+
+Laravel discovers listeners only in `app/Listeners`. It does not discover `Modules/<Name>/app/Listeners`. Register a module listener in one of two ways:
+
+- List it in the `$listen` array of the module `EventServiceProvider`.
+- Add the module listener directories to the application's discovery paths in `bootstrap/app.php`:
+
+```php
+->withEvents(discover: [
+    __DIR__.'/../app/Listeners',
+    __DIR__.'/../Modules/*/app/Listeners',
+])
+```
+
+`EventServiceProvider::addEventDiscoveryPaths()` adds the same paths. The package registers `Nwidart\Modules\Support\ListenerClassNameGuesser`, so Laravel resolves `Modules/Blog/app/Listeners/SyncPoints.php` to the class `Modules\Blog\Listeners\SyncPoints`.
+
+- The glob also matches disabled modules.
+- With `php artisan event:cache`, run it again after you enable or disable a module.
+- A listener that is both discovered and listed in a module `$listen` array is registered twice. Use one way per listener.
 
 ## module:make-mail
 
