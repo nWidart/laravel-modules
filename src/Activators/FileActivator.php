@@ -51,6 +51,18 @@ class FileActivator implements ActivatorInterface
     }
 
     /**
+     * Get the stored activation statuses, keyed by module name.
+     *
+     * The statuses are read from the statuses file once, when the activator is created.
+     *
+     * @return array<string, bool>
+     */
+    public function getStatuses(): array
+    {
+        return $this->modulesStatuses;
+    }
+
+    /**
      * {@inheritDoc}
      */
     #[\Override]

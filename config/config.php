@@ -167,6 +167,7 @@ return [
             'event' => ['path' => 'app/Events', 'generate' => false],
             'enums' => ['path' => 'app/Enums', 'generate' => false],
             'exceptions' => ['path' => 'app/Exceptions', 'generate' => false],
+            'health' => ['path' => 'app/Health', 'generate' => false],
             'jobs' => ['path' => 'app/Jobs', 'generate' => false],
             'job-middleware' => ['path' => 'app/Jobs/Middleware', 'generate' => false],
             'helpers' => ['path' => 'app/Helpers', 'generate' => false],
@@ -348,5 +349,20 @@ return [
     */
     'inertia' => [
         'frontend' => 'vue',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Actuator
+    |--------------------------------------------------------------------------
+    |
+    | When nwidart/laravel-actuator is installed, the package registers the
+    | "modules" health indicator, and the indicators each module lists in the
+    | $healthIndicators property of its service provider, as
+    | "module:{module}:{name}". Set "enabled" to false to register none.
+    |
+    */
+    'actuator' => [
+        'enabled' => true,
     ],
 ];

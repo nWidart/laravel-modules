@@ -154,6 +154,7 @@ export default defineConfig({
                             items: [
                                 'guides/production/deploy',
                                 'guides/production/prohibit-destructive-commands',
+                                'guides/production/health-checks',
                             ],
                         },
                     ],

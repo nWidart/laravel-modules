@@ -3,7 +3,7 @@ title: Artisan commands
 description: Every Artisan command the package registers, grouped by page, with its purpose and a link to its entry.
 ---
 
-The package registers 71 Artisan commands. Each group has one page with the arguments, options and notes of every command. Open the group page for the shared behaviour of a group.
+The package registers 72 Artisan commands. Each group has one page with the arguments, options and notes of every command. Open the group page for the shared behaviour of a group.
 
 In a synopsis, `<name>` is a required argument, `[<name>]` an optional one, and `...` marks an argument that takes several values. Options follow the arguments.
 
@@ -51,6 +51,7 @@ Commands that create a module or a file inside a module. Details: [Generator com
 | [`module:make-exception`](/laravel-modules/reference/commands/generators/#modulemake-exception) | Creates an exception class in a module. |
 | [`module:make-factory`](/laravel-modules/reference/commands/generators/#modulemake-factory) | Creates a model factory in a module. |
 | [`module:make-helper`](/laravel-modules/reference/commands/generators/#modulemake-helper) | Creates a helper class in a module. |
+| [`module:make-health-indicator`](/laravel-modules/reference/commands/generators/#modulemake-health-indicator) | Creates a health indicator class for the actuator in a module. |
 | [`module:make-inertia-component`](/laravel-modules/reference/commands/generators/#modulemake-inertia-component) | Creates an Inertia component in a module. |
 | [`module:make-inertia-page`](/laravel-modules/reference/commands/generators/#modulemake-inertia-page) | Creates an Inertia page in a module. |
 | [`module:make-interface`](/laravel-modules/reference/commands/generators/#modulemake-interface) | Creates an interface in a module. |

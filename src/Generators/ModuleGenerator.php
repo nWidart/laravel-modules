@@ -45,6 +45,7 @@ class ModuleGenerator extends Generator
         'event',
         'enums',
         'exceptions',
+        'health',
         'jobs',
         'job-middleware',
         'helpers',

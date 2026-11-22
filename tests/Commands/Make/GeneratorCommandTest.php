@@ -150,6 +150,7 @@ class GeneratorCommandTest extends BaseTestCase
             'absolute unix path' => ['module:make-policy', 'name', '/tmp/Escaped/Pwned'],
             'absolute windows path' => ['module:make-job', 'name', 'C:\\Escaped\\Pwned'],
             'migration parent segments' => ['module:make-migration', 'name', '../../../../Escaped/create_pwned_table'],
+            'health indicator parent segments' => ['module:make-health-indicator', 'name', '../../../../Escaped/Pwned'],
         ];
     }
 
@@ -178,6 +179,7 @@ class GeneratorCommandTest extends BaseTestCase
             $cases["model, {$label}"] = ['module:make-model', 'model', $name];
             $cases["migration, {$label}"] = ['module:make-migration', 'name', $name];
             $cases["component, {$label}"] = ['module:make-component', 'name', $name];
+            $cases["health indicator, {$label}"] = ['module:make-health-indicator', 'name', $name];
         }
 
         return $cases;

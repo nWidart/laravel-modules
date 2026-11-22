@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Nwidart\Modules\Actuator\HealthIndicators;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -40,6 +41,13 @@ abstract class ModuleServiceProvider extends ServiceProvider
     protected array $providers = [];
 
     /**
+     * Health indicators to register with nwidart/laravel-actuator, keyed by indicator name.
+     *
+     * @var array<string, class-string|array{0: class-string, 1?: array<string, mixed>}>
+     */
+    protected array $healthIndicators = [];
+
+    /**
      * Create a new service provider instance.
      */
     public function __construct($app)
@@ -61,6 +69,7 @@ abstract class ModuleServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
+        $this->registerHealthIndicators();
         $generatorMigrationPath = config('modules.paths.generator.migration.path') ?? 'database/migrations';
         $this->loadMigrationsFrom(module_path($this->name, $generatorMigrationPath));
     }
@@ -111,6 +120,28 @@ abstract class ModuleServiceProvider extends ServiceProvider
     protected function configureSchedules(Schedule $schedule): void
     {
         //
+    }
+
+    /**
+     * Register the module's health indicators with nwidart/laravel-actuator.
+     *
+     * Each indicator is registered as "module:{nameLower}:{key}", with its definition unchanged.
+     * Nothing is registered when the actuator is not installed or modules.actuator.enabled is false,
+     * and an indicator the application defines under the same name is kept.
+     */
+    protected function registerHealthIndicators(): void
+    {
+        if ($this->healthIndicators === []) {
+            return;
+        }
+
+        $indicators = [];
+
+        foreach ($this->healthIndicators as $key => $definition) {
+            $indicators["module:{$this->nameLower}:{$key}"] = $definition;
+        }
+
+        HealthIndicators::register($this->app, $indicators);
     }
 
     /**

@@ -5,3 +5,4 @@
 - Use `module:make ModuleName` to scaffold a new module. Modules live in the `Modules/` directory by default.
 - Module namespaces follow the pattern `Modules\ModuleName` (e.g. `Modules\Blog\Http\Controllers\BlogController`).
 - Always place module-specific logic inside the module directory, not in the application's `app/` folder.
+- With `nwidart/laravel-actuator` installed, a module registers health indicators in the `$healthIndicators` property of its service provider. They appear as `module:{lowercase module}:{key}`. Generate one with `module:make-health-indicator`.

@@ -174,6 +174,25 @@ Job middleware lands in `Modules/Blog/app/Jobs/Middleware` (namespace `Modules\B
 
 Creates `Modules/Blog/config/stripe.php`, read as `config('blog.stripe.key')`. Nested names work: `services/stripe` becomes `config('blog.services.stripe')`.
 
+### Health indicator
+
+```bash
+{{ $assist->artisanCommand('module:make-health-indicator PaymentsHealthIndicator Blog') }}
+```
+
+Creates `Modules/Blog/app/Health/PaymentsHealthIndicator.php`. It needs `nwidart/laravel-actuator` (`composer require nwidart/laravel-actuator`). Register it in the module service provider; the command prints the line:
+
+```php
+protected array $healthIndicators = [
+    'payments' => \Modules\Blog\Health\PaymentsHealthIndicator::class,
+];
+```
+
+- The component name is `module:{lowercase module}:{key}` (`module:blog:payments`).
+- A value is a class name or `[class, [constructor arguments]]`.
+- The package registers a `modules` indicator too. `modules.actuator.enabled` set to `false` turns both off.
+- With a cached config, run `{{ $assist->artisanCommand('config:cache') }}` again after changing `$healthIndicators`.
+
 ## Running Module Migrations
 
 ```bash

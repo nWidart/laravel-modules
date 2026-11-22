@@ -113,6 +113,7 @@ Setting `generate` to `false` also skips the `stubs.files` that a key owns:
 | `event` | `app/Events` | no |
 | `enums` | `app/Enums` | no |
 | `exceptions` | `app/Exceptions` | no |
+| `health` | `app/Health` | no |
 | `jobs` | `app/Jobs` | no |
 | `job-middleware` | `app/Jobs/Middleware` | no |
 | `helpers` | `app/Helpers` | no |
@@ -196,3 +197,9 @@ Values the `composer` stub receives when `module:make` generates a module `compo
 | Key | Default | Description |
 | --- | --- | --- |
 | `inertia.frontend` | `'vue'` | Framework used by `module:make-inertia-page`, `module:make-inertia-component` and `module:publish-inertia` when no `--vue`, `--react` or `--svelte` option is given. The stubs target Inertia v3. Values: `vue`, `react`, `svelte`. |
+
+## actuator
+
+| Key | Default | Description |
+| --- | --- | --- |
+| `actuator.enabled` | `true` | When [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) is installed, register the `modules` health indicator and the indicators that modules list in `$healthIndicators`. `false` registers none. A published `config/modules.php` without the key counts as `true`. See [Report module health with the actuator](/laravel-modules/guides/production/health-checks/). |

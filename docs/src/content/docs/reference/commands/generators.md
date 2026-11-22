@@ -3,7 +3,7 @@ title: Generator commands
 description: Artisan commands that create modules and generate classes and files inside a module.
 ---
 
-This page lists `module:make`, the 40 `module:make-*` generators and `module:route-provider`. Commands that manage existing modules are in [Module management commands](/laravel-modules/reference/commands/module-management/).
+This page lists `module:make`, the 41 `module:make-*` generators and `module:route-provider`. Commands that manage existing modules are in [Module management commands](/laravel-modules/reference/commands/module-management/).
 
 ## Shared behaviour
 
@@ -543,6 +543,42 @@ php artisan module:make-helper <name> [<module>] [-i|--invokable]
 ```bash
 php artisan module:make-helper Str Blog
 # Modules/Blog/app/Helpers/Str.php
+```
+
+## module:make-health-indicator
+
+Creates a health indicator class for [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) in a module.
+
+```bash
+php artisan module:make-health-indicator <name> [<module>] [--force]
+```
+
+**Arguments**
+
+| Name | Required | Description |
+| --- | --- | --- |
+| `name` | yes | Health indicator class name. The command adds no suffix. |
+| `module` | no | Module name. Falls back to the module set by `module:use`. |
+
+**Options**
+
+| Name | Shortcut | Default | Description |
+| --- | --- | --- | --- |
+| `--force` | `-f` | `false` | Overwrite the file if it already exists. |
+
+**Notes**
+
+- Writes `<Name>.php` to the `health` generator path (`paths.generator.health.path`, default `app/Health`), in the namespace `Modules\<Module>\Health`.
+- Stub: `health-indicator.stub`.
+- The command works without the actuator installed, but the generated class needs the actuator to be used.
+- The command does not edit the module service provider. It prints the line to add to the `$healthIndicators` property. The suggested key is the class name without a trailing `HealthIndicator`, in camel case. See [Report module health with the actuator](/laravel-modules/guides/production/health-checks/).
+
+```bash
+php artisan module:make-health-indicator PaymentsHealthIndicator Blog
+# Modules/Blog/app/Health/PaymentsHealthIndicator.php
+#
+# INFO  Register it as [module:blog:payments] in the $healthIndicators property of the module service provider:
+#   'payments' => \Modules\Blog\Health\PaymentsHealthIndicator::class,
 ```
 
 ## module:make-inertia-component

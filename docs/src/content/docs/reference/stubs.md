@@ -39,6 +39,7 @@ The Tokens column lists the `$TOKEN$` placeholders found in the stub file.
 | `exception-render-report.stub` | `module:make-exception` `--render` `--report` | `$CLASS$` `$CLASS_NAMESPACE$` |
 | `exception-report.stub` | `module:make-exception` `--report` | `$CLASS$` `$CLASS_NAMESPACE$` |
 | `factory.stub` | `module:make-factory` | `$MODEL_NAMESPACE$` `$NAME$` `$NAMESPACE$` |
+| `health-indicator.stub` | `module:make-health-indicator` | `$CLASS$` `$CLASS_NAMESPACE$` |
 | `helper.stub` | `module:make-helper` | `$CLASS$` `$CLASS_NAMESPACE$` |
 | `helper-invoke.stub` | `module:make-helper` `--invokable` | `$CLASS$` `$CLASS_NAMESPACE$` |
 | `inertia/app-react.stub` | `module:publish-inertia` `--react` | none |

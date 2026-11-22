@@ -18,7 +18,7 @@ The package reads status through an interface, `ActivatorInterface`, so the stor
 
 ## What the file activator stores
 
-The default activator, `FileActivator`, keeps one JSON file that maps module names to booleans. It loads the file once when it is created and rewrites it on each change. The default location is `modules_statuses.json` at the application root, so that the file is visible and can be committed. The file format, the path setting and the failure cases are in [FileActivator](/laravel-modules/reference/api/contracts/#fileactivator) and [Configuration](/laravel-modules/reference/configuration/#activators).
+The default activator, `FileActivator`, keeps one JSON file that maps module names to booleans. It loads the file once when it is created and rewrites it on each change. The default location is `modules_statuses.json` at the application root, so that the file is visible and can be committed. The file format, the path setting and the failure cases are in [FileActivator](/laravel-modules/reference/api/contracts/#fileactivator) and [Configuration](/laravel-modules/reference/configuration/#activators). With `nwidart/laravel-actuator` installed, the health endpoint reports the enabled modules and fails when an enabled one is missing from disk: see [Report module health with the actuator](/laravel-modules/guides/production/health-checks/).
 
 A missing or empty file means no statuses. A file that is not valid JSON, or that holds a non-empty JSON list, throws an `InvalidJsonException`. The activator does not treat a corrupt file as empty, because the next write would replace it and lose every status.
 
