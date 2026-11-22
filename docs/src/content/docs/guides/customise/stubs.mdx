@@ -1,0 +1,120 @@
+---
+title: Customise the generator stubs
+description: Publish the stubs, point the package at your copy, edit a stub, and change the files module:make writes.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To change the code the generators write, edit a copy of the stubs in your application. The package then reads your copy, and falls back to its own stub for any file you do not have.
+
+<Steps>
+
+1. Publish the stubs.
+
+   ```bash
+   php artisan vendor:publish --tag=stubs
+   ```
+
+   The stubs are copied to `stubs/nwidart-stubs`.
+
+2. Publish the config file, if you have not.
+
+   ```bash
+   php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
+   ```
+
+3. Point the package at your copy. Publishing the stubs does not do this.
+
+   ```php title="config/modules.php"
+   'stubs' => [
+       'enabled' => true,
+       'path' => base_path('stubs/nwidart-stubs'),
+       // ...
+   ],
+   ```
+
+4. Edit a stub. This example adds `declare(strict_types=1);` to the enum generator.
+
+   ```php title="stubs/nwidart-stubs/enum.stub"
+   <?php
+
+   declare(strict_types=1);
+
+   namespace $CLASS_NAMESPACE$;
+
+   enum $CLASS$ {}
+   ```
+
+   `$CLASS$` and `$CLASS_NAMESPACE$` are placeholders that the generator replaces. Keep them.
+
+5. Check the result.
+
+   ```bash
+   php artisan module:make-enum PostStatus Blog
+   ```
+
+   `Modules/Blog/app/Enums/PostStatus.php` starts with `declare(strict_types=1);`.
+
+</Steps>
+
+## Change the files `module:make` writes
+
+`stubs.files` lists the files `module:make` writes into a new module, as `stub key => path inside the module`. Edit the list in `config/modules.php`.
+
+To stop writing a file, remove its line. This example drops the Vite and npm files:
+
+```php title="config/modules.php"
+'files' => [
+    'routes/web' => 'routes/web.php',
+    'routes/api' => 'routes/api.php',
+    'views/index' => 'resources/views/index.blade.php',
+    'views/master' => 'resources/views/components/layouts/master.blade.php',
+    'scaffold/config' => 'config/config.php',
+    'composer' => 'composer.json',
+    'assets/js/app' => 'resources/assets/js/app.js',
+    'assets/sass/app' => 'resources/assets/sass/app.scss',
+],
+```
+
+To write a new file, add a stub, a `stubs.files` line and a `stubs.replacements` line that lists the placeholders the stub uses.
+
+```text title="stubs/nwidart-stubs/readme.stub"
+# $STUDLY_NAME$
+
+The $LOWER_NAME$ module.
+```
+
+```php title="config/modules.php"
+'files' => [
+    // ...
+    'readme' => 'README.md',
+],
+'replacements' => [
+    // ...
+    'readme' => ['STUDLY_NAME', 'LOWER_NAME'],
+],
+```
+
+Create a module and check that `Modules/Shop/README.md` exists and has no `vite.config.js` or `package.json`.
+
+```bash
+php artisan module:make Shop
+```
+
+A stub key that is not in `stubs.replacements` keeps its `$TOKEN$` text, and `module:make` prints a warning. To add placeholders of your own, see [Add your own stub placeholders](/laravel-modules/guides/customise/replacement-tokens/).
+
+## Go back to the package stubs
+
+Set `stubs.enabled` to `false`. The package ignores `stubs.path`.
+
+Also remove every `stubs.files` entry whose stub exists only in your copy, such as `readme`. Otherwise `module:make` fails with `file_get_contents(.../readme.stub): Failed to open stream`. A generator of your own that reads a stub only your copy has, such as `dto.stub`, fails the same way.
+
+`stubs.files` keeps your edits: `module:make` still writes no `vite.config.js` and no `package.json` until you restore the `'vite'` and `'package'` entries.
+
+## Related
+
+- [Stubs and placeholders](/laravel-modules/reference/stubs/): the stub list, placeholders and lookup rules
+- [`stubs` configuration keys](/laravel-modules/reference/configuration/#stubs)
+- [`vendor:publish` tags](/laravel-modules/reference/commands/publish/#vendorpublish-tags)
+- [Add your own stub placeholders](/laravel-modules/guides/customise/replacement-tokens/)
+- [Add your own module commands and generators](/laravel-modules/guides/customise/custom-commands/)

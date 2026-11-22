@@ -1,0 +1,64 @@
+---
+title: Enable and disable modules
+description: Switch modules on and off with module:enable and module:disable, or from PHP code.
+---
+
+To turn a module on or off, change its status. A disabled module stays on disk, but the package does not register its service providers, so its routes are gone.
+
+## Disable a module
+
+```bash
+php artisan module:disable Blog
+```
+
+The command prints the previous status: `Disabling Blog Module, old status: Enabled`.
+
+## Enable a module
+
+```bash
+php artisan module:enable Blog
+```
+
+## Change several modules
+
+To change several modules, list the names. To change every module, use `--all`.
+
+```bash
+php artisan module:disable Blog Shop
+php artisan module:enable --all
+```
+
+An unknown name stops the command before it changes any module. The error, `Module [Nope] does not exist!`, prints as an exception with a stack trace, not as a one-line message.
+
+## Change the status from PHP code
+
+```php
+use Nwidart\Modules\Facades\Module;
+
+Module::disable('Blog');
+Module::findOrFail('Blog')->enable();
+```
+
+`Module::isEnabled('Blog')` returns the current status.
+
+A change applies from the next request or Artisan run: the package registers the providers of enabled modules when the application boots.
+
+## Where the status is stored
+
+The default activator writes the statuses to `modules_statuses.json` in the application root. A module with no entry in that file counts as disabled. This includes a module the package finds by scanning an extra location or `vendor/`: it stays disabled until you enable it. See [Load modules from extra locations](/laravel-modules/guides/modules/scan-extra-locations/). To store the status somewhere else, see [Store module status with a custom activator](/laravel-modules/guides/customise/custom-activator/).
+
+## Check the result
+
+```bash
+php artisan module:list
+```
+
+The module shows `[Disabled]` or `[Enabled]`. To list the enabled modules only, add `--only=enabled`. To see the effect of a web module, run `php artisan route:list --name=blog`: it lists no route while `Blog` is disabled.
+
+## Related
+
+- [`module:enable`](/laravel-modules/reference/commands/module-management/#moduleenable), [`module:disable`](/laravel-modules/reference/commands/module-management/#moduledisable) and [`module:list`](/laravel-modules/reference/commands/module-management/#modulelist)
+- [Events](/laravel-modules/reference/api/events/): `enabling`, `enabled`, `disabling` and `disabled`
+- [Repository API](/laravel-modules/reference/api/repository/)
+- [Create a module](/laravel-modules/guides/modules/create-a-module/)
+- [Delete a module](/laravel-modules/guides/modules/delete-a-module/)

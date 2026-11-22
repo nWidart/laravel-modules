@@ -1,0 +1,56 @@
+---
+title: Delete a module
+description: Remove a module folder and its status with module:delete, after you roll back its migrations.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To remove the module `Blog` from the application, delete its folder with `module:delete`. The command also removes the module from the activator.
+
+<Steps>
+
+1. If the module ran migrations, roll them back first. After the module is deleted, its migration files are gone and you cannot roll them back.
+
+   ```bash
+   php artisan module:migrate-reset Blog
+   ```
+
+2. Delete the module.
+
+   ```bash
+   php artisan module:delete Blog
+   ```
+
+   The command shows a boxed `WARNING` that asks `DO YOU WANT TO REMOVE THE MODULE?` in every environment. To skip the question, add `--force`:
+
+   ```bash
+   php artisan module:delete Blog --force
+   ```
+
+   To delete several modules, list the names. To delete all of them, use `--all`.
+
+3. Regenerate the autoloader, so Composer forgets the classes of the module.
+
+   ```bash
+   composer dump-autoload
+   ```
+
+4. Check the result.
+
+   ```bash
+   php artisan module:list
+   ```
+
+   `Blog` is no longer in the list, its folder `Modules/Blog` is gone, and `modules_statuses.json` has no `Blog` entry.
+
+</Steps>
+
+The command removes the folder and the status entry only. Files you copied out of the module stay: assets published with `module:publish` (in `public/modules/blog`), migrations published with `module:publish-migration` and translations published with `module:publish-translation`. Delete them yourself.
+
+## Related
+
+- [`module:delete`](/laravel-modules/reference/commands/module-management/#moduledelete)
+- [`module:migrate-reset`](/laravel-modules/reference/commands/database/#modulemigrate-reset)
+- [Confirmation and prohibition](/laravel-modules/reference/api/contracts/#confirmablecommand): `Module::prohibitDestructiveCommands()` blocks `module:delete`
+- [Events](/laravel-modules/reference/api/events/): `deleting` and `deleted`
+- [Disable a module instead](/laravel-modules/guides/modules/enable-and-disable-modules/)

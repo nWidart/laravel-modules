@@ -1,0 +1,136 @@
+---
+title: Seed a module with factories and seeders
+description: Generate a factory and a seeder in a module, call them from the module database seeder, and run them with module:seed.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To fill the `posts` table of the `Blog` module with test data, define a factory, call it from a seeder, and run the seeder of the module. You need the `Post` model and its factory from [Add Eloquent models to a module](/laravel-modules/guides/database/models/), and the migrated `posts` table.
+
+`module:make` already created the main seeder, `Modules/Blog/database/seeders/BlogDatabaseSeeder.php`, with an empty `run()` method.
+
+<Steps>
+
+1. Define the factory. If you have no factory yet, run `php artisan module:make-factory Post Blog` first; it creates `Modules/Blog/database/factories/PostFactory.php`.
+
+   ```php title="Modules/Blog/database/factories/PostFactory.php"
+   public function definition(): array
+   {
+       return [
+           'title' => fake()->sentence(),
+           'body' => fake()->paragraph(),
+       ];
+   }
+   ```
+
+2. Generate a seeder. The command appends `Seeder` to the name.
+
+   ```bash
+   php artisan module:make-seed Post Blog
+   ```
+
+   The command creates `Modules/Blog/database/seeders/PostSeeder.php`. Create three posts in its `run()` method:
+
+   ```php title="Modules/Blog/database/seeders/PostSeeder.php"
+   <?php
+
+   namespace Modules\Blog\Database\Seeders;
+
+   use Illuminate\Database\Seeder;
+   use Modules\Blog\Models\Post;
+
+   class PostSeeder extends Seeder
+   {
+       public function run(): void
+       {
+           Post::factory()->count(3)->create();
+       }
+   }
+   ```
+
+3. Call the seeder from the main seeder of the module.
+
+   ```php title="Modules/Blog/database/seeders/BlogDatabaseSeeder.php"
+   <?php
+
+   namespace Modules\Blog\Database\Seeders;
+
+   use Illuminate\Database\Seeder;
+
+   class BlogDatabaseSeeder extends Seeder
+   {
+       public function run(): void
+       {
+           $this->call([PostSeeder::class]);
+       }
+   }
+   ```
+
+4. Run the seeders of the module. `module:seed` runs `Modules\Blog\Database\Seeders\BlogDatabaseSeeder`.
+
+   ```bash
+   php artisan module:seed Blog
+   ```
+
+   ```text
+      INFO  Seeding module ...
+
+     Seeding Blog Module
+
+      INFO  Seeding database.
+
+     Modules\Blog\Database\Seeders\BlogDatabaseSeeder ............... RUNNING
+     Modules\Blog\Database\Seeders\PostSeeder ....................... RUNNING
+     Modules\Blog\Database\Seeders\PostSeeder ................... <time> DONE
+
+     Modules\Blog\Database\Seeders\BlogDatabaseSeeder ............ <time> DONE
+
+   Module [Blog] seeded.
+   ............................................................ <time> DONE
+   ```
+
+5. Check the result. Count the posts:
+
+   ```bash
+   php artisan tinker --execute="echo Modules\Blog\Models\Post::count();"
+   ```
+
+   The count grows by three on each run: it prints `3` on an empty table.
+
+</Steps>
+
+## Run one seeder
+
+To run a single seeder instead of the main one, pass its class name. The class must be in the seeder namespace of the module:
+
+```bash
+php artisan module:seed Blog --class=PostSeeder
+```
+
+## Seed after migrating
+
+To run the migrations and then the seeders of a module, add `--seed` to `module:migrate`:
+
+```bash
+php artisan module:migrate Blog --seed
+```
+
+## Seed the modules with `db:seed`
+
+To include the module in `php artisan db:seed`, call its main seeder from the seeder of your application:
+
+```php title="database/seeders/DatabaseSeeder.php"
+public function run(): void
+{
+    $this->call([
+        \Modules\Blog\Database\Seeders\BlogDatabaseSeeder::class,
+    ]);
+}
+```
+
+## Related
+
+- [`module:make-factory`](/laravel-modules/reference/commands/generators/#modulemake-factory) and [`module:make-seed`](/laravel-modules/reference/commands/generators/#modulemake-seed)
+- [`module:seed`](/laravel-modules/reference/commands/database/#moduleseed): the seeder lookup order and all options.
+- [Add Eloquent models to a module](/laravel-modules/guides/database/models/)
+- [Create and run module migrations](/laravel-modules/guides/database/migrations/)

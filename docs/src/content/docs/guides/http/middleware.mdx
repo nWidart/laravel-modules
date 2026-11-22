@@ -1,0 +1,117 @@
+---
+title: Add middleware to a module
+description: Generate a middleware class in a module, apply it to the routes of the module and register an alias in bootstrap/app.php.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To protect the routes of the `Blog` module with your own middleware, generate the class and apply it in the route file. You need an enabled `Blog` module with a public route; see [Add routes to a module](/laravel-modules/guides/http/routes/).
+
+Laravel 13 has no `app/Http/Kernel.php`. You apply a middleware by its class name, or register an alias in `bootstrap/app.php`.
+
+<Steps>
+
+1. Generate the middleware.
+
+   ```bash
+   php artisan module:make-middleware EnsureIsAdmin Blog
+   ```
+
+   The command creates `Modules/Blog/app/Http/Middleware/EnsureIsAdmin.php`. The class is `Modules\Blog\Http\Middleware\EnsureIsAdmin`. Its `handle()` method passes the request on.
+
+2. Add your check to `handle()`. This example allows only users whose `is_admin` attribute is true.
+
+   ```php title="Modules/Blog/app/Http/Middleware/EnsureIsAdmin.php"
+   <?php
+
+   namespace Modules\Blog\Http\Middleware;
+
+   use Closure;
+   use Illuminate\Http\Request;
+
+   class EnsureIsAdmin
+   {
+       public function handle(Request $request, Closure $next)
+       {
+           abort_unless($request->user()?->is_admin, 403);
+
+           return $next($request);
+       }
+   }
+   ```
+
+3. Apply the middleware to the routes of the module by its class name.
+
+   ```php title="Modules/Blog/routes/web.php"
+   <?php
+
+   use Illuminate\Support\Facades\Route;
+   use Modules\Blog\Http\Controllers\PostController;
+   use Modules\Blog\Http\Middleware\EnsureIsAdmin;
+
+   Route::get('posts', [PostController::class, 'index'])->name('blog.posts.index');
+
+   Route::middleware(EnsureIsAdmin::class)->group(function () {
+       Route::get('admin/posts', [PostController::class, 'index'])->name('blog.admin.posts.index');
+   });
+   ```
+
+4. Check the result. `-v` lists the middleware of each route.
+
+   ```bash
+   php artisan route:list --path=posts -v
+   ```
+
+   ```text
+   GET|HEAD   admin/posts ... blog.admin.posts.index › Modules\Blog\Http\Controllers\PostController@index
+              ⇂ web
+              ⇂ Modules\Blog\Http\Middleware\EnsureIsAdmin
+   GET|HEAD   api/v1/posts .. api.blog.posts.index › Modules\Blog\Http\Controllers\Api\PostController@index
+              ⇂ api
+   GET|HEAD   posts ......... blog.posts.index › Modules\Blog\Http\Controllers\PostController@index
+              ⇂ web
+   ```
+
+   The `api/v1/posts` route is there if you followed the routes guide. Its `api` group does not use the middleware.
+
+</Steps>
+
+## Register an alias
+
+To write `->middleware('blog.admin')` instead of the class name, register the alias in the `Application::configure()` chain of `bootstrap/app.php`:
+
+```php title="bootstrap/app.php"
+->withMiddleware(function (Middleware $middleware): void {
+    $middleware->alias([
+        'blog.admin' => \Modules\Blog\Http\Middleware\EnsureIsAdmin::class,
+    ]);
+})
+```
+
+To keep the alias inside the module, register it in the module provider. The generated provider has no `boot()` method yet, so add the whole method. It must call `parent::boot()`: without it, the module does not register its views, translations, config, commands and migrations, and a page such as `/posts` fails with `No hint path defined for [blog].`
+
+```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
+use Illuminate\Support\Facades\Route;
+use Modules\Blog\Http\Middleware\EnsureIsAdmin;
+
+public function boot(): void
+{
+    parent::boot();
+
+    Route::aliasMiddleware('blog.admin', EnsureIsAdmin::class);
+}
+```
+
+Then use the alias in the route file:
+
+```php title="Modules/Blog/routes/web.php"
+Route::get('admin/posts', [PostController::class, 'index'])->middleware('blog.admin');
+```
+
+The module routes already run in the `web` group, which `RouteServiceProvider` of the module applies. The routes of `routes/api.php` run in the `api` group.
+
+## Related
+
+- [`module:make-middleware`](/laravel-modules/reference/commands/generators/#modulemake-middleware): options and stub.
+- [Module service provider](/laravel-modules/reference/api/module-service-provider/): the `boot()` method that the example extends.
+- [Add routes to a module](/laravel-modules/guides/http/routes/)

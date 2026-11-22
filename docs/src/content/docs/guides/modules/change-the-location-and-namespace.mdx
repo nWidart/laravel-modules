@@ -1,0 +1,96 @@
+---
+title: Change where modules live and their namespace
+description: Move modules to another folder, set a different root namespace, and update the Composer merge-plugin glob.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To generate modules in `app-modules` under the root namespace `AppModules`, change three things together: `paths.modules` and `namespace` in `config/modules.php`, and the `merge-plugin` glob in `composer.json`. Publish the config file first if you have not:
+
+```bash
+php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
+```
+
+<Steps>
+
+1. Set the folder and the namespace.
+
+   ```php title="config/modules.php"
+   'namespace' => 'AppModules',
+
+   'paths' => [
+       'modules' => base_path('app-modules'),
+       // ...
+   ],
+   ```
+
+2. Make the `merge-plugin` glob match the folder. Without it, Composer does not autoload the classes of your modules.
+
+   ```json title="composer.json"
+   "extra": {
+       "merge-plugin": {
+           "include": [
+               "app-modules/*/composer.json"
+           ]
+       }
+   }
+   ```
+
+3. Regenerate the autoloader.
+
+   ```bash
+   composer dump-autoload
+   ```
+
+4. Create a module and check the result.
+
+   ```bash
+   php artisan module:make Blog
+   ```
+
+   The module is in `app-modules/Blog`. Its `composer.json` maps `AppModules\Blog\` to `app/`, and `module.json` lists the provider `AppModules\Blog\Providers\BlogServiceProvider`.
+
+</Steps>
+
+## Modules that already exist
+
+Changing the config does not move or rename anything. For each existing module, do these steps.
+
+<Steps>
+
+1. Move the folder to the new location.
+
+   ```bash
+   mkdir -p app-modules
+   mv Modules/Blog app-modules/Blog
+   ```
+
+2. If you changed `namespace`, replace the old root namespace with the new one in the files of the module. This command rewrites `Modules\Blog` to `AppModules\Blog`, in PHP files and in the escaped form (`Modules\\Blog`) of `module.json` and `composer.json`. It leaves `Nwidart\Modules\...` alone:
+
+   ```bash
+   grep -rl 'Modules' app-modules/Blog | xargs perl -pi -e 's/(?<!\w)(?<!\w\\)Modules(\\{1,2})Blog\b/AppModules$1Blog/g'
+   ```
+
+3. Update the glob in `composer.json` as in the steps above, then run `composer dump-autoload`.
+
+4. Check that the module is found:
+
+   ```bash
+   php artisan module:list
+   ```
+
+   The path column shows `app-modules/Blog`. The status of the module does not change: `modules_statuses.json` is keyed by module name.
+
+</Steps>
+
+References to the old namespace outside the module, such as `use` statements in your application code, are not rewritten. Update them yourself.
+
+`module:composer-update` does not do this. It rewrites only a legacy `Modules\Blog\App\` entry in the `autoload.psr-4` of a module `composer.json`.
+
+## Related
+
+- [`namespace` and `paths.modules`](/laravel-modules/reference/configuration/#top-level-keys)
+- [Installation: tell the plugin where the modules are](/laravel-modules/start-here/installation/)
+- [`module:composer-update`](/laravel-modules/reference/commands/utility/#modulecomposer-update)
+- [Change the folder layout of modules](/laravel-modules/guides/modules/change-the-folder-layout/)
+- [Load modules from extra locations](/laravel-modules/guides/modules/scan-extra-locations/)

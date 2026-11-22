@@ -34,6 +34,7 @@ npm run preview
 - Links: Astro does not add the base path to links in Markdown or in frontmatter. Write internal links as `/laravel-modules/<path>/`, or relative to the page. Link only to pages that exist.
 - Components: Starlight components (`Steps`, `FileTree`, `Card`, `Tabs`, `Aside`) need an `.mdx` file and an import from `@astrojs/starlight/components`. Reference pages stay plain Markdown.
 - Types: each page has one [Diátaxis](https://diataxis.fr) type, and the sidebar groups follow it: Start here (tutorials and how-to guides), Concepts (explanation), Guides (how-to), Reference, Upgrading, Ecosystem. Do not mix steps, explanation and reference on one page. Link to the page of the other type instead.
+- Guides: a how-to guide title names the goal, for example "Create a module". Guides live under `guides/<topic>/`.
 - Truth: the code is the source. Check a command, option, config key or class name against `src/` and `config/config.php` before you write it.
 
 ## Deploy

@@ -1,0 +1,57 @@
+---
+title: Include modules in code coverage
+description: Add the code of the enabled modules to the source list of phpunit.xml so that the coverage report includes it.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+At the end, the coverage report of your application includes the code in `Modules/Blog/app`. Prerequisites: a `phpunit.xml` in the application root, a `modules_statuses.json` that lists the modules, and a coverage driver (Xdebug or PCOV).
+
+<Steps>
+
+1. Update `phpunit.xml`.
+
+   ```bash
+   php artisan module:update-phpunit-coverage
+   ```
+
+   The command reads `modules_statuses.json`, the file set in `modules.activators.file.statuses-file`. For each enabled module that has an `app` folder, it adds an entry to `<source><include>`. It keeps the formatting of the file.
+
+   ```xml title="phpunit.xml"
+   <source>
+       <include>
+           <directory>app</directory>
+           <directory suffix=".php">./Modules/Blog/app/</directory>
+       </include>
+   </source>
+   ```
+
+   The command also removes the entries of modules that are disabled or deleted. If `<source>` has other content, or the file has no `<source>` element, but no `<include>`, the command creates the `<include>` with `<directory>./app</directory>` and the module entries. With an empty `<source></source>` or `<source/>`, the command adds nothing, prints a warning, and still prints the success line.
+
+2. Run the tests with coverage.
+
+   ```bash
+   php artisan test --coverage
+   ```
+
+   Without a coverage driver mode, the run prints `ERROR Code coverage driver not available`. With Xdebug, set its mode for the run:
+
+   ```bash
+   XDEBUG_MODE=coverage php artisan test --coverage
+   ```
+
+</Steps>
+
+Run the command again after you enable, disable, add or delete a module. The module tests must be in a test suite: see [Run the tests of a module](/laravel-modules/guides/testing/run-module-tests/).
+
+### Check the result
+
+Open `phpunit.xml` and look for the `Modules/Blog/app` entry. The coverage report lists file paths under `Modules/Blog/app`, not namespaces.
+
+If the command fails, its exit status tells why: `100` no `phpunit.xml`, `99` no statuses file, `97` invalid XML in `phpunit.xml`. Invalid JSON in the statuses file does not reach this command: it stops every Artisan command with an `InvalidJsonException` before the command runs.
+
+## Related
+
+- [`module:update-phpunit-coverage`](/laravel-modules/reference/commands/utility/#moduleupdate-phpunit-coverage)
+- [`activators.file.statuses-file`](/laravel-modules/reference/configuration/)
+- [Run the tests of a module](/laravel-modules/guides/testing/run-module-tests/)

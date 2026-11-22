@@ -1,0 +1,79 @@
+---
+title: React to module lifecycle events
+description: Listen from the application to modules.blog.enabled, modules.*.disabled and the other lifecycle events a module fires.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To run code when the `Blog` module is enabled or disabled, listen to its lifecycle events in your application. You need an enabled `Blog` module.
+
+A module fires string events named `modules.{lowercase name}.{event}`. The payload is the `Nwidart\Modules\Module` instance. Listen from the application, not from the module: a process that enables a module booted before the module was enabled, so a listener inside the module does not exist yet when `enabled` fires.
+
+<Steps>
+
+1. Register the listeners in the `boot()` method of a provider of your application.
+
+   ```php title="app/Providers/AppServiceProvider.php"
+   <?php
+
+   namespace App\Providers;
+
+   use Illuminate\Support\Facades\Event;
+   use Illuminate\Support\Facades\Log;
+   use Illuminate\Support\ServiceProvider;
+   use Nwidart\Modules\Module;
+
+   class AppServiceProvider extends ServiceProvider
+   {
+       public function boot(): void
+       {
+           Event::listen('modules.blog.enabled', function (Module $module) {
+               Log::info("Module {$module->getName()} enabled.");
+           });
+       }
+   }
+   ```
+
+2. To listen to an event of every module, use a wildcard. A wildcard listener receives the event name and an array that holds the payload.
+
+   ```php title="app/Providers/AppServiceProvider.php"
+   Event::listen('modules.*.disabled', function (string $event, array $payload) {
+       [$module] = $payload;
+
+       Log::info("Module {$module->getName()} disabled.");
+   });
+   ```
+
+3. Check the result. Disable and enable the module, then read the log.
+
+   ```bash
+   php artisan module:disable Blog
+   php artisan module:enable Blog
+   tail -n 2 storage/logs/laravel.log
+   ```
+
+   ```text
+   [<time>] local.INFO: Module Blog disabled.
+   [<time>] local.INFO: Module Blog enabled.
+   ```
+
+</Steps>
+
+## Events you can listen to
+
+| Event | Fired |
+| --- | --- |
+| `modules.blog.creating`, `modules.blog.created` | by `module:make`. `creating` has no payload. |
+| `modules.blog.enabling`, `modules.blog.enabled` | around `module:enable`. |
+| `modules.blog.disabling`, `modules.blog.disabled` | around `module:disable`. |
+| `modules.blog.deleting`, `modules.blog.deleted` | around `module:delete`. |
+| `modules.blog.used` | by `module:use`. |
+
+`unused` is declared but never fired. Do not listen to it.
+
+## Related
+
+- [Events](/laravel-modules/reference/api/events/): every event, its trigger and its payload.
+- [`module:enable`](/laravel-modules/reference/commands/module-management/#moduleenable) and [`module:disable`](/laravel-modules/reference/commands/module-management/#moduledisable)
+- [Enable and disable modules](/laravel-modules/guides/modules/enable-and-disable-modules/)
+- [Use events and listeners in a module](/laravel-modules/guides/console-and-events/events-and-listeners/)
