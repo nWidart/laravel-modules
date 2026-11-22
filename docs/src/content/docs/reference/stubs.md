@@ -101,6 +101,8 @@ The Tokens column lists the `$TOKEN$` placeholders found in the stub file.
 
 A `-duck` stub (`listener-duck.stub`, `listener-queued-duck.stub`) generates a listener whose `handle()` method takes an untyped `$event`, instead of the type of an `--event` class.
 
+`event-provider.stub` generates an `EventServiceProvider` that registers only the listeners in its `$listen` array. It does not discover listeners. For discovery of `Modules/<Name>/app/Listeners`, see [Listener discovery](/laravel-modules/reference/commands/generators/#listener-discovery). Its empty `configureEmailVerification()` override stops each module from registering the email verification listener again.
+
 ## Placeholder syntax
 
 A placeholder is an upper-case name wrapped in dollar signs: `$LOWER_NAME$`. The name holds letters and underscores.

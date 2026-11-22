@@ -3,9 +3,13 @@
 namespace Nwidart\Modules\Tests\Support;
 
 use Composer\Autoload\ClassLoader;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Events\DiscoverEvents;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider;
+use Illuminate\Support\Facades\Event;
 use Nwidart\Modules\Support\ListenerClassNameGuesser;
+use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Tests\BaseTestCase;
 use SplFileInfo;
 
@@ -22,6 +26,13 @@ class ListenerClassNameGuesserTest extends BaseTestCase
      */
     private array $created = [];
 
+    /**
+     * Laravel's static event discovery paths before the test, restored in tearDown.
+     *
+     * @var iterable<int, string>|null
+     */
+    private ?iterable $eventDiscoveryPaths = null;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -34,6 +45,8 @@ class ListenerClassNameGuesserTest extends BaseTestCase
         $this->loader->addPsr4('Modules\\Points\\', base_path('modules/Points/app'));
         $this->loader->addPsr4('Modules\\Legacy\\', base_path('modules/Legacy'));
         $this->loader->register();
+
+        $this->eventDiscoveryPaths = (fn () => static::$eventDiscoveryPaths)->bindTo(null, EventServiceProvider::class)();
     }
 
     protected function tearDown(): void
@@ -45,6 +58,7 @@ class ListenerClassNameGuesserTest extends BaseTestCase
         }
 
         DiscoverEvents::$guessClassNamesUsingCallback = null;
+        $this->restoreEventDiscoveryPaths();
 
         parent::tearDown();
     }
@@ -135,6 +149,52 @@ class ListenerClassNameGuesserTest extends BaseTestCase
         $this->assertSame(['AwardBadge.php'], $calls);
     }
 
+    public function test_the_application_event_provider_does_not_discover_module_listeners_by_default()
+    {
+        $this->writeAppEvent();
+        $this->writeClass('modules/Points/app/Listeners/SyncPoints.php', 'Modules\Points\Listeners', 'SyncPoints', '\App\Events\PointsEarned');
+
+        $events = (new EventServiceProvider($this->app))->getEvents();
+
+        $this->assertArrayNotHasKey('App\Events\PointsEarned', $events);
+    }
+
+    public function test_the_application_event_provider_discovers_module_listeners_in_its_discovery_paths()
+    {
+        $this->writeAppEvent();
+        $this->writeClass('modules/Points/app/Listeners/SyncPoints.php', 'Modules\Points\Listeners', 'SyncPoints', '\App\Events\PointsEarned');
+
+        // What `withEvents(discover: [...])` in bootstrap/app.php does.
+        EventServiceProvider::setEventDiscoveryPaths([app_path('Listeners'), base_path('modules/*/app/Listeners')]);
+        $this->app->register(new EventServiceProvider($this->app), true);
+
+        $this->assertContains('Modules\Points\Listeners\SyncPoints@handle', Event::getRawListeners()['App\Events\PointsEarned'] ?? []);
+    }
+
+    public function test_a_generated_module_event_provider_does_not_discover_listeners()
+    {
+        $this->writeAppEvent();
+        $this->writeClass('modules/Points/app/Listeners/SyncPoints.php', 'Modules\Points\Listeners', 'SyncPoints', '\App\Events\PointsEarned');
+        $this->track('modules/Points/app/Providers/EventServiceProvider.php');
+        $this->finder->ensureDirectoryExists(base_path('modules/Points/app/Providers'));
+        $this->finder->put(base_path('modules/Points/app/Providers/EventServiceProvider.php'), (new Stub('/event-provider.stub', [
+            'NAMESPACE' => 'Modules\Points\Providers',
+            'CLASS' => 'EventServiceProvider',
+        ]))->render());
+
+        EventServiceProvider::setEventDiscoveryPaths([base_path('modules/*/app/Listeners')]);
+        $registered = count(Event::getRawListeners()[Registered::class] ?? []);
+        $provider = new \Modules\Points\Providers\EventServiceProvider($this->app);
+        $this->app->register($provider);
+
+        // Laravel discovers only in its own EventServiceProvider, never in a subclass.
+        $this->assertFalse($provider->shouldDiscoverEvents());
+        $this->assertSame([], $provider->getEvents());
+        $this->assertArrayNotHasKey('App\Events\PointsEarned', Event::getRawListeners());
+        // The empty configureEmailVerification() keeps each module from adding the verification email listener again.
+        $this->assertCount($registered, Event::getRawListeners()[Registered::class] ?? []);
+    }
+
     public function test_registering_again_replaces_the_guesser_instead_of_chaining_it()
     {
         $first = DiscoverEvents::$guessClassNamesUsingCallback;
@@ -158,6 +218,13 @@ class ListenerClassNameGuesserTest extends BaseTestCase
         );
 
         return DiscoverEvents::within(array_values($directories), base_path());
+    }
+
+    private function restoreEventDiscoveryPaths(): void
+    {
+        $paths = $this->eventDiscoveryPaths;
+
+        (fn () => static::$eventDiscoveryPaths = $paths)->bindTo(null, EventServiceProvider::class)();
     }
 
     private function guess(string $path): string
