@@ -3,8 +3,9 @@ import { createInertiaApp } from '@inertiajs/vue3'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 
 const el = document.getElementById('app')
-// Inertia v2 renders the page data in the root's data-page attribute, v3 in a <script data-page="app"> tag
-const hasPageData = el?.dataset.page || document.querySelector('script[data-page="app"][type="application/json"]')
+// Inertia v3 reads the page data only from the <script data-page="app" type="application/json"> tag
+// that @inertia renders. Skip pages rendered without it, such as plain Blade pages loading this file.
+const hasPageData = document.querySelector('script[data-page="app"][type="application/json"]')
 
 if (el && hasPageData) {
     createInertiaApp({

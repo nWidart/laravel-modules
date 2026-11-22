@@ -1,5 +1,5 @@
 <script>
-    import { page } from '@inertiajs/svelte'
+    // Add your props here
 </script>
 
 <svelte:head>

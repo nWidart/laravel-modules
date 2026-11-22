@@ -54,6 +54,31 @@ class MiddlewareMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_generates_an_inertia_middleware()
+    {
+        $code = $this->artisan('module:make-middleware', ['name' => 'HandleInertiaRequests', 'module' => 'Blog', '--inertia' => true]);
+
+        $file = $this->finder->get($this->modulePath.'/Http/Middleware/HandleInertiaRequests.php');
+
+        $this->assertMatchesSnapshot($file);
+        $this->assertSame(0, $code);
+    }
+
+    public function test_the_inertia_middleware_links_the_inertia_v3_docs()
+    {
+        $this->artisan('module:make-middleware', ['name' => 'HandleInertiaRequests', 'module' => 'Blog', '--inertia' => true]);
+
+        $file = $this->finder->get($this->modulePath.'/Http/Middleware/HandleInertiaRequests.php');
+
+        preg_match_all('#@see (https://inertiajs\.com/\S*)#', $file, $matches);
+
+        $this->assertSame([
+            'https://inertiajs.com/docs/v3/installation/server-side-setup',
+            'https://inertiajs.com/docs/v3/advanced/asset-versioning',
+            'https://inertiajs.com/docs/v3/data-props/shared-data',
+        ], $matches[1]);
+    }
+
     public function test_it_can_change_the_default_namespace()
     {
         $this->app['config']->set('modules.paths.generator.filter.path', 'Middleware');

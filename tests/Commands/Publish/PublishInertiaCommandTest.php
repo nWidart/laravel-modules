@@ -3,7 +3,9 @@
 namespace Nwidart\Modules\Tests\Commands\Publish;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Artisan;
 use Nwidart\Modules\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Snapshots\MatchesSnapshots;
 
 class PublishInertiaCommandTest extends BaseTestCase
@@ -53,10 +55,10 @@ class PublishInertiaCommandTest extends BaseTestCase
         $this->assertMatchesSnapshot($this->appJs());
     }
 
-    public function test_the_published_apps_mount_with_the_page_data_of_inertia_v2_and_v3()
+    public function test_the_published_apps_mount_only_with_the_page_data_of_inertia_v3()
     {
-        // Inertia v2 renders the page data in the root's data-page attribute, v3 in a <script data-page="app"> tag
-        $guard = "const hasPageData = el?.dataset.page || document.querySelector('script[data-page=\"app\"][type=\"application/json\"]')\n"
+        // Inertia v3 renders the page data in a <script data-page="app" type="application/json"> tag
+        $guard = "const hasPageData = document.querySelector('script[data-page=\"app\"][type=\"application/json\"]')\n"
             ."\n"
             ."if (el && hasPageData) {\n"
             .'    createInertiaApp(';
@@ -66,7 +68,62 @@ class PublishInertiaCommandTest extends BaseTestCase
 
             $this->assertStringContainsString("document.getElementById('app')", $this->appJs(), $frontend);
             $this->assertStringContainsString($guard, $this->appJs(), $frontend);
+            $this->assertStringNotContainsString('dataset.page', $this->appJs(), $frontend);
         }
+    }
+
+    public function test_the_published_svelte_app_mounts_with_the_svelte_5_api()
+    {
+        $this->artisan('module:publish-inertia', ['--svelte' => true]);
+
+        $this->assertStringContainsString("import { mount } from 'svelte'", $this->appJs());
+        $this->assertStringContainsString('mount(App, { target: el, props })', $this->appJs());
+        $this->assertStringNotContainsString('new App(', $this->appJs());
+    }
+
+    public function test_the_published_react_app_has_no_jsx()
+    {
+        // The app is written to app.js, and Vite parses JSX only in .jsx files
+        $this->artisan('module:publish-inertia', ['--react' => true]);
+
+        $this->assertStringContainsString("import { createElement } from 'react'", $this->appJs());
+        $this->assertStringContainsString('createRoot(el).render(createElement(App, props))', $this->appJs());
+        $this->assertStringNotContainsString('<App', $this->appJs());
+    }
+
+    #[DataProvider('conflictingFrontends')]
+    public function test_it_rejects_more_than_one_frontend_option(array $options, string $named)
+    {
+        $code = $this->artisan('module:publish-inertia', $options);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString(
+            "The {$named} options cannot be used together. Pass only one of --vue, --react or --svelte.",
+            preg_replace('/\s+/', ' ', Artisan::output())
+        );
+        $this->assertFalse($this->finder->exists(resource_path('js/app.js')));
+    }
+
+    public function test_it_rejects_more_than_one_frontend_option_with_force_and_keeps_an_existing_app()
+    {
+        $this->createExistingAppJs();
+
+        $code = $this->artisan('module:publish-inertia', ['--react' => true, '--svelte' => true, '--force' => true]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertSame(self::EXISTING, $this->appJs());
+    }
+
+    /**
+     * @return array<string, array{array<string, bool>, string}>
+     */
+    public static function conflictingFrontends(): array
+    {
+        return [
+            'react and svelte' => [['--react' => true, '--svelte' => true], '--react and --svelte'],
+            'vue and react' => [['--vue' => true, '--react' => true], '--vue and --react'],
+            'all three' => [['--svelte' => true, '--vue' => true, '--react' => true], '--vue, --react and --svelte'],
+        ];
     }
 
     public function test_it_overwrites_an_existing_app_when_the_user_confirms()

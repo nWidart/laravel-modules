@@ -6,12 +6,14 @@ use Illuminate\Support\Str;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
+use Nwidart\Modules\Traits\ResolvesInertiaFrontend;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class InertiaComponentMakeCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
+    use ResolvesInertiaFrontend;
 
     protected $argumentName = 'name';
 
@@ -28,6 +30,19 @@ class InertiaComponentMakeCommand extends GeneratorCommand
      * @var string
      */
     protected $description = 'Create a new Inertia component for the specified module.';
+
+    /**
+     * Execute the console command.
+     */
+    #[\Override]
+    public function handle(): int
+    {
+        if ($this->reportConflictingInertiaFrontends()) {
+            return E_ERROR;
+        }
+
+        return parent::handle();
+    }
 
     /**
      * Get the console command arguments.
@@ -112,24 +127,6 @@ class InertiaComponentMakeCommand extends GeneratorCommand
         $dir = dirname($name);
 
         return $dir === '.' ? '' : $dir;
-    }
-
-    /**
-     * Get the active Inertia frontend, respecting flags then config default.
-     */
-    private function getInertiaFrontend(): string
-    {
-        if ($this->option('react')) {
-            return 'react';
-        }
-        if ($this->option('svelte')) {
-            return 'svelte';
-        }
-        if ($this->option('vue')) {
-            return 'vue';
-        }
-
-        return config('modules.inertia.frontend', 'vue');
     }
 
     /**

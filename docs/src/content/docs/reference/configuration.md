@@ -195,4 +195,4 @@ Values the `composer` stub receives when `module:make` generates a module `compo
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `inertia.frontend` | `'vue'` | Framework used by `module:make-inertia-page`, `module:make-inertia-component` and `module:publish-inertia` when no `--vue`, `--react` or `--svelte` option is given. Values: `vue`, `react`, `svelte`. |
+| `inertia.frontend` | `'vue'` | Framework used by `module:make-inertia-page`, `module:make-inertia-component` and `module:publish-inertia` when no `--vue`, `--react` or `--svelte` option is given. The stubs target Inertia v3. Values: `vue`, `react`, `svelte`. |

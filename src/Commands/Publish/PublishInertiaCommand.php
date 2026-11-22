@@ -5,18 +5,25 @@ namespace Nwidart\Modules\Commands\Publish;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Support\Stub;
+use Nwidart\Modules\Traits\ResolvesInertiaFrontend;
 use Symfony\Component\Console\Input\InputOption;
 
 use function Laravel\Prompts\confirm;
 
 class PublishInertiaCommand extends Command
 {
+    use ResolvesInertiaFrontend;
+
     protected $name = 'module:publish-inertia';
 
     protected $description = 'Publish the Inertia app.js to resources/js, configured to resolve pages from all modules.';
 
     public function handle(): int
     {
+        if ($this->reportConflictingInertiaFrontends()) {
+            return E_ERROR;
+        }
+
         $stub = match ($this->getInertiaFrontend()) {
             'react' => '/inertia/app-react.stub',
             'svelte' => '/inertia/app-svelte.stub',
@@ -63,21 +70,6 @@ class PublishInertiaCommand extends Command
         }
 
         return $this->laravel->runningUnitTests() || (defined('STDIN') && stream_isatty(STDIN));
-    }
-
-    private function getInertiaFrontend(): string
-    {
-        if ($this->option('react')) {
-            return 'react';
-        }
-        if ($this->option('svelte')) {
-            return 'svelte';
-        }
-        if ($this->option('vue')) {
-            return 'vue';
-        }
-
-        return config('modules.inertia.frontend', 'vue');
     }
 
     #[\Override]

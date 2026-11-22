@@ -572,7 +572,7 @@ php artisan module:make-inertia-component <name> [<module>] [--vue] [--react] [-
 
 - Writes `<Name>.vue`, `<Name>.jsx` or `<Name>.svelte` to the `inertia-components` generator path (`paths.generator.inertia-components.path`, default `resources/js/Components`).
 - Stub: `inertia/component-vue.stub`, `inertia/component-react.stub` or `inertia/component-svelte.stub`.
-- The framework is `--react` if given, else `--svelte`, else `--vue`, else `inertia.frontend` (default `vue`).
+- The framework is the option given, else `inertia.frontend` (default `vue`). Pass at most one of `--vue`, `--react` and `--svelte`. With more than one, the command writes nothing, exits with `1` and prints, for example, `The --react and --svelte options cannot be used together. Pass only one of --vue, --react or --svelte.`
 
 ```bash
 php artisan module:make-inertia-component Posts/Index Blog --react
@@ -606,7 +606,7 @@ php artisan module:make-inertia-page <name> [<module>] [--vue] [--react] [--svel
 
 - Writes `<Name>.vue`, `<Name>.jsx` or `<Name>.svelte` to the `inertia` generator path (`paths.generator.inertia.path`, default `resources/js/Pages`).
 - Stub: `inertia/page-vue.stub`, `inertia/page-react.stub` or `inertia/page-svelte.stub`.
-- The framework is `--react` if given, else `--svelte`, else `--vue`, else `inertia.frontend` (default `vue`).
+- The framework is the option given, else `inertia.frontend` (default `vue`). Pass at most one of `--vue`, `--react` and `--svelte`. With more than one, the command writes nothing, exits with `1` and prints, for example, `The --react and --svelte options cannot be used together. Pass only one of --vue, --react or --svelte.`
 
 ```bash
 php artisan module:make-inertia-page Posts/Index Blog --react

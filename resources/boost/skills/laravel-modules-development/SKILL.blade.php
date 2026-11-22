@@ -185,7 +185,7 @@ Creates `Modules/Blog/config/stripe.php`, read as `config('blog.stripe.key')`. N
 
 ## Inertia Support
 
-When using Inertia.js inside a module:
+When using Inertia.js inside a module (the stubs target Inertia v3; pass at most one of `--vue`, `--react` and `--svelte`, otherwise the command fails):
 
 ```bash
 # Generate an Inertia-powered module (--inertia flag)
