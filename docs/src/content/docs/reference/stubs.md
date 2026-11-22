@@ -240,16 +240,9 @@ class AppUrl extends ReplacementKeyCommand
 {
     public function handle(): string
     {
-        return $this->generator->getModule()->getLowerName();
+        return strtolower($this->generator->getName());
     }
 }
 ```
 
-When `module:make` runs this body, it throws a `TypeError`. `ModuleGenerator::getModule()` is declared to return a `Module`, but `module:make` gives the generator the repository. The generated body is therefore a placeholder to replace. A body that works uses a method that `ModuleGenerator` really provides, for example `getName()`:
-
-```php
-public function handle(): string
-{
-    return strtolower($this->generator->getName());
-}
-```
+The generated `handle()` returns the module name in lower case. Change the body to compute your own value.
