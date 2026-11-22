@@ -9,7 +9,6 @@ use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Collection;
 use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
-use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Traits\InteractsWithModuleRepository;
 use Symfony\Component\Console\Input\InputArgument;
@@ -100,7 +99,9 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
             return Command::FAILURE;
         }
 
-        $this->validateModules();
+        if (! $this->validateModules()) {
+            return Command::FAILURE;
+        }
 
         if (! $this->canProceed()) {
             return Command::FAILURE;
@@ -129,14 +130,25 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
     /**
      * Check that every given module exists before any action runs, so a misspelled
      * name does not fail halfway, after the modules before it were processed.
+     * Prints one error line that names every unknown module.
      *
-     * @throws ModuleNotFoundException
+     * @return bool Whether every given module exists.
      */
-    protected function validateModules(): void
+    protected function validateModules(): bool
     {
-        foreach ((array) $this->argument('module') as $module) {
-            $this->getModuleModel($module);
+        $unknown = collect((array) $this->argument('module'))
+            ->reject(fn ($module) => $module instanceof Module || $this->moduleRepository()->find((string) $module) !== null)
+            ->values();
+
+        if ($unknown->isEmpty()) {
+            return true;
         }
+
+        $this->components->error($unknown->count() === 1
+            ? "Module [{$unknown->first()}] does not exist."
+            : 'Modules ['.$unknown->implode(', ').'] do not exist.');
+
+        return false;
     }
 
     /**

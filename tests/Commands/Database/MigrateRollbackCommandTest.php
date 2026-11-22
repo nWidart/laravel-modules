@@ -6,7 +6,6 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Nwidart\Modules\Tests\Migrations\Fixtures\TransactionalSQLiteGrammar;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -287,13 +286,10 @@ PHP);
 
     public function test_it_rolls_back_nothing_when_a_module_does_not_exist()
     {
-        try {
-            $this->artisan('module:migrate-rollback', ['module' => ['Blog', 'Typo']]);
-            $this->fail('An unknown module should have thrown.');
-        } catch (ModuleNotFoundException $e) {
-            $this->assertStringContainsString('Typo', $e->getMessage());
-        }
+        $code = $this->artisan('module:migrate-rollback', ['module' => ['Blog', 'Typo']]);
 
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Module [Typo] does not exist.', $this->app[Kernel::class]->output());
         $this->assertTrue(Schema::hasTable('blog_posts'));
         $this->assertTrue($this->migrationIsLogged());
     }

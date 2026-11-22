@@ -22,7 +22,7 @@ Every command on this page extends `BaseCommand`, the package base class of the 
 - With `--all`, or with `All` chosen in the interactive prompt, a command that has a `--direction` option uses the enabled modules ordered by the `priority` field of `module.json` in that direction. `module:migrate-refresh` has no `--direction` option and uses the enabled modules in ascending order. The interactive list shows the same modules.
 - `--direction` has no effect on modules given by name. A module given by name runs whatever its status: `module:migrate-refresh Shop` refreshes a disabled `Shop`.
 - With no module and no interactive input, the command prints `No module given. Pass a module name or --all.` and exits with `1`.
-- An unknown module name throws `ModuleNotFoundException` before any action runs.
+- An unknown module name prints `Module [Nope] does not exist.` (several names: `Modules [Nope, Typo] do not exist.`) and the command exits with `1` before any action runs. `module:migrate-fresh` does not wipe the database.
 
 ### Exit status
 

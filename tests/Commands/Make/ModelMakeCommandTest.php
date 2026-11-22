@@ -86,6 +86,23 @@ class ModelMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_fails_with_the_reason_when_the_migration_file_already_exists()
+    {
+        // The migration name holds the current second: take the next few, the command runs within them.
+        $migrations = $this->getModuleBasePath().'/database/migrations';
+        $this->finder->ensureDirectoryExists($migrations);
+        $start = time();
+        foreach (range(0, 5) as $offset) {
+            $this->finder->put($migrations.'/'.date('Y_m_d_His_', $start + $offset).'create_posts_table.php', 'existing');
+        }
+
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '-m' => true]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertTrue(is_file($this->modulePath.'/Models/Post.php'));
+        $this->assertMatchesRegularExpression('/ERROR\s+File : \S+_create_posts_table\.php already exists\./', Artisan::output());
+    }
+
     public function test_it_generates_migration_file_with_model_using_shortcut_option()
     {
         $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '-m' => true]);

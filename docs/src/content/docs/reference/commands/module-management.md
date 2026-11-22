@@ -23,7 +23,7 @@ This page lists the commands that manage existing modules. `module:make` and the
 - With neither, an interactive terminal shows a multi-select prompt named `Select Modules`. Its list is the same module list as `--all`, and its first entry, `All`, selects all of them.
 - A module given by name runs whatever its status.
 - With neither and no interactive input (`--no-interaction`, or no TTY), the command prints `No module given. Pass a module name or --all.` and exits with status `1`.
-- The command checks that every named module exists before it runs any action. An unknown name throws `ModuleNotFoundException` and nothing runs.
+- The command checks that every named module exists before it runs any action. An unknown name prints `Module [Nope] does not exist.`, several unknown names print one line, `Modules [Nope, Typo] do not exist.`, and the command exits with `1`. No action runs, not even for the valid names.
 
 ### Exit status
 

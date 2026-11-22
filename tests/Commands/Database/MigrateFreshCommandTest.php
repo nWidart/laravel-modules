@@ -7,7 +7,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Nwidart\Modules\Commands\Database\MigrateFreshCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class MigrateFreshCommandTest extends BaseTestCase
@@ -100,13 +99,10 @@ class MigrateFreshCommandTest extends BaseTestCase
 
     public function test_it_does_not_wipe_the_database_when_a_module_does_not_exist()
     {
-        try {
-            $this->artisan('module:migrate-fresh', ['module' => ['Blog', 'Unknown']]);
-            $this->fail('An unknown module should have thrown.');
-        } catch (ModuleNotFoundException $e) {
-            $this->assertStringContainsString('Unknown', $e->getMessage());
-        }
+        $code = $this->artisan('module:migrate-fresh', ['module' => ['Blog', 'Unknown']]);
 
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Module [Unknown] does not exist.', $this->app[Kernel::class]->output());
         $this->assertTrue(Schema::hasTable('legacy_records'));
         $this->assertFalse(Schema::hasTable('blog_posts'));
     }

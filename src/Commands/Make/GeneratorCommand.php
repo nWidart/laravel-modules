@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Commands\Make;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Exceptions\FileAlreadyExistException;
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Generators\FileGenerator;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Traits\InteractsWithModuleRepository;
@@ -73,6 +74,12 @@ abstract class GeneratorCommand extends Command
             return E_ERROR;
         }
 
+        if (($error = $this->validateModuleArgument()) !== null) {
+            $this->components->error($error);
+
+            return E_ERROR;
+        }
+
         $path = str_replace('\\', '/', $this->getDestinationFilePath());
 
         $files = $this->laravel->make(Filesystem::class);
@@ -125,6 +132,38 @@ abstract class GeneratorCommand extends Command
 
         if ($isAbsolute || $hasParentSegment) {
             return "The {$this->argumentName} [{$name}] must not be an absolute path or contain \"..\" segments.";
+        }
+
+        return null;
+    }
+
+    /**
+     * Check that the target module exists: the module argument, or without it the
+     * module set with module:use. Returns the error message, or null when it exists.
+     *
+     * The repository still throws ModuleNotFoundException for programmatic callers;
+     * this check turns a wrong or missing module into one error line instead.
+     */
+    protected function validateModuleArgument(): ?string
+    {
+        if (! $this->hasArgument('module')) {
+            return null;
+        }
+
+        $name = $this->argument('module');
+
+        if (! is_string($name) || $name === '') {
+            try {
+                $this->moduleRepository()->getUsedNow();
+            } catch (ModuleNotFoundException) {
+                return 'No module given, and no module is set with module:use. Pass the module name, or run php artisan module:use <module> first.';
+            }
+
+            return null;
+        }
+
+        if ($this->moduleRepository()->find($name) === null) {
+            return "Module [{$name}] does not exist.";
         }
 
         return null;

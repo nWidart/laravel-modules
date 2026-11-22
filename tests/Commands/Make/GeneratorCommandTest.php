@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Tests\Commands\Make;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Nwidart\Modules\Commands\Make\GeneratorCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
@@ -221,12 +222,98 @@ class GeneratorCommandTest extends BaseTestCase
         $this->assertFileExists($path);
     }
 
+    public function test_every_generator_prints_an_error_line_for_an_unknown_module()
+    {
+        foreach ($this->generators() as $class) {
+            $command = $this->app->make($class);
+
+            $code = $this->artisan($command->getName(), $this->requiredArguments($command) + ['module' => 'Nope']);
+
+            $output = Artisan::output();
+            $this->assertSame(E_ERROR, $code, "{$command->getName()} should fail for an unknown module.");
+            $this->assertStringContainsString('ERROR  Module [Nope] does not exist.', $output, $command->getName());
+            $this->assertSame(1, substr_count($output, 'ERROR'), $command->getName());
+            $this->assertDirectoryDoesNotExist(base_path('modules/Nope'), $command->getName());
+        }
+    }
+
+    public function test_every_generator_with_an_optional_module_explains_a_missing_module()
+    {
+        $this->app[RepositoryInterface::class]->forgetUsed();
+        $before = $this->moduleFiles();
+
+        foreach ($this->generators() as $class) {
+            $command = $this->app->make($class);
+
+            if ($command->getDefinition()->getArgument('module')->isRequired()) {
+                continue;
+            }
+
+            $code = $this->artisan($command->getName(), $this->requiredArguments($command));
+
+            $output = Artisan::output();
+            $this->assertSame(E_ERROR, $code, "{$command->getName()} should fail without a module.");
+            $this->assertStringContainsString(
+                'No module given, and no module is set with module:use. Pass the module name, or run php artisan module:use <module> first.',
+                $output,
+                $command->getName()
+            );
+            $this->assertStringNotContainsString('Module [] does not exist', $output, $command->getName());
+        }
+
+        $this->assertSame($before, $this->moduleFiles());
+    }
+
+    public function test_a_generator_explains_a_module_set_with_use_that_no_longer_exists()
+    {
+        $this->createModule('Gone');
+        $this->app[RepositoryInterface::class]->setUsed('Gone');
+        $this->app[RepositoryInterface::class]->delete('Gone');
+
+        try {
+            $code = $this->artisan('module:make-controller', ['controller' => 'PostController']);
+        } finally {
+            $this->app[RepositoryInterface::class]->forgetUsed();
+        }
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString('no module is set with module:use', Artisan::output());
+    }
+
     public function test_it_accepts_names_with_dots_that_are_not_parent_segments()
     {
         $code = $this->artisan('module:make-view', ['name' => 'posts.index', 'module' => 'Blog']);
 
         $this->assertSame(0, $code);
         $this->assertFileExists($this->getModuleBasePath().'/resources/views/posts.index.blade.php');
+    }
+
+    /**
+     * @return Collection<int, class-string<GeneratorCommand>>
+     */
+    private function generators()
+    {
+        return ConsoleServiceProvider::defaultCommands()
+            ->filter(fn (string $class) => is_subclass_of($class, GeneratorCommand::class))
+            ->values();
+    }
+
+    /**
+     * A value for every required argument of the command except the module.
+     *
+     * @return array<string, string>
+     */
+    private function requiredArguments(GeneratorCommand $command): array
+    {
+        $arguments = [];
+
+        foreach ($command->getDefinition()->getArguments() as $argument) {
+            if ($argument->isRequired() && $argument->getName() !== 'module') {
+                $arguments[$argument->getName()] = 'Post';
+            }
+        }
+
+        return $arguments;
     }
 
     /**

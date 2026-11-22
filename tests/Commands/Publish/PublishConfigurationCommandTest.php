@@ -2,8 +2,8 @@
 
 namespace Nwidart\Modules\Tests\Commands\Publish;
 
+use Illuminate\Contracts\Console\Kernel;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class PublishConfigurationCommandTest extends BaseTestCase
@@ -27,11 +27,11 @@ class PublishConfigurationCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
-    public function test_it_throws_for_an_unknown_module()
+    public function test_it_prints_an_error_line_for_an_unknown_module()
     {
-        $this->expectException(ModuleNotFoundException::class);
-        $this->expectExceptionMessage('Module [Nope] does not exist!');
+        $code = $this->artisan('module:publish-config', ['module' => 'Nope']);
 
-        $this->artisan('module:publish-config', ['module' => 'Nope']);
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Module [Nope] does not exist.', $this->app[Kernel::class]->output());
     }
 }

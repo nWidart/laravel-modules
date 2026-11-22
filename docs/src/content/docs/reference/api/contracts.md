@@ -106,7 +106,8 @@ A [`BaseCommand`](#basecommand) that implements it:
 | `getInfo(): ?string` | Public. A line printed once before the actions. Default `null`. |
 | `getConfirmableLabel(): ?string` | Public. The label of the production confirmation. Default `Application In Production`. Read only when the command implements `ConfirmableCommand`. |
 | `getConfirmableCallback(): \Closure\|bool\|null` | Public. The callback that decides whether the confirmation applies. Default `null`. |
-| `handle()` | Public. Checks the input, validates the module names, runs the actions and returns the exit code (`0`, or `1` after a failure). |
+| `handle()` | Public. Checks the input, validates the module names, runs the actions and returns the exit code (`0`, or `1` after a failure or an unknown module name). |
+| `validateModules(): bool` | Protected. `true` when every given module exists. Otherwise prints `Module [<name>] does not exist.` (or `Modules [<names>] do not exist.`) and returns `false`; `handle()` then returns `1` and runs no action. |
 | `markAsFailed(): void` | Protected. Marks the run as failed. |
 | `hasFailures(): bool` | Protected. `true` when an action failed during this run. |
 | `getModuleModel(Module\|string $name)` | Protected. The module for a name. Throws `ModuleNotFoundException` for an unknown name. |

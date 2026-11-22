@@ -11,7 +11,6 @@ use Nwidart\Modules\Commands\Database\MigrateResetCommand;
 use Nwidart\Modules\Commands\Database\MigrateRollbackCommand;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Symfony\Component\Console\Input\InputInterface;
@@ -144,14 +143,37 @@ class BaseCommandTest extends BaseTestCase
     {
         $command = $this->registerCommand([]);
 
-        try {
-            $this->artisan('module:base-command-test', ['module' => ['Blog', 'Typo', 'Shop']]);
-            $this->fail('An unknown module should have thrown.');
-        } catch (ModuleNotFoundException $e) {
-            $this->assertStringContainsString('Typo', $e->getMessage());
-        }
+        $code = $this->artisan('module:base-command-test', ['module' => ['Blog', 'Typo', 'Shop']]);
 
+        $this->assertSame(1, $code);
         $this->assertSame([], $command->ran);
+        $this->assertStringContainsString('Module [Typo] does not exist.', $this->app[Kernel::class]->output());
+    }
+
+    public function test_it_prints_an_error_line_for_an_unknown_module()
+    {
+        $command = $this->registerCommand([]);
+
+        $code = $this->artisan('module:base-command-test', ['module' => ['Nope']]);
+
+        $output = $this->app[Kernel::class]->output();
+        $this->assertSame(1, $code);
+        $this->assertSame([], $command->ran);
+        $this->assertStringContainsString('ERROR  Module [Nope] does not exist.', $output);
+        $this->assertSame(1, substr_count($output, 'ERROR'));
+    }
+
+    public function test_it_names_every_unknown_module_in_one_error_line()
+    {
+        $command = $this->registerCommand([]);
+
+        $code = $this->artisan('module:base-command-test', ['module' => ['Nope', 'Blog', 'Typo']]);
+
+        $output = $this->app[Kernel::class]->output();
+        $this->assertSame(1, $code);
+        $this->assertSame([], $command->ran);
+        $this->assertStringContainsString('Modules [Nope, Typo] do not exist.', $output);
+        $this->assertSame(1, substr_count($output, 'ERROR'));
     }
 
     public function test_every_confirmable_command_has_the_confirmable_force_option()
