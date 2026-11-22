@@ -7,9 +7,9 @@
   },
   "devDependencies": {
     "axios": "^1.1.2",
-    "laravel-vite-plugin": "^0.7.5",
-    "sass": "^1.69.5",
+    "laravel-vite-plugin": "^3.1",
+    "sass": "^1.70.0",
     "postcss": "^8.3.7",
-    "vite": "^4.0.0"
+    "vite": "^8.0.0"
   }
 }
