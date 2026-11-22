@@ -28,7 +28,7 @@ At the end, the module commands that wipe data refuse to run in production, even
 
 ## Which commands are blocked
 
-The call sets one flag that every confirmable module command reads. These commands are blocked:
+The call prohibits each of these commands. Each command has its own flag, so you can also prohibit one alone, for example with `MigrateFreshCommand::prohibit()` (see [Destructive commands](/laravel-modules/reference/api/repository/#destructive-commands)). These commands are blocked:
 
 - `module:migrate-fresh`
 - `module:migrate-refresh`

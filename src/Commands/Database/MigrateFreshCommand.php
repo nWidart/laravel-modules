@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands\Database;
 
+use Illuminate\Console\Prohibitable;
 use Illuminate\Console\View\TaskResult;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Support\Collection;
@@ -11,6 +12,9 @@ use Symfony\Component\Console\Input\InputOption;
 
 class MigrateFreshCommand extends BaseCommand implements ConfirmableCommand
 {
+    // Its own prohibition flag: BaseCommand's flag is shared by all its subclasses.
+    use Prohibitable;
+
     /**
      * The console command name.
      *

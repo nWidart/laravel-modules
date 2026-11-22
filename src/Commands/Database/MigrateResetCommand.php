@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands\Database;
 
+use Illuminate\Console\Prohibitable;
 use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Nwidart\Modules\Migrations\Migrator;
@@ -9,6 +10,9 @@ use Symfony\Component\Console\Input\InputOption;
 
 class MigrateResetCommand extends BaseCommand implements ConfirmableCommand
 {
+    // Its own prohibition flag: BaseCommand's flag is shared by all its subclasses.
+    use Prohibitable;
+
     /**
      * The console command name.
      *

@@ -145,7 +145,7 @@ php artisan module:delete [<module>...] [-a|--all] [--force]
 
 **Notes**
 
-- The command is confirmable, and it asks for confirmation in every environment. See [ConfirmableCommand](/laravel-modules/reference/api/contracts/#confirmablecommand). `Module::prohibitDestructiveCommands()` prohibits it too.
+- The command is confirmable, and it asks for confirmation in every environment. See [ConfirmableCommand](/laravel-modules/reference/api/contracts/#confirmablecommand). `Module::prohibitDestructiveCommands()` prohibits it too, and so does `ModuleDeleteCommand::prohibit()`, which prohibits only this command.
 - The module fires the `deleting` and `deleted` [events](/laravel-modules/reference/api/events/).
 - After the action, the command clears the repository cache of scanned modules.
 

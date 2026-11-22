@@ -3,9 +3,11 @@
 namespace Nwidart\Modules\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use Nwidart\Modules\Commands\Actions\ModuleDeleteCommand;
 use Nwidart\Modules\Commands\Database\MigrateFreshCommand;
 use Nwidart\Modules\Commands\Database\MigrateRefreshCommand;
 use Nwidart\Modules\Commands\Database\MigrateResetCommand;
+use Nwidart\Modules\Commands\Database\MigrateRollbackCommand;
 
 /**
  * @method static array<string, \Nwidart\Modules\Module> all()
@@ -35,13 +37,17 @@ class Module extends Facade
     /**
      * Indicate if destructive Artisan commands should be prohibited.
      *
-     * Prohibits: module:migrate-fresh, module:migrate-refresh, and module:migrate-reset
+     * Prohibits: module:migrate-fresh, module:migrate-refresh, module:migrate-reset,
+     * module:migrate-rollback, and module:delete. Each command keeps its own flag, so
+     * MigrateFreshCommand::prohibit() alone blocks only module:migrate-fresh.
      */
     public static function prohibitDestructiveCommands(bool $prohibit = true): void
     {
         MigrateFreshCommand::prohibit($prohibit);
         MigrateRefreshCommand::prohibit($prohibit);
         MigrateResetCommand::prohibit($prohibit);
+        MigrateRollbackCommand::prohibit($prohibit);
+        ModuleDeleteCommand::prohibit($prohibit);
     }
 
     #[\Override]
