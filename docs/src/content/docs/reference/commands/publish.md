@@ -7,7 +7,7 @@ This page lists the commands that copy files from a module to the application, a
 
 ## Shared behaviour
 
-`module:publish`, `module:publish-config`, `module:publish-migration` and `module:publish-translation` extend `BaseCommand`, the package base class of the commands that run one action for each selected module (see [Contracts and base classes](/laravel-modules/reference/api/contracts/#basecommand)). The behaviour below applies to all four. The full description is in [Module management commands](/laravel-modules/reference/commands/module-management/#shared-behaviour). `module:publish-inertia` does not extend `BaseCommand`; its entry says so.
+`module:publish`, `module:publish-config`, `module:publish-migration`, and `module:publish-translation` extend `BaseCommand` (see [Contracts and base classes](/laravel-modules/reference/api/contracts/#basecommand)). They share the behaviour below; see [Module management commands](/laravel-modules/reference/commands/module-management/#shared-behaviour) for details. `module:publish-inertia` does not extend `BaseCommand`.
 
 ### Arguments and options
 
@@ -29,7 +29,7 @@ An action that fails does not stop the remaining modules. The command exits with
 
 ### Existing files
 
-`module:publish-migration` and `module:publish-translation` copy only the files that do not exist at the destination. For each file they skip, they print `File [<path>] already exists` with the status `SKIPPED`, then the warning `Existing files were kept. Use --force to overwrite them.` With `--force`, they overwrite the destination files. `.gitkeep` files are never copied.
+`module:publish-migration` and `module:publish-translation` skip files that already exist at the destination. Each skipped file prints `File [<path>] already exists` (`SKIPPED`), followed by `Existing files were kept. Use --force to overwrite them.` Pass `--force` to overwrite existing files. `.gitkeep` files are never copied.
 
 ## module:publish
 
@@ -86,9 +86,8 @@ php artisan module:publish-config [<module>...] [-f|--force] [-a|--all]
 
 - The command runs `vendor:publish --provider=<provider> --tag=config` for each module.
 - The provider is `<modules.namespace>\<Module>\<provider namespace>\<Module>ServiceProvider`. The provider namespace is `paths.generator.provider.path` without `paths.app_folder`, with `/` replaced by `\`.
-- The files published are the ones that provider registers under the `config` tag. The [`ModuleServiceProvider`](/laravel-modules/reference/api/module-service-provider/#config-files) base class registers every PHP file of the module `config` directory, and publishes each to `config/<module name in lower case>.php` (for `config.php`) or to `config/<module>/<path>.php`.
-
-- The published copy overrides the module. A value in `config/<module name in lower case>.php` wins over the same key in the module config. Nested associative arrays merge key by key, and any other value, including a list or `[]`, replaces the module value as a whole. Keys missing from the copy keep the module value. Delete a key from the copy to use the module default again. See [Config files](/laravel-modules/reference/api/module-service-provider/#config-files).
+- Publishes files registered under the `config` tag by that provider. [`ModuleServiceProvider`](/laravel-modules/reference/api/module-service-provider/#config-files) registers every PHP file in the module `config` folder. `config.php` publishes to `config/<lowername>.php`; other files publish to `config/<lowername>/<path>.php`.
+- Published copies override module defaults. Nested associative arrays merge key by key; lists, empty arrays `[]`, and scalars replace the module value as a whole. Missing keys keep the module value. See [Config files](/laravel-modules/reference/api/module-service-provider/#config-files).
 
 ```bash
 php artisan module:publish-config Blog --force
@@ -119,16 +118,16 @@ This command has no arguments. It has no `--all` option.
 
 **Notes**
 
-- The framework is the option given, else `inertia.frontend` (default `vue`). Pass at most one of `--vue`, `--react` and `--svelte`. With more than one, the command writes nothing, exits with `1` and prints, for example, `The --react and --svelte options cannot be used together. Pass only one of --vue, --react or --svelte.` The options are listed in the order vue, react, svelte. The check runs before the overwrite check, so `--force` does not bypass it.
-- The stubs target Inertia v3 (`inertiajs/inertia-laravel` ^3 and `@inertiajs/vue3`, `@inertiajs/react` or `@inertiajs/svelte` ^3). Inertia v2 is not supported.
-- Stub: `inertia/app-vue.stub`, `inertia/app-react.stub` or `inertia/app-svelte.stub`.
-- The published `app.js` mounts the app only when `<div id="app">` exists and the page has a `<script data-page="app" type="application/json">` tag, which the `@inertia` Blade directive of `inertiajs/inertia-laravel` 3 renders. A page without Inertia page data is skipped silently.
-- The React stub mounts with `createRoot(el).render(createElement(App, props))` from `react` and `react-dom/client`, without JSX: the published file is `resources/js/app.js`, and Vite parses JSX only in `.jsx` files. Pages and components for React stay `.jsx`.
+- The framework comes from the flag given, else `inertia.frontend` (default `vue`). Pass at most one of `--vue`, `--react`, and `--svelte`. Passing more than one writes nothing and exits with `1`. The error lists options in vue, react, svelte order (for example `The --react and --svelte options cannot be used together. Pass only one of --vue, --react or --svelte.`). This check runs before overwrite handling and is not bypassed by `--force`.
+- The stubs target Inertia v3 (`inertiajs/inertia-laravel` ^3 and `@inertiajs/vue3`, `@inertiajs/react`, or `@inertiajs/svelte` ^3). Inertia v2 is not supported.
+- Stub: `inertia/app-vue.stub`, `inertia/app-react.stub`, or `inertia/app-svelte.stub`.
+- The published `app.js` mounts only when `<div id="app">` and `<script data-page="app" type="application/json">` exist (rendered by `@inertia` in `inertiajs/inertia-laravel` 3). Other pages skip silently.
+- The React stub mounts with `createRoot(el).render(createElement(App, props))` from `react` and `react-dom/client` without JSX, because Vite parses JSX only in `.jsx` files. React pages and components stay `.jsx`.
 - The Svelte stub uses `mount(App, { target: el, props })` from `svelte` and needs Svelte 5.
-- Only a Vue `app.js` published earlier keeps working on Inertia v3. A React `app.js` published earlier contains JSX and fails to build. Publish React and Svelte files again with `php artisan module:publish-inertia --react --force` or `--svelte --force`.
-- A fresh Laravel application already has `resources/js/app.js`, so the first run meets the existing-file case. Without `--force`:
-  - In an interactive terminal, the command asks `resources/js/app.js already exists. Overwrite?` (default no). Yes overwrites the file, prints `Published Inertia app.js to resources/js/app.js` and exits with `0`. No prints `Nothing was written. resources/js/app.js was left unchanged.` and exits with `1`.
-  - With `--no-interaction` or without a TTY, the command prints `resources/js/app.js already exists. Use --force to overwrite.` and exits with `1`.
+- Only an earlier Vue `app.js` stays compatible with Inertia v3. Earlier React files contain JSX and fail to build. Republish React and Svelte with `--force`.
+- Without `--force`, an existing `resources/js/app.js` behaves as follows:
+  - Interactive: prompts `resources/js/app.js already exists. Overwrite?` (default no). Answering yes overwrites, prints `Published Inertia app.js to resources/js/app.js`, and exits with `0`. Answering no prints `Nothing was written. resources/js/app.js was left unchanged.` and exits with `1`.
+  - Non-interactive (`--no-interaction` or no TTY): prints `resources/js/app.js already exists. Use --force to overwrite.` and exits with `1`.
 - With `--force`, the command overwrites the file without asking.
 - On success the command prints a reminder that `vite.config.js` must include `resources/js/app.js` as an input.
 
@@ -218,29 +217,32 @@ php artisan vendor:publish --tag=config
 
 ### vite-module-loader.js
 
-The `vite` tag publishes `vite-module-loader.js` next to the root `vite.config.js`. Its default export, `collectModuleAssetsPaths(paths, modulesPath)`, appends the `paths` export of the `vite.config.js` of each enabled module (from `modules_statuses.json`) to `paths` and returns the array. `modulesPath` is relative to the application root, which is the folder of the loader file. The file also exports `moduleRefreshPaths()`.
+The `vite` tag publishes `vite-module-loader.js` to the application root (next to `vite.config.js`). Existing files are skipped unless `--force` is passed. For Vite configuration steps, see [Compile module assets with Vite](/laravel-modules/guides/frontend/vite/).
 
-The tag does not overwrite an existing `vite-module-loader.js`: the command prints `File [vite-module-loader.js] already exists .. SKIPPED`. Run `php artisan vendor:publish --tag=vite --force` to replace it with the current file. The behaviour in the table below belongs to the current file.
+**Exports**
 
-```js
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import collectModuleAssetsPaths from './vite-module-loader.js';
+| Export | Signature | Returns | Description |
+| --- | --- | --- | --- |
+| default | `async collectModuleAssetsPaths(paths, modulesPath)` | `Promise<string[]>` | Reads `modules_statuses.json` in the application root and imports `vite.config.js` for each enabled module under `modulesPath` (relative to the loader directory). Appends each module's `paths` array to `paths` and returns it. |
+| named | `moduleRefreshPaths(modulesPath = 'Modules')` | `string[]` | Returns full-reload globs for every module under `modulesPath`, relative to the application root. |
 
-const paths = ['resources/css/app.css', 'resources/js/app.js'];
-const allPaths = await collectModuleAssetsPaths(paths, 'Modules');
+**`moduleRefreshPaths()` globs**
 
-export default defineConfig({
-    plugins: [laravel({ input: allPaths, refresh: true })],
-});
-```
+Trailing slashes are stripped from `modulesPath` (`<base>`):
 
-`npm run build` from the application root then builds the module entry points into `public/build`, with manifest keys such as `Modules/Blog/resources/assets/js/app.js`.
+- `<base>/*/app/Livewire/**`
+- `<base>/*/app/View/Components/**`
+- `<base>/*/lang/**`
+- `<base>/*/resources/lang/**`
+- `<base>/*/resources/views/**`
+- `<base>/*/routes/**`
 
-| Module state | Result of the current loader |
+**Module loading behaviour (`collectModuleAssetsPaths`)**
+
+| Module state | Result |
 | --- | --- |
-| No `vite.config.js` | Skipped without a message. |
-| `vite.config.js` exports no `paths` | Skipped without a message. |
-| `vite.config.js` fails to load | Prints `Skipping the assets of module <Name>: could not load <path>: <message>`. The other modules still load. |
+| No `vite.config.js` | Skipped silently. |
+| `vite.config.js` exports no `paths` array | Skipped silently. |
+| `vite.config.js` fails to load | Logs `Skipping the assets of module <Name>: could not load <path>: <message>` via `console.warn` and continues with remaining modules. |
 
-With the current loader, a `vite.config.js` generated by an earlier version has no `paths` export and fails to load. Replace it with the content of [`vite.stub`](/laravel-modules/reference/stubs/#vitestub).
+Older module `vite.config.js` files without a `paths` export fail to load. Replace them with [`vite.stub`](/laravel-modules/reference/stubs/#vitestub).

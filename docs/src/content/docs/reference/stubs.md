@@ -108,9 +108,9 @@ A `-duck` stub (`listener-duck.stub`, `listener-queued-duck.stub`) generates a l
 
 `vite.stub` generates the `vite.config.js` of a module. The file does two things.
 
-- Its default export builds the module on its own, from the module folder, into `public/build-<lower-name>`. It writes the manifest to `public/build-<lower-name>/manifest.json` (`manifest: 'manifest.json'`), the path that `module_vite()` reads. The module folder comes from `import.meta.url`. The application root is two levels up from it, the same assumption as `publicDirectory: '../../public'`.
-- It sets `hotFile: path.join(appDirectory, 'storage/vite-<lower-name>.hot')`, so `npm run dev` in the module folder writes its own hot file in the application root, not the `public/hot` of the application `@vite`. The `module_vite()` calls of `views/master.stub` pass `storage_path('vite-<lower-name>.hot')`. The plugin uses `hotFile` as given; `publicDirectory` stays relative (`'../../public'`) because the plugin strips its leading slashes.
-- Its `paths` export lists the asset entry points of the module relative to the application root, for example `Modules/Blog/resources/assets/sass/app.scss` and `Modules/Blog/resources/assets/js/app.js`. The paths are computed from the file location when the file loads.
+- Its default export builds the module on its own into `public/build-<lower-name>`. It writes `manifest.json` inside that directory for `module_vite()`. It derives the module folder from `import.meta.url` and assumes the application root is two levels up, matching `publicDirectory: '../../public'`.
+- It sets `hotFile` to `storage/vite-<lower-name>.hot` in the application root. `npm run dev` in the module writes that file instead of `public/hot`, matching the `module_vite()` calls in `views/master.stub`. `publicDirectory` stays relative (`'../../public'`) because the plugin strips leading slashes.
+- Its `paths` export lists module entry points relative to the application root, such as `Modules/Blog/resources/assets/sass/app.scss` and `Modules/Blog/resources/assets/js/app.js`. Paths are computed from the file location on load.
 
 The `vite-module-loader.js` script reads `paths` to build the module assets from the application root. See [`vendor:publish` tags](/laravel-modules/reference/commands/publish/#vendorpublish-tags).
 
@@ -145,7 +145,7 @@ The `module:make` stubs (`stubs.files` and `json`) take the keys listed in `stub
 | `PROVIDER_NAMESPACE` | Namespace of the `provider` generator entry. |
 | `APP_FOLDER_NAME` | `paths.app_folder`. |
 
-A name in a `stubs.replacements` list that is neither built-in nor a custom replacement class prints `Unknown replacement key [<name>] for stub [<stub key>]. It was replaced with an empty string.` A stub key without an entry in `stubs.replacements` gets no replacement. The default lists are in [Configuration](/laravel-modules/reference/configuration/#stubs).
+A key in `stubs.replacements` that is neither built-in nor a custom class prints a warning: `Unknown replacement key [<name>] for stub [<stub key>]. It was replaced with an empty string.` Stub keys missing from `stubs.replacements` receive no replacements. See [Configuration](/laravel-modules/reference/configuration/#stubs) for the default lists.
 
 ## Tokens of generator commands
 
@@ -191,14 +191,35 @@ Sections the package uses:
 
 | Stub | Tags |
 | --- | --- |
-| `model.stub` | `ATTRIBUTES` (true with `--attributes`), `FACTORY` (true with `--factory`), `PROPERTIES` (true without `--attributes`) |
-| `route-provider.stub` | `WEB_ROUTES`, `API_ROUTES`: true when `stubs.files` lists `routes/web` or `routes/api` and the `routes` generator entry has `generate` set to `true` |
+| `model.stub` | `ATTRIBUTES` (`--attributes`), `FACTORY` (`--factory`), `PROPERTIES` (without `--attributes`) |
+| `route-provider.stub` | `WEB_ROUTES`, `API_ROUTES`: `true` when `stubs.files` lists `routes/web` or `routes/api` and `routes.generate` is `true` |
 
 ## Stub lookup
 
 The `stubs.*` config keys are described in [Configuration](/laravel-modules/reference/configuration/#stubs).
 
-The `Stub` class resolves a stub as `<base path>/<stub path>`. It uses the package stub when that file does not exist. The base path is `stubs.path` when `stubs.enabled` is `true`, and the package stub folder otherwise. The package sets the base path once, after the application boots.
+The `Stub` class resolves a stub as `<base path>/<stub path>`. It falls back to the package stub when that file does not exist. The base path is `stubs.path` when `stubs.enabled` is `true`, and the package stub folder otherwise. The package sets the base path once after the application boots.
+
+## Support\Stub API
+
+`Nwidart\Modules\Support\Stub` resolves stub files, applies conditional sections, and replaces `$TOKEN$` placeholders in a single pass.
+
+| Signature | Returns | Description |
+| --- | --- | --- |
+| `__construct(string $path, array $replaces = [])` | | Sets the relative stub path and initial replacements. |
+| `static create(string $path, array $replaces = [])` | `self` | Factory method returning `new static($path, $replaces)`. |
+| `setPath(string $path)` | `self` | Updates the relative stub path. |
+| `getPath()` | `string` | Returns `<base path><path>` if it exists, otherwise the package stub path. |
+| `static setBasePath(string $path)` | `void` | Sets the base directory checked before falling back to package stubs. |
+| `static getBasePath()` | `?string` | Returns the configured base path, or `null`. |
+| `getContents()` | `string` | Reads the stub, applies conditional sections, and replaces `$TOKEN$` placeholders in one pass. |
+| `render()` | `string` | Alias of `getContents()`. |
+| `saveTo(string $path, string $filename)` | `bool` | Writes `getContents()` to `$path/$filename`. |
+| `replace(array $replaces = [])` | `self` | Replaces the replacements map. |
+| `getReplaces()` | `array` | Returns the replacements map. |
+| `sections(array $sections = [])` | `self` | Sets conditional section flags (`array<string, bool>`). |
+| `getSections()` | `array` | Returns the conditional section flags. |
+| `__toString()` | `string` | Returns `render()`. |
 
 ## Publishing
 
@@ -241,8 +262,8 @@ An entry of a `stubs.replacements` list that has an upper-case token as its key 
 ],
 ```
 
-- The class must extend `ReplacementKeyCommand`. A string key whose value is another class, or no class, prints `Replacement [<key>] for stub [<stub key>] maps to [<value>], which is not a ReplacementKeyCommand class. It was left empty.`
-- Replacement classes apply to the stubs rendered by `module:make`. The `module:make-*` generators do not read `stubs.replacements`.
+- The class must extend `ReplacementKeyCommand`. Otherwise `module:make` leaves the token empty and prints `Replacement [<key>] for stub [<stub key>] maps to [<value>], which is not a ReplacementKeyCommand class. It was left empty.`
+- Replacement classes apply only to stubs rendered by `module:make`. The `module:make-*` generators do not read `stubs.replacements`.
 
 ### Generating a class
 

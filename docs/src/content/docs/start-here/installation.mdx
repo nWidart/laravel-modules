@@ -5,12 +5,12 @@ description: Install the package, set up autoloading with the Composer merge plu
 
 import { Steps } from '@astrojs/starlight/components';
 
-To use Laravel Modules, install the package with Composer and register the module autoloading in the `composer.json` of your application.
+To use Laravel Modules, install the package with Composer and register module autoloading in your application's `composer.json`.
 
 ## Requirements
 
-- PHP 8.3 or later, with the `dom`, `json` and `simplexml` extensions.
-- Laravel 13 for the current version of the package. See [Versions](#versions) for other Laravel releases, and [Version compatibility](/laravel-modules/upgrading/compatibility/) for PHP versions and support.
+- PHP 8.3 or later, with the `dom`, `json`, and `simplexml` extensions.
+- Laravel 13 for version 13.x. See [Version compatibility](/laravel-modules/upgrading/compatibility/) for other Laravel releases, Composer constraints, PHP versions, and support.
 
 ## Install the package
 
@@ -38,11 +38,11 @@ To use Laravel Modules, install the package with Composer and register the modul
    }
    ```
 
-   If you answered `n`, Composer writes the plugin with the value `false`: change it to `true`. If you answered `d`, or Composer did not ask, add the entry yourself. Modules are not autoloaded while the plugin is not allowed.
+   If you answered `n`, change the value from `false` to `true`. If you answered `d` or Composer did not prompt, add the entry yourself. Composer skips module autoloading until you allow the plugin.
 
    Laravel discovers the service provider and the `Module` alias automatically.
 
-2. Tell the plugin where the modules are. Add the `merge-plugin` entry to the `extra` section of `composer.json`. The marked lines are the ones to add; the other lines are the existing content of `extra`:
+2. Tell the plugin where the modules live. Add the `merge-plugin` entry to the `extra` section of `composer.json` (marked lines):
 
    ```json ins={4-9}
    "extra": {
@@ -57,9 +57,7 @@ To use Laravel Modules, install the package with Composer and register the modul
    },
    ```
 
-   The glob must match the folder in `paths.modules`. See [Configuration](/laravel-modules/reference/configuration/#paths). To learn why the package uses a plugin and what it merges, see [Autoloading and the Composer merge plugin](/laravel-modules/concepts/autoloading/).
-
-   The plugin merges the `composer.json` of each module into the autoload configuration of the application.
+   Match the glob to the folder in `paths.modules` ([Configuration](/laravel-modules/reference/configuration/#paths)). The plugin merges each module's `composer.json` into the application's autoload configuration. See [Autoloading and the Composer merge plugin](/laravel-modules/concepts/autoloading/) for details.
 
 3. Regenerate the autoloader.
 
@@ -73,7 +71,7 @@ To use Laravel Modules, install the package with Composer and register the modul
    php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
    ```
 
-   The package works without it. See [Configuration](/laravel-modules/reference/configuration/) for every key.
+   The package works without publishing it. See [Configuration](/laravel-modules/reference/configuration/) for every key.
 
 5. Check the install.
 
@@ -81,7 +79,7 @@ To use Laravel Modules, install the package with Composer and register the modul
    php artisan module:list
    ```
 
-   With no module yet, the command prints only the header line:
+   With no modules yet, the command prints only the header line:
 
    ```text
    Status / Name ........................................ Path / priority
@@ -89,19 +87,6 @@ To use Laravel Modules, install the package with Composer and register the modul
 
 </Steps>
 
-If you used the `"Modules\\": "Modules/"` autoload entry of an older version, remove it from `composer.json`. It is no longer needed.
+If you used the `"Modules\\": "Modules/"` autoload entry from an older version, remove it from `composer.json`.
 
-To create the first module, follow [Your first module](/laravel-modules/start-here/first-module/).
-
-## Versions
-
-Each major version of the package follows one Laravel major version.
-
-| Laravel | laravel-modules |
-| --- | --- |
-| 13 | `^13.0` |
-| 12 | `^12.0` |
-| 11 | `^11.0` |
-| 10 | `^10.0` |
-
-Older Laravel versions use the matching major: Laravel 5.4 uses `^1.0`, Laravel 5.5 uses `^2.0`, and so on through Laravel 9 with `^9.0`.
+To build your first module, continue with [Your first module](/laravel-modules/start-here/first-module/).

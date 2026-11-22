@@ -7,7 +7,7 @@ This page lists four commands that do not manage a single module's lifecycle, ge
 
 ## Shared behaviour
 
-`module:composer-update` extends `BaseCommand`, the package base class of the commands that run one action for each selected module. It inherits the behaviour in [Module management commands](/laravel-modules/reference/commands/module-management/#shared-behaviour): a variadic `module` argument, `--all` (`-a`), the interactive prompt, and exit status `1` when an action fails. `module:setup`, `module:v6:migrate` and `module:update-phpunit-coverage` do not extend it.
+`module:composer-update` extends `BaseCommand`. It inherits the behaviour in [Module management commands](/laravel-modules/reference/commands/module-management/#shared-behaviour): variadic `module`, `--all` (`-a`), the interactive prompt, and exit status `1` on failure. `module:setup`, `module:v6:migrate`, and `module:update-phpunit-coverage` do not extend `BaseCommand`.
 
 Each entry lists its arguments and its options. A command without arguments and options has no separate example: its synopsis is the example.
 
@@ -54,7 +54,7 @@ php artisan module:composer-update [<module>...] [-a|--all]
 
 **Notes**
 
-- The command looks for the key `<modules namespace>\<Module>\App\` or `<modules namespace>\<Module>\<app folder namespace>\` in `autoload.psr-4`. It replaces that key, in place, with `<modules namespace>\<Module>\`. The value (the folder) stays as it was, or becomes `paths.app_folder` when empty.
+- Looks for `<modules namespace>\<Module>\App\` or `<modules namespace>\<Module>\<app folder namespace>\` in `autoload.psr-4`. Replaces the key in place with `<modules namespace>\<Module>\`. Keeps the folder value, or sets `paths.app_folder` when empty.
 - A `composer.json` without such a key stays unchanged. The command does not run Composer. The new mapping takes effect when Composer regenerates the autoloader, which [`module:dump`](/laravel-modules/reference/commands/module-management/#moduledump) and `composer dump-autoload` do.
 - The file keeps its key order, its empty objects and its trailing newline.
 
@@ -86,7 +86,7 @@ This command has no options.
 
 ## module:update-phpunit-coverage
 
-Adds the app folder of each enabled module to the `<source><include>` list of `phpunit.xml`, and removes the entries of modules that are not enabled.
+Syncs `<source><include>` in `phpunit.xml` with the app folders of enabled modules, removing entries for modules that are not enabled.
 
 ```bash
 php artisan module:update-phpunit-coverage
@@ -109,11 +109,11 @@ This command has no options.
 - New entries go where the file allows:
   - In an existing multi-line `<include>` block, before `</include>`.
   - In an empty `<include></include>` or `<include/>` on one line inside `<source>`: the command expands it with the module entries only.
-  - In `<source>` with no `<include>`: the command adds an `<include>` block that holds a `<directory>./app</directory>` entry and one entry per enabled module. This covers a multi-line `<source>`, an empty `<source></source>`, `<source/>` or `<source />` on one line (attributes are kept), and a `<source>` followed by other elements on its line, such as `<source><exclude>...</exclude></source>`. The rest of the line moves to its own line.
+  - In `<source>` with no `<include>`: inserts an `<include>` block containing `<directory>./app</directory>` and each enabled module. Supports multi-line `<source>`, empty `<source></source>`, self-closing `<source/>` or `<source />` (keeping attributes), and `<source>` with trailing elements on the same line (moved to a new line).
   - `<source><include>` on one line with the rest on later lines: before `</include>`.
-  - With no `<source>` element, the command adds a `<source>` block before `</phpunit>`.
-- The `<directory>./app</directory>` entry is the application's own `app` folder, as in Laravel's default `phpunit.xml`. It is not the module app folder (`paths.app_folder`). The command writes it only when it creates an `<include>` block, never into an `<include>` that exists.
-- Layouts the command cannot edit: the whole block on one line (`<source><include><directory>...</directory></include></source>`), `...</directory></include>` on one line, and `<source/>` followed by other text on its line. The command leaves the file unchanged, prints `Could not find where to add the module entries in phpunit.xml: add them by hand.` and does not print the success line.
+  - With no `<source>` element, adds a `<source>` block before `</phpunit>`.
+- `<directory>./app</directory>` is the application's `app` folder, not `paths.app_folder`. It is written only when creating a new `<include>` block.
+- Unsupported layouts: the whole block on one line (`<source><include><directory>...</directory></include></source>`), `...</directory></include>` on one line, or `<source/>` with trailing text on the same line. The file stays unchanged, the command prints `Could not find where to add the module entries in phpunit.xml: add them by hand.`, and omits the success line.
 - When it cannot remove an entry, it prints `Could not remove the entry [<path>] from phpunit.xml: remove it by hand.`
 - The command prints `phpunit.xml updated with enabled module directories.` only when it could place the entries. After a warning it still exits with `0`, so scripts that run it after each module change do not fail.
 
@@ -132,4 +132,4 @@ Status `98` happens only when decoding the statuses file fails, in two cases:
 - The file is empty or holds only whitespace. `FileActivator` treats that as no statuses and boots, but the command's JSON decode fails.
 - The file holds invalid JSON and the active activator is not `FileActivator`. The command still reads the file named by `modules.activators.file.statuses-file`, and nothing else reads it at boot.
 
-With a custom activator and a valid statuses file, the command succeeds and exits with `0`. When `FileActivator` is active and the file holds non-empty invalid JSON, the command never runs and never returns `98`: the activator throws [`InvalidJsonException`](/laravel-modules/reference/api/exceptions/#invalidjsonexception) while the application boots, and `artisan` exits with status `1`.
+With a custom activator and a valid statuses file, the command exits with `0`. With `FileActivator` and non-empty invalid JSON, the command never runs: `FileActivator` throws [`InvalidJsonException`](/laravel-modules/reference/api/exceptions/#invalidjsonexception) during boot and `artisan` exits with `1`.

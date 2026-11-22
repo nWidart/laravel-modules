@@ -3,7 +3,7 @@ title: Enable and disable modules
 description: Switch modules on and off with module:enable and module:disable, or from PHP code.
 ---
 
-To turn a module on or off, change its status. A disabled module stays on disk, but the package does not register its service providers, so its routes are gone.
+Change a module's status to turn it on or off. A disabled module stays on disk, but the package does not register its service providers or routes.
 
 ## Disable a module
 
@@ -11,7 +11,7 @@ To turn a module on or off, change its status. A disabled module stays on disk, 
 php artisan module:disable Blog
 ```
 
-The command prints the previous status: `Disabling Blog Module, old status: Enabled`.
+The command prints `Disabling Blog Module, old status: Enabled`.
 
 ## Enable a module
 
@@ -21,20 +21,14 @@ php artisan module:enable Blog
 
 ## Change several modules
 
-To change several modules, list the names. To change every module, use `--all`.
+Pass multiple names, or use `--all` to target every module:
 
 ```bash
 php artisan module:disable Blog Shop
 php artisan module:enable --all
 ```
 
-An unknown name stops the command before it changes any module. The command prints one error line and exits with status 1, with no stack trace:
-
-```text
-ERROR  Module [Nope] does not exist.
-```
-
-With several unknown names, the line is `Modules [Nope, Typo] do not exist.`
+If any name does not exist, the command stops before changing anything. It prints an error (such as `ERROR  Module [Nope] does not exist.`) and exits with status `1`.
 
 ## Change the status from PHP code
 
@@ -45,13 +39,15 @@ Module::disable('Blog');
 Module::findOrFail('Blog')->enable();
 ```
 
-`Module::isEnabled('Blog')` returns the current status.
+Check the current status with `Module::isEnabled('Blog')`.
 
-A change applies from the next request or Artisan run: the package registers the providers of enabled modules when the application boots.
+Status changes take effect on the next HTTP request or Artisan run, because module providers register during boot.
 
 ## Where the status is stored
 
-The default activator writes the statuses to `modules_statuses.json` in the application root. A module with no entry in that file counts as disabled. This includes a module the package finds by scanning an extra location or `vendor/`: it stays disabled until you enable it. See [Load modules from extra locations](/laravel-modules/guides/modules/scan-extra-locations/). To store the status somewhere else, see [Store module status with a custom activator](/laravel-modules/guides/customise/custom-activator/).
+The default activator writes statuses to `modules_statuses.json` in the application root. Any module missing from that file counts as disabled, including modules discovered from extra scan paths or `vendor/` (see [Load modules from extra locations](/laravel-modules/guides/modules/scan-extra-locations/)).
+
+To store statuses elsewhere, see [Store module status with a custom activator](/laravel-modules/guides/customise/custom-activator/).
 
 ## Check the result
 
@@ -59,7 +55,7 @@ The default activator writes the statuses to `modules_statuses.json` in the appl
 php artisan module:list
 ```
 
-The module shows `[Disabled]` or `[Enabled]`. To list the enabled modules only, add `--only=enabled`. To see the effect of a web module, run `php artisan route:list --name=blog`: it lists no route while `Blog` is disabled.
+Each module shows `[Enabled]` or `[Disabled]`. Add `--only=enabled` to list enabled modules only. Run `php artisan route:list --name=blog` to confirm routes disappear while `Blog` is disabled.
 
 ## Related
 

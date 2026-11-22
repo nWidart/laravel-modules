@@ -39,7 +39,7 @@ Each interface has the same layout: what it is and how the package uses it, then
 
 ### ActivatorInterface
 
-`Nwidart\Modules\Contracts\ActivatorInterface` stores the enabled or disabled status of the modules. The container binds it as a singleton. The binding selects an activator with `modules.activator`, reads its class from `modules.activators.<modules.activator>.class` and constructs it with `new $class($app)`: the constructor receives the container. See [Configuration](/laravel-modules/reference/configuration/#activators).
+`Nwidart\Modules\Contracts\ActivatorInterface` stores the enabled or disabled status of modules. The container binds it as a singleton. It selects the activator from `modules.activator`, reads `modules.activators.<name>.class`, and instantiates `new $class($app)`. See [Configuration](/laravel-modules/reference/configuration/#activators).
 
 | Signature | Returns | Description |
 | --- | --- | --- |
@@ -61,19 +61,19 @@ Each interface has the same layout: what it is and how the package uses it, then
 
 A [`BaseCommand`](#basecommand) that implements it:
 
-- has the option `--force`, without a shortcut;
-- runs two checks after it validated the module names, before any action: the prohibition check, then the confirmation. A failed check ends the command with exit status `1`, and no action runs;
-- prohibition check: when the command is prohibited, it prints `This command is prohibited from running in this environment.`. `--force` does not lift the prohibition;
-- confirmation: Laravel's `confirmToProceed()` prints the alert `getConfirmableLabel()` (default `Application In Production`) and asks `Are you sure you want to run this command?`. The default answer is no. `--force` skips the question. The question applies when `getConfirmableCallback()` returns `true`. With the default `null`, it applies in the `production` environment only. Without interactive input, the answer is the default: the command prints `Command cancelled.`.
+- has the `--force` option, without a shortcut;
+- runs the prohibition check, then confirmation, after module validation and before any action. Either failure exits with `1` and runs no action;
+- prohibition check: prints `This command is prohibited from running in this environment.` when prohibited. `--force` does not lift it;
+- confirmation: Laravel's `confirmToProceed()` displays `getConfirmableLabel()` (default `Application In Production`) and asks `Are you sure you want to run this command?` (default no). `--force` skips it. It runs when `getConfirmableCallback()` returns `true`, or in `production` when `null`. Without interactive input, the command prints `Command cancelled.` and exits with `1`.
 
 | Command | Confirmation applies | Prohibition applies |
 | --- | --- | --- |
-| `module:migrate-fresh`, `module:migrate-refresh`, `module:migrate-reset`, `module:migrate-rollback` | In the `production` environment | After `Module::prohibitDestructiveCommands()` or its own `prohibit()` |
-| `module:delete` | In every environment: its callback returns `true`, and its label is `Warning: Do you want to remove the module?` | After `Module::prohibitDestructiveCommands()` or its own `prohibit()` |
+| `module:migrate-fresh`, `module:migrate-refresh`, `module:migrate-reset`, `module:migrate-rollback` | In `production` | After `Module::prohibitDestructiveCommands()` or its own `prohibit()` |
+| `module:delete` | In every environment (`true` callback; label `Warning: Do you want to remove the module?`) | After `Module::prohibitDestructiveCommands()` or its own `prohibit()` |
 
-`Module::prohibitDestructiveCommands()` is the package counterpart of Laravel's `DB::prohibitDestructiveCommands()`. It calls the static `prohibit()` method of the `Illuminate\Console\Prohibitable` trait on the five commands in the table above (see [Destructive commands](/laravel-modules/reference/api/repository/#destructive-commands)). Each of the five commands uses the trait itself, so each has its own flag: `MigrateFreshCommand::prohibit()` prohibits only `module:migrate-fresh`.
+`Module::prohibitDestructiveCommands()` is the package counterpart of Laravel's `DB::prohibitDestructiveCommands()`. It calls `prohibit()` from `Illuminate\Console\Prohibitable` on the five commands above. See [Destructive commands](/laravel-modules/reference/api/repository/#destructive-commands). Each command uses the trait directly and keeps its own flag: `MigrateFreshCommand::prohibit()` prohibits only `module:migrate-fresh`.
 
-`BaseCommand` also uses the trait. A third-party command that extends `BaseCommand`, implements `ConfirmableCommand` and does not use the trait itself shares the `BaseCommand` flag. `BaseCommand::prohibit()` or the command's own `::prohibit()` prohibits it. `Module::prohibitDestructiveCommands()` does not, and `BaseCommand::prohibit()` does not prohibit the five package commands. Commands that are not confirmable never run the check.
+`BaseCommand` also uses `Prohibitable`. A third-party command extending `BaseCommand` and implementing `ConfirmableCommand` without its own trait shares the `BaseCommand` flag. `BaseCommand::prohibit()` or the command's `prohibit()` prohibits it. `Module::prohibitDestructiveCommands()` does not affect third-party commands, and `BaseCommand::prohibit()` does not affect the five package commands. Non-confirmable commands skip the check.
 
 ### PublisherInterface
 
@@ -95,47 +95,50 @@ A [`BaseCommand`](#basecommand) that implements it:
 
 ### ModuleServiceProvider
 
-`Nwidart\Modules\Support\ModuleServiceProvider` is the base class of the main provider of a module. Its properties, methods and what it registers (config, views, translations, migrations, commands, schedules, sub-providers and publish tags) are on [Module service provider](/laravel-modules/reference/api/module-service-provider/).
+`Nwidart\Modules\Support\ModuleServiceProvider` is the base class for a module's main provider. See [Module service provider](/laravel-modules/reference/api/module-service-provider/) for its properties, methods, and registered resources.
 
 ### BaseCommand
 
-`Nwidart\Modules\Commands\BaseCommand` extends `Illuminate\Console\Command` and implements `PromptsForMissingInput`. It is the base class of the commands that run an action for each selected module. It adds the variadic `module` argument and the `--all` (`-a`) option, and runs `executeAction()` once for each module. For the behaviour, see [Shared behaviour](/laravel-modules/reference/commands/module-management/#shared-behaviour).
+`Nwidart\Modules\Commands\BaseCommand` extends `Illuminate\Console\Command` and implements `PromptsForMissingInput`. It adds the variadic `module` argument and `--all` (`-a`) option, then runs `executeAction()` for each selected module. See [Shared behaviour](/laravel-modules/reference/commands/module-management/#shared-behaviour).
 
 | Signature | Description |
 | --- | --- |
-| `const ALL = 'All'` | The label of the first entry of the module prompt. |
-| `abstract executeAction($name)` | Public. Runs the action for one module name. Return `false` or a non-zero integer, or call `markAsFailed()`, to fail the run. The other modules still run. |
-| `getInfo(): ?string` | Public. A line printed once before the actions. Default `null`. |
-| `getConfirmableLabel(): ?string` | Public. The label of the production confirmation. Default `Application In Production`. Read only when the command implements `ConfirmableCommand`. |
-| `getConfirmableCallback(): \Closure\|bool\|null` | Public. The callback that decides whether the confirmation applies. Default `null`. |
-| `handle()` | Public. Checks the input, validates the module names, runs the actions and returns the exit code (`0`, or `1` after a failure or an unknown module name). |
-| `hasModulesToRun(): bool` | Protected, from [`ValidatesModuleArgument`](#validatesmoduleargument). `true` when a module or `--all` was given. Otherwise prints `No module given. Pass a module name or --all.` and returns `false`. |
-| `validateModules(): bool` | Protected, from [`ValidatesModuleArgument`](#validatesmoduleargument). `true` when every given module exists. Otherwise prints `Module [<name>] does not exist.` (or `Modules [<names>] do not exist.`) and returns `false`; `handle()` then returns `1` and runs no action. |
+| `const ALL = 'All'` | Label of the first entry in the interactive module prompt. |
+| `abstract executeAction($name)` | Public. Runs the action for one module. Return `false` or a non-zero integer, or call `markAsFailed()`, to fail the run. Remaining modules still run. |
+| `getInfo(): ?string` | Public. Optional info line printed once before actions run. Default `null`. |
+| `getConfirmableLabel(): ?string` | Public. Confirmation alert label. Default `Application In Production`. Used only with `ConfirmableCommand`. |
+| `getConfirmableCallback(): \Closure\|bool\|null` | Public. Decides whether confirmation runs. Default `null`. |
+| `handle()` | Public. Validates input and modules, checks `canProceed()`, runs `executeModules()`, and returns `0` or `1`. |
+| `hasModulesToRun(): bool` | Protected, from [`ValidatesModuleArgument`](#validatesmoduleargument). Returns `true` if a module or `--all` was given; otherwise prints an error and returns `false`. |
+| `validateModules(): bool` | Protected, from [`ValidatesModuleArgument`](#validatesmoduleargument). Returns `true` if every named module exists; otherwise prints the missing names and returns `false`. |
+| `canProceed(): bool` | Protected. Returns `true` for non-confirmable commands. For `ConfirmableCommand`, verifies `! $this->isProhibited()` and `confirmToProceed()`. |
+| `executeModules(): void` | Protected. Prints `getInfo()` when set, runs `executeAction()` for each module, and marks failures. |
 | `markAsFailed(): void` | Protected. Marks the run as failed. |
-| `hasFailures(): bool` | Protected. `true` when an action failed during this run. |
-| `getModuleModel(Module\|string $name)` | Protected. The module for a name. Throws `ModuleNotFoundException` for an unknown name. |
-| `getModuleNames(InputInterface $input): array` | Protected. The names that `--all` and the `All` choice of the prompt stand for: every module, or, for a command with a `--direction` option, the enabled modules ordered by priority in that direction. `MigrateRefreshCommand` overrides it with `getEnabledModuleNames('asc')`. |
-| `getEnabledModuleNames(string $direction = 'asc'): array` | Protected. The names of the enabled modules, ordered by `priority` in the given direction. |
-| `moduleRepository()` | Protected. The repository, from [`InteractsWithModuleRepository`](#traits). |
+| `hasFailures(): bool` | Protected. Returns `true` when an action failed during this run. |
+| `getModuleModel(Module\|string $name)` | Protected. Returns the `Module` for a name, or throws `ModuleNotFoundException`. |
+| `getModuleNames(InputInterface $input): array` | Protected. Returns module names for `--all` and the `All` prompt choice: every module, or priority-ordered enabled modules when `--direction` exists. `MigrateRefreshCommand` overrides this with `getEnabledModuleNames('asc')`. |
+| `getEnabledModuleNames(string $direction = 'asc'): array` | Protected. Returns enabled module names ordered by `priority` in the given direction. |
+| `moduleRepository()` | Protected. Returns the repository, from [`InteractsWithModuleRepository`](#interactswithmodulerepository). |
 
 The package registers the classes of `modules.commands` (see [Configuration](/laravel-modules/reference/configuration/)). A module provider registers the classes of its `$commands` property.
 
 ### GeneratorCommand
 
-`Nwidart\Modules\Commands\Make\GeneratorCommand` extends `Illuminate\Console\Command` and is the base class of the `module:make-*` generators. It uses `InteractsWithModuleRepository` and `PathNamespace`. Its constructor adds the option `--force`, with the shortcut `-f` when no other option uses it, unless the command declares `--force` itself.
+`Nwidart\Modules\Commands\Make\GeneratorCommand` extends `Illuminate\Console\Command` and is the base class for `module:make-*` generators. It uses `InteractsWithModuleRepository` and `PathNamespace`. Its constructor adds `--force` (with `-f` if unused) unless the command defines `--force` itself.
 
 | Signature | Description |
 | --- | --- |
-| `$argumentName` | Protected property. The name of the argument that holds the class name. The default is an empty string, which turns off the name check. |
-| `abstract getTemplateContents()` | Protected. Returns the content of the file, usually `Stub::create('/x.stub', [...])->render()`. |
-| `abstract getDestinationFilePath()` | Protected. Returns the path of the file. |
-| `handle(): int` | Public. Validates the name, creates the folder, writes the file through `FileGenerator`, and returns `0`. It prints an error and returns `1` for an invalid name or an existing file without `--force`. |
-| `validateNameArgument(): ?string` | Protected. Returns an error message for an empty name, an absolute path or a path with a `..` segment (also a segment that becomes `..` once whitespace, hyphens and underscores are removed), otherwise `null`. |
-| `getClass()` | Public. The class name: `class_basename()` of the name argument. |
-| `getDefaultNamespace(): string` | Public. The namespace part below the module namespace. Default an empty string. |
-| `getClassNamespace($module)` | Public. The full namespace: the module namespace, `getDefaultNamespace()` and the folders in the name argument. |
-| `module(?string $name = null): Module` | Public. The module for the name, or for `getModuleName()` when `$name` is `null`. |
-| `getModuleName()` | Not defined by the class. Provided by [`ModuleCommandTrait`](#traits), which most generators use. |
+| `$argumentName` | Protected property. Argument name holding the class name. Empty by default, which disables name validation. |
+| `abstract getTemplateContents()` | Protected. Returns file contents, usually via `Stub::create('/x.stub', [...])->render()`. |
+| `abstract getDestinationFilePath()` | Protected. Returns the destination file path. |
+| `handle(): int` | Public. Validates the name and module, creates missing directories, writes via `FileGenerator`, and returns `0`. Prints an error and returns `1` on validation or overwrite failure. |
+| `validateNameArgument(): ?string` | Protected. Rejects empty names, absolute paths, and `..` segments (including segments that reduce to `..` after stripping whitespace, hyphens, and underscores). Returns an error string or `null`. |
+| `validateModuleArgument(): ?string` | Protected. Checks the `module` argument or `module:use` fallback. Returns an error message when missing or unknown, otherwise `null`. |
+| `getClass()` | Public. Returns `class_basename()` of the name argument. |
+| `getDefaultNamespace(): string` | Public. Namespace part below the module namespace. Default `''`. |
+| `getClassNamespace($module)` | Public. Full namespace combining the module namespace, `getDefaultNamespace()`, and any folders in the name argument. |
+| `module(?string $name = null): Module` | Public. Returns the `Module` for `$name`, or for `getModuleName()` when `null`. |
+| `getModuleName()` | Not defined on this class. Provided by [`ModuleCommandTrait`](#modulecommandtrait), which most generators use. |
 
 The path and namespace of a generated class come from `modules.paths.generator.<key>`, read with `Support\Config\GenerateConfigReader`.
 
@@ -204,13 +207,22 @@ Path and namespace helpers. They build the class namespaces of the generators fr
 
 ### ValidatesModuleArgument
 
-Checks the `module` argument and the `--all` option before a command runs. `BaseCommand` and `module:prune` use it. The command needs an array `module` argument, an `--all` option and `InteractsWithModuleRepository`.
+Checks the `module` argument and `--all` option before a command runs. `BaseCommand` and `module:prune` use it. The command needs an array `module` argument, an `--all` option, and `InteractsWithModuleRepository`.
 
 | Signature | Returns | Description |
 | --- | --- | --- |
 | `hasModulesToRun()` | `bool` | Protected. `true` when `--all` or at least one module name is given. Otherwise prints `No module given. Pass a module name or --all.` and returns `false`. |
 | `validateModules()` | `bool` | Protected. `true` when every module name of the argument exists. Otherwise prints `Module [<name>] does not exist.` (or `Modules [<names>] do not exist.`) and returns `false`. |
 | `moduleNamesToValidate()` | `array` | Protected. The names that `validateModules()` checks. Default: the `module` argument. |
+
+### ResolvesInertiaFrontend
+
+Resolves the Inertia frontend from `--vue`, `--react`, and `--svelte`, falling back to `modules.inertia.frontend`. Used by Inertia generator and publish commands.
+
+| Signature | Returns | Description |
+| --- | --- | --- |
+| `getInertiaFrontend()` | `string` | Protected. Returns the passed framework option (`vue`, `react`, or `svelte`), or `modules.inertia.frontend` (default `'vue'`). |
+| `reportConflictingInertiaFrontends()` | `bool` | Protected. Prints an error and returns `true` when more than one framework option is passed; otherwise returns `false`. |
 
 ### MigrationLoaderTrait
 

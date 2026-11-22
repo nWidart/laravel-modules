@@ -5,13 +5,13 @@ description: Turn a module into a Composer package, and load it from the vendor 
 
 import { Steps } from '@astrojs/starlight/components';
 
-At the end, the `Blog` module is a Composer package. Another application installs it with Composer, and the package loads it from `vendor/acme/blog`. Prerequisites: a `Blog` module in `Modules/Blog`, and a Git repository host. The examples use the package name `acme/blog`.
+At the end, the `Blog` module is published as a Composer package (`acme/blog`) and loaded from `vendor/acme/blog` in another application. Prerequisites: a `Blog` module in `Modules/Blog` and a Git host.
 
 ## Prepare the package
 
 <Steps>
 
-1. Make the module folder the root of a Git repository. The folder already holds `module.json` and `composer.json` at its root, which is what the package looks for.
+1. Move the module into its own Git repository. The folder already has `module.json` and `composer.json` at its root.
 
    ```bash
    cp -R Modules/Blog ../blog
@@ -19,7 +19,7 @@ At the end, the `Blog` module is a Composer package. Another application install
    git init
    ```
 
-2. Set the package name in `composer.json`. `module:make` writes `<composer.vendor>/<lower case module name>`, with `nwidart` as the default vendor.
+2. Set the package name in `composer.json`. `module:make` defaults to `<composer.vendor>/<lowercase name>`.
 
    ```json title="composer.json"
    {
@@ -28,7 +28,7 @@ At the end, the `Blog` module is a Composer package. Another application install
    }
    ```
 
-   Keep the `autoload` and `autoload-dev` entries as generated. Composer uses them to load the module classes from `vendor/acme/blog/app`.
+   Keep the generated `autoload` and `autoload-dev` entries so Composer loads the classes from `vendor/acme/blog/app`:
 
    ```json title="composer.json"
    "autoload": {
@@ -40,9 +40,9 @@ At the end, the `Blog` module is a Composer package. Another application install
    }
    ```
 
-3. List the packages the module needs in `require` of the same file. `module:update` and Composer both read it.
+3. Declare any package dependencies under `require` in the same `composer.json`. Both Composer and `module:update` read it.
 
-4. Commit and tag a version. Composer reads the version from the tag.
+4. Commit, tag, and push a release.
 
    ```bash
    git add .
@@ -51,7 +51,7 @@ At the end, the `Blog` module is a Composer package. Another application install
    git push origin HEAD --tags
    ```
 
-5. Make the package available. Submit the repository to Packagist, or, for a private repository, add it to the `composer.json` of each application that installs the module:
+5. Publish the repository on Packagist, or register a private VCS repository in each consuming application:
 
    ```bash
    composer config repositories.acme-blog vcs https://github.com/acme/blog
@@ -61,17 +61,17 @@ At the end, the `Blog` module is a Composer package. Another application install
 
 ## Load the package in an application
 
-The package does not scan `vendor/` by default. Turn scanning on in the application.
+The package does not scan `vendor/` by default. Enable scanning in the consuming application.
 
 <Steps>
 
-1. Publish the configuration, if you have not yet.
+1. Publish `config/modules.php` if you have not already.
 
    ```bash
    php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
    ```
 
-2. Enable the scan.
+2. Enable scanning in `config/modules.php`.
 
    ```php title="config/modules.php"
    'scan' => [
@@ -82,15 +82,15 @@ The package does not scan `vendor/` by default. Turn scanning on in the applicat
    ],
    ```
 
-   The entry already ends with `/*`, so the package reads `vendor/*/*/module.json`, for example `vendor/acme/blog/module.json`. To avoid reading every package in `vendor/`, use `base_path('vendor/acme/*')`. An entry without a trailing `/*` gets one added: see [Scan extra locations](/laravel-modules/guides/modules/scan-extra-locations/).
+   Use `base_path('vendor/acme/*')` to narrow the scan to your own vendor folder. See [Load modules from extra locations](/laravel-modules/guides/modules/scan-extra-locations/) for path matching rules.
 
-3. Install the package. Remove the original `Modules/Blog` folder from the application first, if it exists.
+3. Remove any local `Modules/Blog` folder first, then install the package.
 
    ```bash
    composer require acme/blog:^1.0
    ```
 
-4. Enable the module. A module that the package finds by scanning has no entry in `modules_statuses.json`, and a module without an entry is disabled. The status is stored in the application, not in the package. If `modules_statuses.json` still has an entry for `Blog` from the removed `Modules/Blog`, that entry applies and the vendor module is already enabled.
+4. Enable the module. Scanned modules start disabled until listed in `modules_statuses.json` (unless an earlier entry for `Blog` already exists there).
 
    ```bash
    php artisan module:enable Blog
@@ -98,7 +98,7 @@ The package does not scan `vendor/` by default. Turn scanning on in the applicat
 
 </Steps>
 
-To release a new version, commit the change, tag it (`v1.0.1`) and push. Run `composer update acme/blog` in the application to get it.
+To ship updates later, tag and push a new version (for example `v1.0.1`), then run `composer update acme/blog` in the application.
 
 ### Check the result
 
@@ -106,12 +106,12 @@ To release a new version, commit the change, tag it (`v1.0.1`) and push. Run `co
 php artisan module:list
 ```
 
-The list shows `Blog` as enabled, with a path under `vendor/acme/blog`.
+`Blog` appears as enabled with its path under `vendor/acme/blog`.
 
 ## Related
 
-- [`scan`](/laravel-modules/reference/configuration/)
+- [`scan`](/laravel-modules/reference/configuration/#scan)
 - [`module.json` and the module `composer.json`](/laravel-modules/reference/module-json/)
-- [`module:enable`](/laravel-modules/reference/commands/module-management/)
+- [`module:enable`](/laravel-modules/reference/commands/module-management/#moduleenable)
 - [Install and update modules](/laravel-modules/guides/distribute/install-modules/)
-- [Scan extra locations](/laravel-modules/guides/modules/scan-extra-locations/)
+- [Load modules from extra locations](/laravel-modules/guides/modules/scan-extra-locations/)

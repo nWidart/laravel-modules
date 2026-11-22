@@ -69,11 +69,11 @@ Enabling and disabling fire the module events. See [Events](/laravel-modules/ref
 | `getPath()` | `string` | The folder that holds the modules: the `$path` given to the constructor, else `modules.paths.modules`, else `base_path('Modules')`. |
 | `getPaths()` | `array<int, string>` | The extra module folders added with `addLocation()`. Not in the interface. |
 | `addLocation(string $path)` | `static` | Adds a module folder and calls `resetModules()`. Not in the interface. |
-| `getScanPaths()` | `array<int, string>` | Every folder the repository scans, each ending in `/*`: the extra locations, then `getPath()`, then `modules.scan.paths` when `modules.scan.enabled` is `true`. |
-| `getModulePath(string $moduleName)` | `string` | The module folder, with a trailing `/`. For a module that does not exist, the path it would have: `getPath()`, the studly-case name and `/`. Never throws. |
-| `assetPath(string $module)` | `string` | `modules.paths.assets`, `/` and the name as given. |
+| `getScanPaths()` | `array<int, string>` | Every scanned folder, each ending in `/*`: extra locations, `getPath()`, and `modules.scan.paths` (when `modules.scan.enabled` is `true`). |
+| `getModulePath(string $moduleName)` | `string` | The module folder, with a trailing `/`. For a missing module, returns `<getPath()>/<StudlyName>/`. Never throws. |
+| `assetPath(string $module)` | `string` | `modules.paths.assets`, `/`, and the module name as given. |
 | `getAssetsPath()` | `string` | `modules.paths.assets`. Not in the interface. |
-| `asset(string $asset)` | `string` | The URL of a module asset, from the form `module:path`. The result starts with `//`: the scheme `http://` or `https://` is replaced. Throws [`InvalidAssetPath`](/laravel-modules/reference/api/exceptions/#invalidassetpath) when `$asset` has no `:`. The text before the first `:` is the module name. Everything after it is the path, and the path may contain `:`. Not in the interface. |
+| `asset(string $asset)` | `string` | Protocol-relative URL (`//...`) for `module:path`. Throws [`InvalidAssetPath`](/laravel-modules/reference/api/exceptions/#invalidassetpath) without `:`. Text before the first `:` is the module name; the rest is the path (which may contain `:`). Not in the interface. |
 | `getFiles()` | `Illuminate\Filesystem\Filesystem` | The filesystem instance. |
 | `config(string $key, mixed $default = null)` | `mixed` | `config('modules.'.$key, $default)`. |
 
@@ -98,13 +98,13 @@ Module::asset('blog:css/app.css'); // //example.test/modules/blog/css/app.css
 | --- | --- | --- |
 | `delete(string $name)` | `bool` | Deletes the module with `Module::delete()`, then calls `resetModules()`. Returns the result of the directory removal. Throws `ModuleNotFoundException` for an unknown module. |
 | `install(string $name, string $version = '', string $type = 'composer', bool $subtree = false)` | `Symfony\Component\Process\Process` | Runs the installer and returns the finished process. An empty `$version` installs `dev-master` with `composer` and `master` with `git`. Not in the interface. |
-| `update(string $module)` | `void` | Does what [`module:update`](/laravel-modules/reference/commands/module-management/#moduleupdate) does for one module: runs `composer require` for the `require` packages of the module `composer.json` and `composer require --dev` for its `require-dev` packages, then merges its `scripts` into the application `composer.json`. It does not run `composer update`. Not in the interface. |
+| `update(string $module)` | `void` | Runs [`module:update`](/laravel-modules/reference/commands/module-management/#moduleupdate) for one module: `composer require` for `require`, `composer require --dev` for `require-dev`, and merges `scripts` into the root `composer.json`. Does not run `composer update`. Not in the interface. |
 
 ## Stubs and cache
 
 | Signature | Returns | Description |
 | --- | --- | --- |
-| `getStubPath()` | `string\|null` | Deprecated, removed in v14. The path set with `setStubPath()`. Otherwise `modules.stubs.path` when `modules.stubs.enabled` is `true`. Otherwise `null`. No code of the package reads this value. The generators read the base path set by `Stub::setBasePath()`. See [Stubs and placeholders](/laravel-modules/reference/stubs/). |
+| `getStubPath()` | `string\|null` | Deprecated, removed in v14. Returns the `setStubPath()` value, else `modules.stubs.path` when `modules.stubs.enabled` is `true`, else `null`. Unused by the package; generators use `Stub::setBasePath()`. See [Stubs and placeholders](/laravel-modules/reference/stubs/). |
 | `setStubPath(string $stubPath)` | `static` | Deprecated, removed in v14. Stores the stub path for `getStubPath()`. |
 | `resetModules()` | `static` | Forgets the scan result. The next call scans the `module.json` files again. Not in the interface. |
 
@@ -165,7 +165,7 @@ use Nwidart\Modules\Commands\Database\MigrateFreshCommand;
 MigrateFreshCommand::prohibit($this->app->isProduction());
 ```
 
-`module:migrate-refresh` calls `module:migrate-reset`. If only `MigrateResetCommand` is prohibited, `module:migrate-refresh` starts, the inner reset prints the prohibition message, and the refresh stops with exit status `1` before it migrates or seeds. Nothing changes in the database.
+`module:migrate-refresh` calls `module:migrate-reset`. If only `MigrateResetCommand` is prohibited, the inner reset prints the prohibition message and refresh exits with `1`. Nothing changes in the database.
 
 ## Collection
 

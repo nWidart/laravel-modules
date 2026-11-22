@@ -3,7 +3,7 @@ title: Module service provider
 description: The Support\ModuleServiceProvider base class of a module provider, its properties and methods, and what it registers for a module.
 ---
 
-`Nwidart\Modules\Support\ModuleServiceProvider` extends `Illuminate\Support\ServiceProvider` and uses [`PathNamespace`](/laravel-modules/reference/api/contracts/#traits). `module:make` generates the main provider of a module from the stub `scaffold/provider`, and that provider extends this class.
+`Nwidart\Modules\Support\ModuleServiceProvider` extends `Illuminate\Support\ServiceProvider` and uses [`PathNamespace`](/laravel-modules/reference/api/contracts/#pathnamespace). `module:make` generates the main provider of a module from `scaffold/provider`, extending this class.
 
 ## Properties
 
@@ -21,15 +21,15 @@ The constructor throws `LogicException` with the message `Module service provide
 
 | Signature | Description |
 | --- | --- |
-| `boot(): void` | Public. Calls, in order: `registerCommands()`, `registerCommandSchedules()`, `registerTranslations()`, `registerViews()`, `registerHealthIndicators()`, then `loadMigrationsFrom()` with the module migration folder (`modules.paths.generator.migration.path`, `database/migrations` when unset). It also calls `registerConfig()` when `register()` did not run through this class, see [When the config is available](#when-the-config-is-available). |
-| `register(): void` | Public. Calls `registerConfig()`, then registers each class of `$providers` with `$this->app->register()`. |
-| `registerCommands(): void` | Protected. Registers the classes of `$commands`. |
-| `registerCommandSchedules(): void` | Protected. Does nothing unless the class overrides `configureSchedules()`. Otherwise it waits until the application has booted and calls `configureSchedules()` each time a `Schedule` instance is resolved. |
-| `configureSchedules(Schedule $schedule): void` | Protected. Empty. `registerCommandSchedules()` calls it with the `Schedule`, so a provider that overrides it defines the schedules of the module. |
+| `boot(): void` | Public. Runs `registerCommands()`, `registerCommandSchedules()`, `registerTranslations()`, `registerViews()`, and `registerHealthIndicators()`, then calls `loadMigrationsFrom()` with the module migration folder (default `database/migrations`). Also calls `registerConfig()` when a subclass skipped `parent::register()`. See [When the config is available](#when-the-config-is-available). |
+| `register(): void` | Public. Calls `registerConfig()`, then registers each class in `$providers` via `$this->app->register()`. |
+| `registerCommands(): void` | Protected. Registers the classes in `$commands`. |
+| `registerCommandSchedules(): void` | Protected. Skips registration unless `configureSchedules()` is overridden. When overridden, waits for `booted()` and calls `configureSchedules()` whenever `Schedule` resolves. |
+| `configureSchedules(Schedule $schedule): void` | Protected. Empty hook called by `registerCommandSchedules()` with the resolved `Schedule`. |
 | `registerTranslations(): void` | Protected. See [Translations](#translations). |
 | `registerConfig(): void` | Protected. See [Config files](#config-files). |
 | `registerViews(): void` | Protected. See [Views and Blade components](#views-and-blade-components). |
-| `registerHealthIndicators(): void` | Protected. Registers each entry of `$healthIndicators` with the actuator as `module:<nameLower>:<key>`. See [Report module health with the actuator](/laravel-modules/guides/production/health-checks/). |
+| `registerHealthIndicators(): void` | Protected. Registers `$healthIndicators` with the actuator as `module:<nameLower>:<key>`. See [Health indicators](#health-indicators). |
 
 ```php
 class BlogServiceProvider extends ModuleServiceProvider
@@ -69,15 +69,15 @@ class BlogServiceProvider extends ModuleServiceProvider
 | File | Config key |
 | --- | --- |
 | `config.php` | `<nameLower>` |
-| any other file, for example `settings.php` or `nested/options.php` | `<nameLower>.<path with dots, without .php>`, with adjacent repeated segments removed: `blog.php` gives `blog`, `blog/settings.php` gives `blog.settings` |
+| other files (e.g. `settings.php`, `nested/options.php`) | `<nameLower>.<dot path>` without `.php`. Adjacent repeated segments collapse: `blog.php` becomes `blog`, `blog/settings.php` becomes `blog.settings`. |
 
-The provider merges the config in two steps:
+The provider merges config in two steps:
 
-1. It merges the module files together with `array_replace_recursive()`. `config.php` is merged first, then the other files by path. A dedicated file therefore wins over a key of the same name in `config.php`, and a list in a dedicated file replaces the matching list in `config.php` position by position.
-2. It merges the values the application already has under the module key (for example a copy in `config/<nameLower>.php`) over the result. The application values win.
-   - Where the application value and the module value are both associative arrays, they merge key by key, recursively.
-   - Otherwise the application value replaces the module value as a whole. This includes a list (even a shorter one), an empty array `[]`, and a scalar.
-   - Keys the application does not set keep the module value. Keys only the application sets are kept.
+1. Module files merge via `array_replace_recursive()`, starting with `config.php` followed by remaining files sorted by path. Dedicated files override matching keys in `config.php`. Lists in dedicated files replace matching lists position by position.
+2. Application values under the module key (such as a published `config/<nameLower>.php`) merge over the module config and take precedence:
+   - Associative arrays merge recursively, key by key.
+   - Lists, empty arrays `[]`, and scalars replace the module value as a whole.
+   - Keys omitted by the application keep the module value. Keys set only by the application stay.
 
 The module `'tags' => ['a', 'b', 'c']` with the application `'tags' => ['x']` gives `['x']`. With the application `'tags' => []` it gives `[]`. An empty array in the application also clears an associative module value: `'cache' => []` drops the `cache` defaults of the module.
 
@@ -101,7 +101,7 @@ config('blog.posts_per_page'); // 99
 - in the `register()` of providers that register after the module provider;
 - in the `boot()` of every provider, including providers that boot before the module provider.
 
-It is not available in the `register()` of a provider that registers before the module provider, for example a package that Laravel discovers before this one. Read the module config in its `boot()`.
+It is not available in `register()` of a provider that registers earlier, such as a package discovered before this one. Read the module config in `boot()` instead.
 
 A provider that overrides `register()` without calling `parent::register()` keeps working: `boot()` then calls `registerConfig()`. To read the module config while the provider registers, call `parent::register()` before that code.
 
@@ -124,19 +124,23 @@ In the console, the provider registers these publish groups. See [vendor:publish
 
 ### Views and Blade components
 
-`registerViews()` registers the view namespace `<nameLower>` with `loadViewsFrom()`. The folders are searched in this order: the published folders `<view path>/modules/<nameLower>` of each entry of `view.paths` that exists, then the module views folder.
+`registerViews()` registers the view namespace `<nameLower>` via `loadViewsFrom()`. It searches existing `<view path>/modules/<nameLower>` directories from `view.paths` first, then the module views folder.
 
-It also calls `Blade::componentNamespace()` with the namespace `<modules.namespace>\<Name>\View\Components` and the prefix `<nameLower>`. The folder part `View\Components` is fixed. It does not follow the `component-class` generator path.
+It registers the Blade component namespace `<modules.namespace>\<Name>\View\Components` with prefix `<nameLower>` via `callAfterResolving('blade.compiler')`. Booting therefore does not resolve the Blade compiler eagerly. The `View\Components` segment is fixed and ignores `paths.generator.component-class`.
 
 ### Translations
 
-`registerTranslations()` loads the translations under the namespace `<nameLower>`, and the JSON translations, from `lang_path('modules/<nameLower>')` when that folder exists (the destination of `module:publish-translation`), otherwise from the module language folder (`modules.paths.generator.lang.path`).
+`registerTranslations()` loads namespaced (`<nameLower>`) and JSON translations. When `lang_path('modules/<nameLower>')` exists (from `module:publish-translation`), it loads from there; otherwise it loads from `modules.paths.generator.lang.path`.
 
-The key `auto-discover.translations` (default `false`) is a second registration. `LaravelModulesServiceProvider` adds, for each enabled module, the module language folder under the namespace `<nameLower>` and as a JSON path. It never reads `lang_path('modules/<nameLower>')`.
+`auto-discover.translations` (default `false`) adds a second registration in `LaravelModulesServiceProvider`. For each enabled module, it registers the module `lang` folder under `<nameLower>` and as a JSON path. It never reads `lang_path('modules/<nameLower>')`.
 
-- With `false`, a module has translations only when its provider extends `ModuleServiceProvider`.
-- With `true`, a module gets them without such a provider. When both registrations apply, they register the same namespace. The provider registers after the package hook, so the published folder `lang/modules/<nameLower>` wins when it exists.
+- With `false`, translations load only when the module provider extends `ModuleServiceProvider`.
+- With `true`, modules without `ModuleServiceProvider` still get translations. When both run, `ModuleServiceProvider` runs later, so published translations in `lang/modules/<nameLower>` win.
 
 ### Migrations
 
-`boot()` calls `loadMigrationsFrom()` with the module migration folder. Laravel's migrator then includes it in `php artisan migrate`. The key `auto-discover.migrations` (default `true`) registers the same folder from `LaravelModulesServiceProvider`. See [Module migrations and `php artisan migrate`](/laravel-modules/reference/commands/database/#module-migrations-and-php-artisan-migrate) for what each registration and `module:migrate` cover.
+`boot()` calls `loadMigrationsFrom()` with the module migration folder so `php artisan migrate` includes it. `auto-discover.migrations` (default `true`) registers the same folder in `LaravelModulesServiceProvider`. See [Module migrations and `php artisan migrate`](/laravel-modules/reference/commands/database/#module-migrations-and-php-artisan-migrate).
+
+### Health indicators
+
+`registerHealthIndicators()` registers each entry of `$healthIndicators` in `actuator.health.indicators` as `module:<nameLower>:<key>`. Nothing is registered when `nwidart/laravel-actuator` is not installed or `modules.actuator.enabled` is `false`. An indicator already defined by the application under the same name is kept. See [Actuator integration](/laravel-modules/reference/api/actuator/) and [Report module health with the actuator](/laravel-modules/guides/production/health-checks/).

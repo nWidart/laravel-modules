@@ -22,7 +22,7 @@ The name has the form `modules.{lowername}.{event}`. `{lowername}` is the lower-
 | `deleting` | `ModuleEvent::DELETING` | `Module::delete()`, before the status and the folder are removed. This covers `module:delete`, `Repository::delete()` and `module:make --force` on an existing module. | the `Module` | Fired |
 | `deleted` | `ModuleEvent::DELETED` | `Module::delete()`, after the folder is removed. | the `Module` | Fired |
 | `used` | `ModuleEvent::USED` | `Repository::setUsed()`, which `module:use` calls. | the `Module` | Fired |
-| `unused` | `ModuleEvent::UNUSED` | `Repository::forgetUsed()`, which `module:unuse` calls, after it deletes the stored file. Not fired when no module is in use or the stored name matches no module. | the `Module` | Fired |
+| `unused` | `ModuleEvent::UNUSED` | `Repository::forgetUsed()` (`module:unuse`), after deleting the stored file. Skipped if no module is in use or the stored module is missing. | the `Module` | Fired |
 | `register` | `ModuleEvent::REGISTER` | `Module::register()`. | the `Module` | Deprecated. The package never calls `Module::register()`. Removed in version 14. |
 | `boot` | `ModuleEvent::BOOT` | `Module::boot()`. | the `Module` | Deprecated. The package never calls `Module::boot()`. Removed in version 14. |
 
@@ -52,4 +52,4 @@ Event::listen('modules.*.disabled', function (string $event, array $payload) {
 });
 ```
 
-A listener defined in a module is registered with the providers of the module, when the application boots, and only while the module is enabled. A process that enables a module booted before the status changed, so the module's own listener for `enabled` does not exist in that process. In a process that disables a module, the module's own listeners for `disabling` and `disabled` exist, because the module was enabled when the process booted.
+A module's own listeners register at boot only while the module is enabled. When a process enables a module, that module was disabled at boot, so its `enabled` listener does not run in that process. When a process disables a module, the module was enabled at boot, so its `disabling` and `disabled` listeners run.

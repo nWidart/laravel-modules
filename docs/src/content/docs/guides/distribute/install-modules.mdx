@@ -5,15 +5,15 @@ description: Install a module from Composer or Git with module:install, install 
 
 import { Steps } from '@astrojs/starlight/components';
 
-At the end, the `Blog` module (`acme/blog`) is installed in your application and enabled. Prerequisite: the module is published as a package. See [Publish a module as a Composer package](/laravel-modules/guides/distribute/publish-a-module-as-a-package/).
+At the end, the `Blog` module (`acme/blog`) is installed and enabled in your application. Prerequisite: a module published as a package (see [Publish a module as a Composer package](/laravel-modules/guides/distribute/publish-a-module-as-a-package/)).
 
 ## Install from Composer
 
-Composer puts the module in `vendor/`, so the package must scan `vendor/`.
+Composer installs packages into `vendor/`, so enable scanning of `vendor/` first.
 
 <Steps>
 
-1. Enable the scan in `config/modules.php`.
+1. Enable scanning in `config/modules.php`.
 
    ```php title="config/modules.php"
    'scan' => [
@@ -24,15 +24,17 @@ Composer puts the module in `vendor/`, so the package must scan `vendor/`.
    ],
    ```
 
-2. Install the module. The second argument is a Composer version. Without it, the command requires `dev-master`, which fails when the package has no `master` branch: pass a version.
+2. Install the module with a version or constraint.
 
    ```bash
-   php artisan module:install acme/blog 1.2.0
+   php artisan module:install acme/blog ^1.2
    ```
 
-   The command runs `composer require acme/blog:1.2.0`, then `module:update Blog`. It writes the exact version you pass into `composer.json` (`"acme/blog": "1.2.0"`). To allow updates, pass a constraint such as `^1.2`. The last part of the package name, in studly case, must be the module name: `acme/blog` for `Blog`. Otherwise the command prints that it cannot find the module and exits with `1`.
+   The command runs `composer require` and then `module:update`. Pass a version or constraint (such as `1.2.0` or `^1.2`); without one, Composer requires `dev-master`.
 
-3. Enable the module. A module without an entry in `modules_statuses.json` is disabled.
+   The package suffix in StudlyCase must match the module name (`acme/blog` for `Blog`), or `module:install` fails to find the module.
+
+3. Enable the module. Modules without an entry in `modules_statuses.json` start disabled.
 
    ```bash
    php artisan module:enable Blog
@@ -42,21 +44,21 @@ Composer puts the module in `vendor/`, so the package must scan `vendor/`.
 
 ## Install from Git
 
-To clone the module into the modules folder (`Modules/Blog`), pass `--type`.
+Pass `--type` to clone a module into `Modules/Blog` instead of `vendor/`.
 
 <Steps>
 
-1. Install the module.
+1. Install the module from Git.
 
    ```bash
    php artisan module:install acme/blog 1.2.0 --type=github-https
    ```
 
-   The command runs `git clone https://github.com/acme/blog.git Modules/Blog`, checks out `1.2.0` (a branch, tag or commit, `master` by default), then runs `module:update`. The module name is the `name` in the `module.json` of the clone.
+   The command clones the repository, checks out `1.2.0` (a branch, tag, or commit; defaults to `master`), and runs `module:update`.
 
-   `--type` takes `github` (SSH), `github-https`, `gitlab`, `bitbucket`, a repository URL (`https://...` or `file:///...`) or a `user@host` SSH address. A plain local path is rejected with `Unable to resolve a git repository URL`: use `file:///srv/git/blog.git` for a local repository. To install to another folder, add `--path=Modules/Blog`.
+   `--type` accepts `github` (SSH), `github-https`, `gitlab`, `bitbucket`, a repository URL (`https://...` or `file:///...`), or a `user@host` SSH address. Add `--path=Modules/Blog` to choose another destination folder.
 
-2. Regenerate the autoloader, so that the merge plugin reads the `composer.json` of the new module.
+2. Rebuild the autoloader so the merge plugin loads the module's `composer.json`.
 
    ```bash
    composer dump-autoload
@@ -70,19 +72,21 @@ To clone the module into the modules folder (`Modules/Blog`), pass `--type`.
 
 </Steps>
 
-To keep the module code in the history of your application instead of a nested clone, add `--tree`. The application must be a Git repository with at least one commit and no staged or unstaged changes to tracked files. Untracked files are fine. The command checks this before it runs `git` and stops with a message such as `A subtree install (--tree) needs a clean working tree: commit or stash your changes first. Untracked files are fine.` The command adds a Git remote named `Blog` and runs `git subtree add --squash`. The destination must be inside the project.
+To commit the module code into your application's Git history instead of a nested clone, add `--tree`:
 
 ```bash
 php artisan module:install acme/blog 1.2.0 --type=github-https --tree
 ```
 
+`--tree` adds a Git remote and runs `git subtree add --squash`. Your application must be a Git repository with at least one commit and no uncommitted changes to tracked files.
+
 ## Install a set of modules
 
-To install several modules with one command, list them in `modules.json` in the application root.
+List multiple modules in `modules.json` at the application root to install them together.
 
 <Steps>
 
-1. Create the file.
+1. Create `modules.json`.
 
    ```json title="modules.json"
    {
@@ -100,43 +104,45 @@ To install several modules with one command, list them in `modules.json` in the 
    }
    ```
 
-   An entry without `type` installs from Composer. A Git entry may set `path`, the folder it installs into, for example `"path": "Modules/Blog"`. `--path` is for a single module: with more than one entry, the command exits with `1` before any install.
+   Entries without `type` install from Composer. Git entries can set `path` to override the target folder.
 
-2. Run the command without a name.
+2. Run `module:install` without arguments.
 
    ```bash
    php artisan module:install
    ```
 
-   The command installs each entry in order. A failing entry does not stop the next ones, and the command exits with `1`. A bad entry, such as one without `name`, prints one error line with its position in the list and is skipped.
+   The command installs each entry in order. If one entry fails, the remaining entries still run and the command exits with status `1`.
 
 </Steps>
 
+See [`module:install`](/laravel-modules/reference/commands/module-management/#moduleinstall) for all options and error formats.
+
 ## Update a module
 
-To install the Composer packages that a module requires, run `module:update`.
+Run `module:update` to install the Composer dependencies declared by a module.
 
 ```bash
 php artisan module:update Blog
 ```
 
-The command runs `composer require` for the `require` and `require-dev` entries of the module `composer.json`, and merges its `scripts` into the `composer.json` of the application. It also reformats the root `composer.json`: inline arrays become multi-line. Use `--all` for every module. It does not fetch a newer version of the module itself. For a Composer module, run `composer update acme/blog`. For a Git module, pull in its folder.
+This runs `composer require` for the module's `require` and `require-dev` packages and merges its `scripts` into the root `composer.json`. Use `--all` to update every module, or pass `--no-update` to `module:install` to skip this step.
 
-To skip `module:update` during an install, add `--no-update`.
+`module:update` does not upgrade the module package itself. Run `composer update acme/blog` for a Composer module, or run `git pull` inside a Git module's folder.
 
-### Check the result
+## Check the result
 
 ```bash
 php artisan module:list
 ```
 
-The list shows `Blog` as enabled.
+`Blog` appears in the list as enabled.
 
 ## Related
 
 - [`module:install` and `module:update`](/laravel-modules/reference/commands/module-management/#moduleinstall)
 - [`modules.json`](/laravel-modules/reference/module-json/#modulesjson)
-- [`scan`](/laravel-modules/reference/configuration/)
+- [`scan`](/laravel-modules/reference/configuration/#scan)
 - [Enable and disable modules](/laravel-modules/guides/modules/enable-and-disable-modules/)
 - [Load modules from extra locations](/laravel-modules/guides/modules/scan-extra-locations/)
 - [Autoloading and the Composer merge plugin](/laravel-modules/concepts/autoloading/): what the plugin merges from an installed module

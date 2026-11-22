@@ -11,10 +11,10 @@ Keys marked **deprecated** have no effect in version 13 and are removed in versi
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `namespace` | `'Modules'` | Root namespace of the modules. Generators and `ModuleServiceProvider` prefix every class namespace with it, and `module:make` writes it into the `autoload.psr-4` entry of the module `composer.json`. A module class autoloads only when the `composer.json` of the application merges that file: its `extra.merge-plugin.include` glob must match the modules folder (see `paths.modules`). |
-| `vapor_maintenance_mode` | `env('VAPOR_MAINTENANCE_MODE', false)` | When `true`, the providers manifest is placed next to Laravel's config cache file instead of its services cache file. The providers manifest is the cache file `modules.php` (by default `bootstrap/cache/modules.php`) that lists the providers of the enabled modules. |
+| `namespace` | `'Modules'` | Root namespace of the modules. Generators and `ModuleServiceProvider` prefix class namespaces with it. `module:make` writes it to `autoload.psr-4` in the module `composer.json`. The application `composer.json` must merge that file via `extra.merge-plugin.include` (matching `paths.modules`). |
+| `vapor_maintenance_mode` | `env('VAPOR_MAINTENANCE_MODE', false)` | When `true`, places the `modules.php` providers manifest next to Laravel's config cache instead of its services cache (`bootstrap/cache/modules.php` by default). |
 | `activator` | `'file'` | Name of the active activator: a key of `activators`. An unknown name throws `InvalidActivatorClass`. |
-| `commands` | `ConsoleServiceProvider::defaultCommands()` merged with an empty list | A list of Artisan command class names. `ConsoleServiceProvider` registers every class of the list. |
+| `commands` | `ConsoleServiceProvider::defaultCommands()` merged with an empty list | List of Artisan command class names. `ConsoleServiceProvider` registers every class in the list. |
 
 The `commands` value is an array of class names. The default `config/config.php` builds it from the default commands and a `merge()` call that takes the extra class names:
 
@@ -62,16 +62,20 @@ The `commands` value is an array of class names. The default `config/config.php`
 | `scaffold/config` | `STUDLY_NAME` |
 | `composer` | `LOWER_NAME`, `STUDLY_NAME`, `VENDOR`, `AUTHOR_NAME`, `AUTHOR_EMAIL`, `MODULE_NAMESPACE`, `PROVIDER_NAMESPACE`, `APP_FOLDER_NAME` |
 
-The `json` entry has no counterpart in `stubs.files`: `module:make` always writes `module.json`, from the `json` stub, so the file is not a `stubs.files` entry. `module:make` adds `PROVIDER_NAMESPACE` to the `json` and `composer` lists when they lack it. It also adds `APP_FOLDER_NAME` to `composer` and `PLURAL_LOWER_NAME` to `routes/web` and `routes/api`, unless the list maps that name to a class.
+`module:make` always writes `module.json` from the `json` stub, so `json` is not in `stubs.files`. `module:make` adds missing default keys automatically unless mapped to a custom class:
+
+- `PROVIDER_NAMESPACE` to `json` and `composer`.
+- `APP_FOLDER_NAME` to `composer`.
+- `PLURAL_LOWER_NAME` to `routes/web` and `routes/api`.
 
 ## paths
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `paths.modules` | `base_path('Modules')` | Folder that holds the modules. `module:make` writes here. It is always one of the scanned folders. The `extra.merge-plugin.include` glob in the `composer.json` of the application must match it (default `Modules/*/composer.json`), or the module classes do not autoload. See [Installation](/laravel-modules/start-here/installation/), step 2. |
-| `paths.assets` | `public_path('modules')` | Folder where `module:publish` copies the module assets, one sub-folder per module. `module:setup` creates it. |
-| `paths.migration` | `base_path('database/migrations')` | Folder where `module:publish-migration` copies the module migrations. |
-| `paths.app_folder` | `'app/'` | Folder inside each module that holds its classes. The module `composer.json` maps the module namespace to it. `module:make` stops when a class generator path is not inside it. A class generator path is the `path` of a `paths.generator` entry that holds PHP classes: the entries from `actions` to `request` in the table below. An empty string maps the namespace to the module root; the class generator paths must then drop the `app/` prefix and use StudlyCase folders. |
+| `paths.modules` | `base_path('Modules')` | Folder that holds modules. `module:make` writes here, and the repository always scans it. Match it in `extra.merge-plugin.include` (default `Modules/*/composer.json`) so classes autoload. See [Installation](/laravel-modules/start-here/installation/). |
+| `paths.assets` | `public_path('modules')` | Folder where `module:publish` copies module assets, one sub-folder per module. `module:setup` creates it. |
+| `paths.migration` | `base_path('database/migrations')` | Folder where `module:publish-migration` copies module migrations. |
+| `paths.app_folder` | `'app/'` | Folder inside each module that holds its classes. The module `composer.json` maps the module namespace to it. Every class generator path (`actions` through `request` below) must sit inside it, or `module:make` stops. Set `''` to map to the module root, then drop the `app/` prefix and use StudlyCase folders. |
 
 ### paths.generator
 
@@ -147,16 +151,16 @@ Setting `generate` to `false` also skips the `stubs.files` that a key owns:
 | `test-feature` | `tests/Feature` | yes |
 | `test-unit` | `tests/Unit` | yes |
 
-The key `health` is read by the code but is not in `config/config.php`. `module:make-health-indicator` writes to `paths.app_folder` plus `Health` (`app/Health` with the default app folder). To use another folder, set `modules.paths.generator.health` with a `path` and an optional `namespace`. A configured `health` path must be inside `paths.app_folder`, like the other class generator paths, or `module:make` stops.
+The `health` key is not in `config/config.php`, but the code reads it. `module:make-health-indicator` defaults to `paths.app_folder` plus `Health` (`app/Health`). Set `modules.paths.generator.health` with `path` and optional `namespace` to override it. A configured `health` path must stay inside `paths.app_folder`, or `module:make` stops.
 
-The key `event-provider` is read by the code but is not in `config/config.php`. `module:make-event-provider` writes to the `provider` path. `module:make` generates the event provider when an `event-provider` entry has `generate` set to `true`, or, when the entry has no `path`, when `provider` is generated.
+The `event-provider` key is not in `config/config.php`, but the code reads it. `module:make-event-provider` writes to the `provider` path. `module:make` generates `EventServiceProvider` when `event-provider.generate` is `true`, or when `event-provider` has no `path` and `provider.generate` is `true`.
 
 ## auto-discover
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `auto-discover.migrations` | `true` | Register the migration path of every enabled module with Laravel's migrator, so `php artisan migrate` runs module migrations. See [Module migrations and `php artisan migrate`](/laravel-modules/reference/commands/database/#module-migrations-and-php-artisan-migrate). |
-| `auto-discover.translations` | `false` | Register the `lang` path of every enabled module with the translator, under the lower-case module name as namespace, and as a JSON path. Each module provider that extends `ModuleServiceProvider` registers the same namespace in `registerTranslations()`. See [Translations](/laravel-modules/reference/api/module-service-provider/#translations). |
+| `auto-discover.migrations` | `true` | Registers each enabled module's migration path with Laravel's migrator for `php artisan migrate`. See [Module migrations and `php artisan migrate`](/laravel-modules/reference/commands/database/#module-migrations-and-php-artisan-migrate). |
+| `auto-discover.translations` | `false` | Registers each enabled module's `lang` path with the translator under the lower-case module namespace and as a JSON path. `ModuleServiceProvider::registerTranslations()` registers the same namespace. See [Translations](/laravel-modules/reference/api/module-service-provider/#translations). |
 
 ## scan
 
@@ -189,18 +193,18 @@ Values the `composer` stub receives when `module:make` generates a module `compo
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `activators` | `['file' => [...]]` | Activator definitions, keyed by name. The `activator` key selects one. The container reads its class from `activators.<key>.class`, which must implement `Nwidart\Modules\Contracts\ActivatorInterface`, and constructs it with `new $class($app)`: the constructor receives the container. |
+| `activators` | `['file' => [...]]` | Activator definitions, keyed by name and selected via `activator`. Each entry defines a `class` implementing `Nwidart\Modules\Contracts\ActivatorInterface`. The container instantiates it with `new $class($app)`. |
 | `activators.file.class` | `Nwidart\Modules\Activators\FileActivator::class` | Default activator. |
-| `activators.file.statuses-file` | `base_path('modules_statuses.json')` | JSON file where `FileActivator` stores the module statuses. A module missing from this file counts as disabled. `module:update-phpunit-coverage` reads it too. |
+| `activators.file.statuses-file` | `base_path('modules_statuses.json')` | JSON file where `FileActivator` stores module statuses. Missing modules count as disabled. `module:update-phpunit-coverage` reads it too. |
 
 ## inertia
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `inertia.frontend` | `'vue'` | Framework used by `module:make-inertia-page`, `module:make-inertia-component` and `module:publish-inertia` when no `--vue`, `--react` or `--svelte` option is given. The stubs target Inertia v3. Values: `vue`, `react`, `svelte`. |
+| `inertia.frontend` | `'vue'` | Default framework for Inertia commands when no `--vue`, `--react`, or `--svelte` flag is passed. Stubs target Inertia v3. Values: `vue`, `react`, `svelte`. |
 
 ## actuator
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `actuator.enabled` | `true` | When [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) is installed, register the `modules` health indicator and the indicators that modules list in `$healthIndicators`. `false` registers none. A published `config/modules.php` without the key counts as `true`. The `modules` actuator endpoint is not affected, see [Expose the modules on the actuator](/laravel-modules/guides/production/actuator-modules-endpoint/). See [Report module health with the actuator](/laravel-modules/guides/production/health-checks/). |
+| `actuator.enabled` | `true` | Registers the `modules` and module `$healthIndicators` health checks when [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) is installed. Set `false` to disable both; a missing key counts as `true`. Does not affect the `modules` actuator endpoint. See [Actuator integration](/laravel-modules/reference/api/actuator/), [Report module health with the actuator](/laravel-modules/guides/production/health-checks/), and [Expose the modules on the actuator](/laravel-modules/guides/production/actuator-modules-endpoint/). |

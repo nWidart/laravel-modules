@@ -5,11 +5,13 @@ description: Make a model of a module prunable and delete its old records with m
 
 import { Steps } from '@astrojs/starlight/components';
 
-To delete the posts of the `Blog` module that are older than a year, make `Post` prunable and run `module:prune`. You need the `Post` model and its `PostFactory` from [Add Eloquent models to a module](/laravel-modules/guides/database/models/). `module:prune` wraps Laravel `model:prune`, which finds only the models of the application; the module command finds the models of the module.
+To delete `Post` records in the `Blog` module older than a year, make `Post` prunable and run `module:prune`. You need the `Post` model and `PostFactory` from [Add Eloquent models to a module](/laravel-modules/guides/database/models/).
+
+Laravel's `model:prune` scans application models only. `module:prune` wraps it to find models inside modules.
 
 <Steps>
 
-1. Add the `MassPrunable` trait and a `prunable()` method to the model. `MassPrunable` deletes the matching records with one query. Use `Prunable` instead if you need model events.
+1. Add the `MassPrunable` trait and a `prunable()` method to `Post`. Use `Prunable` instead if you need Eloquent model events to fire during deletion.
 
    ```php title="Modules/Blog/app/Models/Post.php"
    <?php
@@ -38,13 +40,13 @@ To delete the posts of the `Blog` module that are older than a year, make `Post`
    }
    ```
 
-2. Create two records older than a year. Without them the command finds nothing to prune.
+2. Create two old posts to test pruning.
 
    ```bash
    php artisan tinker --execute="Modules\Blog\Models\Post::factory()->count(2)->create(['created_at' => now()->subYears(2)]);"
    ```
 
-3. Count what the command would delete. `--pretend` deletes nothing.
+3. Preview what will be deleted with `--pretend` (deletes nothing).
 
    ```bash
    php artisan module:prune Blog --pretend
@@ -54,9 +56,7 @@ To delete the posts of the `Blog` module that are older than a year, make `Post`
    INFO  2 [Modules\Blog\Models\Post] records will be pruned.
    ```
 
-   With no matching record, the output is `No prunable [Modules\Blog\Models\Post] records found.`
-
-4. Prune.
+4. Prune the records.
 
    ```bash
    php artisan module:prune Blog
@@ -68,19 +68,19 @@ To delete the posts of the `Blog` module that are older than a year, make `Post`
    Modules\Blog\Models\Post ......................................... 2 records
    ```
 
-5. Check the result. Run the count again:
+5. Check the result by running `--pretend` again.
 
    ```bash
    php artisan module:prune Blog --pretend
    ```
 
-   The output is `No prunable [Modules\Blog\Models\Post] records found.`
+   The output reports `No prunable [Modules\Blog\Models\Post] records found.`
 
 </Steps>
 
 ## Prune on a schedule
 
-To prune every day, schedule the command in the module provider. The generated provider already imports `Illuminate\Console\Scheduling\Schedule` and has a commented `configureSchedules()` method. Uncomment the method and add the command. See [Schedule tasks from a module](/laravel-modules/guides/console-and-events/schedules/).
+Uncomment `configureSchedules()` in your module service provider to run `module:prune` daily (see [Schedule tasks from a module](/laravel-modules/guides/console-and-events/schedules/)):
 
 ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
 protected function configureSchedules(Schedule $schedule): void
@@ -89,11 +89,11 @@ protected function configureSchedules(Schedule $schedule): void
 }
 ```
 
-`php artisan schedule:list` shows `php artisan module:prune 'Blog'`.
+Verify with `php artisan schedule:list`.
 
-## Prune several modules or one model
+## Prune several modules or specific models
 
-To prune every enabled module, pass `--all`. To prune one model, pass its name in the model folder of the module with `--model`. To skip a model, pass its name with `--except`. Both options are repeatable. `--model` cannot be combined with `--except`:
+Pass `--all` to prune every enabled module. Use repeatable `--model` or `--except` flags (not both together) to include or exclude specific models:
 
 ```bash
 php artisan module:prune --all
@@ -101,9 +101,7 @@ php artisan module:prune Blog --model=Post
 php artisan module:prune Blog --except=Post
 ```
 
-A name matches the models of every selected module, so `module:prune Blog Shop --model=Post` prunes the `Post` of both. For a model in a sub-folder, write `Archive/Post`. A fully qualified class name such as `--model="Modules\Blog\Models\Post"` also works.
-
-A value that matches no model of the selected modules is an error. For example, `--model=Nope` prints `Model [Nope] does not exist in the selected modules.`, exits with `1` and prunes nothing.
+Short names (including sub-folders like `Archive/Post`) match across all selected modules; fully qualified class names also work. Passing a model name that matches nothing exits with `1` and prunes nothing.
 
 ## Related
 

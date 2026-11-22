@@ -5,11 +5,11 @@ description: Define scheduled tasks in the module provider with configureSchedul
 
 import { Steps } from '@astrojs/starlight/components';
 
-To run a task of the `Blog` module on a schedule, override `configureSchedules()` in the module provider. You need an enabled `Blog` module and a command to schedule; see [Add Artisan commands to a module](/laravel-modules/guides/console-and-events/commands/).
+To run a task from the `Blog` module on a schedule, override `configureSchedules()` in the module service provider. You need an enabled `Blog` module and a command to schedule (see [Add Artisan commands to a module](/laravel-modules/guides/console-and-events/commands/)).
 
 <Steps>
 
-1. Open the module provider. The generated file has a commented `configureSchedules()` method and already imports `Illuminate\Console\Scheduling\Schedule`. Uncomment the method and schedule the command:
+1. Uncomment `configureSchedules()` in `Modules/Blog/app/Providers/BlogServiceProvider.php` and register your scheduled command. The generated provider already imports `Illuminate\Console\Scheduling\Schedule`.
 
    ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
    protected function configureSchedules(Schedule $schedule): void
@@ -18,7 +18,7 @@ To run a task of the `Blog` module on a schedule, override `configureSchedules()
    }
    ```
 
-   The method must not be `private` (`protected` and `public` both work), with the `Schedule` parameter.
+   Use `protected` or `public` visibility (not `private`) with the `Schedule` parameter.
 
 2. Check the result.
 
@@ -34,7 +34,7 @@ To run a task of the `Blog` module on a schedule, override `configureSchedules()
 
 ## Schedule a command that takes arguments
 
-To pass arguments, give them as an array:
+Pass command arguments as an array:
 
 ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
 $schedule->command('module:prune', ['Blog'])->daily();
@@ -42,7 +42,7 @@ $schedule->command('module:prune', ['Blog'])->daily();
 
 ## When the schedule is built
 
-`configureSchedules()` does not run on web requests. It runs when something resolves the `Schedule`: `schedule:run`, `schedule:list` and similar commands. It runs after every provider has booted. The schedule exists only while the module is enabled.
+`configureSchedules()` skips web requests. It runs only when Laravel resolves `Schedule` (such as during `schedule:run` or `schedule:list`), after every service provider has booted. Disabling the module removes its scheduled tasks.
 
 ## Related
 

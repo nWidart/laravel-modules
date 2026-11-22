@@ -5,11 +5,11 @@ description: Remove a module folder and its status with module:delete, after you
 
 import { Steps } from '@astrojs/starlight/components';
 
-To remove the module `Blog` from the application, delete its folder with `module:delete`. The command also removes the module from the activator.
+To remove the `Blog` module from your application, roll back its migrations and run `module:delete`. The command deletes the module folder and removes its entry from the activator.
 
 <Steps>
 
-1. If the module ran migrations, roll them back first. After the module is deleted, its migration files are gone and you cannot roll them back.
+1. Roll back the module's migrations first. Once the module folder is deleted, its migration files are gone and cannot be rolled back.
 
    ```bash
    php artisan module:migrate-reset Blog
@@ -21,15 +21,15 @@ To remove the module `Blog` from the application, delete its folder with `module
    php artisan module:delete Blog
    ```
 
-   The command shows a boxed `WARNING` that asks `DO YOU WANT TO REMOVE THE MODULE?` in every environment. To skip the question, add `--force`:
+   `module:delete` asks for confirmation in every environment. Pass `--force` to skip the prompt:
 
    ```bash
    php artisan module:delete Blog --force
    ```
 
-   To delete several modules, list the names. To delete all of them, use `--all`.
+   List multiple names to delete several modules, or pass `--all` to delete every module.
 
-3. Regenerate the autoloader, so Composer forgets the classes of the module.
+3. Rebuild the autoloader so Composer drops the deleted module's classes.
 
    ```bash
    composer dump-autoload
@@ -41,11 +41,11 @@ To remove the module `Blog` from the application, delete its folder with `module
    php artisan module:list
    ```
 
-   `Blog` is no longer in the list, its folder `Modules/Blog` is gone, and `modules_statuses.json` has no `Blog` entry.
+   `Blog` no longer appears in the list, `Modules/Blog` is gone, and `modules_statuses.json` no longer contains `Blog`.
 
 </Steps>
 
-The command removes the folder and the status entry only. Files you copied out of the module stay: assets published with `module:publish` (in `public/modules/blog`), migrations published with `module:publish-migration` and translations published with `module:publish-translation`. Delete them yourself.
+`module:delete` removes only the module folder and its status entry. Manually delete any files you published out of the module, such as assets in `public/modules/blog`, published migrations, or published translations.
 
 ## Related
 

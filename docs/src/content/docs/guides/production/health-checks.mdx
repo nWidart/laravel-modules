@@ -5,9 +5,9 @@ description: Install nwidart/laravel-actuator to see the state of your modules o
 
 import { Steps } from '@astrojs/starlight/components';
 
-At the end, `/actuator/health` reports which modules are enabled and fails when an enabled module is missing from disk. A module can add its own health checks to the same endpoint.
+At the end, `/actuator/health` reports which modules are enabled and returns `DOWN` if an enabled module is missing from disk. Modules can also register their own health checks on the same endpoint.
 
-The integration uses [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) (`^1.1`, Laravel 12 and 13). Laravel Modules does not require it: the package only suggests it. Without it, nothing changes in your application. For the endpoints, the `show_details` option and the options of the actuator itself, read its [documentation](https://nwidart.github.io/laravel-actuator/).
+This integration uses [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) (`^1.1`), which is optional. For endpoint setup and `show_details` options, see the [Laravel Actuator documentation](https://nwidart.github.io/laravel-actuator/).
 
 ## Install the actuator
 
@@ -15,11 +15,11 @@ The integration uses [`nwidart/laravel-actuator`](https://github.com/nWidart/lar
 composer require nwidart/laravel-actuator
 ```
 
-When the actuator is installed, Laravel Modules registers a health indicator named `modules`. You do not edit any configuration.
+Once installed, Laravel Modules registers a `modules` health indicator automatically. No configuration edit is required.
 
 ## The `modules` indicator
 
-The indicator lists every module with its enabled state. The details are visible only when the `show_details` option of the actuator allows it, for example `ACTUATOR_HEALTH_SHOW_DETAILS=always` or `when_authorized`.
+When `show_details` allows it (for example `ACTUATOR_HEALTH_SHOW_DETAILS=always`), the `modules` indicator lists each module and its enabled status:
 
 ```json
 {
@@ -30,44 +30,27 @@ The indicator lists every module with its enabled state. The details are visible
 }
 ```
 
-| Status | When |
-| --- | --- |
-| `UP` | Every enabled module is found on disk. Disabled modules do not change the status. |
-| `DOWN` | An enabled module is not found on disk: its `module.json` is gone, or it is enabled in `modules_statuses.json` and the repository never found it. `/actuator/health` then returns HTTP 503. |
+The indicator reports `UP` when every enabled module has its `module.json` on disk. It reports `DOWN` (HTTP 503) when an enabled module is missing from disk, and attaches an error to that module's entry. To resolve a `DOWN` status, restore the module folder, remove its entry from `modules_statuses.json`, or set it to `false`.
 
-The indicator never reports `OUT_OF_SERVICE` or `UNKNOWN`.
-
-A missing module appears in the details with an error:
-
-```json
-{
-    "modules": {
-        "Blog": { "enabled": true, "error": "Enabled in the status store, not found on disk." }
-    }
-}
-```
-
-To fix it, restore the module folder, or remove the entry from the statuses file or set it to `false`.
-
-A module the repository scanned counts as present only while its `module.json` exists. If its folder is gone and the activator reports it enabled, the module is listed with the error and the health is `DOWN`, with any activator. If it is disabled, it is left out of the details. This also covers a folder removed while a long-lived process (Octane, a queue worker) holds a cached module scan.
-
-A name that is in the status store but that the repository never scanned is reported only with [`FileActivator`](/laravel-modules/reference/api/contracts/#fileactivator), which exposes its statuses through `getStatuses()`. With a [custom activator](/laravel-modules/guides/customise/custom-activator/) those names are not reported.
+See [Actuator integration](/laravel-modules/reference/api/actuator/) for full indicator behavior, including long-lived processes and custom activators.
 
 ## Ship a health indicator from a module
 
 <Steps>
 
-1. Generate the class.
+1. Generate the health indicator class.
 
    ```bash
    php artisan module:make-health-indicator PaymentsHealthIndicator Blog
    ```
 
-   The command writes `Modules/Blog/app/Health/PaymentsHealthIndicator.php` and prints how to register it. See [`module:make-health-indicator`](/laravel-modules/reference/commands/generators/#modulemake-health-indicator).
+   This creates `Modules/Blog/app/Health/PaymentsHealthIndicator.php`.
 
-2. Return the health from `health()`. An indicator implements `Nwidart\Actuator\Health\HealthIndicator`. Use `Health::up()`, `Health::down()`, `Health::outOfService()` or `Health::unknown()`, each with optional details. An exception thrown from `health()` is reported as `DOWN`.
+2. Implement `health()` to return a `Health` status (`Health::up()`, `Health::down()`, `Health::outOfService()`, or `Health::unknown()`). Any thrown exception is reported as `DOWN`.
 
    ```php title="Modules/Blog/app/Health/PaymentsHealthIndicator.php"
+   <?php
+
    namespace Modules\Blog\Health;
 
    use Nwidart\Actuator\Health\Health;
@@ -82,7 +65,7 @@ A name that is in the status store but that the repository never scanned is repo
    }
    ```
 
-3. List it in the `$healthIndicators` property of the module service provider, the class that extends `Nwidart\Modules\Support\ModuleServiceProvider`. The generator does not edit the provider.
+3. Register the indicator in the `$healthIndicators` property of your module service provider (extending `ModuleServiceProvider`).
 
    ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
    protected array $healthIndicators = [
@@ -93,18 +76,15 @@ A name that is in the status store but that the repository never scanned is repo
 
 </Steps>
 
-A value is a class name, or `[class, [constructor arguments]]`. These are the two forms of the `health.indicators` option of the actuator. The container resolves the class.
+Each entry is either a class name or `[class, [constructor arguments]]`, resolved through the container. The package registers each indicator as `module:{lowercase module name}:{key}` (for example `module:blog:payments` and `module:blog:queue`).
 
-Each indicator is registered as `module:{lowercase module name}:{key}`. The example gives `module:blog:payments` and `module:blog:queue`. With components shown, `/actuator/health/module:blog:payments` returns one of them. Tools use the fixed pattern `^module:([^:]+):(.+)$` to attribute a component to its module, so do not rename it.
+- Disabled modules register no indicators.
+- An indicator with the same name in `config/actuator.php` takes precedence.
+- Without `nwidart/laravel-actuator` installed, `$healthIndicators` is ignored.
 
-- A disabled module registers nothing, so its components are absent.
-- An entry that your application defines under the same name in `config/actuator.php` wins.
-- Without the actuator, the property is ignored: nothing is registered and no actuator class is loaded.
-- A new module has a commented example of the property in its generated service provider.
+## Turn health indicators off
 
-## Turn it off
-
-Set `modules.actuator.enabled` to `false` in `config/modules.php` to register neither the `modules` indicator nor the module indicators. It affects health indicators only: the `modules` endpoint of the actuator stays registered, see [Expose the modules on the actuator](/laravel-modules/guides/production/actuator-modules-endpoint/). The default is `true`, and a published `config/modules.php` without the key counts as enabled. See [Configuration](/laravel-modules/reference/configuration/#actuator).
+Set `modules.actuator.enabled` to `false` in `config/modules.php` to disable both the `modules` indicator and all module `$healthIndicators`:
 
 ```php title="config/modules.php"
 'actuator' => [
@@ -112,12 +92,32 @@ Set `modules.actuator.enabled` to `false` in `config/modules.php` to register ne
 ],
 ```
 
+This affects health indicators only. The `modules` actuator endpoint stays registered; see [Expose the modules on the actuator](/laravel-modules/guides/production/actuator-modules-endpoint/).
+
 ## Cached configuration
 
-The indicators are registered while the application boots, so `php artisan config:cache` stores them in the cached configuration. With a cached configuration, run `config:cache` again after you enable or disable a module, change `$healthIndicators`, or change `modules.actuator.enabled`. See [Deploy an application that uses modules](/laravel-modules/guides/production/deploy/).
+Health indicators register during boot, so `php artisan config:cache` snapshots them. Re-run `php artisan config:cache` after enabling or disabling a module, changing `$healthIndicators`, or toggling `modules.actuator.enabled`.
 
 ## Limits
 
-An invalid `module.json`, or a module service provider that cannot be loaded, stops the application during boot. Every request then fails with HTTP 500 and the indicator cannot report it. Monitor the HTTP status of the application as well.
+- An invalid `module.json` or unloadable module service provider halts application boot with HTTP 500 before `/actuator/health` can run. Monitor your application's HTTP status separately.
+- A nonexistent class in `$healthIndicators` causes `/actuator/health` to fail with HTTP 500 (`BindingResolutionException`). Verify class names after registering them.
 
-A `$healthIndicators` entry whose class does not exist makes the whole `/actuator/health` endpoint fail with HTTP 500 (`BindingResolutionException: Target class [...] does not exist`), not only that component. The same happens for a missing class in the actuator `health.indicators` config. Check the class name after you add an entry.
+## Check the result
+
+Request the health endpoint (with `ACTUATOR_HEALTH_SHOW_DETAILS=always` in local development):
+
+```bash
+curl -H 'Accept: application/json' http://127.0.0.1:8000/actuator/health
+```
+
+The JSON response includes the `modules` component and any `module:blog:*` components you registered. You can also query one component directly at `/actuator/health/module:blog:payments`.
+
+## Related
+
+- [Actuator integration](/laravel-modules/reference/api/actuator/)
+- [Module service provider](/laravel-modules/reference/api/module-service-provider/)
+- [`module:make-health-indicator`](/laravel-modules/reference/commands/generators/#modulemake-health-indicator)
+- [`actuator` configuration](/laravel-modules/reference/configuration/#actuator)
+- [Expose the modules on the actuator](/laravel-modules/guides/production/actuator-modules-endpoint/)
+- [Deploy an application that uses modules](/laravel-modules/guides/production/deploy/)

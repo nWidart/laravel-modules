@@ -5,27 +5,27 @@ description: Add a web route and a public API route to a module, put routes unde
 
 import { Steps } from '@astrojs/starlight/components';
 
-To serve a page and a JSON endpoint from the `Blog` module, add routes to the generated route files. You need an enabled `Blog` module and two controllers, `PostController` and `Api/PostController`:
+To serve a page and a JSON endpoint from the `Blog` module, add routes to its generated route files. You need an enabled `Blog` module and two controllers (`PostController` and `Api/PostController`):
 
 ```bash
 php artisan module:make-controller Post Blog
 php artisan module:make-controller Api/Post Blog --api
 ```
 
-See [Add controllers to a module](/laravel-modules/guides/http/controllers/) for the options.
+See [Add controllers to a module](/laravel-modules/guides/http/controllers/) for controller options.
 
-`module:make` writes both route files for a web module, and the `RouteServiceProvider` of the module loads them:
+`module:make` creates both route files for a web module, and the module's `RouteServiceProvider` loads them:
 
-| File | Generated content | Loaded by `RouteServiceProvider` with |
+| File | Generated routes | Applied by `RouteServiceProvider` |
 | --- | --- | --- |
-| `Modules/Blog/routes/web.php` | `Route::resource('blogs', BlogController::class)->names('blog');`, with no route middleware | the `web` middleware group, no prefix |
-| `Modules/Blog/routes/api.php` | `Route::apiResource('blogs', BlogController::class)->names('blog')` inside `Route::middleware(['auth:sanctum'])->prefix('v1')` | the `api` middleware group, the prefix `api` and the name prefix `api.` |
+| `Modules/Blog/routes/web.php` | `Route::resource('blogs', BlogController::class)->names('blog')` | `web` middleware group, no prefix |
+| `Modules/Blog/routes/api.php` | `Route::apiResource('blogs', BlogController::class)->names('blog')` under `auth:sanctum` and prefix `v1` | `api` middleware group, prefix `api`, name prefix `api.` |
 
-The generated web route needs no login, so the page works in an application without authentication. The generated API route requires `auth:sanctum`: an application without Laravel Sanctum cannot serve it, and a request without a valid token gets a 401 response.
+The generated web route requires no login. The generated API route uses `auth:sanctum`, so requests without Sanctum or a valid token return 401.
 
 <Steps>
 
-1. Add a route for `PostController` to `Modules/Blog/routes/web.php`. Keep the generated `Route::resource()` line if you still want the `blogs` routes.
+1. Add a web route for `PostController` in `Modules/Blog/routes/web.php`. Keep the generated `Route::resource()` line if you still need the `blogs` routes.
 
    ```php title="Modules/Blog/routes/web.php"
    <?php
@@ -38,9 +38,9 @@ The generated web route needs no login, so the page works in an application with
    Route::get('posts', [PostController::class, 'index'])->name('blog.posts.index');
    ```
 
-   Route names are global in the application. Start every name with the module name so that two modules cannot clash.
+   Route names are global across the application. Prefix every name with the module name to avoid collisions.
 
-2. Replace `Modules/Blog/routes/api.php` with a public API route, one without `auth:sanctum`. The provider already adds the prefix `api` and the name prefix `api.`.
+2. Replace `Modules/Blog/routes/api.php` with a public API route without `auth:sanctum`. `RouteServiceProvider` already applies the `api` URL prefix and `api.` name prefix.
 
    ```php title="Modules/Blog/routes/api.php"
    <?php
@@ -53,7 +53,7 @@ The generated web route needs no login, so the page works in an application with
    });
    ```
 
-   The URL is `/api/v1/posts`. The name is `api.blog.posts.index`. To generate the API controller, see [Add controllers to a module](/laravel-modules/guides/http/controllers/#add-an-api-controller).
+   This serves `/api/v1/posts` under the name `api.blog.posts.index`.
 
 3. Check the result.
 
@@ -68,9 +68,9 @@ The generated web route needs no login, so the page works in an application with
 
 </Steps>
 
-## Variants
+## Add a URL prefix
 
-To put the web routes under a URL prefix, wrap them in `prefix()` and `name()`:
+Wrap module routes in `prefix()` and `name()` to group them under a shared path and name prefix:
 
 ```php title="Modules/Blog/routes/web.php"
 <?php
@@ -84,23 +84,27 @@ Route::prefix('blog')->name('blog.')->group(function () {
 });
 ```
 
-The URLs are `/blog/posts` and `/blog/posts/{post}`. The names are `blog.posts.index` and `blog.posts.show`.
+This creates `/blog/posts` (`blog.posts.index`) and `/blog/posts/{post}` (`blog.posts.show`).
 
-The generated `show()` method returns `view('blog::show')`. Create that view, or `/blog/posts/{post}` fails with a 500 error, `View [show] not found.`:
+The generated `show()` method returns `view('blog::show')`. Create that view so `/blog/posts/{post}` does not fail with a missing view error:
 
 ```bash
 php artisan module:make-view show Blog
 ```
 
-To require authentication, wrap the routes in the middleware that your application provides, for example `Route::middleware('auth')->group(...)`. To apply a middleware of the module, see [Add middleware to a module](/laravel-modules/guides/http/middleware/).
+## Require authentication
 
-To link to a route of another module, use its route name. The view needs no knowledge of the namespace or URL of the other module:
+Wrap routes in your application's middleware, such as `Route::middleware('auth')->group(...)`. To add custom middleware inside the module, see [Add middleware to a module](/laravel-modules/guides/http/middleware/).
+
+## Link to a route in another module
+
+Reference routes from other modules by name so views stay decoupled from namespaces and URLs:
 
 ```blade title="Modules/Blog/resources/views/index.blade.php"
 <a href="{{ route('shop.products.index') }}">Shop</a>
 ```
 
-A disabled module registers no routes. `route()` throws `RouteNotFoundException` for the names of a disabled module.
+Disabled modules register no routes, so calling `route()` for a disabled module's route throws `RouteNotFoundException`.
 
 ## Related
 

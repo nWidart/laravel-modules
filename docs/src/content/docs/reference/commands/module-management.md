@@ -7,7 +7,7 @@ This page lists the commands that manage existing modules. `module:make` and the
 
 ## Shared behaviour
 
-`BaseCommand` is the base class of the commands that run one action for each selected module (see [Contracts and base classes](/laravel-modules/reference/api/contracts/#basecommand)). Eight commands on this page extend it and share the behaviour below: `module:enable`, `module:disable`, `module:delete`, `module:use`, `module:update`, `module:dump`, `module:lang` and `module:list-commands`. The other five (`module:list`, `module:unuse`, `module:install`, `module:prune` and `module:model-show`) define their own arguments and say so in their entries.
+`BaseCommand` runs one action per selected module (see [Contracts and base classes](/laravel-modules/reference/api/contracts/#basecommand)). Eight commands here extend it: `module:enable`, `module:disable`, `module:delete`, `module:use`, `module:update`, `module:dump`, `module:lang`, and `module:list-commands`. The other five (`module:list`, `module:unuse`, `module:install`, `module:prune`, and `module:model-show`) define their own arguments.
 
 ### Arguments and options of `BaseCommand` commands
 
@@ -19,11 +19,11 @@ This page lists the commands that manage existing modules. `module:make` and the
 ### Module selection
 
 - With names, the command runs the action once per name, in the order given.
-- With `--all`, the command replaces the names with the module list. The database commands use the enabled modules ordered by priority; a command with a `--direction` option orders them in that direction, and `module:migrate-refresh` uses ascending order. See [Database commands](/laravel-modules/reference/commands/database/#shared-behaviour). Any other command uses every module, enabled or disabled.
-- With neither, an interactive terminal shows a multi-select prompt named `Select Modules`. Its list is the same module list as `--all`, and its first entry, `All`, selects all of them.
+- With `--all`, the command selects the module list automatically. Database commands select enabled modules ordered by priority (`--direction`, or ascending for `module:migrate-refresh`). See [Database commands](/laravel-modules/reference/commands/database/#shared-behaviour). Other commands select every module, enabled or disabled.
+- With neither, an interactive terminal shows a `Select Modules` multi-select prompt listing `All` and the same module list as `--all`.
 - A module given by name runs whatever its status.
-- With neither and no interactive input (`--no-interaction`, or no TTY), the command prints `No module given. Pass a module name or --all.` and exits with status `1`.
-- The command checks that every named module exists before it runs any action. An unknown name prints `Module [Nope] does not exist.`, several unknown names print one line, `Modules [Nope, Typo] do not exist.`, and the command exits with `1`. No action runs, not even for the valid names.
+- With neither and no interactive input (`--no-interaction`, or no TTY), the command prints `No module given. Pass a module name or --all.` and exits with `1`.
+- The command validates every named module before running any action. Unknown names print `Module [Nope] does not exist.` (or `Modules [Nope, Typo] do not exist.`) and exit with `1`. No action runs, even for valid names.
 
 ### Exit status
 
@@ -38,7 +38,7 @@ An action that fails does not stop the remaining modules. The command exits with
 Lists the modules with their status, priority and path.
 
 ```bash
-php artisan module:list [--only=ONLY] [--direction=DIRECTION]
+php artisan module:list [-o|--only=ONLY] [-d|--direction=DIRECTION]
 ```
 
 **Arguments**
@@ -250,20 +250,20 @@ php artisan module:install [<name> [<version>]] [--timeout=TIMEOUT] [--path=PATH
 | a URL with a scheme, such as `https://git.example.com/acme/blog.git` or `file:///srv/git/blog.git` | The URL as given, used as the repository URL. `<name>` is not appended. `file://` clones a local repository. |
 | `user@host`, such as `git@git.example.com` | `user@host:<name>.git` |
 
-Any other value, including a local path without a scheme such as `/srv/git/blog.git`, fails with `Unable to resolve a git repository URL for module [<name>] with type [<type>].` Use `file:///srv/git/blog.git` for a local repository.
+Any other value—including a bare local path such as `/srv/git/blog.git`—fails with `Unable to resolve a git repository URL for module [<name>] with type [<type>].` Use `file:///srv/git/blog.git` for a local repository.
 
 **Notes**
 
-- Any `--type` other than `composer` installs with `git clone` into the destination, then checks out the version. The default version is `master`.
-- The destination is `--path` if given, otherwise the repository path for the studly-case last segment of `name`. With a Composer install the destination has no effect. With `--tree` it is the subtree prefix.
-- `--tree` applies to Git sources only. It runs `git remote add` (named after the module) and `git subtree add --squash`. The destination must be inside the project. If the remote already exists with another URL, the command fails.
-- After a successful install, and unless `--no-update` is given, the command reloads the module list and runs `module:update <module>`. The module name comes from the `name` field of the cloned `module.json` for Git installs, or from the package name for Composer installs. If the repository cannot find the module, the command prints an error and exits with `1`.
-- Without `name`, the command reads `modules.json` in the application root and installs each entry of its `require` list. See [modules.json](/laravel-modules/reference/module-json/#modulesjson). The command installs the remaining entries when one fails and exits with `1`. A missing file prints `File 'modules.json' does not exist in your project root.` and exits with `1`.
-- `--type` is the fallback for entries without a `type`. `--tree` and `--timeout` apply to every entry. `modules.json` entries have no `tree` key.
-- `--path` sets the folder of a single module. If `modules.json` lists more than one entry, the command exits with `1` before any install, with `The --path option sets the folder of a single module, but modules.json lists <count> modules. Remove --path and set a "path" on each entry of modules.json instead.`
-- With one entry, `--path` is the destination of that entry unless the entry has its own `path`: the `path` of the entry wins. An entry without `path` uses `--path` if given, otherwise the default folder of the module.
-- A relative `path` is relative to the application root. If the `path` is outside the module folders the repository scans, the install succeeds but the repository cannot find the module, so the `module:update` step fails. Add `--no-update` to skip it.
-- The command passes the name, version, path and URL as process arguments, not through a shell.
+- Any `--type` other than `composer` clones with `git clone` into the destination, then checks out the version (default `master`).
+- Destination is `--path` if given, otherwise the repository path for the studly-case last segment of `name`. Composer installs ignore it; `--tree` uses it as the subtree prefix.
+- `--tree` applies to Git sources only. It runs `git remote add` (named after the module) and `git subtree add --squash`. The destination must be inside the project. An existing remote with another URL fails.
+- After install (unless `--no-update` is passed), the command reloads modules and runs `module:update <module>`. The module name comes from `module.json` (`name`) for Git installs, or the package name for Composer installs. Missing modules print an error and exit with `1`.
+- Without `name`, the command installs each `require` entry from `modules.json` in the application root. See [modules.json](/laravel-modules/reference/module-json/#modulesjson). A failing entry does not stop the rest, and the command exits with `1`. A missing file prints `File 'modules.json' does not exist in your project root.` and exits with `1`.
+- `--type` is the fallback for entries without `type`. `--tree` and `--timeout` apply to every entry. `modules.json` entries have no `tree` key.
+- `--path` sets the folder for a single module. When `modules.json` lists multiple entries, the command exits with `1` before installing and prints `The --path option sets the folder of a single module, but modules.json lists <count> modules. Remove --path and set a "path" on each entry of modules.json instead.`
+- With one entry, the entry's `path` wins over `--path`. Without an entry `path`, the command uses `--path`, then the default folder.
+- A relative `path` resolves from the application root. If `path` is outside the scanned folders, install succeeds but `module:update` fails because the repository cannot find the module. Pass `--no-update` to skip it.
+- The command passes name, version, path, and URL as process arguments, not through a shell.
 
 **Errors**
 
@@ -373,7 +373,7 @@ php artisan module:list-commands [<module>...] [-a|--all]
 
 **Notes**
 
-- The command scans these directories of the module, when they exist: `Commands`, `Console/Commands`, `<app folder>/Commands`, `<app folder>/Console` and `<app folder>/Console/Commands`. The app folder is `paths.app_folder`.
+- Scans these directories when present: `Commands`, `Console/Commands`, `<app folder>/Commands`, `<app folder>/Console`, and `<app folder>/Console/Commands`. The app folder comes from `paths.app_folder`.
 - It lists the PHP files whose class extends a Symfony or Illuminate command. For each class it shows the command name. When it cannot instantiate the class, it shows the class name, or `Unknown` if no name is available.
 - The output groups the commands by their directory (`Commands` or `Console/Commands`).
 - A module without commands prints `No commands found in module <name>`.
@@ -405,7 +405,7 @@ php artisan module:lang [<module>...] [-a|--all]
 **Notes**
 
 - The command reads the sub-directories of the `lang` generator path of the module (`paths.generator.lang.path`, default `lang`). Each sub-directory is one locale.
-- It reports a file that exists in one locale and not in another, and a key (in dot notation) that exists in one locale file and not in the same file of another locale. It reads PHP array files.
+- Compares PHP array files across locales. Reports files missing from another locale and keys (in dot notation) missing from the same file in another locale.
 - A module with no locale directory prints `No language files found in module <name>`. A module with one locale directory prints `Only one language file found in module <name>`. Neither counts as a failure.
 - A missing file or key marks the module as failed, so the command exits with `1`.
 
@@ -441,15 +441,15 @@ php artisan module:prune [<module>...] [--all] [--model=MODEL] [--except=EXCEPT]
 
 - This command does not extend `BaseCommand`. It shares the module checks through the `ValidatesModuleArgument` trait. `--all` has no shortcut and selects the enabled modules only. A module given by name is pruned whatever its status. The module name `All` stands for `--all`.
 - With neither a module nor `--all` in an interactive terminal, the `Select Modules` prompt lists `All` and the enabled modules. Without interactive input (`--no-interaction`, or no TTY), the command prints `No module given. Pass a module name or --all.` and exits with `1`.
-- The command checks that every named module exists first. An unknown name prints `Module [Nope] does not exist.`, several print `Modules [Nope, Typo] do not exist.`, and the command exits with `1`. Nothing is pruned, not even for the valid names, and not when `--model` is given.
-- The command scans the `model` generator path of each module (`paths.generator.model.path`) for PHP files, and keeps the models that are prunable. When none is prunable, it prints `No prunable models found.` and exits with `0`.
-- `--model` and `--except` take the same kind of value, and the command applies one rule to each value:
-  - The command first looks the value up as a name relative to the model folder of a module: `Post`, `Archive/Old` or `Archive\Old`. It searches only the selected modules: the `module` argument, or the enabled modules with `--all`.
-  - When the value matches no model of the selected modules, the command takes it as a class name. An existing class (fully qualified name) is used unchanged, also when it is outside the selected modules.
-  - A module model wins over a global class or facade alias of the same name. `--except=Log` excludes `Modules\Blog\Models\Log`, not the `Log` facade.
-  - Every match counts. `module:prune Blog Shop --model=Post` prunes `Modules\Blog\Models\Post` and `Modules\Shop\Models\Post`, and `--except=Post` excludes both. There is no prompt.
-  - `Post` does not match a model in a sub-folder such as `Archive\Post`. Give `Archive/Post`.
-  - A value that is neither a model of the selected modules nor an existing class is an error, for `--model` and for `--except`. The command prints `Model [Nope] does not exist in the selected modules.` (or `Models [Nope, Typo] do not exist in the selected modules.`), exits with `1` and prunes nothing, also not for the valid values next to it.
+- Validates every named module first. Unknown names print `Module [Nope] does not exist.` (or `Modules [Nope, Typo] do not exist.`) and exit with `1`. Nothing is pruned, even for valid names or when `--model` is given.
+- Scans `paths.generator.model.path` in each module for prunable models. Prints `No prunable models found.` and exits with `0` when none match.
+- `--model` and `--except` resolve each value in order:
+  - First, as a name relative to a selected module's model folder (`Post`, `Archive/Old`, `Archive\Old`). Searches only the selected modules (`module` argument, or enabled modules with `--all`).
+  - Next, as an existing fully qualified class name, even outside the selected modules.
+  - A module model wins over a global class or facade alias (`--except=Log` excludes `Modules\Blog\Models\Log`, not the `Log` facade).
+  - Every matching module model is included (`module:prune Blog Shop --model=Post` matches both `Blog` and `Shop`). There is no prompt.
+  - `Post` does not match nested models like `Archive\Post`; pass `Archive/Post`.
+  - Unmatched values fail both `--model` and `--except`. Prints `Model [Nope] does not exist in the selected modules.` (or `Models [Nope, Typo] do not exist in the selected modules.`), exits with `1`, and prunes nothing.
 - `--model` and `--except` cannot be combined. The command throws `InvalidArgumentException`.
 
 ```bash
@@ -482,8 +482,8 @@ php artisan module:model-show <model> [--database=DATABASE] [--json]
 
 - A name that Laravel resolves to an existing class is used unchanged: a fully qualified class name, or a model in the application `App\Models` namespace. An application model wins over a module model with the same short name.
 - Otherwise the command looks for `<paths.modules>/*/<paths.generator.model.path>/<name>.php` in every module and shows the matching class. It does not read the module status, so a model of a disabled module matches too.
-- Accepted forms: `Post`, a sub-path inside the models folder (`Admin/Post` or `Admin\Post`, with or without a leading slash or backslash), and a fully qualified class name. `Models/Post` is not supported. A name that contains `*`, `?` or `[` is not looked up.
-- When the same model name exists in several modules, an interactive run prompts for one of the candidate classes. A non-interactive run prints `Model [Tag] is ambiguous, it exists in several modules: Modules\Shop\Models\Tag, Modules\Webapp\Models\Tag. Pass the fully qualified class name.` and exits with status 1.
+- Accepted forms: `Post`, a sub-path inside the models folder (`Admin/Post` or `Admin\Post`, optional leading separator), or a fully qualified class name. `Models/Post` is not supported. Names containing `*`, `?`, or `[` are skipped.
+- When multiple modules contain the same model name, interactive runs prompt for a candidate class. Non-interactive runs exit with `1` and print `Model [Tag] is ambiguous, it exists in several modules: Modules\Shop\Models\Tag, Modules\Webapp\Models\Tag. Pass the fully qualified class name.`
 - When nothing matches, the command fails with Laravel's error, `Target class [App\Models\<name>] does not exist.`
 - The command has no `module` argument. It searches every module directory.
 

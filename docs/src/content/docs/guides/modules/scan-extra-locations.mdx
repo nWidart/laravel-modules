@@ -5,19 +5,19 @@ description: Scan more folders for modules with scan.paths, or add a folder at r
 
 import { Steps } from '@astrojs/starlight/components';
 
-To use modules that live outside `paths.modules`, for example in `plugins/`, tell the package which extra folders to scan. A folder you add holds the modules as sub-folders: `plugins/Acme/module.json` is the module `Acme`. The folder holds a module you copied, cloned or moved there, for example with `mv Modules/Acme plugins/Acme`, with its `module.json` at `plugins/Acme/module.json`.
+To load modules stored outside `paths.modules` (for example in `plugins/`), add those folders to `scan.paths`. Each folder holds modules as subdirectories, such as `plugins/Acme/module.json`.
 
 ## Scan extra folders from the config
 
 <Steps>
 
-1. Publish the config file, if you have not.
+1. Publish `config/modules.php` if you have not already.
 
    ```bash
    php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
    ```
 
-2. Enable the scan and list the folders.
+2. Enable scanning and list the extra folders.
 
    ```php title="config/modules.php"
    'scan' => [
@@ -28,9 +28,9 @@ To use modules that live outside `paths.modules`, for example in `plugins/`, tel
    ],
    ```
 
-   The package adds `/*` to an entry that does not end with `/*`, then reads `<entry>/module.json`. `base_path('plugins')` becomes `plugins/*` and finds `plugins/Acme/module.json`: the entry is the folder that holds the modules as sub-folders. An entry that already ends with `/*` stays as it is. The default entry, `base_path('vendor/*/*')`, finds `vendor/acme/blog/module.json`.
+   The package appends `/*` to any path that does not already end with `/*`, then looks for `module.json` inside each match. `base_path('plugins')` matches `plugins/Acme/module.json`, while the default `base_path('vendor/*/*')` matches `vendor/acme/blog/module.json`.
 
-3. Make Composer autoload the modules in the folder. Add the folder to `extra.merge-plugin.include` in the `composer.json` of the application, then regenerate the autoloader.
+3. Add the folder to `extra.merge-plugin.include` in `composer.json` and rebuild the autoloader.
 
    ```json title="composer.json"
    "extra": {
@@ -47,9 +47,9 @@ To use modules that live outside `paths.modules`, for example in `plugins/`, tel
    composer dump-autoload
    ```
 
-   An enabled module whose provider class cannot be loaded stops every `artisan` command, with `Class "Modules\Acme\Providers\AcmeServiceProvider" not found`. Autoload the module before you enable it.
+   Autoload the module before enabling it. Enabling a module whose provider class cannot autoload breaks every `artisan` command with a class-not-found error.
 
-4. Enable each new module. A module the package finds has no status yet, so it counts as disabled.
+4. Enable the discovered module. Newly scanned modules start disabled.
 
    ```bash
    php artisan module:enable Acme
@@ -61,15 +61,13 @@ To use modules that live outside `paths.modules`, for example in `plugins/`, tel
    php artisan module:list
    ```
 
-   `Acme` is in the list with its path, for example `plugins/Acme [0]`.
+   `Acme` appears with its path (`plugins/Acme [0]`).
 
 </Steps>
 
-The package registers the providers of the modules in these folders like those of any other module. It does not autoload their classes: step 3 does that.
-
 ## Add a folder at runtime
 
-To add a folder from code, call `Module::addLocation()`.
+Call `Module::addLocation()` to expose an extra folder at runtime:
 
 ```php title="app/Providers/AppServiceProvider.php"
 use Nwidart\Modules\Facades\Module;
@@ -80,7 +78,7 @@ public function register(): void
 }
 ```
 
-`addLocation()` makes the modules in the folder visible to `Module::all()`, `Module::find()` and `module:list`. It does not register their providers: the package registers module providers before your application providers run. To load providers from an extra folder, use `scan.paths`.
+`addLocation()` makes modules visible to `Module::all()`, `Module::find()`, and `module:list`. It does not register their service providers, because module providers load before application providers run. Use `scan.paths` to boot providers from extra folders.
 
 ## Related
 

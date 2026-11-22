@@ -5,7 +5,7 @@ description: Add the code of the enabled modules to the source list of phpunit.x
 
 import { Steps } from '@astrojs/starlight/components';
 
-At the end, the coverage report of your application includes the code in `Modules/Blog/app`. Prerequisites: a `phpunit.xml` in the application root, a `modules_statuses.json` that lists the modules, and a coverage driver (Xdebug or PCOV).
+At the end, your application's coverage report includes `Modules/Blog/app`. Prerequisites: `phpunit.xml` in the application root, `modules_statuses.json`, and a coverage driver (Xdebug or PCOV).
 
 <Steps>
 
@@ -15,7 +15,7 @@ At the end, the coverage report of your application includes the code in `Module
    php artisan module:update-phpunit-coverage
    ```
 
-   The command reads `modules_statuses.json`, the file set in `modules.activators.file.statuses-file`. For each enabled module that has an `app` folder, it adds an entry to `<source><include>`. It keeps the formatting of the file.
+   The command reads the statuses file configured in `modules.activators.file.statuses-file` (default `modules_statuses.json`). It adds each enabled module's `app` folder to `<source><include>` and removes disabled or deleted modules.
 
    ```xml title="phpunit.xml"
    <source>
@@ -26,7 +26,7 @@ At the end, the coverage report of your application includes the code in `Module
    </source>
    ```
 
-   The command also removes the entries of modules that are disabled or deleted. If `<source>` has no `<include>`, the command creates one with `<directory>./app</directory>` and the module entries. This includes an empty `<source></source>` or `<source/>`. An empty `<include/>`, `<include />` or `<include></include>` on its own line inside `<source>` gets the module entries only. With `<source>` and `<include>` on the same line, such as `<source><include/></source>`, the command prints `Could not find where to add the module entries in phpunit.xml: add them by hand.`, leaves the file unchanged and exits 0. The command prints `phpunit.xml updated with enabled module directories.` when it placed the entries. When it cannot find where to add them, it prints a warning, leaves the file unchanged and prints no success line.
+   See [`module:update-phpunit-coverage`](/laravel-modules/reference/commands/utility/#moduleupdate-phpunit-coverage) for supported `<source>` XML layouts and exit codes.
 
 2. Run the tests with coverage.
 
@@ -34,7 +34,7 @@ At the end, the coverage report of your application includes the code in `Module
    php artisan test --coverage
    ```
 
-   Without a coverage driver mode, the run prints `ERROR  Code coverage driver not available. Did you set Xdebug's coverage mode?` and exits with status 1. With Xdebug, set its mode for the run:
+   With Xdebug, enable coverage mode for the run:
 
    ```bash
    XDEBUG_MODE=coverage php artisan test --coverage
@@ -42,16 +42,16 @@ At the end, the coverage report of your application includes the code in `Module
 
 </Steps>
 
-Run the command again after you enable, disable, add or delete a module. The module tests must be in a test suite: see [Run the tests of a module](/laravel-modules/guides/testing/run-module-tests/).
+Re-run `php artisan module:update-phpunit-coverage` whenever you add, remove, enable, or disable a module. Make sure your module tests are part of a PHPUnit test suite; see [Run the tests of a module](/laravel-modules/guides/testing/run-module-tests/).
 
-### Check the result
+## Check the result
 
-Open `phpunit.xml` and look for the `Modules/Blog/app` entry. The coverage report lists file paths under `Modules/Blog/app`, not namespaces.
+Open `phpunit.xml` and confirm `./Modules/Blog/app/` appears under `<source><include>`. The coverage output lists files under `Modules/Blog/app`.
 
-If the command fails, its exit status tells why: `100` no `phpunit.xml`, `99` no statuses file, `97` empty or invalid XML in `phpunit.xml`, `98` the command cannot decode the statuses file. That happens when the file is empty or holds only whitespace, which the file activator accepts at boot, or when the file holds invalid JSON and the active activator is not `FileActivator`, so nothing else reads the file. With a custom activator and a valid file, the command succeeds. With `FileActivator` and non-empty invalid JSON, the application fails at boot with an `InvalidJsonException` and exit status 1.
+If the command exits with a non-zero status, check the exit code reference in [`module:update-phpunit-coverage`](/laravel-modules/reference/commands/utility/#moduleupdate-phpunit-coverage).
 
 ## Related
 
 - [`module:update-phpunit-coverage`](/laravel-modules/reference/commands/utility/#moduleupdate-phpunit-coverage)
-- [`activators.file.statuses-file`](/laravel-modules/reference/configuration/)
+- [`activators.file.statuses-file`](/laravel-modules/reference/configuration/#activators)
 - [Run the tests of a module](/laravel-modules/guides/testing/run-module-tests/)

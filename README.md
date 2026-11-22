@@ -38,7 +38,7 @@ composer require nwidart/laravel-modules
 The service provider and alias are registered automatically. To publish the config file (optional):
 
 ```bash
-php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider"
+php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
 ```
 
 ### Autoloading

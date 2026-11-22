@@ -5,11 +5,11 @@ description: Add language files and JSON translations to a module, use them with
 
 import { Steps } from '@astrojs/starlight/components';
 
-To translate the texts of the `Blog` module, add language files to the module and read them with the `blog::` namespace. You need an enabled `Blog` module. `module:make` does not create the `lang` folder, so you create it.
+To translate strings in the `Blog` module, add language files under `Modules/Blog/lang` and read them with the `blog::` namespace. You need an enabled `Blog` module. `module:make` does not create the `lang` folder by default, so create it first.
 
 <Steps>
 
-1. Create one file for each locale in `Modules/Blog/lang/<locale>/`.
+1. Create a PHP language file for each locale in `Modules/Blog/lang/<locale>/`.
 
    ```php title="Modules/Blog/lang/en/messages.php"
    <?php
@@ -27,7 +27,7 @@ To translate the texts of the `Blog` module, add language files to the module an
    ];
    ```
 
-2. Read the key with the namespace `blog`, the file name and the key.
+2. Read the translation using `<module>::<file>.<key>`.
 
    ```blade title="Modules/Blog/resources/views/index.blade.php"
    <x-blog::layouts.master>
@@ -35,9 +35,9 @@ To translate the texts of the `Blog` module, add language files to the module an
    </x-blog::layouts.master>
    ```
 
-   In PHP, call `__('blog::messages.welcome')` or `trans('blog::messages.welcome')`.
+   In PHP, use `__('blog::messages.welcome')` or `trans('blog::messages.welcome')`.
 
-3. To translate with the text as the key, add one JSON file for each locale in the same folder.
+3. Optional: add JSON translation files in `Modules/Blog/lang/` for string-keyed translations.
 
    ```json title="Modules/Blog/lang/fr.json"
    {
@@ -45,17 +45,17 @@ To translate the texts of the `Blog` module, add language files to the module an
    }
    ```
 
-   JSON translations have no namespace: `__('Read more')` reads them.
+   JSON translations have no module namespace; read them with `__('Read more')`.
 
-4. Compare the locales of the module.
+4. Check for missing keys across locales.
 
    ```bash
    php artisan module:lang Blog
    ```
 
-   The command compares the PHP language files and their keys. It does not compare JSON files. It reports each file and each key that exists in one locale and not in another, and exits with `1`. When the locales match, it prints only `Checking languages ...`.
+   This compares PHP language files across locales (it skips JSON files). If any file or key is missing in a locale, the command lists the differences and exits with `1`.
 
-5. Check the result. Read the keys in the `fr` locale:
+5. Check the result in the `fr` locale.
 
    ```bash
    php artisan tinker --execute="app()->setLocale('fr'); echo __('blog::messages.welcome').' | '.__('Read more');"
@@ -67,17 +67,28 @@ To translate the texts of the `Blog` module, add language files to the module an
 
 </Steps>
 
-## Publish the translations to the application
+## Auto-discover translations without `ModuleServiceProvider`
 
-To let translators edit the files in the application, publish them:
+Generated module providers extend `ModuleServiceProvider` and load module translations automatically. If a module does not extend `ModuleServiceProvider` (for example, a `--plain` module or one extending `Illuminate\Support\ServiceProvider`), enable `auto-discover.translations` in `config/modules.php` (default `false`):
+
+```php title="config/modules.php"
+'auto-discover' => [
+    'migrations' => true,
+    'translations' => true,
+],
+```
+
+## Publish translations to the application
+
+Publish a module's language files so translators can edit them in the application:
 
 ```bash
 php artisan module:publish-translation Blog
 ```
 
-The command copies the `lang` folder of the module to `lang/modules/blog`, JSON files included. It skips files that exist. Add `--force` to overwrite.
+This copies `Modules/Blog/lang` (including JSON files) to `lang/modules/blog`. Existing files are skipped unless you pass `--force`.
 
-The module reads `lang/modules/blog` instead of its own `lang` folder as soon as that folder exists. The published copy is then the only source, for PHP and JSON files alike: a key that exists only in the module prints the key itself, with no fallback to the module files.
+Once `lang/modules/blog` exists, the module loads translations exclusively from that directory for both PHP and JSON files, with no fallback to `Modules/Blog/lang`.
 
 ## Related
 

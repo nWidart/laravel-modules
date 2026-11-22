@@ -5,13 +5,13 @@ description: Generate a factory and a seeder in a module, call them from the mod
 
 import { Steps } from '@astrojs/starlight/components';
 
-To fill the `posts` table of the `Blog` module with test data, define a factory, call it from a seeder, and run the seeder of the module. You need the `Post` model and its factory from [Add Eloquent models to a module](/laravel-modules/guides/database/models/), and the migrated `posts` table.
+To populate the `posts` table of the `Blog` module with test data, define a factory, call it from a seeder, and run `module:seed`. You need the `Post` model and factory from [Add Eloquent models to a module](/laravel-modules/guides/database/models/) and the migrated `posts` table.
 
-`module:make` already created the main seeder, `Modules/Blog/database/seeders/BlogDatabaseSeeder.php`, with an empty `run()` method.
+`module:make` already generated `Modules/Blog/database/seeders/BlogDatabaseSeeder.php` with an empty `run()` method.
 
 <Steps>
 
-1. Define the factory. If you have no factory yet, run `php artisan module:make-factory Post Blog` first; it creates `Modules/Blog/database/factories/PostFactory.php`.
+1. Define the factory. If you do not have one yet, generate `Modules/Blog/database/factories/PostFactory.php` with `php artisan module:make-factory Post Blog`.
 
    ```php title="Modules/Blog/database/factories/PostFactory.php"
    public function definition(): array
@@ -23,13 +23,13 @@ To fill the `posts` table of the `Blog` module with test data, define a factory,
    }
    ```
 
-2. Generate a seeder. The command appends `Seeder` to the name.
+2. Generate a seeder. The command appends `Seeder` automatically.
 
    ```bash
    php artisan module:make-seed Post Blog
    ```
 
-   The command creates `Modules/Blog/database/seeders/PostSeeder.php`. Create three posts in its `run()` method:
+   This creates `Modules/Blog/database/seeders/PostSeeder.php`. Add your factory call to `run()`:
 
    ```php title="Modules/Blog/database/seeders/PostSeeder.php"
    <?php
@@ -48,7 +48,7 @@ To fill the `posts` table of the `Blog` module with test data, define a factory,
    }
    ```
 
-3. Call the seeder from the main seeder of the module.
+3. Call `PostSeeder` from the module's main database seeder.
 
    ```php title="Modules/Blog/database/seeders/BlogDatabaseSeeder.php"
    <?php
@@ -66,7 +66,7 @@ To fill the `posts` table of the `Blog` module with test data, define a factory,
    }
    ```
 
-4. Run the seeders of the module. `module:seed` runs `Modules\Blog\Database\Seeders\BlogDatabaseSeeder`.
+4. Run the module seeder.
 
    ```bash
    php artisan module:seed Blog
@@ -88,21 +88,21 @@ To fill the `posts` table of the `Blog` module with test data, define a factory,
       INFO  Module [Blog] seeded.
    ```
 
-   If a seeder fails or you cancel the confirmation in production, the command prints `ERROR  Module [Blog] seeding failed.` instead and exits with status 1.
+   If seeding fails or you decline the production confirmation, the command prints an error and exits with status `1`.
 
-5. Check the result. Count the posts:
+5. Check the result.
 
    ```bash
    php artisan tinker --execute="echo Modules\Blog\Models\Post::count();"
    ```
 
-   The count grows by three on each run: it prints `3` on an empty table.
+   The count increases by 3 on each run (starting at `3` on an empty table).
 
 </Steps>
 
 ## Run one seeder
 
-To run a single seeder instead of the main one, pass its class name. The class must be in the seeder namespace of the module:
+Pass `--class` with a class in the module's seeder namespace to run a single seeder:
 
 ```bash
 php artisan module:seed Blog --class=PostSeeder
@@ -110,15 +110,15 @@ php artisan module:seed Blog --class=PostSeeder
 
 ## Seed after migrating
 
-To run the migrations and then the seeders of a module, add `--seed` to `module:migrate`:
+Add `--seed` to `module:migrate` to seed the module right after migrating:
 
 ```bash
 php artisan module:migrate Blog --seed
 ```
 
-## Seed the modules with `db:seed`
+## Seed modules with `db:seed`
 
-To include the module in `php artisan db:seed`, call its main seeder from the seeder of your application:
+Call the module's main seeder from `database/seeders/DatabaseSeeder.php` to include it in `php artisan db:seed`:
 
 ```php title="database/seeders/DatabaseSeeder.php"
 public function run(): void

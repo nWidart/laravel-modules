@@ -3,35 +3,35 @@ title: Use the package with AI coding assistants
 description: The Laravel Boost guideline and skill that laravel-modules ships, how to turn them on, and the llms.txt files of this site.
 ---
 
-The package ships a guideline and a skill in the format of [Laravel Boost](https://github.com/laravel/boost), the Laravel package that gives AI coding assistants guidelines and skills for your application. Boost discovers them, and you opt in to install them. This page lists what they contain and how to turn them on. The site also publishes text files for language models.
+The package ships a guideline and a skill for [Laravel Boost](https://github.com/laravel/boost). Boost discovers package guidelines and skills automatically, and you opt in to install them. This site also publishes plain-text `llms.txt` files for language models.
 
 ## What the package ships
 
-The package ships two files in `resources/boost/`, in the repository and in the Composer install under `vendor/nwidart/laravel-modules/resources/boost/`.
+Two Blade templates ship under `resources/boost/` (installed at `vendor/nwidart/laravel-modules/resources/boost/`):
 
 | File | Kind | Content |
 | --- | --- | --- |
-| `resources/boost/guidelines/core.blade.php` | Guideline | Five lines: what the package is, `module:make ModuleName` to scaffold a module in `Modules/`, the `Modules\ModuleName` namespace pattern, and the rule to keep module logic in the module folder, not in `app/`. |
-| `resources/boost/skills/laravel-modules-development/SKILL.blade.php` | Skill `laravel-modules-development` | Example commands for creating, enabling and disabling modules, for the `module:make-*` generators, for module migrations and for Inertia, plus key conventions, such as the namespace, the `blog::index` view naming and the config key. |
+| `resources/boost/guidelines/core.blade.php` | Guideline | Seven bullets: modular layout, `module:make`, `Modules\ModuleName` namespaces, keeping logic out of `app/`, Actuator `$healthIndicators` (`module:make-health-indicator`), and the `modules` actuator endpoint (`GET /actuator/modules`). |
+| `resources/boost/skills/laravel-modules-development/SKILL.blade.php` | Skill (`laravel-modules-development`) | Commands and conventions for modules, generators (`module:make-config`, `module:make-job-middleware`, `--attributes`, `--json-api`), event discovery, health indicators, `GET /actuator/modules`, migrations, and Inertia v3. |
 
-The skill describes itself as the one to use for any task that mentions `module:make`, module commands or a `Modules/` folder. Both files are Blade templates. The skill calls `$assist->artisanCommand()` for each command.
+The skill activates for tasks mentioning `module:make`, module commands, or a `Modules/` directory. It renders commands through `$assist->artisanCommand()`.
 
-A guideline is loaded when the assistant starts. A skill is loaded when a task needs it. This is how Laravel Boost describes the two.
+In Laravel Boost, guidelines load at session start while skills load on demand.
 
 ## Turn the guideline and skill on
 
-Boost reads `resources/boost/guidelines/` and `resources/boost/skills/` in each package that your application requires. With Laravel Boost 2.10.4, the release checked for this page, it lists the package as `nwidart/laravel-modules (guidelines, skills)`. Boost does not install them until you choose them.
+Boost reads `resources/boost/guidelines/` and `resources/boost/skills/` from installed Composer packages. In Laravel Boost 2.10.4, it lists `nwidart/laravel-modules (guidelines, skills)` and waits for you to opt in.
 
-Install Boost, then pick the package in the prompt:
+Install Boost and select the package when prompted:
 
 ```bash
 composer require laravel/boost --dev
 php artisan boost:install
 ```
 
-Select `nwidart/laravel-modules` in the package prompt of `boost:install`. `boost:update` offers the same choice later.
+Pick `nwidart/laravel-modules` in the prompt (`boost:update` offers the same prompt later).
 
-To set the choice without the prompt, list the package in `boost.json` in the project root:
+To configure it without a prompt, add the package to `boost.json` in your project root:
 
 ```json title="boost.json"
 {
@@ -39,7 +39,7 @@ To set the choice without the prompt, list the package in `boost.json` in the pr
 }
 ```
 
-Run `php artisan boost:update` after you edit the file, then check that your assistant lists `laravel-modules-development` among its skills. See the [Laravel Boost documentation](https://laravel.com/docs/13.x/boost) for the commands of Boost itself.
+Run `php artisan boost:update`, then verify that your assistant lists `laravel-modules-development`. See the [Laravel Boost documentation](https://laravel.com/docs/13.x/boost) for Boost commands.
 
 ## Site files for language models
 
@@ -51,6 +51,6 @@ This site publishes plain-text versions of the documentation at the site root:
 | `llms-full.txt` | https://nwidart.github.io/laravel-modules/llms-full.txt |
 | `llms-small.txt` | https://nwidart.github.io/laravel-modules/llms-small.txt |
 
-Point an assistant at one of these when it needs the documentation. The `llms-small.txt` file is the compact version. The site build generates all three, so they match the pages you read.
+Point your assistant at one of these files when it needs full documentation context. `llms-small.txt` is the compact version. The site build generates all three from these pages.
 
-If an assistant's answer disagrees with [Artisan commands](/laravel-modules/reference/commands/) or [Configuration](/laravel-modules/reference/configuration/), trust those pages: they are checked against the code.
+When an assistant disagrees with [Artisan commands](/laravel-modules/reference/commands/) or [Configuration](/laravel-modules/reference/configuration/), trust those reference pages: they are verified against the source code.

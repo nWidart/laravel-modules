@@ -43,7 +43,7 @@ $blog->isEnabled(); // true
 | `setPath(string $path)` | `static` | Replaces the module folder of this instance. Writes nothing to disk. |
 | `getExtraPath(?string $path)` | `string` | The module folder, `/` and `$path`. The module folder alone when `$path` is `null` or empty. |
 | `getAppPath()` | `string` | The folder given by `modules.paths.app_folder` inside the module, without a trailing slash. The module folder when that folder does not exist. |
-| `getCachedServicesPath()` | `string` | The cache file of the module providers: the cached services file of the application with `services.php` replaced by `<snake_name>_module.php`. With `modules.vapor_maintenance_mode`, the cached config file with `config.php` replaced. Abstract in `Module`. |
+| `getCachedServicesPath()` | `string` | Provider cache path: the application's cached services path with `services.php` replaced by `<snake_name>_module.php`. Under `modules.vapor_maintenance_mode`, replaces `config.php` in the cached config path. Abstract in `Module`. |
 
 ## module.json and composer.json
 
@@ -81,7 +81,7 @@ The module asks the activator (see `activators` in [Configuration](/laravel-modu
 | --- | --- | --- |
 | `enable()` | `void` | Fires `enabling`, enables the module through the activator, fires `enabled`. |
 | `disable()` | `void` | Fires `disabling`, disables the module through the activator, fires `disabled`. |
-| `delete()` | `bool` | Fires `deleting`, removes the status of the module from the activator, deletes the module folder, fires `deleted`. Returns the result of the folder removal. The repository `delete()` also clears its scan cache. This method does not. |
+| `delete()` | `bool` | Fires `deleting`, removes the activator status, deletes the module folder, and fires `deleted`. Returns whether folder deletion succeeded. Does not clear the repository scan cache (unlike `Repository::delete()`). |
 | `fireEvent(string $event)` | `void` | Dispatches the event `modules.<lowername>.<event>` with the module as payload. See [Events](/laravel-modules/reference/api/events/). |
 | `registerAliases()` | `void` | Registers the `aliases` of `module.json` with Laravel's `AliasLoader`. Abstract in `Module`. |
 | `registerProviders()` | `void` | Loads the `providers` of `module.json` through Laravel's `ProviderRepository`. Abstract in `Module`. |

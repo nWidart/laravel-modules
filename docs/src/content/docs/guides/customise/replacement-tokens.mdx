@@ -5,7 +5,7 @@ description: Define a $TOKEN$ whose value a PHP class computes when module:make 
 
 import { Steps } from '@astrojs/starlight/components';
 
-To add a placeholder such as `$TABLE_PREFIX$` to the files `module:make` writes, create a replacement class and register it in `stubs.replacements`. This guide assumes the stubs are published and enabled: do the first three steps of [Customise the generator stubs](/laravel-modules/guides/customise/stubs/) first. The module `Blog` already exists.
+To compute a custom placeholder such as `$TABLE_PREFIX$` when `module:make` renders stubs, create a replacement class and register it in `stubs.replacements`. Prerequisites: an existing `Blog` module, plus published and enabled stubs (complete steps 1–3 of [Customise the generator stubs](/laravel-modules/guides/customise/stubs/)).
 
 <Steps>
 
@@ -15,9 +15,9 @@ To add a placeholder such as `$TABLE_PREFIX$` to the files `module:make` writes,
    php artisan module:make-replacement TablePrefix Blog
    ```
 
-   The file is `Modules/Blog/app/Console/Replacements/TablePrefix.php`.
+   This creates `Modules/Blog/app/Console/Replacements/TablePrefix.php`.
 
-2. Edit `handle()`. The generated body returns `strtolower($this->generator->getName())`, the lower-case name of the module that `module:make` is creating. Append the underscore to get a table prefix.
+2. Update `handle()` to return the replacement value. The generated method returns the lowercase name of the module being created; append an underscore for a table prefix.
 
    ```php title="Modules/Blog/app/Console/Replacements/TablePrefix.php"
    <?php
@@ -35,7 +35,7 @@ To add a placeholder such as `$TABLE_PREFIX$` to the files `module:make` writes,
    }
    ```
 
-3. Register the class under the stub that uses the token. The key is the upper-case token name. Keep the built-in names that the stub already used.
+3. Register the class under the stub key in `config/modules.php`. Use an uppercase token name as the key and keep the existing built-in tokens.
 
    ```php title="config/modules.php"
    'replacements' => [
@@ -47,7 +47,7 @@ To add a placeholder such as `$TABLE_PREFIX$` to the files `module:make` writes,
    ],
    ```
 
-4. Use the token in the stub.
+4. Insert the token in the published stub.
 
    ```php title="stubs/nwidart-stubs/scaffold/config.stub"
    <?php
@@ -58,7 +58,7 @@ To add a placeholder such as `$TABLE_PREFIX$` to the files `module:make` writes,
    ];
    ```
 
-5. Check the result. Create a module and read its config file.
+5. Check the result by generating a new module and inspecting its config file.
 
    ```bash
    php artisan module:make Shop
@@ -69,9 +69,9 @@ To add a placeholder such as `$TABLE_PREFIX$` to the files `module:make` writes,
 
 </Steps>
 
-The text your class returns is inserted as it is. In a JSON stub (`module.json` and `composer.json`), escape the value yourself, for example `\` as `\\` and `"` as `\"`. If the result is not valid JSON, `module:make` stops before it writes a file.
+The returned string is inserted verbatim. For JSON stubs (`module.json` and `composer.json`), escape backslashes and quotes yourself (`\\` and `\"`); invalid JSON aborts `module:make` before writing files.
 
-A replacement class applies to the stubs `module:make` renders: the entries of `stubs.files` and the `json` stub (`module.json`). The `module:make-*` generators do not read `stubs.replacements`.
+Replacement classes apply only to stubs rendered by `module:make` (`stubs.files` and `json`), not to `module:make-*` generators.
 
 ## Related
 

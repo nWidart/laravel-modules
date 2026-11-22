@@ -5,9 +5,9 @@ description: Generate a middleware class in a module, apply it to the routes of 
 
 import { Steps } from '@astrojs/starlight/components';
 
-To protect the routes of the `Blog` module with your own middleware, generate the class and apply it in the route file. You need an enabled `Blog` module with a public route; see [Add routes to a module](/laravel-modules/guides/http/routes/).
+To protect routes in the `Blog` module with custom middleware, generate the class and apply it in the module's route file. You need an enabled `Blog` module with a route (see [Add routes to a module](/laravel-modules/guides/http/routes/)).
 
-Laravel 13 has no `app/Http/Kernel.php`. You apply a middleware by its class name, or register an alias in `bootstrap/app.php`.
+Laravel 13 has no `app/Http/Kernel.php`. Apply middleware by class name or register an alias in `bootstrap/app.php`.
 
 <Steps>
 
@@ -17,9 +17,9 @@ Laravel 13 has no `app/Http/Kernel.php`. You apply a middleware by its class nam
    php artisan module:make-middleware EnsureIsAdmin Blog
    ```
 
-   The command creates `Modules/Blog/app/Http/Middleware/EnsureIsAdmin.php`. The class is `Modules\Blog\Http\Middleware\EnsureIsAdmin`. Its `handle()` method passes the request on.
+   This creates `Modules/Blog/app/Http/Middleware/EnsureIsAdmin.php` (`Modules\Blog\Http\Middleware\EnsureIsAdmin`).
 
-2. Add your check to `handle()`. This example allows only users whose `is_admin` attribute is true.
+2. Add your authorization check in `handle()`.
 
    ```php title="Modules/Blog/app/Http/Middleware/EnsureIsAdmin.php"
    <?php
@@ -40,7 +40,7 @@ Laravel 13 has no `app/Http/Kernel.php`. You apply a middleware by its class nam
    }
    ```
 
-3. Apply the middleware to the routes of the module by its class name.
+3. Apply the middleware by class name in `Modules/Blog/routes/web.php`.
 
    ```php title="Modules/Blog/routes/web.php"
    <?php
@@ -56,7 +56,7 @@ Laravel 13 has no `app/Http/Kernel.php`. You apply a middleware by its class nam
    });
    ```
 
-4. Check the result. `-v` lists the middleware of each route.
+4. Check the result. Pass `-v` to show each route's middleware.
 
    ```bash
    php artisan route:list --path=posts -v
@@ -72,13 +72,13 @@ Laravel 13 has no `app/Http/Kernel.php`. You apply a middleware by its class nam
               ⇂ web
    ```
 
-   The `api/v1/posts` route is there if you followed the routes guide. Its `api` group does not use the middleware.
+   The `api/v1/posts` route appears if you followed the routes guide; its `api` group does not include `EnsureIsAdmin`.
 
 </Steps>
 
 ## Register an alias
 
-To write `->middleware('blog.admin')` instead of the class name, register the alias in the `Application::configure()` chain of `bootstrap/app.php`:
+To use `->middleware('blog.admin')` instead of the full class name, register an alias in `bootstrap/app.php`:
 
 ```php title="bootstrap/app.php"
 ->withMiddleware(function (Middleware $middleware): void {
@@ -88,7 +88,7 @@ To write `->middleware('blog.admin')` instead of the class name, register the al
 })
 ```
 
-To keep the alias inside the module, register it in the module provider. The generated provider has no `boot()` method yet, so add the whole method. It must call `parent::boot()`: without it, the module does not register its views, translations, commands and migrations, and a page such as `/posts` fails with `No hint path defined for [blog].`
+To keep the alias inside the module, add a `boot()` method to the module service provider. Always call `parent::boot()`: without it, the module does not register its commands, scheduled commands, translations, views, health indicators, or migrations.
 
 ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
 use Illuminate\Support\Facades\Route;
@@ -102,13 +102,13 @@ public function boot(): void
 }
 ```
 
-Then use the alias in the route file:
+Apply the alias in your routes:
 
 ```php title="Modules/Blog/routes/web.php"
 Route::get('admin/posts', [PostController::class, 'index'])->middleware('blog.admin');
 ```
 
-The module routes already run in the `web` group, which `RouteServiceProvider` of the module applies. The routes of `routes/api.php` run in the `api` group.
+The module's `RouteServiceProvider` already wraps `routes/web.php` in the `web` middleware group and `routes/api.php` in the `api` group.
 
 ## Related
 
