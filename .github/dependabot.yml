@@ -37,3 +37,18 @@ updates:
     groups:
       github-actions:
         patterns: ["*"]
+
+  # The documentation site. Its dependencies are not part of the Composer package.
+  - package-ecosystem: npm
+    directory: "/docs"
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: chore
+      include: scope
+    # One pull request for all docs dependency updates, majors included.
+    groups:
+      docs:
+        patterns: ["*"]

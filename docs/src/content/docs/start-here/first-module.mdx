@@ -1,0 +1,310 @@
+---
+title: Your first module
+description: Build a Blog module in a new Laravel app. Create it, serve a page from it, add a model, test it, then disable and enable it.
+---
+
+import { Steps, FileTree } from '@astrojs/starlight/components';
+
+In this tutorial we build a `Blog` module that lists posts from the database. We start from a new Laravel 13 app with the package installed as described in [Installation](/laravel-modules/start-here/installation/), and the default SQLite database. The `composer` command must be on the `PATH`: `module:make` runs `composer dump-autoload`.
+
+<Steps>
+
+1. Create the module.
+
+   ```bash
+   php artisan module:make Blog
+   ```
+
+   The command ends with:
+
+   ```text
+   INFO  Module [Blog] created successfully.
+   ```
+
+2. Look at what the command generated in `Modules/Blog`.
+
+   <FileTree>
+
+   - Modules
+     - Blog
+       - app
+         - Http
+           - Controllers
+             - BlogController.php
+         - Providers
+           - BlogServiceProvider.php
+           - EventServiceProvider.php
+           - RouteServiceProvider.php
+       - config
+         - config.php
+       - database
+         - factories/
+         - migrations/
+         - seeders
+           - BlogDatabaseSeeder.php
+       - resources
+         - assets
+           - js
+             - app.js
+           - sass
+             - app.scss
+         - views
+           - components
+             - layouts
+               - master.blade.php
+           - index.blade.php
+       - routes
+         - api.php
+         - web.php
+       - tests
+         - Feature/
+         - Unit/
+       - composer.json
+       - module.json
+       - package.json
+       - vite.config.js
+
+   </FileTree>
+
+   The empty folders hold a `.gitkeep` file, which the tree does not show. `module:make` also wrote `modules_statuses.json` in the app root. The module is enabled. Check it:
+
+   ```bash
+   php artisan module:list
+   ```
+
+   ```text
+   Status / Name ........................................ Path / priority
+   [Enabled] Blog ...................................... Modules/Blog [0]
+   ```
+
+3. Open `Modules/Blog/routes/web.php`. The generated route needs a logged-in user, and a new app has no login page. Replace the file with a public route:
+
+   ```php
+   <?php
+
+   use Illuminate\Support\Facades\Route;
+   use Modules\Blog\Http\Controllers\BlogController;
+
+   Route::get('blogs', [BlogController::class, 'index'])->name('blog.index');
+   ```
+
+   List the route. `--except-path=api` leaves out the API routes of the module, which are under `api/`:
+
+   ```bash
+   php artisan route:list --path=blogs --except-path=api
+   ```
+
+   ```text
+   GET|HEAD   blogs ........ blog.index › Modules\Blog\Http\Controllers\BlogController@index
+
+                                                                  Showing [1] routes
+   ```
+
+4. Start the server and open `http://127.0.0.1:8000/blogs`.
+
+   ```bash
+   php artisan serve
+   ```
+
+   The page shows the heading "Hello World" and the line "Module: Blog". Leave the server running and open a second terminal for the next steps.
+
+5. Create the migration for a `posts` table.
+
+   ```bash
+   php artisan module:make-migration create_posts_table Blog --fields="title:string,body:text"
+   ```
+
+   The command creates `Modules/Blog/database/migrations/<timestamp>_create_posts_table.php`.
+
+6. Create the `Post` model.
+
+   ```bash
+   php artisan module:make-model Post Blog --fillable=title,body
+   ```
+
+   The command creates `Modules/Blog/app/Models/Post.php`.
+
+7. Run the migration of the module.
+
+   ```bash
+   php artisan module:migrate Blog
+   ```
+
+   ```text
+   Running Migration Blog Module ...........................................
+
+      INFO  Running migrations.
+
+     <timestamp>_create_posts_table ................................ <time> DONE
+   ```
+
+8. Open `Modules/Blog/database/seeders/BlogDatabaseSeeder.php` and replace its content:
+
+   ```php
+   <?php
+
+   namespace Modules\Blog\Database\Seeders;
+
+   use Illuminate\Database\Seeder;
+   use Modules\Blog\Models\Post;
+
+   class BlogDatabaseSeeder extends Seeder
+   {
+       public function run(): void
+       {
+           Post::create(['title' => 'Hello, modules', 'body' => 'This post lives in the Blog module.']);
+           Post::create(['title' => 'Second post', 'body' => 'Both posts come from the Post model.']);
+       }
+   }
+   ```
+
+   Run it once: a second run adds two more posts.
+
+   ```bash
+   php artisan module:seed Blog
+   ```
+
+   ```text
+      INFO  Seeding module.
+
+   Seeding Blog Module
+      INFO  Seeding database.
+
+     Modules\Blog\Database\Seeders\BlogDatabaseSeeder ............... RUNNING
+     Modules\Blog\Database\Seeders\BlogDatabaseSeeder ............ <time> DONE
+
+   Module [Blog] seeded.
+   ............................................................ <time> DONE
+   ```
+
+9. Open `Modules/Blog/app/Http/Controllers/BlogController.php` and replace its content:
+
+   ```php
+   <?php
+
+   namespace Modules\Blog\Http\Controllers;
+
+   use App\Http\Controllers\Controller;
+   use Modules\Blog\Models\Post;
+
+   class BlogController extends Controller
+   {
+       public function index()
+       {
+           return view('blog::index', ['posts' => Post::orderBy('id')->get()]);
+       }
+   }
+   ```
+
+10. Open `Modules/Blog/resources/views/index.blade.php` and replace its content:
+
+    ```blade
+    <x-blog::layouts.master>
+        <h1>Posts</h1>
+
+        @foreach ($posts as $post)
+            <article>
+                <h2>{{ $post->title }}</h2>
+                <p>{{ $post->body }}</p>
+            </article>
+        @endforeach
+    </x-blog::layouts.master>
+    ```
+
+    Reload `http://127.0.0.1:8000/blogs`. The page shows the heading "Posts" and two posts: "Hello, modules" and "Second post".
+
+11. Create a feature test.
+
+    ```bash
+    php artisan module:make-test PostIndexTest Blog --feature
+    ```
+
+    The command creates `Modules/Blog/tests/Feature/PostIndexTest.php`.
+
+12. Open the test file and replace its content:
+
+    ```php
+    <?php
+
+    namespace Modules\Blog\Tests\Feature;
+
+    use Illuminate\Foundation\Testing\RefreshDatabase;
+    use Modules\Blog\Models\Post;
+    use Tests\TestCase;
+
+    class PostIndexTest extends TestCase
+    {
+        use RefreshDatabase;
+
+        public function test_the_index_lists_posts(): void
+        {
+            Post::create(['title' => 'Written in a test', 'body' => 'Test body.']);
+
+            $this->get('/blogs')
+                ->assertOk()
+                ->assertSee('Written in a test');
+        }
+    }
+    ```
+
+    Run it:
+
+    ```bash
+    php artisan test Modules/Blog/tests/Feature/PostIndexTest.php
+    ```
+
+    ```text
+    PASS  Modules\Blog\Tests\Feature\PostIndexTest
+    ✓ the index lists posts
+
+    Tests:    1 passed (2 assertions)
+    Duration: <time>
+    ```
+
+13. Disable the module.
+
+    ```bash
+    php artisan module:disable Blog
+    ```
+
+    ```text
+       INFO  Disabling module.
+
+      Disabling Blog Module, old status: Enabled ................... <time> DONE
+    ```
+
+    List the route again:
+
+    ```bash
+    php artisan route:list --path=blogs --except-path=api
+    ```
+
+    ```text
+    ERROR  Your application doesn't have any routes matching the given criteria.
+    ```
+
+    Reload `http://127.0.0.1:8000/blogs`. The page shows a 404 error.
+
+14. Enable the module.
+
+    ```bash
+    php artisan module:enable Blog
+    ```
+
+    ```text
+       INFO  Enabling module.
+
+      Enabling Blog Module, old status: Disabled ................... <time> DONE
+    ```
+
+    ```bash
+    php artisan route:list --path=blogs --except-path=api
+    ```
+
+    The route `blog.index` is back, and `http://127.0.0.1:8000/blogs` shows the two posts again.
+
+</Steps>
+
+We now have a module that owns its route, controller, model, migration, seeder, view and test, and we can switch it off and on.
+
+To go further, see [Artisan commands](/laravel-modules/reference/commands/) for the other generators and [module.json](/laravel-modules/reference/module-json/) for the manifest.

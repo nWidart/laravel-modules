@@ -1,0 +1,107 @@
+---
+title: Installation
+description: Install the package, set up autoloading with the Composer merge plugin, optionally publish the configuration, and check the install.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To use Laravel Modules, install the package with Composer and register the module autoloading in the `composer.json` of your application.
+
+## Requirements
+
+- PHP 8.3 or later, with the `dom`, `json` and `simplexml` extensions.
+- Laravel 13 for the current version of the package. See [Versions](#versions) for other Laravel releases.
+
+## Install the package
+
+<Steps>
+
+1. Require the package.
+
+   ```bash
+   composer require nwidart/laravel-modules
+   ```
+
+   The package requires `wikimedia/composer-merge-plugin`. Composer asks whether to trust it:
+
+   ```text
+   Do you trust "wikimedia/composer-merge-plugin" to execute code and wish to enable it now? (writes "allow-plugins" to composer.json) [y,n,d,?]
+   ```
+
+   Answer `y`. Composer adds this to `composer.json`:
+
+   ```json
+   "config": {
+       "allow-plugins": {
+           "wikimedia/composer-merge-plugin": true
+       }
+   }
+   ```
+
+   If you answered `n`, Composer writes the plugin with the value `false`: change it to `true`. If you answered `d`, or Composer did not ask, add the entry yourself. Modules are not autoloaded while the plugin is not allowed.
+
+   Laravel discovers the service provider and the `Module` alias automatically.
+
+2. Tell the plugin where the modules are. Add the `merge-plugin` entry to the `extra` section of `composer.json`. The marked lines are the ones to add; the other lines are the existing content of `extra`:
+
+   ```json ins={4-9}
+   "extra": {
+       "laravel": {
+           "dont-discover": []
+       },
+       "merge-plugin": {
+           "include": [
+               "Modules/*/composer.json"
+           ]
+       }
+   },
+   ```
+
+   The glob must match the folder in `paths.modules`. See [Configuration](/laravel-modules/reference/configuration/#paths).
+
+   The plugin merges the `composer.json` of each module into the autoload configuration of the application.
+
+3. Regenerate the autoloader.
+
+   ```bash
+   composer dump-autoload
+   ```
+
+4. Optional: publish the configuration file to `config/modules.php`.
+
+   ```bash
+   php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
+   ```
+
+   The package works without it. See [Configuration](/laravel-modules/reference/configuration/) for every key.
+
+5. Check the install.
+
+   ```bash
+   php artisan module:list
+   ```
+
+   With no module yet, the command prints only the header line:
+
+   ```text
+   Status / Name ........................................ Path / priority
+   ```
+
+</Steps>
+
+If you used the `"Modules\\": "modules/"` autoload entry of an older version, remove it from `composer.json`. It is no longer needed.
+
+To create the first module, follow [Your first module](/laravel-modules/start-here/first-module/).
+
+## Versions
+
+Each major version of the package follows one Laravel major version.
+
+| Laravel | laravel-modules |
+| --- | --- |
+| 13 | `^13.0` |
+| 12 | `^12.0` |
+| 11 | `^11.0` |
+| 10 | `^10.0` |
+
+Older Laravel versions use the matching major: Laravel 5.4 uses `^1.0`, Laravel 5.5 uses `^2.0`, and so on through Laravel 9 with `^9.0`.

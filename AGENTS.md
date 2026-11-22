@@ -38,6 +38,12 @@ Instead:
 - Save work with a temporary commit: `git commit -m "wip"`, then `git reset --soft HEAD~1` to undo it.
 - Use a separate worktree.
 
+## Documentation site
+
+The documentation site is the Astro and Starlight app in `docs/`. Pages are in `docs/src/content/docs/`. See `docs/README.md` to run and build it.
+
+A change to user-facing behaviour (commands, options, config, stubs) updates the matching page under `docs/src/content/docs/` in the same PR. `npm run build` in `docs/` must pass.
+
 ## Learnings
 
 Before exploring, read the `.trail/learnings/` files that bear on your task. They are short notes from earlier work sessions: what was decided, what was ruled out, and what to watch out for. Commit a new learning with the change it came from.

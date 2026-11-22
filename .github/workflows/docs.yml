@@ -1,0 +1,66 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+# A newer push to the same pull request cancels its build. Runs on master queue instead.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      # withastro/action does not check out the repository. Full history lets Starlight
+      # read each page's "Last updated" date from git.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # Installs with npm (from docs/package-lock.json), runs `npm run build` (which runs the
+      # links validator) and uploads docs/dist as the Pages artifact.
+      - name: Build site
+        uses: withastro/action@v6
+        with:
+          path: docs
+
+  deploy:
+    name: Deploy
+    needs: build
+    # Pull requests only build. A manual run deploys only from master.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # One deploy at a time. A running deploy is never cancelled.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
