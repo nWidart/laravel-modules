@@ -1,0 +1,90 @@
+---
+title: Create and run module migrations
+description: Generate a migration in a module, run it with php artisan migrate or module:migrate, roll it back, and publish it to the application.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To create the `posts` table for the `Blog` module, generate a migration inside the module and run it. You need an enabled `Blog` module and a configured database.
+
+<Steps>
+
+1. Generate the migration. The first word of the name selects the stub: `create` writes `Schema::create()`.
+
+   ```bash
+   php artisan module:make-migration create_posts_table Blog --fields="title:string,body:text"
+   ```
+
+   The command creates `Modules/Blog/database/migrations/<timestamp>_create_posts_table.php`. `--fields` adds one column for each `column:type` pair:
+
+   ```php title="Modules/Blog/database/migrations/<timestamp>_create_posts_table.php"
+   Schema::create('posts', function (Blueprint $table) {
+       $table->id();
+       $table->string('title');
+       $table->text('body');
+       $table->timestamps();
+   });
+   ```
+
+2. Run the migrations. `php artisan migrate` runs the pending migrations of the application and of every enabled module.
+
+   ```bash
+   php artisan migrate
+   ```
+
+   To run only the migrations of the module, use `module:migrate`:
+
+   ```bash
+   php artisan module:migrate Blog
+   ```
+
+3. Check the result.
+
+   ```bash
+   php artisan module:migrate-status Blog
+   ```
+
+   ```text
+   Migration name .............................................. Batch / Status
+   <timestamp>_create_posts_table ..................................... [1] Ran
+   ```
+
+</Steps>
+
+## Add a column later
+
+To change an existing table, name the migration after the action. `add_slug_to_posts_table` selects the `add` stub and the table `posts`:
+
+```bash
+php artisan module:make-migration add_slug_to_posts_table Blog --fields="slug:string:nullable"
+```
+
+The migration adds `$table->string('slug')->nullable()` in `up()` and drops the column in `down()`. Run it with `php artisan migrate` or `php artisan module:migrate Blog`.
+
+## Roll back
+
+To undo the last batch of the module, run:
+
+```bash
+php artisan module:migrate-rollback Blog
+```
+
+`module:migrate` puts each module in its own batch. `php artisan migrate` puts everything it runs in one batch. To undo all migrations of the module, run `php artisan module:migrate-reset Blog`. To reset and run them again, run `php artisan module:migrate-refresh Blog`. In the `production` environment these commands ask for confirmation.
+
+## Publish the migrations to the application
+
+To move the migrations of the module into the application, for example before you remove the module, run:
+
+```bash
+php artisan module:publish-migration Blog
+```
+
+The command copies the files to `database/migrations` and keeps their names. It skips files that exist. Add `--force` to overwrite them. A migration that exists in both places has one name, so the migrator runs it once.
+
+## Related
+
+- [Database commands](/laravel-modules/reference/commands/database/): every `module:migrate*` command and option.
+- [Module migrations and `php artisan migrate`](/laravel-modules/reference/commands/database/#module-migrations-and-php-artisan-migrate)
+- [`module:make-migration`](/laravel-modules/reference/commands/generators/#modulemake-migration) and [`module:publish-migration`](/laravel-modules/reference/commands/publish/#modulepublish-migration)
+- [Add Eloquent models to a module](/laravel-modules/guides/database/models/)
+- [Seed a module with factories and seeders](/laravel-modules/guides/database/factories-and-seeders/)

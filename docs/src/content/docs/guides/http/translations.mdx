@@ -1,0 +1,87 @@
+---
+title: Translate a module
+description: Add language files and JSON translations to a module, use them with the blog namespace, and publish them to the application.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To translate the texts of the `Blog` module, add language files to the module and read them with the `blog::` namespace. You need an enabled `Blog` module. `module:make` does not create the `lang` folder, so you create it.
+
+<Steps>
+
+1. Create one file for each locale in `Modules/Blog/lang/<locale>/`.
+
+   ```php title="Modules/Blog/lang/en/messages.php"
+   <?php
+
+   return [
+       'welcome' => 'Welcome to the blog',
+   ];
+   ```
+
+   ```php title="Modules/Blog/lang/fr/messages.php"
+   <?php
+
+   return [
+       'welcome' => 'Bienvenue sur le blog',
+   ];
+   ```
+
+2. Read the key with the namespace `blog`, the file name and the key.
+
+   ```blade title="Modules/Blog/resources/views/index.blade.php"
+   <x-blog::layouts.master>
+       <h1>{{ __('blog::messages.welcome') }}</h1>
+   </x-blog::layouts.master>
+   ```
+
+   In PHP, call `__('blog::messages.welcome')` or `trans('blog::messages.welcome')`.
+
+3. To translate with the text as the key, add one JSON file for each locale in the same folder.
+
+   ```json title="Modules/Blog/lang/fr.json"
+   {
+       "Read more": "Lire la suite"
+   }
+   ```
+
+   JSON translations have no namespace: `__('Read more')` reads them.
+
+4. Compare the locales of the module.
+
+   ```bash
+   php artisan module:lang Blog
+   ```
+
+   The command reports each file and each key that exists in one locale and not in another, and exits with `1`. When the locales match, it prints only `Checking languages ...`.
+
+5. Check the result. Read the keys in the `fr` locale:
+
+   ```bash
+   php artisan tinker --execute="app()->setLocale('fr'); echo __('blog::messages.welcome').' | '.__('Read more');"
+   ```
+
+   ```text
+   Bienvenue sur le blog | Lire la suite
+   ```
+
+</Steps>
+
+## Publish the translations to the application
+
+To let translators edit the files in the application, publish them:
+
+```bash
+php artisan module:publish-translation Blog
+```
+
+The command copies the `lang` folder of the module to `lang/modules/blog`. It skips files that exist. Add `--force` to overwrite.
+
+The module reads `lang/modules/blog` instead of its own `lang` folder as soon as that folder exists. The published folder replaces the module folder as a whole: keys missing from the published files do not fall back to the module files.
+
+## Related
+
+- [`module:publish-translation`](/laravel-modules/reference/commands/publish/#modulepublish-translation) and [`module:lang`](/laravel-modules/reference/commands/module-management/#modulelang)
+- [Module service provider: translations](/laravel-modules/reference/api/module-service-provider/#translations)
+- [Configuration: `auto-discover`](/laravel-modules/reference/configuration/#auto-discover)
+- [Use views and Blade components in a module](/laravel-modules/guides/http/views-and-components/)

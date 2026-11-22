@@ -1,0 +1,82 @@
+---
+title: Use events and listeners in a module
+description: Generate an event and a listener in a module, map them in the module EventServiceProvider and check the mapping with event:list.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To run a listener when the `Blog` module publishes a post, generate the event and the listener and map them in the `EventServiceProvider` of the module. You need an enabled `Blog` module. `module:make` created `Modules/Blog/app/Providers/EventServiceProvider.php` and the main provider registers it.
+
+<Steps>
+
+1. Generate the event.
+
+   ```bash
+   php artisan module:make-event PostPublished Blog
+   ```
+
+   The command creates `Modules/Blog/app/Events/PostPublished.php`, the class `Modules\Blog\Events\PostPublished`.
+
+2. Generate the listener for the event. `--event` types the `handle()` parameter. Add `--queued` to get a listener that implements `ShouldQueue`.
+
+   ```bash
+   php artisan module:make-listener NotifySubscribers Blog --event=PostPublished --queued
+   ```
+
+   The command creates `Modules/Blog/app/Listeners/NotifySubscribers.php`. The `handle()` method receives a `Modules\Blog\Events\PostPublished`. `--event` takes the class name as `PostPublished`, which resolves in the `Events` namespace of the module, or a fully qualified name that starts with `\`.
+
+3. Map the event to the listener in `$listen`.
+
+   ```php title="Modules/Blog/app/Providers/EventServiceProvider.php"
+   protected $listen = [
+       \Modules\Blog\Events\PostPublished::class => [
+           \Modules\Blog\Listeners\NotifySubscribers::class,
+       ],
+   ];
+   ```
+
+4. Dispatch the event where the post is published.
+
+   ```php
+   use Modules\Blog\Events\PostPublished;
+
+   PostPublished::dispatch();
+   ```
+
+5. Check the result.
+
+   ```bash
+   php artisan event:list --event=PostPublished
+   ```
+
+   ```text
+   Modules\Blog\Events\PostPublished ..........................................
+   ⇂ Modules\Blog\Listeners\NotifySubscribers (ShouldQueue)
+   ```
+
+</Steps>
+
+## Event discovery does not cover modules
+
+The generated `EventServiceProvider` sets `$shouldDiscoverEvents = true`. That has no effect: Laravel discovers listeners only in the provider class `Illuminate\Foundation\Support\Providers\EventServiceProvider`, and only in `app/Listeners` of the application. It never scans `Modules/Blog/app/Listeners`. Map every module listener in `$listen`, as in step 3.
+
+To skip the provider, register the listener in the `boot()` method of the module provider with `Event::listen()`. The provider must call `parent::boot()`:
+
+```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
+use Illuminate\Support\Facades\Event;
+use Modules\Blog\Events\PostPublished;
+use Modules\Blog\Listeners\NotifySubscribers;
+
+public function boot(): void
+{
+    parent::boot();
+
+    Event::listen(PostPublished::class, NotifySubscribers::class);
+}
+```
+
+## Related
+
+- [`module:make-event`](/laravel-modules/reference/commands/generators/#modulemake-event), [`module:make-listener`](/laravel-modules/reference/commands/generators/#modulemake-listener) and [`module:make-event-provider`](/laravel-modules/reference/commands/generators/#modulemake-event-provider)
+- [React to module lifecycle events](/laravel-modules/guides/console-and-events/lifecycle-events/)
+- [Add Artisan commands to a module](/laravel-modules/guides/console-and-events/commands/)

@@ -1,0 +1,124 @@
+---
+title: Add Eloquent models to a module
+description: Generate a model with module:make-model, give it a factory that Laravel can find with UseFactory, and relate it to a model of another module.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To get a `Post` model with a factory in the `Blog` module, generate both with one command. You need an enabled `Blog` module and the `posts` table from [Create and run module migrations](/laravel-modules/guides/database/migrations/).
+
+<Steps>
+
+1. Generate the model and its factory.
+
+   ```bash
+   php artisan module:make-model Post Blog --fillable=title,body -f
+   ```
+
+   The command creates `Modules/Blog/app/Models/Post.php` and `Modules/Blog/database/factories/PostFactory.php`. `-f` is `--factory`.
+
+   ```php title="Modules/Blog/app/Models/Post.php"
+   <?php
+
+   namespace Modules\Blog\Models;
+
+   use Illuminate\Database\Eloquent\Attributes\UseFactory;
+   use Illuminate\Database\Eloquent\Factories\HasFactory;
+   use Illuminate\Database\Eloquent\Model;
+   use Modules\Blog\Database\Factories\PostFactory;
+
+   #[UseFactory(PostFactory::class)]
+   class Post extends Model
+   {
+       /** @use HasFactory<PostFactory> */
+       use HasFactory;
+
+       /**
+        * The attributes that are mass assignable.
+        */
+       protected $fillable = ["title","body"];
+   }
+   ```
+
+   The `#[UseFactory]` attribute is required. Laravel guesses the factory of `Modules\Blog\Models\Post` as `Database\Factories\Modules\Blog\Models\PostFactory`, which does not exist. The attribute names the module factory, so `Post::factory()` finds it.
+
+2. Fill the `definition()` of the factory.
+
+   ```php title="Modules/Blog/database/factories/PostFactory.php"
+   public function definition(): array
+   {
+       return [
+           'title' => fake()->sentence(),
+           'body' => fake()->paragraph(),
+       ];
+   }
+   ```
+
+3. Check the result. Show the model, then create a post with the factory:
+
+   ```bash
+   php artisan model:show 'Modules\Blog\Models\Post'
+   ```
+
+   ```text
+   Modules\Blog\Models\Post ...................................................
+   Database ............................................................ sqlite
+   Table ................................................................ posts
+   ```
+
+   ```bash
+   php artisan tinker --execute="echo Modules\Blog\Models\Post::factory()->create()->title;"
+   ```
+
+   The command prints the title of the new post.
+
+</Steps>
+
+## Generate more files with the model
+
+Each flag runs another generator after the model is written:
+
+| Flag | Also creates |
+| --- | --- |
+| `-m` | a migration `create_posts_table` |
+| `-c` | `PostController` |
+| `-s` | `PostSeeder` |
+
+```bash
+php artisan module:make-model Post Blog -mfcs
+```
+
+Without `-f`, the model has no `HasFactory` trait. To add a factory to an existing model, run `php artisan module:make-factory Post Blog`, then add the `#[UseFactory(PostFactory::class)]` attribute and the `HasFactory` trait as in step 1.
+
+## Relate a model to a model of another module
+
+To relate `Post` of `Blog` to `Product` of `Shop`, import the class of the other module:
+
+```php title="Modules/Blog/app/Models/Post.php"
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Shop\Models\Product;
+
+public function product(): BelongsTo
+{
+    return $this->belongsTo(Product::class);
+}
+```
+
+```php title="Modules/Shop/app/Models/Product.php"
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Blog\Models\Post;
+
+public function posts(): HasMany
+{
+    return $this->hasMany(Post::class);
+}
+```
+
+A foreign key needs the table of the other module. `php artisan migrate` runs migrations in the order of their file names, which start with the timestamp. Create the migration that adds `product_id` after the migration of `products`. Then the table exists when the key is created.
+
+## Related
+
+- [`module:make-model`](/laravel-modules/reference/commands/generators/#modulemake-model) and [`module:make-factory`](/laravel-modules/reference/commands/generators/#modulemake-factory): all flags.
+- [Create and run module migrations](/laravel-modules/guides/database/migrations/)
+- [Seed a module with factories and seeders](/laravel-modules/guides/database/factories-and-seeders/)
+- [Prune module models](/laravel-modules/guides/database/prune-models/)

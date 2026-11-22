@@ -1,0 +1,53 @@
+---
+title: Schedule tasks from a module
+description: Define scheduled tasks in the module provider with configureSchedules() and check them with schedule:list.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To run a task of the `Blog` module on a schedule, override `configureSchedules()` in the module provider. You need an enabled `Blog` module and a command to schedule; see [Add Artisan commands to a module](/laravel-modules/guides/console-and-events/commands/).
+
+<Steps>
+
+1. Open the module provider. The generated file has a commented `configureSchedules()` method and already imports `Illuminate\Console\Scheduling\Schedule`. Uncomment the method and schedule the command:
+
+   ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
+   use Illuminate\Console\Scheduling\Schedule;
+
+   protected function configureSchedules(Schedule $schedule): void
+   {
+       $schedule->command('blog:prune-old')->daily();
+   }
+   ```
+
+   The method must be `protected`, with the `Schedule` parameter.
+
+2. Check the result.
+
+   ```bash
+   php artisan schedule:list
+   ```
+
+   ```text
+   0 0 * * *  php artisan blog:prune-old .......... Next Due: <time>
+   ```
+
+</Steps>
+
+## Schedule a command that takes arguments
+
+To pass arguments, give them as an array:
+
+```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
+$schedule->command('module:prune', ['Blog'])->daily();
+```
+
+## When the schedule is built
+
+`configureSchedules()` does not run on web requests. It runs when something resolves the `Schedule`: `schedule:run`, `schedule:list` and similar commands. It runs after every provider has booted. The schedule exists only while the module is enabled.
+
+## Related
+
+- [Module service provider: methods](/laravel-modules/reference/api/module-service-provider/#methods): `registerCommandSchedules()` and `configureSchedules()`.
+- [Add Artisan commands to a module](/laravel-modules/guides/console-and-events/commands/)
+- [Prune module models](/laravel-modules/guides/database/prune-models/)

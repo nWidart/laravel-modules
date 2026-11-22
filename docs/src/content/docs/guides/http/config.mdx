@@ -1,0 +1,79 @@
+---
+title: Give a module its own configuration
+description: Add config files to a module with module:make-config, read their values by key, and publish them to the application.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To give the `Blog` module its own settings, add values to its `config/config.php` or to a second config file, and read them with `config()`. You need an enabled `Blog` module. A new module has `Modules/Blog/config/config.php`, which holds `'name' => 'Blog'`.
+
+The module provider registers every PHP file of the module `config` folder. The file name decides the config key:
+
+| File | Key prefix |
+| --- | --- |
+| `config/config.php` | `blog` |
+| `config/settings.php` | `blog.settings` |
+
+<Steps>
+
+1. Add a value to `config/config.php`.
+
+   ```php title="Modules/Blog/config/config.php"
+   <?php
+
+   return [
+       'name' => 'Blog',
+       'posts_per_page' => 15,
+   ];
+   ```
+
+2. To keep a group of settings apart, create a second file.
+
+   ```bash
+   php artisan module:make-config settings Blog
+   ```
+
+   The command creates `Modules/Blog/config/settings.php` with an empty array. Add a value:
+
+   ```php title="Modules/Blog/config/settings.php"
+   <?php
+
+   return [
+       'per_page' => 10,
+   ];
+   ```
+
+3. Check the result. List the keys, then read one:
+
+   ```bash
+   php artisan config:show blog
+   ```
+
+   ```text
+   blog .......................................................................
+   name .................................................................. Blog
+   posts_per_page .......................................................... 15
+   settings ⇁ per_page ..................................................... 10
+   ```
+
+   In code, call `config('blog.posts_per_page')` and `config('blog.settings.per_page')`.
+
+</Steps>
+
+## Publish the config files
+
+To copy the config files of the module into the application, run:
+
+```bash
+php artisan module:publish-config Blog
+```
+
+The command creates `config/blog.php` and `config/blog/settings.php`. Add `--force` to overwrite files that exist.
+
+The module merges its own values over the published ones. A value that the module file defines wins over the same key in `config/blog.php`, so editing a published copy does not change that key. A key that only the published file defines stays. To change a value that the module defines, edit the module file.
+
+## Related
+
+- [`module:make-config`](/laravel-modules/reference/commands/generators/#modulemake-config) and [`module:publish-config`](/laravel-modules/reference/commands/publish/#modulepublish-config)
+- [Module service provider: config files](/laravel-modules/reference/api/module-service-provider/#config-files)
+- [Use views and Blade components in a module](/laravel-modules/guides/http/views-and-components/)
