@@ -60,11 +60,15 @@ class ModuleServiceProviderOutsideConsoleTest extends BaseTestCase
     {
         $this->writeModuleConfig('config.php', ['name' => 'Blog']);
         $this->writeModuleConfig('settings.php', ['theme' => 'light']);
-        config(['blog' => ['name' => 'Cached Blog']]);
+        config([
+            'blog' => ['name' => 'Cached Blog'],
+            // Resolving the module config directory would fail with this path.
+            'modules.paths.generator.config.path' => null,
+        ]);
         $this->app->instance('config_loaded_from_cache', true);
 
         $provider = $this->moduleProvider();
-        $provider->registerModuleConfig();
+        $provider->register();
 
         $this->assertSame([], ServiceProvider::pathsToPublish($provider::class, 'config'));
         $this->assertSame(['name' => 'Cached Blog'], config('blog'));
@@ -76,7 +80,7 @@ class ModuleServiceProviderOutsideConsoleTest extends BaseTestCase
         $this->writeModuleConfig('settings.php', ['theme' => 'light']);
 
         $provider = $this->moduleProvider();
-        $provider->registerModuleConfig();
+        $provider->register();
 
         $this->assertSame('Blog', config('blog.name'));
         $this->assertSame('light', config('blog.settings.theme'));
@@ -135,11 +139,6 @@ class ModuleServiceProviderOutsideConsoleTest extends BaseTestCase
             protected string $name = 'Blog';
 
             protected string $nameLower = 'blog';
-
-            public function registerModuleConfig(): void
-            {
-                $this->registerConfig();
-            }
 
             public function registerModuleViews(): void
             {

@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Support\ModuleServiceProvider;
 use Nwidart\Modules\Tests\BaseTestCase;
+use Nwidart\Modules\Tests\Support\Fixtures\ModuleConfigReadingProvider;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 class ModuleServiceProviderTest extends BaseTestCase
@@ -38,6 +39,107 @@ class ModuleServiceProviderTest extends BaseTestCase
     {
         $this->app[RepositoryInterface::class]->delete('Blog');
         parent::tearDown();
+    }
+
+    public function test_sub_providers_can_read_module_config_in_register()
+    {
+        $this->writeModuleConfig('config.php', ['name' => 'Blog']);
+
+        $this->app->register(new class($this->app) extends ModuleServiceProvider
+        {
+            protected string $name = 'Blog';
+
+            protected string $nameLower = 'blog';
+
+            protected array $providers = [ModuleConfigReadingProvider::class];
+        });
+
+        $this->assertSame('Blog', $this->app->getProvider(ModuleConfigReadingProvider::class)->moduleName);
+    }
+
+    public function test_later_providers_can_read_module_config_before_module_boot()
+    {
+        $this->writeModuleConfig('config.php', ['name' => 'Blog']);
+
+        // Testbench has already booted, so calling register() directly keeps the module's boot() pending.
+        $this->moduleProvider()->register();
+        $reader = $this->app->register(ModuleConfigReadingProvider::class);
+
+        $this->assertSame('Blog', $reader->moduleName);
+    }
+
+    public function test_boot_merges_config_when_register_does_not_call_parent()
+    {
+        $this->writeModuleConfig('config.php', ['name' => 'Blog']);
+        $provider = new class($this->app) extends ModuleServiceProvider
+        {
+            protected string $name = 'Blog';
+
+            protected string $nameLower = 'blog';
+
+            public function register(): void {}
+        };
+
+        $provider->booting(fn () => $this->assertNull(config('blog.name')));
+        $this->app->register($provider);
+
+        $this->assertSame('Blog', config('blog.name'));
+        $this->assertSame(
+            [$this->configPath.'/config.php' => config_path('blog.php')],
+            ServiceProvider::pathsToPublish($provider::class, 'config')
+        );
+    }
+
+    public function test_boot_skips_config_already_registered_by_the_base_provider()
+    {
+        $this->writeModuleConfig('config.php', ['name' => 'Blog']);
+        $provider = $this->registerModuleConfig();
+
+        $this->writeModuleConfig('config.php', ['name' => 'Blog', 'late_default' => true]);
+        $provider->boot();
+
+        $this->assertSame(['name' => 'Blog'], config('blog'));
+    }
+
+    public function test_explicitly_registering_config_again_in_boot_preserves_values_and_publish_paths()
+    {
+        $this->writeModuleConfig('config.php', ['name' => 'Blog', 'settings' => ['theme' => 'light']]);
+        $this->writeModuleConfig('nested/options.php', ['tags' => ['a', 'b'], 'cache' => ['store' => 'file']]);
+        config(['blog' => [
+            'settings' => ['theme' => 'dark'],
+            'nested' => ['options' => ['tags' => ['x'], 'cache' => []]],
+        ]]);
+
+        $provider = new class($this->app) extends ModuleServiceProvider
+        {
+            protected string $name = 'Blog';
+
+            protected string $nameLower = 'blog';
+
+            public function boot(): void
+            {
+                $this->registerConfig();
+            }
+        };
+
+        $provider->register();
+        $values = config('blog');
+        $paths = ServiceProvider::pathsToPublish($provider::class, 'config');
+
+        $this->assertSame([
+            'name' => 'Blog',
+            'settings' => ['theme' => 'dark'],
+            'nested' => ['options' => ['tags' => ['x'], 'cache' => []]],
+        ], $values);
+        $this->assertSame([
+            $this->configPath.'/config.php' => config_path('blog.php'),
+            $this->configPath.'/nested/options.php' => config_path('blog/nested/options.php'),
+        ], $paths);
+
+        $provider->boot();
+
+        $this->assertSame($values, config('blog'));
+        $this->assertSame($paths, ServiceProvider::pathsToPublish($provider::class, 'config'));
     }
 
     public function test_app_config_values_override_module_defaults()
@@ -297,7 +399,7 @@ class ModuleServiceProviderTest extends BaseTestCase
     private function registerModuleConfig(): ModuleServiceProvider
     {
         $provider = $this->moduleProvider();
-        $provider->registerModuleConfig();
+        $provider->register();
 
         return $provider;
     }
@@ -309,11 +411,6 @@ class ModuleServiceProviderTest extends BaseTestCase
             protected string $name = 'Blog';
 
             protected string $nameLower = 'blog';
-
-            public function registerModuleConfig(): void
-            {
-                $this->registerConfig();
-            }
 
             public function registerModuleViews(): void
             {

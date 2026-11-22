@@ -88,7 +88,7 @@ To write `->middleware('blog.admin')` instead of the class name, register the al
 })
 ```
 
-To keep the alias inside the module, register it in the module provider. The generated provider has no `boot()` method yet, so add the whole method. It must call `parent::boot()`: without it, the module does not register its views, translations, config, commands and migrations, and a page such as `/posts` fails with `No hint path defined for [blog].`
+To keep the alias inside the module, register it in the module provider. The generated provider has no `boot()` method yet, so add the whole method. It must call `parent::boot()`: without it, the module does not register its views, translations, commands and migrations, and a page such as `/posts` fails with `No hint path defined for [blog].`
 
 ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
 use Illuminate\Support\Facades\Route;

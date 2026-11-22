@@ -21,8 +21,8 @@ The constructor throws `LogicException` with the message `Module service provide
 
 | Signature | Description |
 | --- | --- |
-| `boot(): void` | Public. Calls, in order: `registerCommands()`, `registerCommandSchedules()`, `registerTranslations()`, `registerConfig()`, `registerViews()`, `registerHealthIndicators()`, then `loadMigrationsFrom()` with the module migration folder (`modules.paths.generator.migration.path`, `database/migrations` when unset). |
-| `register(): void` | Public. Registers each class of `$providers` with `$this->app->register()`. |
+| `boot(): void` | Public. Calls, in order: `registerCommands()`, `registerCommandSchedules()`, `registerTranslations()`, `registerViews()`, `registerHealthIndicators()`, then `loadMigrationsFrom()` with the module migration folder (`modules.paths.generator.migration.path`, `database/migrations` when unset). It also calls `registerConfig()` when `register()` did not run through this class, see [When the config is available](#when-the-config-is-available). |
+| `register(): void` | Public. Calls `registerConfig()`, then registers each class of `$providers` with `$this->app->register()`. |
 | `registerCommands(): void` | Protected. Registers the classes of `$commands`. |
 | `registerCommandSchedules(): void` | Protected. Does nothing unless the class overrides `configureSchedules()`. Otherwise it waits until the application has booted and calls `configureSchedules()` each time a `Schedule` instance is resolved. |
 | `configureSchedules(Schedule $schedule): void` | Protected. Empty. `registerCommandSchedules()` calls it with the `Schedule`, so a provider that overrides it defines the schedules of the module. |
@@ -51,14 +51,14 @@ class BlogServiceProvider extends ModuleServiceProvider
 
 | Part of the module | Registered by | Name |
 | --- | --- | --- |
-| Config | `registerConfig()` | Config key `<nameLower>`, or `<nameLower>.<file>`. See [Config files](#config-files). |
+| Config | `registerConfig()`, called by `register()` | Config key `<nameLower>`, or `<nameLower>.<file>`. See [Config files](#config-files). |
 | Views | `registerViews()` | View namespace `<nameLower>`. |
 | Blade components | `registerViews()` | Component prefix `<nameLower>`. |
 | Translations | `registerTranslations()` | Translation namespace `<nameLower>`, and JSON translations. |
 | Migrations | `boot()` | The migration folder, through `loadMigrationsFrom()`. See [Migrations](#migrations). |
 | Commands | `registerCommands()` | The classes of `$commands`. |
 | Schedules | `registerCommandSchedules()` | The events that `configureSchedules()` defines. |
-| Sub-providers | `register()` | The classes of `$providers`. |
+| Sub-providers | `register()`, after the config | The classes of `$providers`. |
 | Health indicators | `registerHealthIndicators()` | The actuator components `module:<nameLower>:<key>`, when the actuator is installed and `modules.actuator.enabled` is `true`. |
 | Publish tags | `registerConfig()`, `registerViews()` | `config`, `views` and `<nameLower>-module-views`. See [Publish tags](#publish-tags). |
 
@@ -92,6 +92,26 @@ return ['posts_per_page' => 99];
 
 config('blog.posts_per_page'); // 99
 ```
+
+#### When the config is available
+
+`register()` calls `registerConfig()` before it registers `$providers`. The module config is available:
+
+- in the `register()` of the sub-providers of the module (the route provider, the event provider and the other `$providers`);
+- in the `register()` of providers that register after the module provider;
+- in the `boot()` of every provider, including providers that boot before the module provider.
+
+It is not available in the `register()` of a provider that registers before the module provider, for example a package that Laravel discovers before this one. Read the module config in its `boot()`.
+
+A provider that overrides `register()` without calling `parent::register()` keeps working: `boot()` then calls `registerConfig()`. To read the module config while the provider registers, call `parent::register()` before that code.
+
+`registerConfig()` is safe to call a second time: it gives the same config and the same publish paths.
+
+To keep a module from merging its config, override `registerConfig()` with an empty method. Leaving `registerConfig()` out of an overridden `boot()` does not skip the merge, because `register()` already ran it.
+
+An override of `registerConfig()` runs during `register()`. Do the work that needs a service that exists only at boot time in `boot()` instead.
+
+`registerConfig()` calls `module_path($name)`, which throws `Module [<Name>] does not exist!` when `$name` does not match an existing module. This runs in `register()`, so a provider that overrides `boot()` hits the exception too. The generated providers always match.
 
 ### Publish tags
 

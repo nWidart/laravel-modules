@@ -23,6 +23,8 @@ trait RegistersModuleProviders
 
             protected string $nameLower = 'blog';
 
+            public function register(): void {}
+
             public function boot(): void
             {
                 $this->registerHealthIndicators();
