@@ -10,7 +10,7 @@ description: Where to ask questions, report bugs and security problems, contribu
 
 ## Report a security problem
 
-The repository has no `SECURITY.md`, and GitHub private vulnerability reporting is off. The only route to report a vulnerability privately is to contact the maintainer, [Nicolas Widart](https://github.com/nWidart), through the contact details on their GitHub profile. Say in the first line that the message concerns a security problem. Do not post the details in a public issue.
+Use the [private report form](https://github.com/nWidart/laravel-modules/security/advisories/new). You can also open it from the repository's Security tab with "Report a vulnerability". Do not post the details in a public issue, discussion or pull request. The full policy is in [SECURITY.md](https://github.com/nWidart/laravel-modules/blob/master/SECURITY.md).
 
 A security fix lands on `master` and, when the problem exists in version 12, on `12.x`. See [Version compatibility](/laravel-modules/upgrading/compatibility/).
 

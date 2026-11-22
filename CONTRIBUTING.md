@@ -10,6 +10,8 @@ Please review these guidelines before submitting any pull requests.
 1. Code, test, commit and push
 1. Open a pull request detailing your changes.
 
+Report security vulnerabilities privately, as described in [SECURITY.md](SECURITY.md). Do not open a public issue or pull request for them.
+
 ## Guidelines
 
 * Format the code with `composer lint` (Pint).
