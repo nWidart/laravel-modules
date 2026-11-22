@@ -1,0 +1,47 @@
+---
+title: Laravel Modules
+description: Split a large Laravel application into self-contained modules, each with its own routes, views, migrations and providers.
+template: splash
+hero:
+  tagline: One app. Many self-contained modules.
+  image:
+    dark: ../../assets/logo-dark.svg
+    light: ../../assets/logo-light.svg
+    alt: ''
+  actions:
+    # Hero links are not rewritten by Astro, so internal ones carry the /laravel-modules base.
+    - text: Get started
+      link: /laravel-modules/start-here/introduction/
+      icon: right-arrow
+    - text: GitHub
+      link: https://github.com/nWidart/laravel-modules
+      icon: github
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="Self-contained modules" icon="puzzle">
+    Each module holds its own providers, routes, controllers, models, views, migrations, config and translations in one folder.
+  </Card>
+  <Card title="Generators" icon="rocket">
+    `module:make` creates a module. `module:make-controller`, `module:make-model`, `module:make-migration` and more create the classes inside it.
+  </Card>
+  <Card title="Enable and disable" icon="setting">
+    Disable a module and the package stops registering its providers. Its routes disappear until you enable it again.
+  </Card>
+  <Card title="Module-aware database commands" icon="seti:db">
+    `module:migrate`, `module:seed` and the rollback, reset, refresh and fresh variants run for one module or for all of them.
+  </Card>
+</CardGrid>
+
+Install the package with Composer:
+
+```bash
+composer require nwidart/laravel-modules
+```
+
+<LinkCard title="Introduction" description="What the package is and when modules help." href="/laravel-modules/start-here/introduction/" />
+<LinkCard title="Your first module" description="Build a Blog module step by step." href="/laravel-modules/start-here/first-module/" />
+<LinkCard title="Artisan commands" description="Every command, argument and option." href="/laravel-modules/reference/commands/" />

@@ -1,0 +1,72 @@
+/*
+ * Laravel Modules brand theme for Starlight.
+ * Colours come from art/social-preview.html: navy surfaces, slate lines, mint accent.
+ * Only Starlight custom properties and a few stable element hooks are set here, so
+ * Starlight's scoped component styles (attribute strategy since 0.43) stay untouched.
+ * This file is unlayered, so it wins over Starlight's @layer starlight.* rules.
+ */
+
+/* Dark mode (Starlight's default). */
+:root {
+    --sl-color-accent-low: #0c3a30;
+    --sl-color-accent: #24b98c;
+    --sl-color-accent-high: #5ef2c2;
+
+    --sl-color-white: #f5f7fb;
+    --sl-color-gray-1: #dde3ec;
+    --sl-color-gray-2: #b4bed0;
+    --sl-color-gray-3: #7d8aa5;
+    --sl-color-gray-4: #3a4766;
+    --sl-color-gray-5: #22304d;
+    --sl-color-gray-6: #111a2e;
+    --sl-color-black: #0b1220;
+
+    /* Body text keeps Starlight's system stack. */
+    --sl-font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+    --lm-font-display: 'Space Grotesk Variable', var(--__sl-font);
+}
+
+/* Light mode. Mint fails contrast on white, so the accent turns to a deep teal (5.3:1 on white). */
+:root[data-theme='light'] {
+    --sl-color-accent-low: #d3f8ea;
+    --sl-color-accent: #0a7a5c;
+    --sl-color-accent-high: #064a39;
+
+    --sl-color-white: #0b1220;
+    --sl-color-gray-1: #111a2e;
+    --sl-color-gray-2: #22304d;
+    --sl-color-gray-3: #3a4766;
+    --sl-color-gray-4: #6b7892;
+    --sl-color-gray-5: #b4bed0;
+    --sl-color-gray-6: #e3e8f0;
+    --sl-color-gray-7: #f2f5f9;
+    --sl-color-black: #ffffff;
+}
+
+/* Display face for headings and the site title, as on the social card. */
+.site-title,
+h1#_top,
+.sl-markdown-content :is(h1, h2, h3, h4) {
+    font-family: var(--lm-font-display);
+    /* Keeps the fallback at the same x-height while the web font loads. */
+    font-size-adjust: from-font;
+}
+
+h1#_top,
+.sl-markdown-content :is(h1, h2) {
+    letter-spacing: -0.02em;
+}
+
+/* The splash hero carries the large, tight headline of the social card. */
+.hero h1#_top {
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+}
+
+/* The logo mark carries the accent; the title next to it stays neutral. */
+.site-title {
+    color: var(--sl-color-white);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
