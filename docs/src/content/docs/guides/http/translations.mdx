@@ -3,7 +3,7 @@ title: Translate a module
 description: Add language files and JSON translations to a module, use them with the blog namespace, and publish them to the application.
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+import { FileTree, Steps } from '@astrojs/starlight/components';
 
 To translate strings in the `Blog` module, add language files under `Modules/Blog/lang` and read them with the `blog::` namespace. You need an enabled `Blog` module. `module:make` does not create the `lang` folder by default, so create it first.
 
@@ -46,6 +46,21 @@ To translate strings in the `Blog` module, add language files under `Modules/Blo
    ```
 
    JSON translations have no module namespace; read them with `__('Read more')`.
+
+   The `lang` folder now looks like this:
+
+   <FileTree>
+
+   - Modules
+     - Blog
+       - lang
+         - en
+           - messages.php
+         - fr
+           - messages.php
+         - fr.json
+
+   </FileTree>
 
 4. Check for missing keys across locales.
 

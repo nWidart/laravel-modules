@@ -3,36 +3,42 @@ title: Anatomy of a module
 description: What a module folder contains, why module.json and composer.json are separate, and how namespaces map to app/.
 ---
 
+import { FileTree } from '@astrojs/starlight/components';
+
 A module is a folder shaped like a small Laravel package. This page explains what each part holds and why. For creation steps, see [Create a module](/laravel-modules/guides/modules/create-a-module/). For every manifest field, see [module.json](/laravel-modules/reference/module-json/).
 
 ## What `module:make` generates
 
 With default config, `php artisan module:make Blog` creates:
 
-```text
-Modules/Blog/
-├── app/
-│   ├── Http/Controllers/
-│   └── Providers/
-├── config/
-├── database/
-│   ├── factories/
-│   ├── migrations/
-│   └── seeders/
-├── resources/
-│   ├── assets/
-│   └── views/
-├── routes/
-│   ├── api.php
-│   └── web.php
-├── tests/
-│   ├── Feature/
-│   └── Unit/
-├── composer.json
-├── module.json
-├── package.json
-└── vite.config.js
-```
+<FileTree>
+
+- Modules
+  - Blog
+    - app
+      - Http
+        - Controllers/
+      - Providers/
+    - config/
+    - database
+      - factories/
+      - migrations/
+      - seeders/
+    - resources
+      - assets/
+      - views/
+    - routes
+      - api.php
+      - web.php
+    - tests
+      - Feature/
+      - Unit/
+    - composer.json
+    - module.json
+    - package.json
+    - vite.config.js
+
+</FileTree>
 
 A folder is generated initially only when its `generate` flag is `true` in `modules.paths.generator`. Each stub file follows the flag of the generator key that owns it. See [Generators and stubs](/laravel-modules/concepts/generators-and-stubs/#what-generate-does).
 
