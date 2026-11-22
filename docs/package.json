@@ -17,6 +17,8 @@
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/space-grotesk": "^5.3.0",
     "astro": "^7.4.13",
+    "astro-og-canvas": "^0.13.3",
+    "canvaskit-wasm": "^0.42.0",
     "sharp": "^0.35.5",
     "starlight-links-validator": "^0.27.0",
     "starlight-llms-txt": "^0.12.0"
