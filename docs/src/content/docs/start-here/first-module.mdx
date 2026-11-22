@@ -77,7 +77,7 @@ In this tutorial we build a `Blog` module that lists posts from the database. We
    [Enabled] Blog ...................................... Modules/Blog [0]
    ```
 
-3. Open `Modules/Blog/routes/web.php`. The generated route needs a logged-in user, and a new app has no login page. Replace the file with a public route:
+3. Open `Modules/Blog/routes/web.php`. It holds one resource route for the generated controller, with no middleware:
 
    ```php
    <?php
@@ -85,13 +85,13 @@ In this tutorial we build a `Blog` module that lists posts from the database. We
    use Illuminate\Support\Facades\Route;
    use Modules\Blog\Http\Controllers\BlogController;
 
-   Route::get('blogs', [BlogController::class, 'index'])->name('blog.index');
+   Route::resource('blogs', BlogController::class)->names('blog');
    ```
 
-   List the route. `--except-path=api` leaves out the API routes of the module, which are under `api/`:
+   List the index route. `--except-path=api` leaves out the API routes of the module, which are under `api/`:
 
    ```bash
-   php artisan route:list --path=blogs --except-path=api
+   php artisan route:list --name=blog.index --except-path=api
    ```
 
    ```text
@@ -276,7 +276,7 @@ In this tutorial we build a `Blog` module that lists posts from the database. We
     List the route again:
 
     ```bash
-    php artisan route:list --path=blogs --except-path=api
+    php artisan route:list --name=blog.index --except-path=api
     ```
 
     ```text
@@ -298,7 +298,7 @@ In this tutorial we build a `Blog` module that lists posts from the database. We
     ```
 
     ```bash
-    php artisan route:list --path=blogs --except-path=api
+    php artisan route:list --name=blog.index --except-path=api
     ```
 
     The route `blog.index` is back, and `http://127.0.0.1:8000/blogs` shows the two posts again.
