@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Tests\Commands\Database;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Nwidart\Modules\Tests\Commands\Database\Fixtures\FailingSeeder;
@@ -128,6 +129,63 @@ class MigrateRefreshCommandTest extends BaseTestCase
         $this->assertTrue(Schema::hasTable('feature_flags'));
         $this->assertSame(0, DB::table('feature_flags')->count());
         $this->assertSame(0, DB::table('blog_posts')->count());
+    }
+
+    public function test_it_refreshes_only_the_enabled_modules_with_all()
+    {
+        $this->createDisabledShopModule();
+
+        try {
+            $code = $this->artisan('module:migrate-refresh', ['--all' => true, '--no-interaction' => true]);
+        } finally {
+            $this->repository->delete('Shop');
+        }
+
+        $this->assertSame(0, $code);
+        $this->assertSame(0, DB::table('blog_posts')->count());
+        // the disabled module was left alone
+        $this->assertSame(1, DB::table('shop_orders')->count());
+    }
+
+    public function test_it_lists_only_the_enabled_modules_in_the_prompt()
+    {
+        $this->createDisabledShopModule();
+
+        try {
+            $this->mockConsoleOutput = true;
+            $this->artisan('module:migrate-refresh')
+                ->expectsQuestion('Select Modules', '')
+                ->expectsChoice('Select Modules', [BaseCommand::ALL], [BaseCommand::ALL, 'blog'])
+                ->assertSuccessful();
+        } finally {
+            $this->repository->delete('Shop');
+        }
+
+        $this->assertSame(0, DB::table('blog_posts')->count());
+        $this->assertSame(1, DB::table('shop_orders')->count());
+    }
+
+    public function test_it_refreshes_a_disabled_module_given_by_name()
+    {
+        $this->repository->find('Blog')->disable();
+
+        $code = $this->artisan('module:migrate-refresh', ['module' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+        $this->assertTrue(Schema::hasTable('blog_posts'));
+        $this->assertSame(0, DB::table('blog_posts')->count());
+    }
+
+    /**
+     * Create a migrated Shop module with one row in its table, then disable it.
+     */
+    private function createDisabledShopModule(): void
+    {
+        $this->createModule('Shop');
+        $this->writeMigration(base_path('modules/Shop/database/migrations'), 'shop_orders');
+        $this->app[Kernel::class]->call('module:migrate', ['module' => ['Shop']]);
+        DB::table('shop_orders')->insert(['id' => 1]);
+        $this->repository->find('Shop')->disable();
     }
 
     /**

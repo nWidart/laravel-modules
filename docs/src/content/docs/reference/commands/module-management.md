@@ -19,8 +19,9 @@ This page lists the commands that manage existing modules. `module:make` and the
 ### Module selection
 
 - With names, the command runs the action once per name, in the order given.
-- With `--all`, the command replaces the names with the module list. A command with a `--direction` option uses the enabled modules ordered by priority. Any other command uses every module, enabled or disabled.
-- With neither, an interactive terminal shows a multi-select prompt named `Select Modules`. Its first entry, `All`, selects every module.
+- With `--all`, the command replaces the names with the module list. The database commands use the enabled modules ordered by priority; a command with a `--direction` option orders them in that direction, and `module:migrate-refresh` uses ascending order. See [Database commands](/laravel-modules/reference/commands/database/#shared-behaviour). Any other command uses every module, enabled or disabled.
+- With neither, an interactive terminal shows a multi-select prompt named `Select Modules`. Its list is the same module list as `--all`, and its first entry, `All`, selects all of them.
+- A module given by name runs whatever its status.
 - With neither and no interactive input (`--no-interaction`, or no TTY), the command prints `No module given. Pass a module name or --all.` and exits with status `1`.
 - The command checks that every named module exists before it runs any action. An unknown name throws `ModuleNotFoundException` and nothing runs.
 

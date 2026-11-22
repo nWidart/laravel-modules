@@ -43,6 +43,20 @@ class DumpCommandTest extends BaseTestCase
         $this->assertSame($cwd, getcwd());
     }
 
+    public function test_it_dumps_disabled_modules_too_with_all()
+    {
+        $this->repository->find('Shop')->disable();
+        $command = $this->registerCommand(['Blog' => 0, 'Shop' => 0]);
+
+        $code = $this->artisan('module:dump', ['--all' => true, '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertEqualsCanonicalizing([
+            realpath($this->getModuleBasePath('Blog')),
+            realpath($this->getModuleBasePath('Shop')),
+        ], $command->ranIn);
+    }
+
     public function test_it_fails_when_composer_fails_and_still_dumps_the_other_modules()
     {
         $cwd = getcwd();

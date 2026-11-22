@@ -110,7 +110,8 @@ A [`BaseCommand`](#basecommand) that implements it:
 | `markAsFailed(): void` | Protected. Marks the run as failed. |
 | `hasFailures(): bool` | Protected. `true` when an action failed during this run. |
 | `getModuleModel(Module\|string $name)` | Protected. The module for a name. Throws `ModuleNotFoundException` for an unknown name. |
-| `getModuleNames(InputInterface $input): array` | Protected. The names that `--all` stands for. |
+| `getModuleNames(InputInterface $input): array` | Protected. The names that `--all` and the `All` choice of the prompt stand for: every module, or, for a command with a `--direction` option, the enabled modules ordered by priority in that direction. `MigrateRefreshCommand` overrides it with `getEnabledModuleNames('asc')`. |
+| `getEnabledModuleNames(string $direction = 'asc'): array` | Protected. The names of the enabled modules, ordered by `priority` in the given direction. |
 | `moduleRepository()` | Protected. The repository, from [`InteractsWithModuleRepository`](#traits). |
 
 The package registers the classes of `modules.commands` (see [Configuration](/laravel-modules/reference/configuration/)). A module provider registers the classes of its `$commands` property.
