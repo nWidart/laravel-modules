@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Tests\Commands\Make;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Process;
@@ -14,6 +15,7 @@ use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Nwidart\Modules\Tests\Support\Fixtures\QuotedValueReplacement;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Exception\RuntimeException;
 
@@ -112,6 +114,46 @@ class ModuleMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($this->finder->get($path));
         $this->assertSame(0, $code);
+    }
+
+    /**
+     * A fresh app without a starter kit has no login route and no email verification,
+     * so the generated web routes must be reachable without authentication.
+     */
+    #[RunInSeparateProcess]
+    public function test_it_generates_web_routes_that_are_reachable_without_authentication()
+    {
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+        $this->assertSame(0, $code);
+
+        $routes = $this->finder->get($this->modulePath.'/'.$this->app['modules']->config('stubs.files.routes/web'));
+        $this->assertStringNotContainsString('middleware', $routes);
+        $this->assertStringNotContainsString('auth', $routes);
+
+        // Load the module as an app would: autoload its classes and register its provider.
+        // The Testbench skeleton has no App\Http\Controllers\Controller, which the generated controller extends.
+        class_alias(Controller::class, 'App\Http\Controllers\Controller');
+        $psr4 = json_decode($this->finder->get($this->modulePath.'/composer.json'), true)['autoload']['psr-4'];
+        spl_autoload_register(function (string $class) use ($psr4) {
+            foreach ($psr4 as $prefix => $directory) {
+                $file = $this->modulePath.'/'.rtrim($directory, '/').'/'.str_replace('\\', '/', substr($class, strlen($prefix))).'.php';
+
+                if (str_starts_with($class, $prefix) && is_file($file)) {
+                    require $file;
+
+                    return;
+                }
+            }
+        });
+        $this->app->register('Modules\Blog\Providers\BlogServiceProvider');
+
+        $this->assertFalse($this->app['router']->has('login'));
+        // The web middleware group encrypts cookies.
+        $this->app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
+
+        $this->get('/blogs')
+            ->assertOk()
+            ->assertSee('Hello World');
     }
 
     public function test_it_generates_api_route_file()
