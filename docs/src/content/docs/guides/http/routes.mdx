@@ -84,6 +84,12 @@ Route::prefix('blog')->name('blog.')->group(function () {
 
 The URLs are `/blog/posts` and `/blog/posts/{post}`. The names are `blog.posts.index` and `blog.posts.show`.
 
+The generated `show()` method returns `view('blog::show')`. Create that view, or `/blog/posts/{post}` fails with a 500 error, `View [show] not found.`:
+
+```bash
+php artisan module:make-view show Blog
+```
+
 To require authentication again, wrap the routes in the middleware that your application provides, for example `Route::middleware('auth')->group(...)`. To apply a middleware of the module, see [Add middleware to a module](/laravel-modules/guides/http/middleware/).
 
 To link to a route of another module, use its route name. The view needs no knowledge of the namespace or URL of the other module:

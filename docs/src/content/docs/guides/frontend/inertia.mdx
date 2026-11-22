@@ -3,7 +3,7 @@ title: Use Inertia in a module
 description: Generate a module that renders Inertia pages, publish the Inertia entry file that resolves module pages, and add pages, components and middleware.
 ---
 
-import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
 At the end, the `Blog` module renders Inertia pages from `Modules/Blog/resources/js/Pages`, and the application resolves them by name.
 
@@ -40,24 +40,34 @@ Prerequisite: Inertia is installed in the application, with the server-side adap
    <Tabs syncKey="inertia-frontend">
      <TabItem label="Vue">
        ```bash
-       php artisan module:publish-inertia --vue
+       php artisan module:publish-inertia --vue --force
        ```
      </TabItem>
      <TabItem label="React">
        ```bash
-       php artisan module:publish-inertia --react
+       php artisan module:publish-inertia --react --force
        ```
      </TabItem>
      <TabItem label="Svelte">
        ```bash
-       php artisan module:publish-inertia --svelte
+       php artisan module:publish-inertia --svelte --force
        ```
      </TabItem>
    </Tabs>
 
-   Without a flag, the command uses `inertia.frontend`. It writes `resources/js/app.js`. If the file exists, the command stops. Add `--force` to overwrite it.
+   Without a flag, the command uses `inertia.frontend`. It writes `resources/js/app.js`. Every new Laravel 13 app already has that file, and without `--force` the command stops with `resources/js/app.js already exists. Use --force to overwrite.` The command replaces your `resources/js/app.js`: move any code you added to it first.
 
-4. Add `resources/js/app.js` to the inputs of the root `vite.config.js`, and the plugin of your framework.
+4. Check the page condition in the published `resources/js/app.js`.
+
+   <Aside type="caution">
+   The published file does not render with Inertia v3. It contains `if (el && el.dataset.page) {`. Inertia v3 puts the page data in a `<script data-page="app" type="application/json">` element, so `el.dataset.page` is empty, the condition is false and the page stays blank. With Inertia v3, change that line to `if (el) {`, then build.
+   </Aside>
+
+   ```js title="resources/js/app.js"
+   if (el) {
+   ```
+
+5. Add `resources/js/app.js` to the inputs of the root `vite.config.js`, and the plugin of your framework.
 
    ```js title="vite.config.js"
    laravel({
@@ -66,7 +76,7 @@ Prerequisite: Inertia is installed in the application, with the server-side adap
    }),
    ```
 
-5. Build the assets.
+6. Build the assets.
 
    ```bash
    npm run build
@@ -87,7 +97,7 @@ The extension is `.vue`, `.jsx` or `.svelte`, as set by the framework. The entry
 
 ### Check the result
 
-Log in, as the generated route uses the `auth` and `verified` middleware, and open `/blogs`. The `Index` page of the module renders. To list the routes, run `php artisan route:list --name=blog`.
+Log in, as the generated route uses the `auth` and `verified` middleware, and open `/blogs`. In an application without authentication, a guest gets an HTTP 500 error, because there is no `login` route. For this check, use an authentication starter kit, or add a public route: see [Add routes to a module](/laravel-modules/guides/http/routes/). The `Index` page of the module renders. To list the routes, run `php artisan route:list --name=blog`.
 
 ## Add a page
 

@@ -46,8 +46,10 @@ To create the `posts` table for the `Blog` module, generate a migration inside t
 
    ```text
    Migration name .............................................. Batch / Status
-   <timestamp>_create_posts_table ..................................... [1] Ran
+   <timestamp>_create_posts_table ..................................... [2] Ran
    ```
+
+   The batch is `[2]` in a new Laravel app, because the migrations of the application itself are batch 1. In an application with no earlier migration it is `[1]`.
 
 </Steps>
 

@@ -46,11 +46,9 @@ To render a view and a Blade component that live in the `Blog` module, address t
    </x-blog::layouts.master>
    ```
 
-5. Check the result. Add a route that renders the view, then open it:
+5. Check the result. Add this line to `Modules/Blog/routes/web.php`, which already imports `Route`, then open the page:
 
    ```php title="Modules/Blog/routes/web.php"
-   use Illuminate\Support\Facades\Route;
-
    Route::view('posts/show', 'blog::posts.show')->name('blog.posts.show');
    ```
 

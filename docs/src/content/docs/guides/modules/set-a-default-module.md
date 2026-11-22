@@ -43,6 +43,8 @@ php artisan module:make-controller PostController
 Module [] does not exist!
 ```
 
+The error prints as an exception with a stack trace, not as a one-line message.
+
 While a module is in use, the same command writes into that module.
 
 ## Related

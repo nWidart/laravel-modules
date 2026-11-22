@@ -26,7 +26,7 @@ At the end, the coverage report of your application includes the code in `Module
    </source>
    ```
 
-   The command also removes the entries of modules that are disabled or deleted. If the file has no `<include>` element, the command creates one with `<directory>./app</directory>` and the module entries.
+   The command also removes the entries of modules that are disabled or deleted. If `<source>` has other content, or the file has no `<source>` element, but no `<include>`, the command creates the `<include>` with `<directory>./app</directory>` and the module entries. With an empty `<source></source>` or `<source/>`, the command adds nothing, prints a warning, and still prints the success line.
 
 2. Run the tests with coverage.
 
@@ -34,7 +34,7 @@ At the end, the coverage report of your application includes the code in `Module
    php artisan test --coverage
    ```
 
-   If Xdebug is loaded but its mode does not include coverage, set it for the run:
+   Without a coverage driver mode, the run prints `ERROR Code coverage driver not available`. With Xdebug, set its mode for the run:
 
    ```bash
    XDEBUG_MODE=coverage php artisan test --coverage
@@ -46,9 +46,9 @@ Run the command again after you enable, disable, add or delete a module. The mod
 
 ### Check the result
 
-Open `phpunit.xml` and look for the `Modules/Blog/app` entry. The coverage report lists classes under `Modules\Blog`.
+Open `phpunit.xml` and look for the `Modules/Blog/app` entry. The coverage report lists file paths under `Modules/Blog/app`, not namespaces.
 
-If the command fails, its exit status tells why: `100` no `phpunit.xml`, `99` no statuses file, `98` invalid JSON in the statuses file, `97` invalid XML in `phpunit.xml`.
+If the command fails, its exit status tells why: `100` no `phpunit.xml`, `99` no statuses file, `97` invalid XML in `phpunit.xml`. Invalid JSON in the statuses file does not reach this command: it stops every Artisan command with an `InvalidJsonException` before the command runs.
 
 ## Related
 

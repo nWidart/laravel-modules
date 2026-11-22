@@ -20,7 +20,7 @@ To run a task of the `Blog` module on a schedule, override `configureSchedules()
    }
    ```
 
-   The method must be `protected`, with the `Schedule` parameter.
+   The method must not be `private` (`protected` and `public` both work), with the `Schedule` parameter.
 
 2. Check the result.
 

@@ -53,7 +53,7 @@ Each flag selects another stub. The first matching flag wins.
 
 Route an invokable controller by its class name: `Route::post('posts/{post}/publish', PublishPostController::class);`.
 
-To pass data to a view, return it from the method:
+To pass data to a view, return it from the method. The `Post` model comes from [Add Eloquent models to a module](/laravel-modules/guides/database/models/):
 
 ```php title="Modules/Blog/app/Http/Controllers/PostController.php"
 public function index()

@@ -53,7 +53,7 @@ To translate the texts of the `Blog` module, add language files to the module an
    php artisan module:lang Blog
    ```
 
-   The command reports each file and each key that exists in one locale and not in another, and exits with `1`. When the locales match, it prints only `Checking languages ...`.
+   The command compares the PHP language files and their keys. It does not compare JSON files. It reports each file and each key that exists in one locale and not in another, and exits with `1`. When the locales match, it prints only `Checking languages ...`.
 
 5. Check the result. Read the keys in the `fr` locale:
 
@@ -75,9 +75,9 @@ To let translators edit the files in the application, publish them:
 php artisan module:publish-translation Blog
 ```
 
-The command copies the `lang` folder of the module to `lang/modules/blog`. It skips files that exist. Add `--force` to overwrite.
+The command copies the `lang` folder of the module to `lang/modules/blog`, JSON files included. It skips files that exist. Add `--force` to overwrite.
 
-The module reads `lang/modules/blog` instead of its own `lang` folder as soon as that folder exists. The published folder replaces the module folder as a whole: keys missing from the published files do not fall back to the module files.
+The module reads `lang/modules/blog` instead of its own `lang` folder as soon as that folder exists. The published copy is then the only source, for PHP and JSON files alike: a key that exists only in the module prints the key itself, with no fallback to the module files.
 
 ## Related
 

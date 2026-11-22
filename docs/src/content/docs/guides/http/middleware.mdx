@@ -66,9 +66,13 @@ Laravel 13 has no `app/Http/Kernel.php`. You apply a middleware by its class nam
    GET|HEAD   admin/posts ... blog.admin.posts.index › Modules\Blog\Http\Controllers\PostController@index
               ⇂ web
               ⇂ Modules\Blog\Http\Middleware\EnsureIsAdmin
+   GET|HEAD   api/v1/posts .. api.blog.posts.index › Modules\Blog\Http\Controllers\Api\PostController@index
+              ⇂ api
    GET|HEAD   posts ......... blog.posts.index › Modules\Blog\Http\Controllers\PostController@index
               ⇂ web
    ```
+
+   The `api/v1/posts` route is there if you followed the routes guide. Its `api` group does not use the middleware.
 
 </Steps>
 
@@ -84,7 +88,7 @@ To write `->middleware('blog.admin')` instead of the class name, register the al
 })
 ```
 
-To keep the alias inside the module, register it in the module provider. The provider must call `parent::boot()`:
+To keep the alias inside the module, register it in the module provider. The generated provider has no `boot()` method yet, so add the whole method. It must call `parent::boot()`: without it, no module routes load.
 
 ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
 use Illuminate\Support\Facades\Route;

@@ -69,11 +69,13 @@ The class namespace follows the path: `Modules\Blog\Http\Api\Controllers`. To se
 
 `module:make-model Post Blog` now writes `Modules/Blog/app/Domain/Models/Post.php` with the namespace `Modules\Blog\Models`. The namespace must still autoload from the path, so map it in the `composer.json` of the module, then run `composer dump-autoload`:
 
-```json title="Modules/Blog/composer.json"
+```json title="Modules/Blog/composer.json" ins={4}
 "autoload": {
     "psr-4": {
         "Modules\\Blog\\": "app/",
-        "Modules\\Blog\\Models\\": "app/Domain/Models/"
+        "Modules\\Blog\\Models\\": "app/Domain/Models/",
+        "Modules\\Blog\\Database\\Factories\\": "database/factories/",
+        "Modules\\Blog\\Database\\Seeders\\": "database/seeders/"
     }
 }
 ```
@@ -91,7 +93,21 @@ Set `generate` to `true` to create the folder in every new module, and to `false
 
 ## Modules that already exist
 
-A change to the config does not move files. For an existing module, move the folders and the classes yourself. If you changed `app_folder`, update the `autoload.psr-4` entry for `Modules\Blog\` in the `composer.json` of the module, then run `composer dump-autoload`.
+A change to the config does not move files. For an existing module, move the folders yourself. For example, to move the classes of `Blog` from `app/` to `src/` after you set `app_folder` to `src/`:
+
+```bash
+mv Modules/Blog/app Modules/Blog/src
+```
+
+Then point the `Modules\Blog\` entry of `autoload.psr-4` in `Modules/Blog/composer.json` at the new folder, and regenerate the autoloader:
+
+```json title="Modules/Blog/composer.json"
+"Modules\\Blog\\": "src/",
+```
+
+```bash
+composer dump-autoload
+```
 
 ## Check the result
 

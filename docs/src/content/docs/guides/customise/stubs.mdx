@@ -107,6 +107,8 @@ A stub key that is not in `stubs.replacements` keeps its `$TOKEN$` text, and `mo
 
 Set `stubs.enabled` to `false`. The package ignores `stubs.path`.
 
+Also remove every `stubs.files` entry whose stub exists only in your copy, such as `readme`. Otherwise `module:make` fails with `file_get_contents(.../readme.stub): Failed to open stream`.
+
 ## Related
 
 - [Stubs and placeholders](/laravel-modules/reference/stubs/): the stub list, placeholders and lookup rules

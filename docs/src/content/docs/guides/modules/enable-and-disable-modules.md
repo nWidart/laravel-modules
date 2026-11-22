@@ -28,7 +28,7 @@ php artisan module:disable Blog Shop
 php artisan module:enable --all
 ```
 
-An unknown name stops the command before it changes any module.
+An unknown name stops the command before it changes any module. The error, `Module [Nope] does not exist!`, prints as an exception with a stack trace, not as a one-line message.
 
 ## Change the status from PHP code
 
@@ -45,7 +45,7 @@ A change applies from the next request or Artisan run: the package registers the
 
 ## Where the status is stored
 
-The default activator writes the statuses to `modules_statuses.json` in the application root. A module with no entry in that file counts as disabled. To store the status somewhere else, see [Store module status with a custom activator](/laravel-modules/guides/customise/custom-activator/).
+The default activator writes the statuses to `modules_statuses.json` in the application root. A module with no entry in that file counts as disabled. This includes a module the package finds by scanning an extra location or `vendor/`: it stays disabled until you enable it. See [Load modules from extra locations](/laravel-modules/guides/modules/scan-extra-locations/). To store the status somewhere else, see [Store module status with a custom activator](/laravel-modules/guides/customise/custom-activator/).
 
 ## Check the result
 

@@ -36,7 +36,7 @@ The call sets one flag that every confirmable module command reads. These comman
 - `module:migrate-rollback`
 - `module:delete`
 
-Commands that are not confirmable, such as `module:migrate`, `module:seed` and `module:enable`, run as usual.
+The other module commands are not blocked. `module:enable` runs as usual. In production, `module:migrate` and `module:seed` still ask for Laravel's confirmation and need `--force`, like `migrate`.
 
 A blocked command prints this warning and exits with status `1`. It does not run any action.
 
@@ -60,7 +60,7 @@ Then run the command with the variable set:
 ALLOW_DESTRUCTIVE_COMMANDS=true php artisan module:migrate-rollback Blog --force
 ```
 
-Set the variable in the process environment, as in the example. With a cached configuration, Laravel does not load `.env`.
+Set the variable in the process environment, as in the example. A value in `.env` works only without a configuration cache: with a cached configuration, Laravel does not load `.env`.
 
 ## The production confirmation
 

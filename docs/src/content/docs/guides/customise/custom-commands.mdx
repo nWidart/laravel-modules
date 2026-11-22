@@ -39,7 +39,7 @@ To add an Artisan command to the application, register its class in one of two p
 
 ## Register a command from the application
 
-Add the class to the list in `config/modules.php`. Keep `defaultCommands()`: the `commands` key holds the full list, so a list without it unregisters the package commands. Publish the config file first if you have not:
+Add the class to the list in `config/modules.php`. The class must exist first: an entry for a missing class stops every `artisan` command with `Target class [...] does not exist.` Keep `defaultCommands()`: the `commands` key holds the full list, so a list without it unregisters the package commands. Publish the config file first if you have not:
 
 ```bash
 php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
@@ -48,9 +48,11 @@ php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProv
 ```php title="config/modules.php"
 'commands' => ConsoleServiceProvider::defaultCommands()
     ->merge([
-        \App\Console\Commands\MakeDtoCommand::class,
+        \App\Console\Commands\SyncCatalogCommand::class,
     ])->toArray(),
 ```
+
+To add the generator below, make this change in its step 4, after you write the class.
 
 ## Write a generator
 
@@ -139,7 +141,7 @@ This example adds `module:make-dto`, which writes a data class into a module. It
    }
    ```
 
-4. Register the command in the `commands` list, as shown above.
+4. Register the command in the `commands` list, as shown above, with `\App\Console\Commands\MakeDtoCommand::class`. The class exists now, so the entry is safe.
 
 5. Check the result.
 

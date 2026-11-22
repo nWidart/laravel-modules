@@ -77,13 +77,14 @@ List the modules.
 php artisan module:list
 ```
 
-The output has a line like this for the new module:
+The output has a header line and a line for each module, like this for the new one:
 
 ```text
-[Enabled] Blog ........ Modules/Blog [0]
+Status / Name ........................................ Path / priority
+[Enabled] Blog ................................... Modules/Blog [0]
 ```
 
-A module created with `--disabled` shows `[Disabled]`. For a web or API module, `php artisan route:list --name=blog` lists its routes.
+A module created with `--disabled` shows `[Disabled]`. For a web or API module, `php artisan route:list --name=blog` lists its routes: for a web module, 12 routes, the `blog.*` web routes and the `api.blog.*` API routes.
 
 ## Related
 

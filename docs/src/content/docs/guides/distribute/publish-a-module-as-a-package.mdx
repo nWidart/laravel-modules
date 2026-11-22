@@ -82,7 +82,7 @@ The package does not scan `vendor/` by default. Turn scanning on in the applicat
    ],
    ```
 
-   The package looks for `module.json` in every path listed. To avoid reading every package in `vendor/`, use `base_path('vendor/acme/*')`.
+   The entry already ends with `/*`, so the package reads `vendor/*/*/module.json`, for example `vendor/acme/blog/module.json`. To avoid reading every package in `vendor/`, use `base_path('vendor/acme/*')`. An entry without a trailing `/*` gets one added: see [Scan extra locations](/laravel-modules/guides/modules/scan-extra-locations/).
 
 3. Install the package. Remove the original `Modules/Blog` folder from the application first, if it exists.
 
@@ -90,7 +90,7 @@ The package does not scan `vendor/` by default. Turn scanning on in the applicat
    composer require acme/blog:^1.0
    ```
 
-4. Enable the module. A module that the package finds by scanning has no entry in `modules_statuses.json`, and a module without an entry is disabled. The status is stored in the application, not in the package.
+4. Enable the module. A module that the package finds by scanning has no entry in `modules_statuses.json`, and a module without an entry is disabled. The status is stored in the application, not in the package. If `modules_statuses.json` still has an entry for `Blog` from the removed `Modules/Blog`, that entry applies and the vendor module is already enabled.
 
    ```bash
    php artisan module:enable Blog

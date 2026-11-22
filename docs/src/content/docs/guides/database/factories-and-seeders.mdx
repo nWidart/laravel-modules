@@ -73,12 +73,18 @@ To fill the `posts` table of the `Blog` module with test data, define a factory,
    ```
 
    ```text
-   Modules\Blog\Database\Seeders\BlogDatabaseSeeder ................... RUNNING
-   Modules\Blog\Database\Seeders\PostSeeder ........................... RUNNING
-   Modules\Blog\Database\Seeders\PostSeeder ........................ 21 ms DONE
-   Modules\Blog\Database\Seeders\BlogDatabaseSeeder ................ 22 ms DONE
+      INFO  Seeding module.
+
+   Seeding Blog Module
+      INFO  Seeding database.
+
+     Modules\Blog\Database\Seeders\BlogDatabaseSeeder ............... RUNNING
+     Modules\Blog\Database\Seeders\PostSeeder ....................... RUNNING
+     Modules\Blog\Database\Seeders\PostSeeder ................... <time> DONE
+     Modules\Blog\Database\Seeders\BlogDatabaseSeeder ............ <time> DONE
 
    Module [Blog] seeded.
+   ............................................................ <time> DONE
    ```
 
 5. Check the result. Count the posts:
@@ -87,7 +93,7 @@ To fill the `posts` table of the `Blog` module with test data, define a factory,
    php artisan tinker --execute="echo Modules\Blog\Models\Post::count();"
    ```
 
-   The command prints `3` after the first run. A second run adds three more posts.
+   The count grows by three on each run: it prints `3` on an empty table.
 
 </Steps>
 

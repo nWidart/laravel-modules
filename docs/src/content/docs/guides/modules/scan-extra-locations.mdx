@@ -28,15 +28,34 @@ To use modules that live outside `paths.modules`, for example in `plugins/`, tel
    ],
    ```
 
-   The package adds `/*` to each entry and reads `plugins/*/module.json`. Each entry is therefore a folder that contains modules as sub-folders. The default entry, `base_path('vendor/*/*')`, matches `vendor/*/*/*/module.json`: replace it with the folders that hold your modules.
+   The package adds `/*` to an entry that does not end with `/*`, then reads `<entry>/module.json`. `base_path('plugins')` becomes `plugins/*` and finds `plugins/Acme/module.json`: the entry is the folder that holds the modules as sub-folders. An entry that already ends with `/*` stays as it is. The default entry, `base_path('vendor/*/*')`, finds `vendor/acme/blog/module.json`.
 
-3. Enable each new module. A module the package finds has no status yet, so it counts as disabled.
+3. Make Composer autoload the modules in the folder. Add the folder to `extra.merge-plugin.include` in the `composer.json` of the application, then regenerate the autoloader.
+
+   ```json title="composer.json"
+   "extra": {
+       "merge-plugin": {
+           "include": [
+               "Modules/*/composer.json",
+               "plugins/*/composer.json"
+           ]
+       }
+   }
+   ```
+
+   ```bash
+   composer dump-autoload
+   ```
+
+   An enabled module whose provider class cannot be loaded stops every `artisan` command, with `Class "Modules\Acme\Providers\AcmeServiceProvider" not found`. Autoload the module before you enable it.
+
+4. Enable each new module. A module the package finds has no status yet, so it counts as disabled.
 
    ```bash
    php artisan module:enable Acme
    ```
 
-4. Check the result.
+5. Check the result.
 
    ```bash
    php artisan module:list
@@ -46,7 +65,7 @@ To use modules that live outside `paths.modules`, for example in `plugins/`, tel
 
 </Steps>
 
-The package registers the providers of the modules in these folders like those of any other module. It does not autoload their classes: the module needs its own Composer autoload entry, for example through a `merge-plugin` glob in `composer.json`.
+The package registers the providers of the modules in these folders like those of any other module. It does not autoload their classes: step 3 does that.
 
 ## Add a folder at runtime
 

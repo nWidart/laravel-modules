@@ -9,7 +9,7 @@ At the end, your deploy script installs the application, the modules and their a
 
 ## Prepare the repository
 
-Commit two things that the deploy depends on.
+Commit three things that the deploy depends on.
 
 - **The merge plugin entry.** A deploy runs Composer without interaction, so Composer cannot ask whether to trust `wikimedia/composer-merge-plugin`. It does not run a plugin that `allow-plugins` does not allow, and then the module classes do not autoload. Check `composer.json`:
 
@@ -29,6 +29,8 @@ Commit two things that the deploy depends on.
   ```
 
 - **The status file.** `modules_statuses.json` in the application root stores which modules are enabled. The package registers enabled modules only, and a module without an entry is disabled. If the file is not in the repository, the deployed application has no module. Commit it. If you set `activators.file.statuses-file` to another path, deploy the file to that path.
+
+- **The npm lock file.** `npm ci` needs a committed `package-lock.json`, which a new Laravel 13 app does not have. Run `npm install` once and commit `package-lock.json`.
 
 ## Write the deploy script
 
@@ -63,7 +65,7 @@ Commit two things that the deploy depends on.
    php artisan module:publish --all
    ```
 
-   The command copies `resources/assets` of each module to `public/modules/<name>`. It includes disabled modules. List module names instead of `--all` to publish a selection.
+   The command copies `resources/assets` of each module to `public/modules/<name>`. It includes the assets of disabled modules. Without `modules_statuses.json`, every module is disabled. List module names instead of `--all` to publish a selection.
 
 4. Run the migrations.
 
@@ -83,7 +85,9 @@ Commit two things that the deploy depends on.
    php artisan optimize
    ```
 
-   `optimize` caches the configuration, events, routes and views. With a cached configuration, the module providers skip the read of the module `config` folder on web requests. `route:cache` fails for a route that uses a closure. The routes that `module:make` generates use controllers.
+   `optimize` caches the configuration, events, routes and views. With a cached configuration, the module providers skip the read of the module `config` folder on web requests.
+
+   After you enable, disable or add a module on a server with cached routes, run `php artisan optimize` again. The cached routes keep the routes of a disabled module and miss the routes of a new module.
 
 </Steps>
 
@@ -91,9 +95,9 @@ Commit two things that the deploy depends on.
 
 The package keeps a list of the providers of the enabled modules in `bootstrap/cache/modules.php`. Laravel writes it during the first boot after the list changes, for example after a deploy that enables a module. Any Artisan command boots the application, so the `php artisan migrate` step writes it.
 
-Make `bootstrap/cache` writable by the user that runs the application. If it is not writable, the boot fails with `The bootstrap/cache directory must be present and writable.`
+Make `bootstrap/cache` writable by the user that runs the application. If it is not writable, the boot fails with `The /path/to/app/bootstrap/cache directory must be present and writable.`, with the absolute path of your application.
 
-No command deletes the file, and you do not have to. Laravel rebuilds it when the list of providers differs from the list it holds. If you want to reset it, delete it:
+No command deletes the file, and you do not have to. Laravel rebuilds it when the list of providers differs from the list it holds. `module:disable` leaves the module in the file until the next request rewrites it. If you want to reset it, delete it. This is safe: the file is rebuilt.
 
 ```bash
 rm bootstrap/cache/modules.php

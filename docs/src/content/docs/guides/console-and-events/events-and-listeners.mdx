@@ -43,6 +43,8 @@ To run a listener when the `Blog` module publishes a post, generate the event an
    PostPublished::dispatch();
    ```
 
+   A `--queued` listener runs only when a worker processes the queue: run `php artisan queue:work`. A new Laravel app uses `QUEUE_CONNECTION=database`. With `QUEUE_CONNECTION=sync`, the listener runs immediately.
+
 5. Check the result.
 
    ```bash

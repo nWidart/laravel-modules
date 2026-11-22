@@ -5,7 +5,7 @@ description: Make a model of a module prunable and delete its old records with m
 
 import { Steps } from '@astrojs/starlight/components';
 
-To delete the posts of the `Blog` module that are older than a year, make `Post` prunable and run `module:prune`. You need the `Post` model of [Add Eloquent models to a module](/laravel-modules/guides/database/models/). `module:prune` wraps Laravel `model:prune`, which finds only the models of the application; the module command finds the models of the module.
+To delete the posts of the `Blog` module that are older than a year, make `Post` prunable and run `module:prune`. You need the `Post` model and its `PostFactory` from [Add Eloquent models to a module](/laravel-modules/guides/database/models/). `module:prune` wraps Laravel `model:prune`, which finds only the models of the application; the module command finds the models of the module.
 
 <Steps>
 
@@ -38,7 +38,13 @@ To delete the posts of the `Blog` module that are older than a year, make `Post`
    }
    ```
 
-2. Count what the command would delete. `--pretend` deletes nothing.
+2. Create two records older than a year. Without them the command finds nothing to prune.
+
+   ```bash
+   php artisan tinker --execute="Modules\Blog\Models\Post::factory()->count(2)->create(['created_at' => now()->subYears(2)]);"
+   ```
+
+3. Count what the command would delete. `--pretend` deletes nothing.
 
    ```bash
    php artisan module:prune Blog --pretend
@@ -50,7 +56,7 @@ To delete the posts of the `Blog` module that are older than a year, make `Post`
 
    With no matching record, the output is `No prunable [Modules\Blog\Models\Post] records found.`
 
-3. Prune.
+4. Prune.
 
    ```bash
    php artisan module:prune Blog
@@ -62,7 +68,7 @@ To delete the posts of the `Blog` module that are older than a year, make `Post`
    Modules\Blog\Models\Post ......................................... 2 records
    ```
 
-4. Check the result. Run the count again:
+5. Check the result. Run the count again:
 
    ```bash
    php artisan module:prune Blog --pretend

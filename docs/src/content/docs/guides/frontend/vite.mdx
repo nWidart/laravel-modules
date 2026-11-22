@@ -11,7 +11,7 @@ At the end, the `Blog` module serves compiled CSS and JavaScript. Pick one of tw
 
 Use this way when a module has its own assets and its own build. The build writes to `public/build-blog`.
 
-`module:make Blog` generates `Modules/Blog/vite.config.js` and `Modules/Blog/package.json`. The generated `package.json` pins `vite` `^4.0.0` and `laravel-vite-plugin` `^0.7.5`.
+`module:make Blog` generates `Modules/Blog/vite.config.js` and `Modules/Blog/package.json`. The generated `package.json` pins `vite` `^4.0.0` and `laravel-vite-plugin` `^0.7.5`. A check installed `vite` 4.5.14 and `laravel-vite-plugin` 0.7.8, and the build works on Node.js 26. npm 11 prints an `install-scripts` warning for `esbuild` and `@parcel/watcher`. The warning does not stop the build.
 
 <Steps>
 
@@ -22,7 +22,15 @@ Use this way when a module has its own assets and its own build. The build write
    npm install
    ```
 
-2. Build the assets.
+2. Add a rule to `resources/assets/sass/app.scss`. The generated file is empty, and an empty file builds to a JavaScript chunk, not a stylesheet: the layout then gets two `<script type="module">` tags and no stylesheet link.
+
+   ```scss title="Modules/Blog/resources/assets/sass/app.scss"
+   body {
+       color: #222;
+   }
+   ```
+
+3. Build the assets.
 
    ```bash
    npm run build
@@ -30,7 +38,7 @@ Use this way when a module has its own assets and its own build. The build write
 
    The generated `vite.config.js` reads `resources/assets/sass/app.scss` and `resources/assets/js/app.js`. It writes the build and its manifest to `public/build-blog` (`../../public/build-blog` from the module folder).
 
-3. Load the build in the layout. The generated layout has the two `module_vite()` calls commented out. Remove the Blade comment markers.
+4. Load the build in the layout. The generated layout has the two `module_vite()` calls commented out. Remove the Blade comment markers.
 
    ```blade title="Modules/Blog/resources/views/components/layouts/master.blade.php"
    {{-- in <head> --}}
@@ -75,12 +83,13 @@ Use this way to run one Vite build, from the application root, for the applicati
 
    Write the paths relative to the application root.
 
-3. Collect the paths in the root `vite.config.js`. `collectModuleAssetsPaths(paths, 'Modules')` appends the `paths` of every enabled module to the list you give it.
+3. Change your root `vite.config.js`. Keep its plugins and options, and wrap the config in the async `getConfig()`. `collectModuleAssetsPaths(paths, 'Modules')` appends the `paths` of every enabled module to the list you give it. This is the Laravel 13 default with the added lines marked; `tailwindcss()` stays:
 
-   ```js title="vite.config.js"
+   ```js title="vite.config.js" ins={2-3,6-11,13,16-17,27,29}
    import { defineConfig } from 'vite';
    import laravel, { refreshPaths } from 'laravel-vite-plugin';
    import collectModuleAssetsPaths, { moduleRefreshPaths } from './vite-module-loader.js';
+   import tailwindcss from '@tailwindcss/vite';
 
    async function getConfig() {
        const paths = [
@@ -95,7 +104,13 @@ Use this way to run one Vite build, from the application root, for the applicati
                    input: allPaths,
                    refresh: [...refreshPaths, ...moduleRefreshPaths('Modules')],
                }),
+               tailwindcss(),
            ],
+           server: {
+               watch: {
+                   ignored: ['**/storage/framework/views/**'],
+               },
+           },
        });
    }
 
