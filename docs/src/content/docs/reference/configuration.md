@@ -203,4 +203,4 @@ Values the `composer` stub receives when `module:make` generates a module `compo
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `actuator.enabled` | `true` | When [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) is installed, register the `modules` health indicator and the indicators that modules list in `$healthIndicators`. `false` registers none. A published `config/modules.php` without the key counts as `true`. See [Report module health with the actuator](/laravel-modules/guides/production/health-checks/). |
+| `actuator.enabled` | `true` | When [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) is installed, register the `modules` health indicator and the indicators that modules list in `$healthIndicators`. `false` registers none. A published `config/modules.php` without the key counts as `true`. The `modules` actuator endpoint is not affected, see [Expose the modules on the actuator](/laravel-modules/guides/production/actuator-modules-endpoint/). See [Report module health with the actuator](/laravel-modules/guides/production/health-checks/). |

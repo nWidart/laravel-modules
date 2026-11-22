@@ -11,7 +11,9 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Translation\Translator;
+use Nwidart\Actuator\Actuator;
 use Nwidart\Modules\Actuator\HealthIndicators;
+use Nwidart\Modules\Actuator\ModulesEndpoint;
 use Nwidart\Modules\Actuator\ModulesHealthIndicator;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
@@ -57,6 +59,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->registerMigrations();
         $this->registerTranslations();
         $this->registerEventDiscovery();
+        $this->registerActuatorEndpoint();
 
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'modules');
 
@@ -152,6 +155,21 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     protected function registerEventDiscovery(): void
     {
         ListenerClassNameGuesser::register();
+    }
+
+    /**
+     * Register the "modules" endpoint of nwidart/laravel-actuator, when a version with custom endpoints is installed.
+     *
+     * The actuator keeps its endpoints per application and rejects a duplicate id, so a second
+     * register() on the same application (a forced re-register) must not add the endpoint again.
+     */
+    protected function registerActuatorEndpoint(): void
+    {
+        if (! class_exists(Actuator::class) || $this->app->getProviders(self::class) !== []) {
+            return;
+        }
+
+        Actuator::endpoint('modules', ModulesEndpoint::class);
     }
 
     protected function registerTranslations(): void

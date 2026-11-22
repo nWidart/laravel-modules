@@ -66,6 +66,7 @@ The module shows `[Disabled]` or `[Enabled]`. To list the enabled modules only, 
 - [`module:enable`](/laravel-modules/reference/commands/module-management/#moduleenable), [`module:disable`](/laravel-modules/reference/commands/module-management/#moduledisable) and [`module:list`](/laravel-modules/reference/commands/module-management/#modulelist)
 - [Events](/laravel-modules/reference/api/events/): `enabling`, `enabled`, `disabling` and `disabled`
 - [Repository API](/laravel-modules/reference/api/repository/)
+- [Expose the modules on the actuator](/laravel-modules/guides/production/actuator-modules-endpoint/): read which modules are enabled over HTTP
 - [Create a module](/laravel-modules/guides/modules/create-a-module/)
 - [Delete a module](/laravel-modules/guides/modules/delete-a-module/)
 - [Module status and activators](/laravel-modules/concepts/status-and-activators/): why the status is not in `module.json`, and whether to commit the statuses file
