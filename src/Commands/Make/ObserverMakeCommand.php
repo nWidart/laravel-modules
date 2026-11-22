@@ -43,7 +43,7 @@ class ObserverMakeCommand extends GeneratorCommand
     {
         return [
             ['name', InputArgument::REQUIRED, 'The observer name will be created.'],
-            ['module', InputArgument::OPTIONAL, 'The name of module will be created.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }
 

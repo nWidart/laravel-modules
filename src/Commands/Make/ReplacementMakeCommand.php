@@ -50,7 +50,7 @@ class ReplacementMakeCommand extends GeneratorCommand
     protected function getArguments(): array
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the enum class.'],
+            ['name', InputArgument::REQUIRED, 'The name of the replacement class.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }

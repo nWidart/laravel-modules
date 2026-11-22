@@ -143,7 +143,6 @@ class MigrateFreshCommand extends BaseCommand implements ConfirmableCommand
         return [
             ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'asc'],
             ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
-            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
             ['seed', null, InputOption::VALUE_NONE, 'Indicates if the seed task should be re-run.'],
             ['pretend', null, InputOption::VALUE_NONE, 'Not supported: the command refuses to run, as it would still drop all tables.'],
             ['drop-views', null, InputOption::VALUE_NONE, 'Drop all tables and views'],

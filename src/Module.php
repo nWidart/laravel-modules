@@ -119,7 +119,7 @@ abstract class Module
     }
 
     /**
-     * Get name in studly case.
+     * Get name in kebab case.
      */
     public function getKebabName(): string
     {

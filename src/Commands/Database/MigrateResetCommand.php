@@ -101,7 +101,6 @@ class MigrateResetCommand extends BaseCommand implements ConfirmableCommand
         return [
             ['direction', 'd', InputOption::VALUE_OPTIONAL, 'The direction of ordering.', 'desc'],
             ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
-            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production.'],
             ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run.'],
             ['subpath', null, InputOption::VALUE_OPTIONAL, 'A migrations subdirectory, file, or glob pattern, relative to the module migrations directory'],
         ];
