@@ -253,8 +253,12 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
     }
 
     /**
-     * Get the names of the modules that "all" stands for. Commands with a --direction
-     * option get the enabled modules sorted by priority in that direction.
+     * Get the names of the modules that --all and the "All" choice of the prompt stand for.
+     *
+     * The database commands get the enabled modules ordered by priority: a command with a
+     * --direction option orders them in that direction, and module:migrate-refresh, which has
+     * none, overrides this method. Every other command gets every module, enabled or disabled.
+     * A module given by name runs whatever its status.
      *
      * @return array<int, string>
      */
@@ -267,7 +271,17 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         $direction = $input->getOption('direction')
             ?? $this->getDefinition()->getOption('direction')->getDefault();
 
-        return array_keys($this->moduleRepository()->getOrdered((string) $direction));
+        return $this->getEnabledModuleNames((string) $direction);
+    }
+
+    /**
+     * Get the names of the enabled modules, ordered by priority in the given direction.
+     *
+     * @return array<int, string>
+     */
+    protected function getEnabledModuleNames(string $direction = 'asc'): array
+    {
+        return array_keys($this->moduleRepository()->getOrdered($direction));
     }
 
     /**

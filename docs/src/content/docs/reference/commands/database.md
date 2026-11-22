@@ -19,8 +19,8 @@ Every command on this page extends `BaseCommand`, the package base class of the 
 ### Module selection
 
 - With names, the command runs the action once per name.
-- With `--all`, or with `All` chosen in the interactive prompt, a command that has a `--direction` option uses the enabled modules ordered by the `priority` field of `module.json` in that direction. A command without `--direction` (`module:migrate-refresh`) uses every module, enabled or disabled.
-- `--direction` has no effect on modules given by name.
+- With `--all`, or with `All` chosen in the interactive prompt, a command that has a `--direction` option uses the enabled modules ordered by the `priority` field of `module.json` in that direction. `module:migrate-refresh` has no `--direction` option and uses the enabled modules in ascending order. The interactive list shows the same modules.
+- `--direction` has no effect on modules given by name. A module given by name runs whatever its status: `module:migrate-refresh Shop` refreshes a disabled `Shop`.
 - With no module and no interactive input, the command prints `No module given. Pass a module name or --all.` and exits with `1`.
 - An unknown module name throws `ModuleNotFoundException` before any action runs.
 
@@ -156,7 +156,7 @@ php artisan module:migrate-refresh [<module>...] [--database=DATABASE] [--force]
 **Notes**
 
 - The command is confirmable. See [Confirmation and prohibition](#confirmation-and-prohibition).
-- It has no `--direction`, `--pretend` or `--subpath` option. `--all` selects every module, enabled or disabled.
+- It has no `--direction`, `--pretend` or `--subpath` option. `--all` selects the enabled modules in ascending order of `priority`.
 - For each module the command runs `module:migrate-reset`, `module:migrate` and, with `--seed`, `module:seed`, each with `--force`. It stops the module at the first call that fails.
 
 ```bash

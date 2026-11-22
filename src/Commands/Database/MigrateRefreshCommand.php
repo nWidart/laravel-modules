@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Commands\Database;
 use Illuminate\Console\View\TaskResult;
 use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
 class MigrateRefreshCommand extends BaseCommand implements ConfirmableCommand
@@ -55,6 +56,19 @@ class MigrateRefreshCommand extends BaseCommand implements ConfirmableCommand
 
             return TaskResult::Success->value;
         });
+    }
+
+    /**
+     * Refresh the enabled modules ordered by priority, like the other database commands.
+     * Each module is reset and migrated before the next one, so the order is ascending,
+     * as for module:migrate.
+     *
+     * @return array<int, string>
+     */
+    #[\Override]
+    protected function getModuleNames(InputInterface $input): array
+    {
+        return $this->getEnabledModuleNames('asc');
     }
 
     /**
