@@ -68,8 +68,7 @@ A module fires string events named `modules.{lowercase name}.{event}`. The paylo
 | `modules.blog.disabling`, `modules.blog.disabled` | around `module:disable`. |
 | `modules.blog.deleting`, `modules.blog.deleted` | around `module:delete`. |
 | `modules.blog.used` | by `module:use`. |
-
-`unused` is declared but never fired. Do not listen to it.
+| `modules.blog.unused` | by `module:unuse`, when a module is in use. |
 
 ## Related
 

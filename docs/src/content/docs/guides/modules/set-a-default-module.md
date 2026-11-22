@@ -25,11 +25,17 @@ The file is `Modules/Blog/app/Http/Controllers/PostController.php`. An explicit 
 
 ## Clear the default module
 
-`module:unuse` needs a module name or `--all`, like every command that acts on modules. It clears the stored module whatever the name is.
+`module:unuse` takes no module name. It deletes the stored module. The command accepts a name or `--all` and ignores them.
 
 ```bash
-php artisan module:unuse Blog
+php artisan module:unuse
 ```
+
+```text
+Forget Using Blog Module ........................................ DONE
+```
+
+When no module is in use, the command prints `No module is in use.` and exits with status 0. The `modules.blog.unused` event fires when a module was in use.
 
 ## Check the result
 
@@ -40,10 +46,10 @@ php artisan module:make-controller PostController
 ```
 
 ```text
-Module [] does not exist!
+ERROR  No module given, and no module is set with module:use. Pass the module name, or run php artisan module:use <module> first.
 ```
 
-The error prints as an exception with a stack trace, not as a one-line message.
+The command exits with status 1 and prints no stack trace.
 
 While a module is in use, the same command writes into that module.
 

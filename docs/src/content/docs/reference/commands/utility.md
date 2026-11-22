@@ -124,12 +124,12 @@ This command has no options.
 | `0` | Done, also after the warnings above. |
 | `100` | `phpunit.xml` does not exist. |
 | `99` | The statuses file does not exist. |
-| `98` | The statuses file cannot be decoded. Prints `Error decoding JSON from <path>: <error>`. |
+| `98` | The command cannot decode the statuses file. Prints `Error decoding JSON from <path>: <error>`. See below. |
 | `97` | `phpunit.xml` is empty or not valid XML. |
 
-Status `98` happens in two cases only:
+Status `98` happens only when decoding the statuses file fails, in two cases:
 
-- The active activator is not `FileActivator`. The command still reads the file named by `modules.activators.file.statuses-file`, and nothing else reads it at boot.
-- `FileActivator` is active and the statuses file is empty or holds only whitespace. The activator treats that as no statuses and boots, but the command's JSON decode fails.
+- The file is empty or holds only whitespace. `FileActivator` treats that as no statuses and boots, but the command's JSON decode fails.
+- The file holds invalid JSON and the active activator is not `FileActivator`. The command still reads the file named by `modules.activators.file.statuses-file`, and nothing else reads it at boot.
 
-When `FileActivator` is active and the statuses file holds non-empty invalid JSON, the command never runs and never returns `98`: the activator throws [`InvalidJsonException`](/laravel-modules/reference/api/exceptions/#invalidjsonexception) while the application boots, and `artisan` exits with status `1`.
+With a custom activator and a valid statuses file, the command succeeds and exits with `0`. When `FileActivator` is active and the file holds non-empty invalid JSON, the command never runs and never returns `98`: the activator throws [`InvalidJsonException`](/laravel-modules/reference/api/exceptions/#invalidjsonexception) while the application boots, and `artisan` exits with status `1`.

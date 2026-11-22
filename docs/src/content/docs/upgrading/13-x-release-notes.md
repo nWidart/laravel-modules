@@ -104,7 +104,7 @@ You must act in two cases:
 
 Other changes need no action:
 
-- The package ships files for Laravel Boost under `.ai/laravel-modules/` ([#2156](https://github.com/nWidart/laravel-modules/pull/2156)). Laravel Boost does not read that location. See [Use the package with AI coding assistants](/laravel-modules/ecosystem/ai-assistants/).
+- 13.1.0 shipped files for Laravel Boost under `.ai/laravel-modules/` ([#2156](https://github.com/nWidart/laravel-modules/pull/2156)). Laravel Boost did not read that location. A change merged to `master` after 13.3.0 moves them to `resources/boost/`, where Boost reads them ([#2267](https://github.com/nWidart/laravel-modules/pull/2267)). See [Use the package with AI coding assistants](/laravel-modules/ecosystem/ai-assistants/).
 - `module:migrate <Module>` no longer runs the migrations of the application or of another module with a similar name ([#2171](https://github.com/nWidart/laravel-modules/pull/2171)).
 - `--pretend` works on `module:migrate-rollback` and `module:migrate-reset` ([#2175](https://github.com/nWidart/laravel-modules/pull/2175)).
 - Module translation loading no longer misses its namespace ([#2154](https://github.com/nWidart/laravel-modules/pull/2154)).

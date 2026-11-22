@@ -80,7 +80,7 @@ If the plugin is set to `false`, modules are not autoloaded. After changing `com
 composer dump-autoload
 ```
 
-> Since v11.0, the `"Modules\\": "modules/"` autoload entry is no longer needed. Remove it from your `composer.json` if present.
+> Since v11.0, the `"Modules\\": "Modules/"` autoload entry is no longer needed. Remove it from your `composer.json` if present.
 
 ## Quick start
 

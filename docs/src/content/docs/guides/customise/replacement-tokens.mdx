@@ -17,7 +17,7 @@ To add a placeholder such as `$TABLE_PREFIX$` to the files `module:make` writes,
 
    The file is `Modules/Blog/app/Console/Replacements/TablePrefix.php`.
 
-2. Replace the body of `handle()`. The generated body calls `getModule()->getLowerName()`, which throws a `TypeError` when `module:make` runs it. `getName()` returns the studly-case name of the module that is being created.
+2. Edit `handle()`. The generated body returns `strtolower($this->generator->getName())`, the lower-case name of the module that `module:make` is creating. Append the underscore to get a table prefix.
 
    ```php title="Modules/Blog/app/Console/Replacements/TablePrefix.php"
    <?php

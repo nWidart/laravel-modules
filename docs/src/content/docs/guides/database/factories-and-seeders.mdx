@@ -75,7 +75,7 @@ To fill the `posts` table of the `Blog` module with test data, define a factory,
    ```text
       INFO  Seeding module ...
 
-     Seeding Blog Module
+     Seeding Blog Module ......................................
 
       INFO  Seeding database.
 
@@ -85,9 +85,10 @@ To fill the `posts` table of the `Blog` module with test data, define a factory,
 
      Modules\Blog\Database\Seeders\BlogDatabaseSeeder ............ <time> DONE
 
-   Module [Blog] seeded.
-   ............................................................ <time> DONE
+      INFO  Module [Blog] seeded.
    ```
+
+   If a seeder fails or you cancel the confirmation in production, the command prints `ERROR  Module [Blog] seeding failed.` instead and exits with status 1.
 
 5. Check the result. Count the posts:
 

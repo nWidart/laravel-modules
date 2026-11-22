@@ -1,11 +1,11 @@
 ---
 title: Add routes to a module
-description: Replace the generated authenticated routes of a module with a public web route and an API route, and link to a route of another module.
+description: Add a web route and a public API route to a module, put routes under a prefix, and link to a route of another module.
 ---
 
 import { Steps } from '@astrojs/starlight/components';
 
-To serve a public page and a JSON endpoint from the `Blog` module, replace the generated route files. You need an enabled `Blog` module and two controllers, `PostController` and `Api/PostController`:
+To serve a page and a JSON endpoint from the `Blog` module, add routes to the generated route files. You need an enabled `Blog` module and two controllers, `PostController` and `Api/PostController`:
 
 ```bash
 php artisan module:make-controller Post Blog
@@ -18,27 +18,29 @@ See [Add controllers to a module](/laravel-modules/guides/http/controllers/) for
 
 | File | Generated content | Loaded by `RouteServiceProvider` with |
 | --- | --- | --- |
-| `Modules/Blog/routes/web.php` | `Route::resource('blogs', BlogController::class)->names('blog')` inside `Route::middleware(['auth', 'verified'])` | the `web` middleware group, no prefix |
+| `Modules/Blog/routes/web.php` | `Route::resource('blogs', BlogController::class)->names('blog');`, with no route middleware | the `web` middleware group, no prefix |
 | `Modules/Blog/routes/api.php` | `Route::apiResource('blogs', BlogController::class)->names('blog')` inside `Route::middleware(['auth:sanctum'])->prefix('v1')` | the `api` middleware group, the prefix `api` and the name prefix `api.` |
 
-An app without authentication set up has no login page for `auth` to redirect to and no Sanctum for `auth:sanctum`, so the generated routes fail there.
+The generated web route needs no login, so the page works in an application without authentication. The generated API route requires `auth:sanctum`: an application without Laravel Sanctum cannot serve it, and a request without a valid token gets a 401 response.
 
 <Steps>
 
-1. Replace `Modules/Blog/routes/web.php` with a public route.
+1. Add a route for `PostController` to `Modules/Blog/routes/web.php`. Keep the generated `Route::resource()` line if you still want the `blogs` routes.
 
    ```php title="Modules/Blog/routes/web.php"
    <?php
 
    use Illuminate\Support\Facades\Route;
+   use Modules\Blog\Http\Controllers\BlogController;
    use Modules\Blog\Http\Controllers\PostController;
 
+   Route::resource('blogs', BlogController::class)->names('blog');
    Route::get('posts', [PostController::class, 'index'])->name('blog.posts.index');
    ```
 
    Route names are global in the application. Start every name with the module name so that two modules cannot clash.
 
-2. Replace `Modules/Blog/routes/api.php` with a public API route. The provider already adds the prefix `api` and the name prefix `api.`.
+2. Replace `Modules/Blog/routes/api.php` with a public API route, one without `auth:sanctum`. The provider already adds the prefix `api` and the name prefix `api.`.
 
    ```php title="Modules/Blog/routes/api.php"
    <?php
@@ -90,7 +92,7 @@ The generated `show()` method returns `view('blog::show')`. Create that view, or
 php artisan module:make-view show Blog
 ```
 
-To require authentication again, wrap the routes in the middleware that your application provides, for example `Route::middleware('auth')->group(...)`. To apply a middleware of the module, see [Add middleware to a module](/laravel-modules/guides/http/middleware/).
+To require authentication, wrap the routes in the middleware that your application provides, for example `Route::middleware('auth')->group(...)`. To apply a middleware of the module, see [Add middleware to a module](/laravel-modules/guides/http/middleware/).
 
 To link to a route of another module, use its route name. The view needs no knowledge of the namespace or URL of the other module:
 
