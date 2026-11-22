@@ -418,7 +418,7 @@ php artisan module:lang Blog
 Prunes the prunable Eloquent models of the given modules. It wraps Laravel `model:prune`.
 
 ```bash
-php artisan module:prune [<module>...] [--all] [--model=MODEL] [--except=EXCEPT] [--path=PATH] [--chunk=CHUNK] [--pretend]
+php artisan module:prune [<module>...] [--all] [--model=MODEL] [--except=EXCEPT] [--chunk=CHUNK] [--pretend]
 ```
 
 **Arguments**
@@ -434,7 +434,6 @@ php artisan module:prune [<module>...] [--all] [--model=MODEL] [--except=EXCEPT]
 | `--all` | | `false` | Select every enabled module. It replaces the `module` argument. |
 | `--model` | | none | Class names of the models to prune, or their names in the model folder of the selected modules. Repeatable. See the notes. |
 | `--except` | | none | Class names of the models to exclude from pruning, or their names in the model folder of the selected modules. Repeatable. See the notes. |
-| `--path` | | none | Declared (inherited from `model:prune`) but ignored. The command always scans the model folder of the selected modules. |
 | `--chunk` | | `1000` | Number of models to retrieve per chunk. |
 | `--pretend` | | `false` | Display the number of prunable records instead of deleting them. |
 
