@@ -432,8 +432,8 @@ php artisan module:prune <module>... [--all] [--model=MODEL] [--except=EXCEPT] [
 | Name | Shortcut | Default | Description |
 | --- | --- | --- | --- |
 | `--all` | | `false` | Select every enabled module. It replaces the `module` argument. |
-| `--model` | | none | Class names of the models to prune. Repeatable. |
-| `--except` | | none | Class names of the models to exclude. Repeatable. |
+| `--model` | | none | Fully qualified class names of the models to prune. Repeatable. |
+| `--except` | | none | Fully qualified class names of the models to exclude. Repeatable. |
 | `--path` | | none | Absolute directory paths where models are located. Repeatable. |
 | `--chunk` | | `1000` | Number of models to retrieve per chunk. |
 | `--pretend` | | `false` | Display the number of prunable records instead of deleting them. |
@@ -442,7 +442,7 @@ php artisan module:prune <module>... [--all] [--model=MODEL] [--except=EXCEPT] [
 
 - This command does not extend `BaseCommand`. `--all` has no shortcut and selects the enabled modules only. A run without `module` and without `--all` fails on the missing argument, unless an interactive terminal answers the prompt.
 - The command scans the `model` generator path of each module (`paths.generator.model.path`) for PHP files, and keeps the models that are prunable.
-- `--model` and `--except` cannot be combined. The command throws `InvalidArgumentException`. With `--model`, the command prunes the listed classes that exist and ignores the module models.
+- `--model` and `--except` cannot be combined. The command throws `InvalidArgumentException`. With `--model`, the command prunes the listed classes that exist and ignores the module models. A short name such as `--model=Post` matches nothing, and the command prints `No prunable models found.`
 
 ```bash
 php artisan module:prune Blog --pretend
@@ -460,7 +460,7 @@ php artisan module:model-show <model> [--database=DATABASE] [--json]
 
 | Name | Required | Description |
 | --- | --- | --- |
-| `model` | yes, asked when missing | Model class name without namespace. In an interactive terminal, a missing argument opens a search prompt. A non-interactive run fails on the missing argument. |
+| `model` | yes, asked when missing | Model name, or fully qualified class name. See the notes for the accepted forms. In an interactive terminal, a missing argument opens a search prompt. A non-interactive run fails on the missing argument. |
 
 **Options**
 
@@ -471,9 +471,14 @@ php artisan module:model-show <model> [--database=DATABASE] [--json]
 
 **Notes**
 
-- The command looks for `<paths.modules>/*/<paths.generator.model.path>/<model>.php` and resolves the class name from the path. It does not read the module status.
+- A name that Laravel resolves to an existing class is used unchanged: a fully qualified class name, or a model in the application `App\Models` namespace. An application model wins over a module model with the same short name.
+- Otherwise the command looks for `<paths.modules>/*/<paths.generator.model.path>/<name>.php` in every module and shows the matching class. It does not read the module status, so a model of a disabled module matches too.
+- Accepted forms: `Post`, a sub-path inside the models folder (`Admin/Post` or `Admin\Post`, with or without a leading slash or backslash), and a fully qualified class name. `Models/Post` is not supported. A name that contains `*`, `?` or `[` is not looked up.
+- When the same model name exists in several modules, an interactive run prompts for one of the candidate classes. A non-interactive run prints `Model [Tag] is ambiguous, it exists in several modules: Modules\Shop\Models\Tag, Modules\Webapp\Models\Tag. Pass the fully qualified class name.` and exits with status 1.
+- When nothing matches, the command fails with Laravel's error, `Target class [App\Models\<name>] does not exist.`
 - The command has no `module` argument. It searches every module directory.
 
 ```bash
 php artisan module:model-show Post --json
+php artisan module:model-show 'Modules\Shop\Models\Tag'
 ```

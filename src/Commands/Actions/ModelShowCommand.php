@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Commands\Actions;
 
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Database\Console\ShowModelCommand;
+use Illuminate\Database\Eloquent\ModelInspector;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -11,6 +12,7 @@ use Nwidart\Modules\Traits\PathNamespace;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 use function Laravel\Prompts\search;
+use function Laravel\Prompts\select;
 
 #[AsCommand('module:model-show', 'Show information about an Eloquent model in modules')]
 class ModelShowCommand extends ShowModelCommand implements PromptsForMissingInput
@@ -75,6 +77,64 @@ class ModelShowCommand extends ShowModelCommand implements PromptsForMissingInpu
 
         return collect(File::glob($pattern))
             ->map($this->formatModuleNamespace(...));
+    }
+
+    /**
+     * Resolve a short model name given as argument to a module model, then show it.
+     */
+    #[\Override]
+    public function handle(ModelInspector $modelInspector)
+    {
+        $model = $this->resolveModuleModel($this->argument('model'), $modelInspector);
+
+        if ($model === null) {
+            return self::FAILURE;
+        }
+
+        $this->input->setArgument('model', $model);
+
+        return parent::handle($modelInspector);
+    }
+
+    /**
+     * Get the model class to show for the given name.
+     *
+     * A name that Laravel resolves to an existing class (fully qualified, or in the app models
+     * namespace) is kept. Otherwise the name, relative to the models directory of a module
+     * ("Post", "Admin/Post" or "Admin\\Post"), is looked up in every module. One match is used,
+     * no match keeps the name so Laravel reports it, and several matches are offered as a
+     * choice, or fail without interaction. Null means the command must fail.
+     */
+    private function resolveModuleModel(string $model, ModelInspector $inspector): ?string
+    {
+        $app_class = (fn (string $model): string => $this->qualifyModel($model))->call($inspector, $model);
+
+        $path = str_replace('\\', '/', ltrim($model, '\\/'));
+
+        if (class_exists($app_class) || $path === '' || strpbrk($path, '*?[') !== false) {
+            return $model;
+        }
+
+        $candidates = $this->findModels($path)->unique()->values();
+
+        if ($candidates->count() <= 1) {
+            return $candidates->first() ?? $model;
+        }
+
+        if ($this->input->isInteractive()) {
+            return (string) select(
+                label: "Model [{$model}] exists in several modules. Select one",
+                options: $candidates->all(),
+            );
+        }
+
+        $this->components->error(sprintf(
+            'Model [%s] is ambiguous, it exists in several modules: %s. Pass the fully qualified class name.',
+            $model,
+            $candidates->implode(', '),
+        ));
+
+        return null;
     }
 
     #[\Override]
