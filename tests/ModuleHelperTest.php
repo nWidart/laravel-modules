@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Blade;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Module;
+use Orchestra\Testbench\Attributes\DefineEnvironment;
 
 class ModuleHelperTest extends BaseTestCase
 {
@@ -66,9 +67,18 @@ class ModuleHelperTest extends BaseTestCase
 
     public function test_module_directive_renders_content_when_module_is_enabled()
     {
+        $this->assertFalse($this->app->resolved('blade.compiler'));
+
         $blade = "@module('Blog') Enabled @endmodule";
 
         $this->assertStringContainsString('Enabled', Blade::render($blade));
+    }
+
+    #[DefineEnvironment('resolveBladeBeforeBoot')]
+    public function test_module_directive_is_registered_on_an_already_resolved_compiler()
+    {
+        $this->assertTrue($this->app->resolved('blade.compiler'));
+        $this->assertSame('Enabled', trim(Blade::render("@module('Blog') Enabled @endmodule")));
     }
 
     public function test_module_directive_does_not_render_content_when_module_is_disabled()
@@ -78,5 +88,10 @@ class ModuleHelperTest extends BaseTestCase
         $blade = "@module('Blog') Enabled @endmodule";
 
         $this->assertStringNotContainsString('Enabled', Blade::render($blade));
+    }
+
+    protected function resolveBladeBeforeBoot($app): void
+    {
+        $app->make('blade.compiler');
     }
 }

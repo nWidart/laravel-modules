@@ -9,8 +9,8 @@ use Illuminate\Contracts\Translation\Translator as TranslatorContract;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\AboutCommand;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Translation\Translator;
+use Illuminate\View\Compilers\BladeCompiler;
 use Nwidart\Actuator\Actuator;
 use Nwidart\Modules\Actuator\HealthIndicators;
 use Nwidart\Modules\Actuator\ModulesEndpoint;
@@ -32,14 +32,15 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     #[\Override]
     public function boot()
     {
-        $this->registerNamespaces();
+        if ($this->app->runningInConsole()) {
+            $this->registerNamespaces();
 
-        AboutCommand::add('Laravel-Modules', [
-            'Version' => fn () => InstalledVersions::getPrettyVersion('nwidart/laravel-modules'),
-        ]);
+            AboutCommand::add('Laravel-Modules', [
+                'Version' => fn () => InstalledVersions::getPrettyVersion('nwidart/laravel-modules'),
+            ]);
+        }
 
-        // Create @module() blade directive.
-        Blade::if('module', fn (string $name) => module($name));
+        $this->callAfterResolving('blade.compiler', fn (BladeCompiler $blade) => $blade->if('module', fn (string $name) => module($name)));
 
         HealthIndicators::register($this->app, ['modules' => ModulesHealthIndicator::class]);
     }
@@ -52,6 +53,8 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
     #[\Override]
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'modules');
+
         $this->registerServices();
         $this->setupStubPath();
         $this->registerProviders();
@@ -60,8 +63,6 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         $this->registerTranslations();
         $this->registerEventDiscovery();
         $this->registerActuatorEndpoint();
-
-        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'modules');
 
         $this->registerModules();
     }
@@ -174,8 +175,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
     protected function registerTranslations(): void
     {
-        // Runs before the package config is merged, so the fallback must match the package default.
-        if (! $this->app->make(ConfigRepository::class)->get('modules.auto-discover.translations', false)) {
+        if (! $this->app->make(ConfigRepository::class)->get('modules.auto-discover.translations')) {
             return;
         }
         $this->callAfterResolving('translator', function (TranslatorContract $translator) {

@@ -3,10 +3,12 @@
 namespace Nwidart\Modules\Tests\Support;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Support\ModuleServiceProvider;
 use Nwidart\Modules\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ModuleServiceProviderTest extends BaseTestCase
 {
@@ -259,6 +261,29 @@ class ModuleServiceProviderTest extends BaseTestCase
             [$sourcePath => resource_path('views/modules/blog')],
             ServiceProvider::pathsToPublish($provider::class, 'blog-module-views')
         );
+    }
+
+    #[DataProvider('bladeResolutionTiming')]
+    public function test_module_boot_registers_its_component_namespace(bool $resolveBeforeBoot): void
+    {
+        config(['modules.namespace' => 'Nwidart\\Modules\\Tests\\Support\\Fixtures']);
+
+        if ($resolveBeforeBoot) {
+            $this->app->make('blade.compiler');
+        }
+
+        $this->moduleProvider()->boot();
+
+        $this->assertSame($resolveBeforeBoot, $this->app->resolved('blade.compiler'));
+        $this->assertSame('Module badge', Blade::render('<x-blog::lifecycle-badge />'));
+    }
+
+    public static function bladeResolutionTiming(): array
+    {
+        return [
+            'after module boot' => [false],
+            'before module boot' => [true],
+        ];
     }
 
     private function writeModuleConfig(string $file, array $values): void

@@ -3,15 +3,20 @@
 namespace Nwidart\Modules\Tests;
 
 use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Translation\Translator;
+use Nwidart\Modules\Commands\Actions\ListCommand;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
+use Nwidart\Modules\Facades\Module;
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Nwidart\Modules\ModuleManifest;
 use Nwidart\Modules\Support\Stub;
 use Orchestra\Testbench\Attributes\DefineEnvironment;
+use Orchestra\Testbench\Attributes\ResolvesLaravel;
 use Orchestra\Testbench\Attributes\WithConfig;
 
 class LaravelModulesServiceProviderTest extends BaseTestCase
@@ -101,7 +106,8 @@ class LaravelModulesServiceProviderTest extends BaseTestCase
     }
 
     #[WithConfig('modules.auto-discover.translations', true, defer: false)]
-    public function test_it_auto_discovers_module_translations_when_enabled()
+    #[WithConfig('modules.auto-discover.migrations', false, defer: false)]
+    public function test_it_honours_published_auto_discovery_flags()
     {
         $this->createModule('Blog');
 
@@ -110,6 +116,60 @@ class LaravelModulesServiceProviderTest extends BaseTestCase
 
         $this->assertContains($langPath, $translator->getLoader()->jsonPaths());
         $this->assertSame($langPath, $translator->getLoader()->namespaces()['blog'] ?? null);
+        $this->assertNotContains($this->moduleMigrationPath('Blog'), $this->freshMigratorPaths());
+    }
+
+    #[WithConfig('modules.auto-discover', [], defer: false)]
+    public function test_it_uses_discovery_defaults_for_missing_nested_keys()
+    {
+        $this->createModule('Blog');
+
+        $this->assertContains($this->moduleMigrationPath('Blog'), $this->freshMigratorPaths());
+        $this->assertNotContains($this->moduleLangPath('Blog'), $this->resolveFreshTranslator()->getLoader()->jsonPaths());
+    }
+
+    public function test_it_merges_package_defaults_before_configuring_an_already_resolved_translator()
+    {
+        $this->createModule('Blog');
+        $this->setModuleJson('Blog', ['providers' => []]);
+        $translator = $this->app['translator'];
+        $originalConfig = config('modules');
+
+        config(['modules' => [
+            'paths' => $originalConfig['paths'],
+            'auto-discover' => ['translations' => true],
+        ]]);
+        Module::clearResolvedInstance('modules');
+
+        try {
+            $this->app->register(LaravelModulesServiceProvider::class, force: true);
+
+            $this->assertSame($this->moduleLangPath('Blog'), $translator->getLoader()->namespaces()['blog'] ?? null);
+        } finally {
+            config(['modules' => $originalConfig]);
+        }
+    }
+
+    #[WithConfig('modules.commands', [ListCommand::class], defer: false)]
+    public function test_it_registers_only_the_commands_from_published_config()
+    {
+        $commands = Artisan::all();
+
+        $this->assertArrayHasKey('module:list', $commands);
+        $this->assertArrayNotHasKey('module:make', $commands);
+    }
+
+    #[ResolvesLaravel('resetPublishPaths')]
+    public function test_it_registers_publish_paths_about_info_and_commands_in_the_console()
+    {
+        $this->assertTrue($this->app->runningInConsole());
+
+        $this->assertSame([config_path('modules.php')], array_values(ServiceProvider::pathsToPublish(LaravelModulesServiceProvider::class, 'config')));
+        $this->assertSame([base_path('stubs/nwidart-stubs')], array_values(ServiceProvider::pathsToPublish(LaravelModulesServiceProvider::class, 'stubs')));
+        $this->assertSame([base_path('vite-module-loader.js')], array_values(ServiceProvider::pathsToPublish(LaravelModulesServiceProvider::class, 'vite')));
+        $this->assertSame(0, Artisan::call('module:list'));
+        $this->assertSame(0, Artisan::call('about', ['--only' => 'Laravel-Modules']));
+        $this->assertStringContainsString('Laravel-Modules', Artisan::output());
     }
 
     public function test_it_registers_aliases_of_enabled_modules()
@@ -218,6 +278,12 @@ class LaravelModulesServiceProviderTest extends BaseTestCase
         $app['config']->set('modules.stubs.path', __DIR__.'/stubs');
     }
 
+    protected function resetPublishPaths(): void
+    {
+        ServiceProvider::$publishes = [];
+        ServiceProvider::$publishGroups = [];
+    }
+
     /**
      * Run the provider's module registration again, so it picks up modules created by the test.
      */
@@ -263,6 +329,18 @@ class LaravelModulesServiceProviderTest extends BaseTestCase
         return $this->app[RepositoryInterface::class]
             ->find($moduleName)
             ->getExtraPath(config('modules.paths.generator.lang.path'));
+    }
+
+    private function moduleMigrationPath(string $moduleName): string
+    {
+        return module_path($moduleName, config('modules.paths.generator.migration.path'));
+    }
+
+    private function freshMigratorPaths(): array
+    {
+        $this->app->forgetInstance('migrator');
+
+        return $this->app['migrator']->paths();
     }
 
     private function resolveFreshTranslator(): Translator
