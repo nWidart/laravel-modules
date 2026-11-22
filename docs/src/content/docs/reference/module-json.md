@@ -109,7 +109,8 @@ The values come from `composer.vendor`, `composer.author`, `namespace` and `path
         {
             "name": "acme/blog",
             "version": "1.2.0",
-            "type": "github-https"
+            "type": "github-https",
+            "path": "Modules/Blog"
         }
     ]
 }
@@ -121,6 +122,9 @@ The values come from `composer.vendor`, `composer.author`, `namespace` and `path
 | --- | --- | --- |
 | `name` | yes | Package name in the form `vendor/name`. |
 | `version` | no | Composer version constraint, or the Git branch, tag or commit to check out. |
-| `type` | no | Install source: `composer` or empty, `github`, `github-https`, `gitlab`, `bitbucket`, a repository URL, or `user@host`. An entry without `type` uses the `--type` option of the command. |
+| `type` | no | Install source: `composer` or empty, `github`, `github-https`, `gitlab`, `bitbucket`, a repository URL with a scheme (including `file://`), or `user@host`. See [Values of `--type`](/laravel-modules/reference/commands/module-management/#moduleinstall). An entry without `type` uses the `--type` option of the command. |
+| `path` | no | Destination folder of the module. A relative path is relative to the application root. With a `composer` source it has no effect. An empty or non-string value counts as absent: the entry then uses `--path` when only one entry exists, else the default module folder. |
+
+`require` must be a list of entries. Each entry must be an object with a non-empty string `name`. `version` and `type`, when set, must be scalars. The command skips an entry that breaks these rules, prints one error line with its position in the list, installs the remaining entries and exits with `1`. A `require` that is not a list prints one error line and exits with `1`. See [Errors](/laravel-modules/reference/commands/module-management/#moduleinstall) of `module:install` for the messages.
 
 `modules.json` has no other field. It is a different file from `modules_statuses.json`, which the `file` activator writes.

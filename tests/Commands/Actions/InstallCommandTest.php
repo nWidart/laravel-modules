@@ -62,6 +62,7 @@ class InstallCommandTest extends BaseTestCase
         @unlink(base_path('modules.json'));
         (new Filesystem)->deleteDirectory($this->app[RepositoryInterface::class]->getModulePath('Blog'));
         (new Filesystem)->deleteDirectory(base_path('modules/BlogModule'));
+        (new Filesystem)->deleteDirectory($this->app[RepositoryInterface::class]->getModulePath('Shop'));
 
         parent::tearDown();
     }
@@ -129,11 +130,11 @@ class InstallCommandTest extends BaseTestCase
         file_put_contents(base_path('modules.json'), json_encode([
             'require' => [
                 ['name' => 'acme/broken', 'version' => 'develop', 'type' => 'file://'.$this->tmpDir.'/missing.git'],
-                ['name' => 'acme/blog', 'version' => 'develop', 'type' => $this->repoUrl],
+                ['name' => 'acme/blog', 'version' => 'develop', 'type' => $this->repoUrl, 'path' => $this->destination],
             ],
         ]));
 
-        $code = $this->artisan('module:install', ['--path' => $this->destination]);
+        $code = $this->artisan('module:install');
 
         $this->assertSame(1, $code);
         $this->assertStringContainsString('Failed to install module [acme/broken]', Artisan::output());
@@ -152,6 +153,83 @@ class InstallCommandTest extends BaseTestCase
         $code = $this->artisan('module:install', ['--path' => $this->destination]);
 
         $this->assertSame(0, $code);
+        $this->assertSame('develop', $this->currentBranch($this->destination));
+        $this->assertSame(['Blog'], $this->updateCommand->updated);
+    }
+
+    public function test_modules_json_installs_each_module_into_its_own_path()
+    {
+        $shopDestination = dirname($this->destination).DIRECTORY_SEPARATOR.'Shop';
+        file_put_contents(base_path('modules.json'), json_encode([
+            'require' => [
+                ['name' => 'acme/blog', 'version' => 'develop', 'type' => $this->repoUrl, 'path' => $this->destination],
+                ['name' => 'acme/shop', 'version' => 'develop', 'type' => $this->createBareRepository('Shop'), 'path' => $shopDestination],
+            ],
+        ]));
+
+        $code = $this->artisan('module:install');
+
+        $this->assertSame(0, $code, Artisan::output());
+        $this->assertSame('develop', $this->currentBranch($this->destination));
+        $this->assertSame('develop', $this->currentBranch($shopDestination));
+        $this->assertSame(['Blog', 'Shop'], $this->updateCommand->updated);
+    }
+
+    public function test_modules_json_installs_an_entry_without_path_into_the_modules_path()
+    {
+        $shopDestination = $this->app[RepositoryInterface::class]->getModulePath('Shop');
+        file_put_contents(base_path('modules.json'), json_encode([
+            'require' => [
+                ['name' => 'acme/blog', 'version' => 'develop', 'type' => $this->repoUrl, 'path' => $this->destination],
+                ['name' => 'acme/shop', 'version' => 'develop', 'type' => $this->createBareRepository('Shop')],
+            ],
+        ]));
+
+        $code = $this->artisan('module:install');
+
+        $this->assertSame(0, $code, Artisan::output());
+        $this->assertSame('develop', $this->currentBranch($this->destination));
+        $this->assertDirectoryDoesNotExist(base_path('modules/Blog'));
+        $this->assertFileExists($shopDestination.'module.json');
+        $this->assertSame(['Blog', 'Shop'], $this->updateCommand->updated);
+    }
+
+    public function test_path_option_with_several_modules_json_entries_fails_without_installing()
+    {
+        file_put_contents(base_path('modules.json'), json_encode([
+            'require' => [
+                ['name' => 'acme/blog', 'version' => 'develop', 'type' => $this->repoUrl],
+                ['name' => 'acme/shop', 'version' => 'develop', 'type' => $this->createBareRepository('Shop')],
+            ],
+        ]));
+
+        $code = $this->artisan('module:install', ['--path' => $this->destination]);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString(
+            'The --path option sets the folder of a single module, but modules.json lists 2 modules. Remove --path and set a "path" on each entry of modules.json instead.',
+            Artisan::output()
+        );
+        $this->assertDirectoryDoesNotExist($this->destination);
+        $this->assertDirectoryDoesNotExist($this->app[RepositoryInterface::class]->getModulePath('Blog'));
+        $this->assertDirectoryDoesNotExist($this->app[RepositoryInterface::class]->getModulePath('Shop'));
+        $this->assertSame([], $this->updateCommand->updated);
+    }
+
+    public function test_the_entry_path_wins_over_the_path_option_for_a_single_modules_json_entry()
+    {
+        $optionDestination = $this->tmpDir.DIRECTORY_SEPARATOR.'option dir'.DIRECTORY_SEPARATOR.'Blog';
+        file_put_contents(base_path('modules.json'), json_encode([
+            'require' => [
+                ['name' => 'acme/blog', 'version' => 'develop', 'type' => $this->repoUrl, 'path' => $this->destination],
+            ],
+        ]));
+
+        $code = $this->artisan('module:install', ['--path' => $optionDestination]);
+
+        $this->assertSame(0, $code, Artisan::output());
+        $this->assertSame('develop', $this->currentBranch($this->destination));
+        $this->assertDirectoryDoesNotExist($optionDestination);
         $this->assertSame(['Blog'], $this->updateCommand->updated);
     }
 
@@ -314,5 +392,73 @@ class InstallCommandTest extends BaseTestCase
 
         $this->assertSame(1, $code);
         $this->assertSame(['Blog'], $this->updateCommand->updated);
+    }
+
+    public function test_modules_json_skips_an_entry_without_a_valid_name_and_installs_the_rest()
+    {
+        file_put_contents(base_path('modules.json'), json_encode([
+            'require' => [
+                ['version' => 'develop', 'type' => $this->repoUrl],
+                ['name' => 42, 'version' => 'develop', 'type' => $this->repoUrl],
+                ['name' => 'acme/blog', 'version' => 'develop', 'type' => $this->repoUrl, 'path' => $this->destination],
+            ],
+        ]));
+
+        $code = $this->artisan('module:install');
+
+        $output = Artisan::output();
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Skipping entry #1 of the modules.json "require" list: "name" must be a package name such as "vendor/module".', $output);
+        $this->assertStringContainsString('Skipping entry #2 of the modules.json "require" list: "name" must be a package name such as "vendor/module".', $output);
+        $this->assertSame('develop', $this->currentBranch($this->destination));
+        $this->assertSame(['Blog'], $this->updateCommand->updated);
+    }
+
+    public function test_modules_json_reports_a_require_keyed_by_package_name()
+    {
+        file_put_contents(base_path('modules.json'), json_encode([
+            'require' => ['acme/blog' => 'dev-master', 'acme/shop' => 'dev-master'],
+        ]));
+
+        $code = $this->artisan('module:install');
+
+        $output = Artisan::output();
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Skipping entry #1 of the modules.json "require" list: expected an object such as {"name": "vendor/module"}, got string.', $output);
+        $this->assertStringContainsString('Skipping entry #2 of the modules.json "require" list: expected an object such as {"name": "vendor/module"}, got string.', $output);
+        $this->assertSame([], $this->updateCommand->updated);
+    }
+
+    public function test_modules_json_reports_a_require_that_is_not_a_list()
+    {
+        file_put_contents(base_path('modules.json'), json_encode(['require' => 'acme/blog']));
+
+        $code = $this->artisan('module:install');
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('The "require" key of modules.json must be a list of entries such as {"name": "vendor/module"}.', Artisan::output());
+        $this->assertSame([], $this->updateCommand->updated);
+    }
+
+    public function test_tree_install_with_uncommitted_changes_fails_with_a_clear_message()
+    {
+        $project = $this->useGitProjectAsBasePath();
+        file_put_contents($project.DIRECTORY_SEPARATOR.'composer.json', '{"name": "changed"}');
+
+        $code = $this->artisan('module:install', [
+            'name' => 'acme/blog',
+            'version' => 'develop',
+            '--type' => $this->repoUrl,
+            '--path' => 'Modules/Blog',
+            '--tree' => true,
+        ]);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString(
+            'Failed to install module [acme/blog]: A subtree install (--tree) needs a clean working tree: commit or stash your changes first. Untracked files are fine.',
+            Artisan::output()
+        );
+        $this->assertDirectoryDoesNotExist($project.'/Modules/Blog');
+        $this->assertSame([], $this->updateCommand->updated);
     }
 }

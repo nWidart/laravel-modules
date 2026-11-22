@@ -108,9 +108,15 @@ class Installer
      *
      * When a subtree install fails, the git remote it added is removed again,
      * so the install can be retried. A remote that existed before is kept.
+     *
+     * @throws InvalidArgumentException When a subtree install cannot run in the project.
      */
     public function run(): Process
     {
+        if ($this->installsViaSubtree()) {
+            $this->ensureProjectAcceptsSubtree();
+        }
+
         $addsRemote = $this->installsViaSubtree() && $this->getSubtreeRemoteUrl() === null;
 
         $process = $this->getProcess();
@@ -406,6 +412,39 @@ class Installer
     protected function installsViaSubtree(): bool
     {
         return $this->tree && $this->installsViaGit();
+    }
+
+    /**
+     * Check the project meets what `git subtree add` requires, so the install
+     * fails with a clear message instead of a raw git error: a git repository
+     * with at least one commit, and no staged or unstaged changes to tracked
+     * files (the same `git diff-index HEAD` check git subtree runs). Untracked
+     * files are allowed.
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function ensureProjectAcceptsSubtree(): void
+    {
+        $insideWorkTree = new Process(['git', 'rev-parse', '--is-inside-work-tree'], base_path());
+        $insideWorkTree->run();
+
+        if (! $insideWorkTree->isSuccessful() || trim($insideWorkTree->getOutput()) !== 'true') {
+            throw new InvalidArgumentException('A subtree install (--tree) needs the project ['.base_path().'] to be a git repository: run git init and commit the project first.');
+        }
+
+        $head = new Process(['git', 'rev-parse', '--verify', '--quiet', 'HEAD'], base_path());
+        $head->run();
+
+        if (! $head->isSuccessful()) {
+            throw new InvalidArgumentException('A subtree install (--tree) needs a git repository with at least one commit: commit the project first.');
+        }
+
+        $changes = new Process(['git', 'diff-index', '--quiet', 'HEAD', '--'], base_path());
+        $changes->run();
+
+        if (! $changes->isSuccessful()) {
+            throw new InvalidArgumentException('A subtree install (--tree) needs a clean working tree: commit or stash your changes first. Untracked files are fine.');
+        }
     }
 
     /**

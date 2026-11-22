@@ -8,7 +8,6 @@ use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Process\Installer;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Nwidart\Modules\Tests\Process\Concerns\CreatesLocalGitRepository;
-use Symfony\Component\Process\Process;
 
 class InstallerTest extends BaseTestCase
 {
@@ -400,32 +399,83 @@ class InstallerTest extends BaseTestCase
         $this->assertSame('BlogModule', (new Installer('acme/blog-module', '^1.0'))->getInstalledModuleName());
     }
 
-    /**
-     * Create a committed git project in the temporary directory and use it as base_path().
-     */
-    private function useGitProjectAsBasePath(): string
+    public function test_subtree_install_outside_a_git_repository_fails_with_a_clear_message()
     {
-        $subtree = new Process(['git', 'subtree', '-h']);
-        $subtree->run();
-
-        if (! str_contains($subtree->getOutput().$subtree->getErrorOutput(), 'git subtree add')) {
-            $this->markTestSkipped('git subtree is not available.');
-        }
-
         $project = $this->tmpDir.DIRECTORY_SEPARATOR.'project';
         mkdir($project);
-        file_put_contents($project.DIRECTORY_SEPARATOR.'composer.json', '{}');
-
-        $this->git(['init', '--quiet', '--initial-branch=main'], $project);
-        // `git subtree add` commits without the -c flags of git(), so the project needs its own identity.
-        $this->git(['config', 'user.name', 'Laravel Modules'], $project);
-        $this->git(['config', 'user.email', 'tests@example.com'], $project);
-        $this->git(['config', 'commit.gpgsign', 'false'], $project);
-        $this->git(['add', 'composer.json'], $project);
-        $this->git(['commit', '--quiet', '-m', 'Initial commit'], $project);
-
         $this->app->setBasePath($project);
 
-        return $project;
+        $this->assertSubtreeInstallIsRejected(
+            'A subtree install (--tree) needs the project ['.$project.'] to be a git repository: run git init and commit the project first.',
+            $project
+        );
+    }
+
+    public function test_subtree_install_in_a_repository_without_a_commit_fails_with_a_clear_message()
+    {
+        $project = $this->tmpDir.DIRECTORY_SEPARATOR.'project';
+        mkdir($project);
+        $this->git(['init', '--quiet', '--initial-branch=main'], $project);
+        $this->app->setBasePath($project);
+
+        $this->assertSubtreeInstallIsRejected(
+            'A subtree install (--tree) needs a git repository with at least one commit: commit the project first.',
+            $project
+        );
+    }
+
+    public function test_subtree_install_with_unstaged_changes_fails_with_a_clear_message()
+    {
+        $project = $this->useGitProjectAsBasePath();
+        file_put_contents($project.DIRECTORY_SEPARATOR.'composer.json', '{"name": "changed"}');
+
+        $this->assertSubtreeInstallIsRejected(
+            'A subtree install (--tree) needs a clean working tree: commit or stash your changes first. Untracked files are fine.',
+            $project
+        );
+    }
+
+    public function test_subtree_install_with_staged_changes_fails_with_a_clear_message()
+    {
+        $project = $this->useGitProjectAsBasePath();
+        file_put_contents($project.DIRECTORY_SEPARATOR.'new.txt', 'new');
+        $this->git(['add', 'new.txt'], $project);
+
+        $this->assertSubtreeInstallIsRejected(
+            'A subtree install (--tree) needs a clean working tree: commit or stash your changes first. Untracked files are fine.',
+            $project
+        );
+    }
+
+    public function test_subtree_install_accepts_untracked_files()
+    {
+        $project = $this->useGitProjectAsBasePath();
+        file_put_contents($project.DIRECTORY_SEPARATOR.'untracked.txt', 'untracked');
+
+        $process = (new Installer('acme/blog', 'develop', $this->repoUrl, true))
+            ->setPath('Modules/Blog')
+            ->run();
+
+        $this->assertTrue($process->isSuccessful(), $process->getErrorOutput());
+        $this->assertFileExists($project.'/Modules/Blog/module.json');
+    }
+
+    private function assertSubtreeInstallIsRejected(string $message, string $project): void
+    {
+        try {
+            (new Installer('acme/blog', 'develop', $this->repoUrl, true))
+                ->setPath('Modules/Blog')
+                ->run();
+
+            $this->fail('The install should be rejected.');
+        } catch (InvalidArgumentException $e) {
+            $this->assertSame($message, $e->getMessage());
+        }
+
+        $this->assertDirectoryDoesNotExist($project.'/Modules/Blog');
+
+        if (is_dir($project.'/.git')) {
+            $this->assertSame('', trim($this->git(['remote'], $project)));
+        }
     }
 }
