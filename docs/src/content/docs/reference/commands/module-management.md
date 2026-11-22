@@ -233,7 +233,7 @@ php artisan module:install [<name> [<version>]] [--timeout=TIMEOUT] [--path=PATH
 | Name | Shortcut | Default | Description |
 | --- | --- | --- | --- |
 | `--timeout` | | `3360` | Process timeout in seconds. |
-| `--path` | | the module path from the repository | Install destination. |
+| `--path` | | the module path from the repository | Destination folder of one module. Not accepted when `modules.json` lists more than one module. |
 | `--type` | | none | Install source. See the table below. |
 | `--tree` | | `false` | Install as a Git subtree. |
 | `--no-update` | | `false` | Skip the `module:update` call after the install. |
@@ -247,21 +247,49 @@ php artisan module:install [<name> [<version>]] [--timeout=TIMEOUT] [--path=PATH
 | `github-https` | `https://github.com/<name>.git` |
 | `gitlab` | `git@gitlab.com:<name>.git` |
 | `bitbucket` | `git@bitbucket.org:<name>.git` |
-| a URL | The URL, used as the repository URL. |
-| `user@host` | `user@host:<name>.git` |
+| a URL with a scheme, such as `https://git.example.com/acme/blog.git` or `file:///srv/git/blog.git` | The URL as given, used as the repository URL. `<name>` is not appended. `file://` clones a local repository. |
+| `user@host`, such as `git@git.example.com` | `user@host:<name>.git` |
+
+Any other value, including a local path without a scheme such as `/srv/git/blog.git`, fails with `Unable to resolve a git repository URL for module [<name>] with type [<type>].` Use `file:///srv/git/blog.git` for a local repository.
 
 **Notes**
 
 - Any `--type` other than `composer` installs with `git clone` into the destination, then checks out the version. The default version is `master`.
-- The destination is `--path` if given, otherwise the repository path for the studly-case last segment of `name`.
+- The destination is `--path` if given, otherwise the repository path for the studly-case last segment of `name`. With a Composer install the destination has no effect. With `--tree` it is the subtree prefix.
 - `--tree` applies to Git sources only. It runs `git remote add` (named after the module) and `git subtree add --squash`. The destination must be inside the project. If the remote already exists with another URL, the command fails.
 - After a successful install, and unless `--no-update` is given, the command reloads the module list and runs `module:update <module>`. The module name comes from the `name` field of the cloned `module.json` for Git installs, or from the package name for Composer installs. If the repository cannot find the module, the command prints an error and exits with `1`.
 - Without `name`, the command reads `modules.json` in the application root and installs each entry of its `require` list. See [modules.json](/laravel-modules/reference/module-json/#modulesjson). The command installs the remaining entries when one fails and exits with `1`. A missing file prints `File 'modules.json' does not exist in your project root.` and exits with `1`.
-- The options act on every entry of `modules.json`: `--type` and `--tree` are the fallback for entries without a `type`, and `--path` and `--timeout` apply to all entries.
+- `--type` is the fallback for entries without a `type`. `--tree` and `--timeout` apply to every entry. `modules.json` entries have no `tree` key.
+- `--path` sets the folder of a single module. If `modules.json` lists more than one entry, the command exits with `1` before any install, with `The --path option sets the folder of a single module, but modules.json lists <count> modules. Remove --path and set a "path" on each entry of modules.json instead.`
+- With one entry, `--path` is the destination of that entry unless the entry has its own `path`: the `path` of the entry wins. An entry without `path` uses `--path` if given, otherwise the default folder of the module.
+- A relative `path` is relative to the application root. If the `path` is outside the module folders the repository scans, the install succeeds but the repository cannot find the module, so the `module:update` step fails. Add `--no-update` to skip it.
 - The command passes the name, version, path and URL as process arguments, not through a shell.
+
+**Errors**
+
+Each case exits with `1`.
+
+| Case | Message |
+| --- | --- |
+| `require` is not a list | `The "require" key of modules.json must be a list of entries such as {"name": "vendor/module"}.` |
+| An entry is not an object | `Skipping entry #<n> of the modules.json "require" list: expected an object such as {"name": "vendor/module"}, got <type>.` |
+| `name` is missing or not a non-empty string | `Skipping entry #<n> of the modules.json "require" list: "name" must be a package name such as "vendor/module".` |
+| `version` or `type` is set and not a scalar | `Skipping entry #<n> of the modules.json "require" list: "version" of [<name>] must be a string.` (the same form for `"type"`) |
+| `--tree` and the project is not a Git repository | `Failed to install module [<name>]: A subtree install (--tree) needs the project [<base path>] to be a git repository: run git init and commit the project first.` |
+| `--tree` and the repository has no commit | `Failed to install module [<name>]: A subtree install (--tree) needs a git repository with at least one commit: commit the project first.` |
+| `--tree` and tracked files have staged or unstaged changes | `Failed to install module [<name>]: A subtree install (--tree) needs a clean working tree: commit or stash your changes first. Untracked files are fine.` |
+
+- A bad `modules.json` entry is skipped and counts as a failure. The command installs the remaining entries.
+- The `--tree` checks run before any `git` process. Untracked files are accepted. Installs without `--tree` are not checked.
 
 ```bash
 php artisan module:install acme/blog 1.2.0 --type=github-https
+```
+
+Install every entry of `modules.json`, each into its own `path`:
+
+```bash
+php artisan module:install
 ```
 
 ## module:update

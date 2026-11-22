@@ -68,19 +68,43 @@ class InstallCommand extends Command
 
         $modules = Json::make($path);
 
-        // Each entry of the module.json "require" list holds the name, version and type of a module.
-        /** @var array<int, array<string, mixed>> $dependencies */
+        // Each entry of the modules.json "require" list holds the name, version, type and optional path of a module.
         $dependencies = $modules->get('require', []);
 
+        if (! is_array($dependencies)) {
+            $this->error('The "require" key of modules.json must be a list of entries such as {"name": "vendor/module"}.');
+
+            return self::FAILURE;
+        }
+
+        // --path is the folder of one module: applied to several, every module would go into the same folder.
+        if ($this->option('path') && count($dependencies) > 1) {
+            $this->error('The --path option sets the folder of a single module, but modules.json lists '.count($dependencies).' modules. Remove --path and set a "path" on each entry of modules.json instead.');
+
+            return self::FAILURE;
+        }
+
         $failed = false;
+        $position = 0;
 
         foreach ($dependencies as $module) {
-            $module = collect($module);
+            $position++;
+
+            if (($problem = $this->invalidEntryProblem($module)) !== null) {
+                $this->error("Skipping entry #{$position} of the modules.json \"require\" list: {$problem}");
+                $failed = true;
+
+                continue;
+            }
+
+            /** @var array<string, mixed> $module Checked by invalidEntryProblem(). */
+            $path = $module['path'] ?? null;
 
             $installed = $this->install(
-                $module->get('name'),
-                $module->get('version'),
-                $module->get('type')
+                $module['name'],
+                $module['version'] ?? null,
+                $module['type'] ?? null,
+                path: is_string($path) && $path !== '' ? $path : null
             );
 
             $failed = $failed || ! $installed;
@@ -90,15 +114,38 @@ class InstallCommand extends Command
     }
 
     /**
+     * Get why a modules.json "require" entry cannot be installed, null when it can.
+     */
+    protected function invalidEntryProblem(mixed $module): ?string
+    {
+        if (! is_array($module) || ($module !== [] && array_is_list($module))) {
+            return 'expected an object such as {"name": "vendor/module"}, got '.(is_array($module) ? 'a list' : get_debug_type($module)).'.';
+        }
+
+        if (! is_string($module['name'] ?? null) || $module['name'] === '') {
+            return '"name" must be a package name such as "vendor/module".';
+        }
+
+        foreach (['version', 'type'] as $key) {
+            if (isset($module[$key]) && ! is_scalar($module[$key])) {
+                return "\"{$key}\" of [{$module['name']}] must be a string.";
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Install the specified module.
      *
      * @param  string  $name
      * @param  string|null  $version  Null installs the Installer default.
      * @param  string|null  $type
      * @param  bool  $tree
+     * @param  string|null  $path  The destination folder, null for the --path option or else the repository module path.
      * @return bool Whether the installation succeeded.
      */
-    protected function install($name, $version = null, $type = null, $tree = false): bool
+    protected function install($name, $version = null, $type = null, $tree = false, ?string $path = null): bool
     {
         $installer = new Installer(
             $name,
@@ -115,7 +162,7 @@ class InstallCommand extends Command
             $installer->setTimeout($timeout);
         }
 
-        if ($path = $this->option('path')) {
+        if ($path = $path ?: $this->option('path')) {
             $installer->setPath($path);
         }
 
