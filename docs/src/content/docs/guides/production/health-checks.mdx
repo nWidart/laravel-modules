@@ -7,7 +7,7 @@ import { Steps } from '@astrojs/starlight/components';
 
 At the end, `/actuator/health` reports which modules are enabled and fails when an enabled module is missing from disk. A module can add its own health checks to the same endpoint.
 
-The integration uses [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) (`^1.0`, Laravel 12 and 13). Laravel Modules does not require it: the package only suggests it. Without it, nothing changes in your application. For the endpoints, the `show_details` option and the options of the actuator itself, read its documentation.
+The integration uses [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) (`^1.1`, Laravel 12 and 13). Laravel Modules does not require it: the package only suggests it. Without it, nothing changes in your application. For the endpoints, the `show_details` option and the options of the actuator itself, read its [documentation](https://nwidart.github.io/laravel-actuator/).
 
 ## Install the actuator
 
