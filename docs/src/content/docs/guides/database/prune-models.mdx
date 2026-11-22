@@ -80,11 +80,9 @@ To delete the posts of the `Blog` module that are older than a year, make `Post`
 
 ## Prune on a schedule
 
-To prune every day, schedule the command in the module provider. See [Schedule tasks from a module](/laravel-modules/guides/console-and-events/schedules/).
+To prune every day, schedule the command in the module provider. The generated provider already imports `Illuminate\Console\Scheduling\Schedule` and has a commented `configureSchedules()` method. Uncomment the method and add the command. See [Schedule tasks from a module](/laravel-modules/guides/console-and-events/schedules/).
 
 ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
-use Illuminate\Console\Scheduling\Schedule;
-
 protected function configureSchedules(Schedule $schedule): void
 {
     $schedule->command('module:prune', ['Blog'])->daily();
@@ -95,12 +93,17 @@ protected function configureSchedules(Schedule $schedule): void
 
 ## Prune several modules or one model
 
-To prune every enabled module, pass `--all`. To prune one model, pass its class with `--model`. `--model` cannot be combined with `--except`:
+To prune every enabled module, pass `--all`. To prune one model, pass its name in the model folder of the module with `--model`. To skip a model, pass its name with `--except`. Both options are repeatable. `--model` cannot be combined with `--except`:
 
 ```bash
 php artisan module:prune --all
-php artisan module:prune Blog --model="Modules\Blog\Models\Post"
+php artisan module:prune Blog --model=Post
+php artisan module:prune Blog --except=Post
 ```
+
+A name matches the models of every selected module, so `module:prune Blog Shop --model=Post` prunes the `Post` of both. For a model in a sub-folder, write `Archive/Post`. A fully qualified class name such as `--model="Modules\Blog\Models\Post"` also works.
+
+A value that matches no model of the selected modules is an error. For example, `--model=Nope` prints `Model [Nope] does not exist in the selected modules.`, exits with `1` and prunes nothing.
 
 ## Related
 

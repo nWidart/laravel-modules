@@ -12,8 +12,6 @@ To run a task of the `Blog` module on a schedule, override `configureSchedules()
 1. Open the module provider. The generated file has a commented `configureSchedules()` method and already imports `Illuminate\Console\Scheduling\Schedule`. Uncomment the method and schedule the command:
 
    ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
-   use Illuminate\Console\Scheduling\Schedule;
-
    protected function configureSchedules(Schedule $schedule): void
    {
        $schedule->command('blog:prune-old')->daily();

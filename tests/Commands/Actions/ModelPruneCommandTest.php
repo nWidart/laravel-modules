@@ -8,10 +8,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use InvalidArgumentException;
+use Laravel\Prompts\Prompt;
+use Nwidart\Modules\Commands\Actions\ModelPruneCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Tests\BaseTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\Console\Input\InputInterface;
 
 class ModelPruneCommandTest extends BaseTestCase
 {
@@ -80,23 +82,23 @@ class ModelPruneCommandTest extends BaseTestCase
 
     public function test_it_fails_for_an_unknown_module()
     {
-        $this->expectException(ModuleNotFoundException::class);
-        $this->expectExceptionMessage('Module [Nope] does not exist!');
+        $this->createPrunableModel('Modules\Blog\Models', 'UnknownModulePost', 'app/Models');
 
-        $this->artisan('module:prune', ['module' => ['Nope'], '--no-interaction' => true]);
+        $code = $this->artisan('module:prune', ['module' => ['Nope'], '--no-interaction' => true]);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Module [Nope] does not exist.', $this->commandOutput());
+        $this->assertSame(1, DB::table('unknownmoduleposts')->count());
     }
 
     public function test_it_fails_for_an_unknown_module_before_pruning_a_known_one()
     {
         $this->createPrunableModel('Modules\Blog\Models', 'KnownPost', 'app/Models');
 
-        try {
-            $this->artisan('module:prune', ['module' => ['Blog', 'Nope'], '--no-interaction' => true]);
-            $this->fail('Expected a ModuleNotFoundException.');
-        } catch (ModuleNotFoundException $e) {
-            $this->assertSame('Module [Nope] does not exist!', $e->getMessage());
-        }
+        $code = $this->artisan('module:prune', ['module' => ['Blog', 'Nope'], '--no-interaction' => true]);
 
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Module [Nope] does not exist.', $this->commandOutput());
         $this->assertSame(1, DB::table('knownposts')->count());
     }
 
@@ -104,18 +106,63 @@ class ModelPruneCommandTest extends BaseTestCase
     {
         $this->createPrunableModel('Modules\Blog\Models', 'GivenPost', 'app/Models');
 
-        try {
-            $this->artisan('module:prune', [
-                'module' => ['Nope'],
-                '--model' => ['Modules\Blog\Models\GivenPost'],
-                '--no-interaction' => true,
-            ]);
-            $this->fail('Expected a ModuleNotFoundException.');
-        } catch (ModuleNotFoundException $e) {
-            $this->assertSame('Module [Nope] does not exist!', $e->getMessage());
-        }
+        $code = $this->artisan('module:prune', [
+            'module' => ['Nope'],
+            '--model' => ['Modules\Blog\Models\GivenPost'],
+            '--no-interaction' => true,
+        ]);
 
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Module [Nope] does not exist.', $this->commandOutput());
         $this->assertSame(1, DB::table('givenposts')->count());
+    }
+
+    public function test_it_names_every_unknown_module_in_one_line()
+    {
+        $this->createPrunableModel('Modules\Blog\Models', 'SeveralUnknownPost', 'app/Models');
+
+        $code = $this->artisan('module:prune', ['module' => ['Nope', 'Blog', 'Typo'], '--no-interaction' => true]);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Modules [Nope, Typo] do not exist.', $this->commandOutput());
+        $this->assertSame(1, DB::table('severalunknownposts')->count());
+    }
+
+    public function test_it_fails_without_a_module_when_not_interactive()
+    {
+        $this->createPrunableModel('Modules\Blog\Models', 'NoModulePost', 'app/Models');
+
+        $code = $this->artisan('module:prune', ['--no-interaction' => true]);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('No module given. Pass a module name or --all.', $this->commandOutput());
+        $this->assertSame(1, DB::table('nomoduleposts')->count());
+    }
+
+    public function test_it_fails_without_a_module_when_the_prompt_cannot_be_shown()
+    {
+        $command = new class extends ModelPruneCommand
+        {
+            /**
+             * Without a TTY, Laravel turns interactive prompts off even when the input is interactive.
+             */
+            protected function configurePrompts(InputInterface $input)
+            {
+                parent::configurePrompts($input);
+
+                Prompt::interactive(false);
+
+                // tests turn the fallback on, and fallbackWhen() cannot turn it off again
+                (new \ReflectionProperty(Prompt::class, 'shouldFallback'))->setValue(null, false);
+            }
+        };
+        $command->setLaravel($this->app);
+        $this->app[Kernel::class]->registerCommand($command);
+
+        $code = $this->artisan('module:prune');
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('No module given. Pass a module name or --all.', $this->commandOutput());
     }
 
     #[DataProvider('casedModuleNameProvider')]
@@ -279,6 +326,154 @@ class ModelPruneCommandTest extends BaseTestCase
         ]);
     }
 
+    public function test_it_prunes_a_model_given_by_its_short_name()
+    {
+        $this->createPrunableModel('Modules\Blog\Models', 'ShortPost', 'app/Models');
+
+        $code = $this->artisan('module:prune', ['module' => ['Blog'], '--model' => ['ShortPost'], '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame(0, DB::table('shortposts')->count());
+    }
+
+    #[DataProvider('subFolderModelNameProvider')]
+    public function test_it_prunes_a_model_given_by_its_name_in_a_sub_folder(string $name)
+    {
+        $this->createPrunableModel('Modules\Blog\Models\Archive', 'ArchivedShortPost', 'app/Models/Archive');
+
+        $code = $this->artisan('module:prune', ['module' => ['Blog'], '--model' => [$name], '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame(0, DB::table('archivedshortposts')->count());
+    }
+
+    public static function subFolderModelNameProvider(): array
+    {
+        return [
+            'slash' => ['Archive/ArchivedShortPost'],
+            'backslash' => ['Archive\ArchivedShortPost'],
+        ];
+    }
+
+    public function test_a_short_name_does_not_match_a_model_in_a_sub_folder()
+    {
+        $this->createPrunableModel('Modules\Blog\Models\Nested', 'NestedOnlyPost', 'app/Models/Nested');
+
+        $code = $this->artisan('module:prune', ['module' => ['Blog'], '--model' => ['NestedOnlyPost'], '--no-interaction' => true]);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Model [NestedOnlyPost] does not exist in the selected modules.', $this->commandOutput());
+        $this->assertSame(1, DB::table('nestedonlyposts')->count());
+    }
+
+    public function test_it_prunes_a_short_name_in_every_selected_module()
+    {
+        $this->createModule('Shop');
+        $this->createPrunableModel('Modules\Blog\Models', 'TwinPost', 'app/Models', table: 'blog_twinposts');
+        $this->createPrunableModel('Modules\Shop\Models', 'TwinPost', 'app/Models', 'Shop', table: 'shop_twinposts');
+
+        $code = $this->artisan('module:prune', ['module' => ['Blog', 'Shop'], '--model' => ['TwinPost'], '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame(0, DB::table('blog_twinposts')->count());
+        $this->assertSame(0, DB::table('shop_twinposts')->count());
+    }
+
+    public function test_it_fails_for_a_short_name_that_exists_only_in_a_module_that_is_not_selected()
+    {
+        $this->createModule('Shop');
+        $this->createPrunableModel('Modules\Shop\Models', 'ShopOnlyPost', 'app/Models', 'Shop');
+
+        $code = $this->artisan('module:prune', ['module' => ['Blog'], '--model' => ['ShopOnlyPost'], '--no-interaction' => true]);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Model [ShopOnlyPost] does not exist in the selected modules.', $this->commandOutput());
+        $this->assertSame(1, DB::table('shoponlyposts')->count());
+    }
+
+    public function test_it_prunes_nothing_when_one_of_the_given_models_does_not_exist()
+    {
+        $this->createPrunableModel('Modules\Blog\Models', 'ValidPost', 'app/Models');
+
+        $code = $this->artisan('module:prune', [
+            'module' => ['Blog'],
+            '--model' => ['ValidPost', 'Typo'],
+            '--no-interaction' => true,
+        ]);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Model [Typo] does not exist in the selected modules.', $this->commandOutput());
+        $this->assertSame(1, DB::table('validposts')->count());
+    }
+
+    public function test_it_prunes_a_model_given_by_its_fully_qualified_name_outside_the_selected_modules()
+    {
+        $this->createModule('Shop');
+        $this->createPrunableModel('Modules\Shop\Models', 'QualifiedOrder', 'app/Models', 'Shop');
+
+        $code = $this->artisan('module:prune', [
+            'module' => ['Blog'],
+            '--model' => ['Modules\Shop\Models\QualifiedOrder'],
+            '--no-interaction' => true,
+        ]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame(0, DB::table('qualifiedorders')->count());
+    }
+
+    public function test_it_resolves_a_short_name_with_a_custom_app_folder()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'src/');
+        $this->app['config']->set('modules.paths.generator.model.path', 'src/Models');
+        $this->createPrunableModel('Modules\Blog\Models', 'SrcShortPost', 'src/Models');
+
+        $code = $this->artisan('module:prune', ['module' => ['Blog'], '--model' => ['SrcShortPost'], '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame(0, DB::table('srcshortposts')->count());
+    }
+
+    public function test_it_excludes_a_model_given_by_its_short_name_with_except()
+    {
+        $this->createPrunableModel('Modules\Blog\Models', 'ExceptShortPost', 'app/Models');
+        $this->createPrunableModel('Modules\Blog\Models', 'ExceptNeighbourPost', 'app/Models');
+
+        $code = $this->artisan('module:prune', ['module' => ['Blog'], '--except' => ['ExceptShortPost'], '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame(1, DB::table('exceptshortposts')->count());
+        $this->assertSame(0, DB::table('exceptneighbourposts')->count());
+    }
+
+    public function test_except_excludes_a_short_name_in_every_selected_module()
+    {
+        $this->createModule('Shop');
+        $this->createPrunableModel('Modules\Blog\Models', 'ExceptTwin', 'app/Models', table: 'blog_excepttwins');
+        $this->createPrunableModel('Modules\Shop\Models', 'ExceptTwin', 'app/Models', 'Shop', table: 'shop_excepttwins');
+
+        $code = $this->artisan('module:prune', ['module' => ['Blog', 'Shop'], '--except' => ['ExceptTwin'], '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertStringContainsString('No prunable models found.', $this->commandOutput());
+        $this->assertSame(1, DB::table('blog_excepttwins')->count());
+        $this->assertSame(1, DB::table('shop_excepttwins')->count());
+    }
+
+    public function test_it_prunes_nothing_when_an_excepted_model_does_not_exist()
+    {
+        $this->createPrunableModel('Modules\Blog\Models', 'KeptPost', 'app/Models');
+
+        $code = $this->artisan('module:prune', [
+            'module' => ['Blog'],
+            '--except' => ['KeptPsot', 'Typo'],
+            '--no-interaction' => true,
+        ]);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Models [KeptPsot, Typo] do not exist in the selected modules.', $this->commandOutput());
+        $this->assertSame(1, DB::table('keptposts')->count());
+    }
+
     private function commandOutput(): string
     {
         return $this->app[Kernel::class]->output();
@@ -287,11 +482,12 @@ class ModelPruneCommandTest extends BaseTestCase
     /**
      * Write a prunable model with one prunable row into a module.
      */
-    private function createPrunableModel(string $namespace, string $class, string $path, string $module = 'Blog'): void
+    private function createPrunableModel(string $namespace, string $class, string $path, string $module = 'Blog', ?string $table = null): void
     {
-        $this->createModel($namespace, $class, $path, module: $module);
+        $table ??= strtolower($class).'s';
 
-        $table = strtolower($class).'s';
+        $this->createModel($namespace, $class, $path, module: $module, table: $table);
+
         Schema::create($table, fn (Blueprint $table) => $table->id());
         DB::table($table)->insert(['id' => 1]);
     }
@@ -299,10 +495,10 @@ class ModelPruneCommandTest extends BaseTestCase
     /**
      * Write a model into a module and autoload the module root namespace from it.
      */
-    private function createModel(string $namespace, string $class, string $path, bool $prunable = true, string $module = 'Blog'): void
+    private function createModel(string $namespace, string $class, string $path, bool $prunable = true, string $module = 'Blog', ?string $table = null): void
     {
         $prunable_trait = $prunable ? 'use \Illuminate\Database\Eloquent\Prunable;' : '';
-        $table = strtolower($class).'s';
+        $table ??= strtolower($class).'s';
 
         $this->app['files']->ensureDirectoryExists(base_path("modules/{$module}/{$path}"));
         $this->app['files']->put(base_path("modules/{$module}/{$path}/{$class}.php"), <<<PHP

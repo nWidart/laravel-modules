@@ -418,34 +418,43 @@ php artisan module:lang Blog
 Prunes the prunable Eloquent models of the given modules. It wraps Laravel `model:prune`.
 
 ```bash
-php artisan module:prune <module>... [--all] [--model=MODEL] [--except=EXCEPT] [--path=PATH] [--chunk=CHUNK] [--pretend]
+php artisan module:prune [<module>...] [--all] [--model=MODEL] [--except=EXCEPT] [--path=PATH] [--chunk=CHUNK] [--pretend]
 ```
 
 **Arguments**
 
 | Name | Required | Description |
 | --- | --- | --- |
-| `module` | yes, unless `--all` is given | One or more module names. In an interactive terminal, a missing argument opens a multi-select prompt. |
+| `module` | no, but the command needs a module or `--all` | One or more module names. In an interactive terminal, a missing argument opens a multi-select prompt. |
 
 **Options**
 
 | Name | Shortcut | Default | Description |
 | --- | --- | --- | --- |
 | `--all` | | `false` | Select every enabled module. It replaces the `module` argument. |
-| `--model` | | none | Fully qualified class names of the models to prune. Repeatable. |
-| `--except` | | none | Fully qualified class names of the models to exclude. Repeatable. |
-| `--path` | | none | Absolute directory paths where models are located. Repeatable. |
+| `--model` | | none | Class names of the models to prune, or their names in the model folder of the selected modules. Repeatable. See the notes. |
+| `--except` | | none | Class names of the models to exclude from pruning, or their names in the model folder of the selected modules. Repeatable. See the notes. |
+| `--path` | | none | Declared (inherited from `model:prune`) but ignored. The command always scans the model folder of the selected modules. |
 | `--chunk` | | `1000` | Number of models to retrieve per chunk. |
 | `--pretend` | | `false` | Display the number of prunable records instead of deleting them. |
 
 **Notes**
 
-- This command does not extend `BaseCommand`. `--all` has no shortcut and selects the enabled modules only. A run without `module` and without `--all` fails on the missing argument, unless an interactive terminal answers the prompt.
-- The command scans the `model` generator path of each module (`paths.generator.model.path`) for PHP files, and keeps the models that are prunable.
-- `--model` and `--except` cannot be combined. The command throws `InvalidArgumentException`. With `--model`, the command prunes the listed classes that exist and ignores the module models. A short name such as `--model=Post` matches nothing, and the command prints `No prunable models found.`
+- This command does not extend `BaseCommand`. It shares the module checks through the `ValidatesModuleArgument` trait. `--all` has no shortcut and selects the enabled modules only. A module given by name is pruned whatever its status. The module name `All` stands for `--all`.
+- With neither a module nor `--all` in an interactive terminal, the `Select Modules` prompt lists `All` and the enabled modules. Without interactive input (`--no-interaction`, or no TTY), the command prints `No module given. Pass a module name or --all.` and exits with `1`.
+- The command checks that every named module exists first. An unknown name prints `Module [Nope] does not exist.`, several print `Modules [Nope, Typo] do not exist.`, and the command exits with `1`. Nothing is pruned, not even for the valid names, and not when `--model` is given.
+- The command scans the `model` generator path of each module (`paths.generator.model.path`) for PHP files, and keeps the models that are prunable. When none is prunable, it prints `No prunable models found.` and exits with `0`.
+- `--model` and `--except` take the same kind of value, and the command applies one rule to each value:
+  - An existing class (fully qualified name) is used unchanged, also when it is outside the selected modules.
+  - Any other value is a name relative to the model folder of a module: `Post`, `Archive/Old` or `Archive\Old`. The command looks it up only in the selected modules: the `module` argument, or the enabled modules with `--all`.
+  - Every match counts. `module:prune Blog Shop --model=Post` prunes `Modules\Blog\Models\Post` and `Modules\Shop\Models\Post`, and `--except=Post` excludes both. There is no prompt.
+  - `Post` does not match a model in a sub-folder such as `Archive\Post`. Give `Archive/Post`.
+  - A value that is neither an existing class nor a model of the selected modules is an error, for `--model` and for `--except`. The command prints `Model [Nope] does not exist in the selected modules.` (or `Models [Nope, Typo] do not exist in the selected modules.`), exits with `1` and prunes nothing, also not for the valid values next to it.
+- `--model` and `--except` cannot be combined. The command throws `InvalidArgumentException`.
 
 ```bash
 php artisan module:prune Blog --pretend
+php artisan module:prune Blog Shop --model=Post
 ```
 
 ## module:model-show
