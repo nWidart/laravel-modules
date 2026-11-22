@@ -1,11 +1,33 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { pathToFileURL } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
+// The application root: this file is published next to the root vite.config.js.
+const appDirectory = path.dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Add the asset entry points of every enabled module to `paths`.
+ *
+ * Reads the `paths` export of each enabled module's vite.config.js. A module
+ * without a vite.config.js is skipped. A module whose vite.config.js fails to
+ * load is reported with a warning and skipped; the other modules still load.
+ *
+ * @example
+ * import laravel from 'laravel-vite-plugin';
+ * import collectModuleAssetsPaths from './vite-module-loader.js';
+ *
+ * const inputPaths = await collectModuleAssetsPaths(['resources/css/app.css', 'resources/js/app.js'], 'Modules');
+ *
+ * laravel({ input: inputPaths, refresh: true })
+ *
+ * @param {string[]} paths Entry points to add the module entry points to.
+ * @param {string} modulesPath Modules directory, relative to the app root.
+ * @returns {Promise<string[]>}
+ */
 async function collectModuleAssetsPaths(paths, modulesPath) {
-  modulesPath = path.join(__dirname, modulesPath);
+  modulesPath = path.resolve(appDirectory, modulesPath);
 
-  const moduleStatusesPath = path.join(__dirname, 'modules_statuses.json');
+  const moduleStatusesPath = path.join(appDirectory, 'modules_statuses.json');
 
   try {
     // Read module_statuses.json
@@ -27,17 +49,23 @@ async function collectModuleAssetsPaths(paths, modulesPath) {
 
         try {
           await fs.access(viteConfigPath);
+        } catch (error) {
+          // vite.config.js does not exist, skip this module
+          continue;
+        }
+
+        try {
           // Convert to a file URL for Windows compatibility
           const moduleConfigURL = pathToFileURL(viteConfigPath);
 
           // Import the module-specific Vite configuration
-          const moduleConfig = await import(moduleConfigURL.href);
+          const moduleConfig = await import(/* @vite-ignore */ moduleConfigURL.href);
 
           if (moduleConfig.paths && Array.isArray(moduleConfig.paths)) {
             paths.push(...moduleConfig.paths);
           }
         } catch (error) {
-          // vite.config.js does not exist, skip this module
+          console.warn(`Skipping the assets of module ${moduleDir}: could not load ${viteConfigPath}: ${error?.message ?? error}`);
         }
       }
     }

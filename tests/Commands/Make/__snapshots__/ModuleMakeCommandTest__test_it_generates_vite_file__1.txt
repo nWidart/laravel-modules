@@ -1,9 +1,28 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 // Uncomment the import for your frontend framework:
 // import vue from '@vitejs/plugin-vue';
 // import react from '@vitejs/plugin-react';
 // import { svelte } from '@sveltejs/vite-plugin-svelte';
+
+// This module's folder and the application root (two levels up, like publicDirectory below).
+const moduleDirectory = fileURLToPath(new URL('.', import.meta.url));
+const appDirectory = path.resolve(moduleDirectory, '../..');
+
+// The asset entry points of this module, relative to this folder.
+const assets = [
+    'resources/assets/sass/app.scss',
+    'resources/assets/js/app.js',
+];
+
+// The entry points relative to the application root, for example
+// Modules/Blog/resources/assets/js/app.js. The vite-module-loader.js
+// script reads them to build module assets from the root vite.config.js.
+export const paths = assets.map((asset) =>
+    path.relative(appDirectory, path.join(moduleDirectory, asset)).split(path.sep).join('/')
+);
 
 export default defineConfig({
     build: {
@@ -15,10 +34,7 @@ export default defineConfig({
         laravel({
             publicDirectory: '../../public',
             buildDirectory: 'build-blog',
-            input: [
-                __dirname + '/resources/assets/sass/app.scss',
-                __dirname + '/resources/assets/js/app.js'
-            ],
+            input: assets.map((asset) => path.join(moduleDirectory, asset)),
             refresh: true,
         }),
         // Uncomment the plugin for your frontend framework:
@@ -35,7 +51,7 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': __dirname + '/resources/js',
+            '@': path.join(moduleDirectory, 'resources/js'),
         },
     },
 });
