@@ -188,9 +188,11 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
     /**
      * Resolve --model or --except values to model classes.
      *
-     * A value that is an existing class is kept. Any other value is a name relative to the
-     * model folder of a module ("Post", "Admin/Post" or "Admin\\Post", compared without regard
-     * to case, like PHP class names) and stands for that model in every selected module.
+     * A value is first a name relative to the model folder of a module ("Post", "Admin/Post"
+     * or "Admin\\Post", compared without regard to case, like PHP class names) and stands for
+     * that model in every selected module. Only a value that matches no model of the selected
+     * modules is taken as a class name, kept unchanged when the class exists. A module model
+     * thus wins over a global class or facade alias of the same name, such as "Log".
      *
      * @param  array<int, string>  $values
      * @return array{0: array<int, string>, 1: array<int, string>} The unique model classes, and the values that match no model.
@@ -213,20 +215,16 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
         foreach ($values as $value) {
             $value = (string) $value;
 
-            if (class_exists($value)) {
-                $models[] = $value;
-
-                continue;
-            }
-
             $name = strtolower(str_replace('/', '\\', trim($value, '\\/')));
             $matches = $available->where('name', $name)->pluck('class');
 
-            if ($matches->isEmpty()) {
+            if ($matches->isNotEmpty()) {
+                array_push($models, ...$matches->all());
+            } elseif (class_exists($value)) {
+                $models[] = $value;
+            } else {
                 $unknown[] = $value;
             }
-
-            array_push($models, ...$matches->all());
         }
 
         return [array_values(array_unique($models)), $unknown];

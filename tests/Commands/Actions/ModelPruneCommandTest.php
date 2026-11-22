@@ -459,6 +459,33 @@ class ModelPruneCommandTest extends BaseTestCase
         $this->assertSame(1, DB::table('shop_excepttwins')->count());
     }
 
+    public function test_it_prunes_a_module_model_whose_short_name_is_also_a_facade_alias()
+    {
+        // Testbench registers the default facade aliases, so the alias loader answers class_exists().
+        $this->assertTrue(class_exists('Event'));
+        $this->createPrunableModel('Modules\Blog\Models', 'Event', 'app/Models');
+
+        $code = $this->artisan('module:prune', ['module' => ['Blog'], '--model' => ['Event'], '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertStringContainsString('Modules\Blog\Models\Event', $this->commandOutput());
+        $this->assertSame(0, DB::table('events')->count());
+    }
+
+    public function test_except_keeps_a_module_model_whose_short_name_is_also_a_facade_alias()
+    {
+        // Testbench registers the default facade aliases, so the alias loader answers class_exists().
+        $this->assertTrue(class_exists('Log'));
+        $this->createPrunableModel('Modules\Blog\Models', 'Log', 'app/Models');
+        $this->createPrunableModel('Modules\Blog\Models', 'AliasNeighbourPost', 'app/Models');
+
+        $code = $this->artisan('module:prune', ['module' => ['Blog'], '--except' => ['Log'], '--no-interaction' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame(1, DB::table('logs')->count());
+        $this->assertSame(0, DB::table('aliasneighbourposts')->count());
+    }
+
     public function test_it_prunes_nothing_when_an_excepted_model_does_not_exist()
     {
         $this->createPrunableModel('Modules\Blog\Models', 'KeptPost', 'app/Models');
