@@ -1,0 +1,161 @@
+---
+title: Add your own module commands and generators
+description: Register command classes from a module provider or from config/modules.php, and write a generator that extends GeneratorCommand.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To add an Artisan command to the application, register its class in one of two places: the `$commands` list of a module provider, or the `commands` key of `config/modules.php`. Use the provider for a command that belongs to a module. Use the config for a command that belongs to the application, such as a new generator.
+
+## Register a command from a module
+
+<Steps>
+
+1. Generate the command class in `Blog`.
+
+   ```bash
+   php artisan module:make-command SendDigest Blog --command=blog:send-digest
+   ```
+
+   The file is `Modules/Blog/app/Console/SendDigest.php`, with the signature `blog:send-digest`.
+
+2. List the class in the provider of the module.
+
+   ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
+   protected array $commands = [
+       \Modules\Blog\Console\SendDigest::class,
+   ];
+   ```
+
+3. Check the result.
+
+   ```bash
+   php artisan list blog
+   ```
+
+   The output lists `blog:send-digest`.
+
+</Steps>
+
+## Register a command from the application
+
+Add the class to the list in `config/modules.php`. Keep `defaultCommands()`: the `commands` key holds the full list, so a list without it unregisters the package commands. Publish the config file first if you have not:
+
+```bash
+php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
+```
+
+```php title="config/modules.php"
+'commands' => ConsoleServiceProvider::defaultCommands()
+    ->merge([
+        \App\Console\Commands\MakeDtoCommand::class,
+    ])->toArray(),
+```
+
+## Write a generator
+
+This example adds `module:make-dto`, which writes a data class into a module. It assumes the stubs are published and enabled: do the first three steps of [Customise the generator stubs](/laravel-modules/guides/customise/stubs/) first.
+
+<Steps>
+
+1. Add a generator path for the new kind of file.
+
+   ```php title="config/modules.php"
+   'generator' => [
+       // ...
+       'dto' => ['path' => 'app/DTOs', 'generate' => false],
+   ],
+   ```
+
+2. Add the stub.
+
+   ```php title="stubs/nwidart-stubs/dto.stub"
+   <?php
+
+   namespace $NAMESPACE$;
+
+   final readonly class $CLASS$
+   {
+       public function __construct() {}
+   }
+   ```
+
+3. Write the command. It extends `GeneratorCommand`, uses `ModuleCommandTrait` to resolve the module (the `module` argument, or the module set by `module:use`), and sets `$argumentName` so the base class rejects an empty name, an absolute path and a `..` segment.
+
+   ```php title="app/Console/Commands/MakeDtoCommand.php"
+   <?php
+
+   namespace App\Console\Commands;
+
+   use Illuminate\Support\Str;
+   use Nwidart\Modules\Commands\Make\GeneratorCommand;
+   use Nwidart\Modules\Support\Config\GenerateConfigReader;
+   use Nwidart\Modules\Support\Stub;
+   use Nwidart\Modules\Traits\ModuleCommandTrait;
+   use Symfony\Component\Console\Input\InputArgument;
+
+   class MakeDtoCommand extends GeneratorCommand
+   {
+       use ModuleCommandTrait;
+
+       protected $name = 'module:make-dto';
+
+       protected $description = 'Create a new DTO class for the specified module.';
+
+       protected $argumentName = 'name';
+
+       protected function getArguments(): array
+       {
+           return [
+               ['name', InputArgument::REQUIRED, 'The name of the DTO class.'],
+               ['module', InputArgument::OPTIONAL, 'The name of the module.'],
+           ];
+       }
+
+       public function getDefaultNamespace(): string
+       {
+           return config('modules.paths.generator.dto.namespace')
+               ?? $this->strip_app_folder(config('modules.paths.generator.dto.path', 'app/DTOs'));
+       }
+
+       protected function getDestinationFilePath(): string
+       {
+           $path = $this->moduleRepository()->getModulePath($this->getModuleName());
+
+           $dtoPath = GenerateConfigReader::read('dto')->getPath() ?? config('modules.paths.app_folder').'DTOs';
+
+           return $path.$dtoPath.'/'.Str::studly($this->argument('name')).'.php';
+       }
+
+       protected function getTemplateContents(): string
+       {
+           $module = $this->moduleRepository()->findOrFail($this->getModuleName());
+
+           return Stub::create('/dto.stub', [
+               'NAMESPACE' => $this->getClassNamespace($module),
+               'CLASS' => $this->getClass(),
+           ])->render();
+       }
+   }
+   ```
+
+4. Register the command in the `commands` list, as shown above.
+
+5. Check the result.
+
+   ```bash
+   php artisan module:make-dto OrderData Blog
+   ```
+
+   `Modules/Blog/app/DTOs/OrderData.php` exists and has the namespace `Modules\Blog\DTOs`. The base class adds `--force` (`-f`) to overwrite an existing file.
+
+</Steps>
+
+## Related
+
+- [`commands` configuration key](/laravel-modules/reference/configuration/#top-level-keys)
+- [`ModuleServiceProvider`: `$commands`](/laravel-modules/reference/api/module-service-provider/#properties)
+- [`GeneratorCommand`](/laravel-modules/reference/api/contracts/#generatorcommand) and [`ModuleCommandTrait`](/laravel-modules/reference/api/contracts/#modulecommandtrait)
+- [`module:make-command`](/laravel-modules/reference/commands/generators/#modulemake-command)
+- [Add Artisan commands to a module](/laravel-modules/guides/console-and-events/commands/)
+- [Customise the generator stubs](/laravel-modules/guides/customise/stubs/)

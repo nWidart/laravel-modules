@@ -1,0 +1,71 @@
+---
+title: Load modules from extra locations
+description: Scan more folders for modules with scan.paths, or add a folder at runtime with Module::addLocation().
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To use modules that live outside `paths.modules`, for example in `plugins/`, tell the package which extra folders to scan. A folder you add holds the modules as sub-folders: `plugins/Acme/module.json` is the module `Acme`.
+
+## Scan extra folders from the config
+
+<Steps>
+
+1. Publish the config file, if you have not.
+
+   ```bash
+   php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
+   ```
+
+2. Enable the scan and list the folders.
+
+   ```php title="config/modules.php"
+   'scan' => [
+       'enabled' => true,
+       'paths' => [
+           base_path('plugins'),
+       ],
+   ],
+   ```
+
+   The package adds `/*` to each entry and reads `plugins/*/module.json`. Each entry is therefore a folder that contains modules as sub-folders. The default entry, `base_path('vendor/*/*')`, matches `vendor/*/*/*/module.json`: replace it with the folders that hold your modules.
+
+3. Enable each new module. A module the package finds has no status yet, so it counts as disabled.
+
+   ```bash
+   php artisan module:enable Acme
+   ```
+
+4. Check the result.
+
+   ```bash
+   php artisan module:list
+   ```
+
+   `Acme` is in the list with its path, for example `plugins/Acme [0]`.
+
+</Steps>
+
+The package registers the providers of the modules in these folders like those of any other module. It does not autoload their classes: the module needs its own Composer autoload entry, for example through a `merge-plugin` glob in `composer.json`.
+
+## Add a folder at runtime
+
+To add a folder from code, call `Module::addLocation()`.
+
+```php title="app/Providers/AppServiceProvider.php"
+use Nwidart\Modules\Facades\Module;
+
+public function register(): void
+{
+    Module::addLocation(base_path('plugins'));
+}
+```
+
+`addLocation()` makes the modules in the folder visible to `Module::all()`, `Module::find()` and `module:list`. It does not register their providers: the package registers module providers before your application providers run. To load providers from an extra folder, use `scan.paths`.
+
+## Related
+
+- [`scan` configuration keys](/laravel-modules/reference/configuration/#scan)
+- [Repository API: `addLocation()` and the scan cache](/laravel-modules/reference/api/repository/#scan-cache)
+- [Change where modules live and their namespace](/laravel-modules/guides/modules/change-the-location-and-namespace/)
+- [Enable and disable modules](/laravel-modules/guides/modules/enable-and-disable-modules/)

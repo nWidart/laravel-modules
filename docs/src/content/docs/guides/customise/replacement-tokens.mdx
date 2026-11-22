@@ -1,0 +1,82 @@
+---
+title: Add your own stub placeholders
+description: Define a $TOKEN$ whose value a PHP class computes when module:make renders a stub.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To add a placeholder such as `$TABLE_PREFIX$` to the files `module:make` writes, create a replacement class and register it in `stubs.replacements`. This guide assumes the stubs are published and enabled: do the first three steps of [Customise the generator stubs](/laravel-modules/guides/customise/stubs/) first. The module `Blog` already exists.
+
+<Steps>
+
+1. Generate the replacement class in `Blog`.
+
+   ```bash
+   php artisan module:make-replacement TablePrefix Blog
+   ```
+
+   The file is `Modules/Blog/app/Console/Replacements/TablePrefix.php`.
+
+2. Replace the body of `handle()`. The generated body calls `getModule()->getLowerName()`, which throws a `TypeError` when `module:make` runs it. `getName()` returns the studly-case name of the module that is being created.
+
+   ```php title="Modules/Blog/app/Console/Replacements/TablePrefix.php"
+   <?php
+
+   namespace Modules\Blog\Console\Replacements;
+
+   use Nwidart\Modules\Support\ReplacementKeyCommand;
+
+   class TablePrefix extends ReplacementKeyCommand
+   {
+       public function handle(): string
+       {
+           return strtolower($this->generator->getName()).'_';
+       }
+   }
+   ```
+
+3. Register the class under the stub that uses the token. The key is the upper-case token name. Keep the built-in names that the stub already used.
+
+   ```php title="config/modules.php"
+   'replacements' => [
+       // ...
+       'scaffold/config' => [
+           'STUDLY_NAME',
+           'TABLE_PREFIX' => \Modules\Blog\Console\Replacements\TablePrefix::class,
+       ],
+   ],
+   ```
+
+4. Use the token in the stub.
+
+   ```php title="stubs/nwidart-stubs/scaffold/config.stub"
+   <?php
+
+   return [
+       'name' => '$STUDLY_NAME$',
+       'table_prefix' => '$TABLE_PREFIX$',
+   ];
+   ```
+
+5. Check the result. Create a module and read its config file.
+
+   ```bash
+   php artisan module:make Shop
+   cat Modules/Shop/config/config.php
+   ```
+
+   The file contains `'table_prefix' => 'shop_',`.
+
+</Steps>
+
+The text your class returns is inserted as it is. In a JSON stub (`module.json` and `composer.json`), escape the value yourself, for example `\` as `\\` and `"` as `\"`. If the result is not valid JSON, `module:make` stops before it writes a file.
+
+A replacement class applies to the stubs `module:make` renders: the entries of `stubs.files` and the `json` stub (`module.json`). The `module:make-*` generators do not read `stubs.replacements`.
+
+## Related
+
+- [Custom replacement classes](/laravel-modules/reference/stubs/#custom-replacement-classes) and [built-in replacement keys](/laravel-modules/reference/stubs/#built-in-replacement-keys)
+- [`ReplacementKeyCommand`](/laravel-modules/reference/api/contracts/#replacementkeycommand)
+- [`module:make-replacement`](/laravel-modules/reference/commands/generators/#modulemake-replacement)
+- [`stubs.replacements`](/laravel-modules/reference/configuration/#default-stubsreplacements)
+- [Customise the generator stubs](/laravel-modules/guides/customise/stubs/)

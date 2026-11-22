@@ -1,0 +1,113 @@
+---
+title: Change the folder layout of modules
+description: Rename the class folder of a module, move a generator folder, and choose which folders module:make creates.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To change where `module:make` and the `module:make-*` generators put files, edit the `paths` section of `config/modules.php`. The change applies to new modules and to every generator run. Publish the file first if you have not:
+
+```bash
+php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
+```
+
+## Rename the class folder
+
+To keep the classes of a module in `src/` instead of `app/`, change `paths.app_folder` and every class path with it.
+
+<Steps>
+
+1. Set the app folder.
+
+   ```php title="config/modules.php"
+   'paths' => [
+       // ...
+       'app_folder' => 'src/',
+   ],
+   ```
+
+2. In `paths.generator`, replace the `app/` prefix of every class entry with `src/`. Do not touch `config`, `database`, `resources`, `routes` and `tests`.
+
+   ```php title="config/modules.php"
+   'generator' => [
+       'actions' => ['path' => 'src/Actions', 'generate' => false],
+       'controller' => ['path' => 'src/Http/Controllers', 'generate' => true],
+       'provider' => ['path' => 'src/Providers', 'generate' => true],
+       // ... every other entry that started with app/
+   ],
+   ```
+
+   If one class entry stays outside the app folder, `module:make` prints the keys at fault and stops before it writes anything.
+
+3. Create a module and check the result.
+
+   ```bash
+   php artisan module:make Blog
+   ```
+
+   The classes are in `Modules/Blog/src`, and `Modules/Blog/composer.json` maps `Modules\Blog\` to `src/`.
+
+</Steps>
+
+The namespace of a class does not contain the app folder: `Modules\Blog\Http\Controllers\BlogController` is in `src/Http/Controllers`.
+
+To map the module namespace to the module root, set `'app_folder' => ''` and remove the `app/` prefix from the class entries (`'provider' => ['path' => 'Providers', ...]`). Every segment of those paths must be in StudlyCase.
+
+## Move one folder
+
+To put the controllers in another folder, change the `path` of that entry.
+
+```php title="config/modules.php"
+'controller' => ['path' => 'app/Http/Api/Controllers', 'generate' => true],
+```
+
+The class namespace follows the path: `Modules\Blog\Http\Api\Controllers`. To set a namespace that differs from the path, add a `namespace` entry. It is relative to the module namespace.
+
+```php title="config/modules.php"
+'model' => ['path' => 'app/Domain/Models', 'generate' => false, 'namespace' => 'Models'],
+```
+
+`module:make-model Post Blog` now writes `Modules/Blog/app/Domain/Models/Post.php` with the namespace `Modules\Blog\Models`. The namespace must still autoload from the path, so map it in the `composer.json` of the module, then run `composer dump-autoload`:
+
+```json title="Modules/Blog/composer.json"
+"autoload": {
+    "psr-4": {
+        "Modules\\Blog\\": "app/",
+        "Modules\\Blog\\Models\\": "app/Domain/Models/"
+    }
+}
+```
+
+## Choose the folders `module:make` creates
+
+Set `generate` to `true` to create the folder in every new module, and to `false` to skip it.
+
+```php title="config/modules.php"
+'jobs' => ['path' => 'app/Jobs', 'generate' => true],
+'views' => ['path' => 'resources/views', 'generate' => false],
+```
+
+`generate` has no effect on the generator commands: `module:make-job` writes to the `jobs` path either way. Setting `routes`, `views`, `config` or `assets` to `false` also skips the files they own (for example `routes/web.php` for `routes`). See [`paths.generator`](/laravel-modules/reference/configuration/#pathsgenerator).
+
+## Modules that already exist
+
+A change to the config does not move files. For an existing module, move the folders and the classes yourself. If you changed `app_folder`, update the `autoload.psr-4` entry for `Modules\Blog\` in the `composer.json` of the module, then run `composer dump-autoload`.
+
+## Check the result
+
+Create a module and list its files.
+
+```bash
+php artisan module:make Shop
+find Modules/Shop -type f -not -name .gitkeep
+```
+
+The files are in the folders you configured.
+
+## Related
+
+- [`paths` configuration keys](/laravel-modules/reference/configuration/#paths)
+- [`module:make`](/laravel-modules/reference/commands/generators/#modulemake)
+- [Generator commands: path and namespace](/laravel-modules/reference/commands/generators/#path-and-namespace)
+- [Change where modules live and their namespace](/laravel-modules/guides/modules/change-the-location-and-namespace/)
+- [Create a module](/laravel-modules/guides/modules/create-a-module/)
