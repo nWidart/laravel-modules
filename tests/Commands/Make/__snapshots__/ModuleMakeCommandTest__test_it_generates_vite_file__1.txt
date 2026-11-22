@@ -34,6 +34,8 @@ export default defineConfig({
         laravel({
             publicDirectory: '../../public',
             buildDirectory: 'build-blog',
+            // module_vite() reads this file to load the assets from the dev server.
+            hotFile: path.join(appDirectory, 'storage/vite-blog.hot'),
             input: assets.map((asset) => path.join(moduleDirectory, asset)),
             refresh: true,
         }),
