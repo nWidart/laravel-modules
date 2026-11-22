@@ -56,7 +56,7 @@ php artisan module:make <name>... [-p|--plain] [--api] [--web] [--inertia] [-d|-
 | --- | --- | --- | --- |
 | `--plain` | `-p` | `false` | Generate a plain module: folders and `module.json` only. |
 | `--api` |  | `false` | Generate an API module. The controller is generated with `module:make-controller --api` (the `controller-api.stub` stub). Everything else is the same as in a web module: the views, `routes/web.php`, `routes/api.php`, the assets and the other `stubs.files` are still written. |
-| `--web` |  | `false` | No effect. `web` is the default type. |
+| `--web` |  | `false` | Generate a web module (default). Wins over `--plain` and `--api`. |
 | `--inertia` |  | `false` | Generate an Inertia module: an Inertia controller and four Inertia pages, no Blade views. |
 | `--disabled` | `-d` | `false` | Create the module in the disabled state. |
 | `--force` |  | `false` | Recreate the module when it already exists. |
@@ -68,7 +68,7 @@ php artisan module:make <name>... [-p|--plain] [--api] [--web] [--inertia] [-d|-
 
 - This command is not a generator in the sense of the shared behaviour above: it has no `module` argument and does not read `module:use`. Without `name`, an interactive terminal asks `What is the name of the module?`.
 - The name is converted to studly case. It becomes the module folder and namespace. The converted name must match `^[A-Za-z_][A-Za-z0-9_]*$`. A name that does not match prints an error, the command goes on with the next name, and the exit status is `1`.
-- Type: `--plain` gives `plain`, `--api` gives `api`, and neither gives `web`. With `--plain` and `--api` together, the type is `web`: neither option takes effect. `--inertia` has no effect on a plain module.
+- Type, first match wins: `--web` gives `web`; `--plain` with `--api` gives `web`; `--plain` alone gives `plain`; `--api` alone gives `api`; no type option gives `web`. `--inertia` has no effect on a plain module.
 - An existing module stops with `Module [<name>] already exists!` unless `--force` is given. With `--force`, the command deletes the existing module and creates it again.
 - Before it writes anything, the command renders every stub. A JSON stub that renders invalid JSON stops the command, and the existing module stays in place.
 - If `composer.json` is generated and uses the app folder, every class generator path must be inside `paths.app_folder` (or match its namespace when `paths.app_folder` is empty). Otherwise the command prints the offending keys and stops.
@@ -811,13 +811,13 @@ php artisan module:make-migration <name> [<module>] [--fields=FIELDS] [--plain]
 
 | Name | Shortcut | Default | Description |
 | --- | --- | --- | --- |
-| `--fields` |  | none | Columns, comma-separated, for example `title:string, body:text`. |
-| `--plain` |  | `false` | Declared, never read. The plain stub is used when the name matches no action. |
+| `--fields` |  | none | Columns, comma-separated, for example `title:string, body:text`. Ignored with `--plain`. |
+| `--plain` |  | `false` | Use `migration/plain.stub` (empty `up()` and `down()`) whatever the name is. |
 
 **Notes**
 
 - Writes `<Y_m_d_His>_<name>.php` to the `migration` generator path (`paths.generator.migration.path`, default `database/migrations`). The class name is the studly-case name.
-- Stub: the first word of the name selects it. `create` or `make` gives `migration/create.stub`; `add`, `update`, `append` or `insert` gives `migration/add.stub`; `delete` or `remove` gives `migration/delete.stub`; `destroy` or `drop` gives `migration/drop.stub`; any other word gives `migration/plain.stub`.
+- Stub: with `--plain`, always `migration/plain.stub`. Without it, the first word of the name selects the stub. `create` or `make` gives `migration/create.stub`; `add`, `update`, `append` or `insert` gives `migration/add.stub`; `delete` or `remove` gives `migration/delete.stub`; `destroy` or `drop` gives `migration/drop.stub`; any other word gives `migration/plain.stub`.
 - The table name comes from the rest of the name: `create_posts_table` gives `posts`, `add_slug_to_posts_table` gives `posts`.
 - Each field is `column:type[:modifier...]`. The shortcuts `soft_delete` and `remember_token`, and `belongsTo:column:key:table`, are also accepted.
 
@@ -1260,6 +1260,7 @@ php artisan module:make-test <name> [<module>] [--feature]
 
 - Writes `<Name>.php` to the `test-unit` generator path (`paths.generator.test-unit.path`, default `tests/Unit`), or to the `test-feature` path (`paths.generator.test-feature.path`, default `tests/Feature`) with `--feature`.
 - Stub: `tests/unit.stub`, or `tests/feature.stub` with `--feature`.
+- Namespace: the module namespace plus the generator path, without the app folder. With the default paths, `Modules\Blog\Tests\Unit` or `Modules\Blog\Tests\Feature`. With `paths.app_folder` set to `app/` and a test path of `app/Tests/Unit`, the namespace is `Modules\Blog\Tests\Unit`.
 
 ```bash
 php artisan module:make-test PostTest Blog --feature

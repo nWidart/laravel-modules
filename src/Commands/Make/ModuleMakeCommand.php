@@ -130,7 +130,7 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
         return [
             ['plain', 'p', InputOption::VALUE_NONE, 'Generate a plain module (without some resources).'],
             ['api', null, InputOption::VALUE_NONE, 'Generate an api module.'],
-            ['web', null, InputOption::VALUE_NONE, 'Generate a web module.'],
+            ['web', null, InputOption::VALUE_NONE, 'Generate a web module (default).'],
             ['inertia', null, InputOption::VALUE_NONE, 'Generate an Inertia module (Inertia controller + JS pages, no Blade views).'],
             ['disabled', 'd', InputOption::VALUE_NONE, 'Do not enable the module at creation.'],
             ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when the module already exists.'],
@@ -141,24 +141,23 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
     }
 
     /**
-     * Get module type .
+     * Get the module type from the --web, --plain and --api options.
      *
-     * @return string
+     * --web wins over the others. --plain and --api together give a web module.
+     * With no type option, the module is a web module.
      */
-    private function getModuleType()
+    private function getModuleType(): string
     {
-        $isPlain = $this->option('plain');
-        $isApi = $this->option('api');
+        $isWeb = (bool) $this->option('web');
+        $isPlain = (bool) $this->option('plain');
+        $isApi = (bool) $this->option('api');
 
-        if ($isPlain && $isApi) {
-            return 'web';
-        }
-        if ($isPlain) {
-            return 'plain';
-        } elseif ($isApi) {
-            return 'api';
-        } else {
-            return 'web';
-        }
+        return match (true) {
+            $isWeb => 'web',
+            $isPlain && $isApi => 'web',
+            $isPlain => 'plain',
+            $isApi => 'api',
+            default => 'web',
+        };
     }
 }

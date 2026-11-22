@@ -3,8 +3,11 @@
 namespace Nwidart\Modules\Tests\Commands\Make;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Process\Process;
 
@@ -104,6 +107,41 @@ class MigrationMakeCommandTest extends BaseTestCase
 
         $this->assertMatchesSnapshot($file);
         $this->assertSame(0, $code);
+    }
+
+    public function test_it_generates_a_plain_migration_with_the_plain_option()
+    {
+        $code = $this->artisan('module:make-migration', ['name' => 'create_posts_table', 'module' => 'Blog', '--plain' => true]);
+
+        $file = $this->getGeneratedMigration();
+
+        $this->assertSame(0, $code);
+        $this->assertStringNotContainsString('Schema::create', $file);
+        $this->assertMatchesSnapshot($file);
+    }
+
+    #[DataProvider('migrationNamesWithASchemaStub')]
+    public function test_the_plain_option_ignores_the_migration_name_pattern(string $name)
+    {
+        $code = $this->artisan('module:make-migration', ['name' => $name, 'module' => 'Blog', '--plain' => true, '--fields' => 'title:string']);
+
+        $file = $this->getGeneratedMigration();
+
+        $this->assertSame(0, $code);
+        $this->assertSame(Stub::create('/migration/plain.stub', ['class' => Str::studly($name)])->render(), $file);
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function migrationNamesWithASchemaStub(): array
+    {
+        return [
+            'create' => ['create_posts_table'],
+            'add' => ['add_title_to_posts_table'],
+            'delete' => ['remove_title_from_posts_table'],
+            'drop' => ['drop_posts_table'],
+        ];
     }
 
     public function test_it_generates_foreign_key_constraints()

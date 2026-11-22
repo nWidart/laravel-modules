@@ -66,7 +66,7 @@ The Tokens column lists the `$TOKEN$` placeholders found in the stub file.
 | `migration/create.stub` | `module:make-migration` (`create_*`, `make_*`) | `$FIELDS$` `$TABLE$` |
 | `migration/delete.stub` | `module:make-migration` (`delete_*`, `remove_*`) | `$FIELDS_DOWN$` `$FIELDS_UP$` `$TABLE$` |
 | `migration/drop.stub` | `module:make-migration` (`destroy_*`, `drop_*`) | `$FIELDS$` `$TABLE$` |
-| `migration/plain.stub` | `module:make-migration` (any other name) | none |
+| `migration/plain.stub` | `module:make-migration` `--plain`, or any other name | none |
 | `model.stub` | `module:make-model` | `$CLASS$` `$FACTORY$` `$FACTORY_CLASS$` `$FILLABLE$` `$NAMESPACE$` |
 | `notification.stub` | `module:make-notification` | `$CLASS$` `$NAMESPACE$` |
 | `observer.stub` | `module:make-observer` | `$MODEL_NAMESPACE$` `$NAME$` `$NAMESPACE$` `$NAME_VARIABLE$` |
