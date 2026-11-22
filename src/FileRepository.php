@@ -44,6 +44,9 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Stub path
+     *
+     * @deprecated The package does not read this value: generators read their stubs from
+     *             Stub::setBasePath(), set from the modules.stubs.path config. Will be removed in v14.
      */
     protected ?string $stubPath = null;
 
@@ -638,6 +641,9 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Get stub path.
+     *
+     * @deprecated The package does not read this value: generators read their stubs from
+     *             Stub::getBasePath(), set from the modules.stubs.path config. Will be removed in v14.
      */
     public function getStubPath(): ?string
     {
@@ -654,6 +660,10 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
     /**
      * Set stub path.
+     *
+     * @deprecated The package does not read this value, so it does not change the stubs the
+     *             generators use. Use Stub::setBasePath() or the modules.stubs.path config.
+     *             Will be removed in v14.
      */
     public function setStubPath(string $stubPath): self
     {

@@ -16,7 +16,7 @@ class ClassMakeCommand extends GeneratorCommand
      */
     protected $signature = 'module:make-class
         {--t|type=class : The type of class, e.g. class, service, repository, contract, etc.}
-        {--s|suffix : Create the class without the type suffix}
+        {--s|suffix : Append the type to the class name (for example FooService)}
         {--i|invokable : Generate a single method, invokable class}
         {--f|force : Create the class even if the class already exists}
         {name : The name of the class}

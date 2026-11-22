@@ -44,7 +44,7 @@ class InterfaceMakeCommand extends GeneratorCommand
     protected function getArguments(): array
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the action class.'],
+            ['name', InputArgument::REQUIRED, 'The name of the interface.'],
             ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
         ];
     }

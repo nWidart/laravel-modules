@@ -48,6 +48,7 @@ class ConsoleServiceProvider extends ServiceProvider
 
             // Database Commands
             Commands\Database\MigrateCommand::class,
+            Commands\Database\MigrateFreshCommand::class,
             Commands\Database\MigrateRefreshCommand::class,
             Commands\Database\MigrateResetCommand::class,
             Commands\Database\MigrateRollbackCommand::class,
@@ -110,8 +111,6 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\LaravelModulesV6Migrator::class,
             Commands\SetupCommand::class,
             Commands\UpdatePhpunitCoverage::class,
-
-            Commands\Database\MigrateFreshCommand::class,
         ]);
     }
 }

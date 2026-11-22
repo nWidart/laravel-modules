@@ -15,7 +15,7 @@ This page lists the public methods of the `Module` facade and of the repository 
 | Abstract class | `Nwidart\Modules\FileRepository`. It implements `RepositoryInterface` and `Countable`, and uses `Macroable`. |
 | Bound class | `Nwidart\Modules\Laravel\LaravelFileRepository`. It adds no methods to `FileRepository`. |
 
-The facade forwards every call to the bound repository, so it accepts every public method of `FileRepository`, not only the ones in the facade docblock. The docblock of the facade lists `getCached()`. The repository has no such method.
+The facade forwards every call to the bound repository, so it accepts every public method of `FileRepository`, not only the ones in the facade docblock.
 
 ```php
 use Nwidart\Modules\Facades\Module;
@@ -104,8 +104,8 @@ Module::asset('blog:css/app.css'); // //example.test/modules/blog/css/app.css
 
 | Signature | Returns | Description |
 | --- | --- | --- |
-| `getStubPath()` | `string\|null` | The path set with `setStubPath()`. Otherwise `modules.stubs.path` when `modules.stubs.enabled` is `true`. Otherwise `null`. No code of the package reads this value. The generators read the base path set by `Stub::setBasePath()`. See [Stubs and placeholders](/laravel-modules/reference/stubs/). |
-| `setStubPath(string $stubPath)` | `static` | Stores the stub path for `getStubPath()`. |
+| `getStubPath()` | `string\|null` | Deprecated, removed in v14. The path set with `setStubPath()`. Otherwise `modules.stubs.path` when `modules.stubs.enabled` is `true`. Otherwise `null`. No code of the package reads this value. The generators read the base path set by `Stub::setBasePath()`. See [Stubs and placeholders](/laravel-modules/reference/stubs/). |
+| `setStubPath(string $stubPath)` | `static` | Deprecated, removed in v14. Stores the stub path for `getStubPath()`. |
 | `resetModules()` | `static` | Forgets the scan result. The next call scans the `module.json` files again. Not in the interface. |
 
 ### Scan cache

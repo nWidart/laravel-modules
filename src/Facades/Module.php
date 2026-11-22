@@ -9,7 +9,6 @@ use Nwidart\Modules\Commands\Database\MigrateResetCommand;
 
 /**
  * @method static array<string, \Nwidart\Modules\Module> all()
- * @method static array<string, \Nwidart\Modules\Module> getCached()
  * @method static array<string, \Nwidart\Modules\Module> scan()
  * @method static \Nwidart\Modules\Collection<string, \Nwidart\Modules\Module> toCollection()
  * @method static array<int, string> getScanPaths()
@@ -18,14 +17,14 @@ use Nwidart\Modules\Commands\Database\MigrateResetCommand;
  * @method static int count()
  * @method static array<string, \Nwidart\Modules\Module> getOrdered($direction = 'asc')
  * @method static array<string, \Nwidart\Modules\Module> getByStatus($status)
- * @method static \Nwidart\Modules\Module find(string $name)
+ * @method static \Nwidart\Modules\Module|null find(string $name)
  * @method static \Nwidart\Modules\Module findOrFail(string $name)
  * @method static string getModulePath($moduleName)
  * @method static \Illuminate\Filesystem\Filesystem getFiles()
  * @method static mixed config(string $key, $default = null)
  * @method static string getPath()
  * @method static void boot()
- * @method static void register(): void
+ * @method static void register()
  * @method static string assetPath(string $module)
  * @method static bool delete(string $module)
  * @method static bool isEnabled(string $name)

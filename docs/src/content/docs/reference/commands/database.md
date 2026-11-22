@@ -98,7 +98,7 @@ php artisan module:migrate Blog --seed
 Drops all tables of the database, then runs the application migrations and the migrations of the given modules.
 
 ```bash
-php artisan module:migrate-fresh [<module>...] [-d|--direction=DIRECTION] [--database=DATABASE] [--force] [--seed] [--pretend] [--drop-views] [--drop-types] [-a|--all]
+php artisan module:migrate-fresh [<module>...] [-d|--direction=DIRECTION] [--database=DATABASE] [--seed] [--pretend] [--drop-views] [--drop-types] [-a|--all] [--force]
 ```
 
 **Arguments**
@@ -113,11 +113,11 @@ php artisan module:migrate-fresh [<module>...] [-d|--direction=DIRECTION] [--dat
 | --- | --- | --- | --- |
 | `--direction` | `-d` | `asc` | Order of the modules selected with `--all`. |
 | `--database` | | none | Database connection. |
-| `--force` | | `false` | Skip the production confirmation. |
 | `--seed` | | `false` | Run `module:seed` for each module after its migrations. |
 | `--pretend` | | `false` | Not supported. The command refuses to run. |
 | `--drop-views` | | `false` | Drop the views too. |
 | `--drop-types` | | `false` | Drop the types too (PostgreSQL only). |
+| `--force` | | `false` | Skip the production confirmation. |
 
 **Notes**
 
@@ -136,7 +136,7 @@ php artisan module:migrate-fresh --all --seed --force
 Resets and runs again the migrations of the given modules.
 
 ```bash
-php artisan module:migrate-refresh [<module>...] [--database=DATABASE] [--force] [--seed] [-a|--all]
+php artisan module:migrate-refresh [<module>...] [--database=DATABASE] [--seed] [-a|--all] [--force]
 ```
 
 **Arguments**
@@ -150,8 +150,8 @@ php artisan module:migrate-refresh [<module>...] [--database=DATABASE] [--force]
 | Name | Shortcut | Default | Description |
 | --- | --- | --- | --- |
 | `--database` | | none | Database connection. |
-| `--force` | | `false` | Skip the production confirmation. |
 | `--seed` | | `false` | Run `module:seed` for each module at the end. |
+| `--force` | | `false` | Skip the production confirmation. |
 
 **Notes**
 
@@ -168,7 +168,7 @@ php artisan module:migrate-refresh Blog --seed
 Rolls back every migration of the given modules that ran.
 
 ```bash
-php artisan module:migrate-reset [<module>...] [-d|--direction=DIRECTION] [--database=DATABASE] [--force] [--pretend] [--subpath=SUBPATH] [-a|--all]
+php artisan module:migrate-reset [<module>...] [-d|--direction=DIRECTION] [--database=DATABASE] [--pretend] [--subpath=SUBPATH] [-a|--all] [--force]
 ```
 
 **Arguments**
@@ -183,9 +183,9 @@ php artisan module:migrate-reset [<module>...] [-d|--direction=DIRECTION] [--dat
 | --- | --- | --- | --- |
 | `--direction` | `-d` | `desc` | Order of the modules selected with `--all`. |
 | `--database` | | none | Database connection. |
-| `--force` | | `false` | Skip the production confirmation. |
 | `--pretend` | | `false` | Print the SQL queries instead of running them. |
 | `--subpath` | | none | A directory, a file or a glob pattern, relative to the module migration path. |
+| `--force` | | `false` | Skip the production confirmation. |
 
 **Notes**
 
@@ -202,7 +202,7 @@ php artisan module:migrate-reset Blog --pretend
 Rolls back the last batch of migrations of the given modules.
 
 ```bash
-php artisan module:migrate-rollback [<module>...] [-d|--direction=DIRECTION] [--database=DATABASE] [--force] [--pretend] [--subpath=SUBPATH] [-a|--all]
+php artisan module:migrate-rollback [<module>...] [-d|--direction=DIRECTION] [--database=DATABASE] [--pretend] [--subpath=SUBPATH] [-a|--all] [--force]
 ```
 
 **Arguments**
@@ -217,9 +217,9 @@ php artisan module:migrate-rollback [<module>...] [-d|--direction=DIRECTION] [--
 | --- | --- | --- | --- |
 | `--direction` | `-d` | `desc` | Order of the modules selected with `--all`. |
 | `--database` | | none | Database connection. |
-| `--force` | | `false` | Skip the production confirmation. |
 | `--pretend` | | `false` | Print the SQL queries instead of running them. |
 | `--subpath` | | none | A directory, a file or a glob pattern, relative to the module migration path. |
+| `--force` | | `false` | Skip the production confirmation. |
 
 **Notes**
 

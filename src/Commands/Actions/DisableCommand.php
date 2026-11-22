@@ -14,13 +14,6 @@ class DisableCommand extends BaseCommand
     protected $name = 'module:disable';
 
     /**
-     * The console command signature.
-     *
-     * @var string
-     */
-    protected $signature = 'module:disable';
-
-    /**
      * The console command description.
      *
      * @var string

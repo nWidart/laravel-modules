@@ -323,7 +323,8 @@ return [
     |
     | You can define new types of activators here, file, database, etc. The only
     | required parameter is 'class'.
-    | The file activator will store the activation status in storage/installed_modules
+    | The file activator stores the activation status in the JSON file set by
+    | 'statuses-file' (default: modules_statuses.json in the application root).
     */
     'activators' => [
         'file' => [

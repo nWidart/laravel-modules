@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Tests\Commands\Actions;
 
+use Illuminate\Support\Facades\Artisan;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Tests\BaseTestCase;
@@ -67,5 +68,17 @@ class DisableCommandTest extends BaseTestCase
 
         $this->assertTrue($blogModule->isDisabled() && $taxonomyModule->isDisabled());
         $this->assertSame(0, $code);
+    }
+
+    public function test_it_takes_the_same_arguments_and_options_as_module_enable()
+    {
+        $disable = Artisan::all()['module:disable'];
+        $enable = Artisan::all()['module:enable'];
+
+        $this->assertSame('module:disable', $disable->getName());
+        $this->assertSame('Disable an array of modules.', $disable->getDescription());
+        $this->assertSame('module:disable [-a|--all] [--] [<module>...]', $disable->getSynopsis());
+        $this->assertEquals($enable->getDefinition()->getArguments(), $disable->getDefinition()->getArguments());
+        $this->assertEquals($enable->getDefinition()->getOptions(), $disable->getDefinition()->getOptions());
     }
 }

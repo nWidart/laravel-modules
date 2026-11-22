@@ -53,7 +53,7 @@ class RepositoryMakeCommand extends GeneratorCommand
     protected function getOptions(): array
     {
         return [
-            ['invokable', 'i', InputOption::VALUE_NONE, 'Generate an invokable action class', null],
+            ['invokable', 'i', InputOption::VALUE_NONE, 'Generate an invokable repository class', null],
             ['force', 'f', InputOption::VALUE_NONE, 'Overwrite the file if it already exists'],
         ];
     }

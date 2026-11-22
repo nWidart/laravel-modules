@@ -5,8 +5,14 @@ namespace Nwidart\Modules\Tests\Commands;
 use Illuminate\Contracts\Console\Kernel;
 use Laravel\Prompts\Prompt;
 use Nwidart\Modules\Commands\BaseCommand;
+use Nwidart\Modules\Commands\Database\MigrateFreshCommand;
+use Nwidart\Modules\Commands\Database\MigrateRefreshCommand;
+use Nwidart\Modules\Commands\Database\MigrateResetCommand;
+use Nwidart\Modules\Commands\Database\MigrateRollbackCommand;
+use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
+use Nwidart\Modules\Providers\ConsoleServiceProvider;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Symfony\Component\Console\Input\InputInterface;
 
@@ -146,6 +152,30 @@ class BaseCommandTest extends BaseTestCase
         }
 
         $this->assertSame([], $command->ran);
+    }
+
+    public function test_every_confirmable_command_has_the_confirmable_force_option()
+    {
+        $commands = ConsoleServiceProvider::defaultCommands()
+            ->filter(fn (string $class) => is_subclass_of($class, ConfirmableCommand::class))
+            ->values();
+
+        // the migrate commands that drop or roll back data must be among them
+        foreach ([MigrateFreshCommand::class, MigrateRefreshCommand::class, MigrateResetCommand::class, MigrateRollbackCommand::class] as $class) {
+            $this->assertContains($class, $commands);
+        }
+
+        foreach ($commands as $class) {
+            $definition = $this->app->make($class)->getDefinition();
+
+            $this->assertTrue($definition->hasOption('force'), "{$class} has no --force option.");
+
+            $force = $definition->getOption('force');
+
+            $this->assertNull($force->getShortcut(), "{$class} --force must have no shortcut.");
+            $this->assertFalse($force->acceptValue(), "{$class} --force must not take a value.");
+            $this->assertSame('Force the operation to run without confirmation.', $force->getDescription(), $class);
+        }
     }
 
     /**
