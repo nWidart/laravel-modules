@@ -209,7 +209,7 @@ When using Inertia.js inside a module:
 - Module classes are namespaced as `Modules\{ModuleName}` (e.g. `Modules\Blog\Http\Controllers\PostController`).
 - Module routes are loaded from `Modules/{Name}/routes/web.php` and `api.php`.
 - Module views are referenced as `{lowercase-name}::{view}` (e.g. `blog::index`).
-- Module configs live in `Modules/{Name}/config/{name}.php` and are merged at `{name}`.
+- Module configs live in `Modules/{Name}/config/{name}.php` and are merged at `{name}`. A copy published with `module:publish-config` (`config/{name}.php`) overrides the module's values.
 - Module service providers are auto-discovered from `module.json` `providers` key.
 - Keep business logic inside the module; avoid coupling modules together — use events/listeners instead.
 - Use `module:publish-config`, `module:publish-migration`, or `module:publish-translation` to publish module assets to the host application.
