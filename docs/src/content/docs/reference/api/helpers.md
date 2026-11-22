@@ -78,6 +78,8 @@ Returns a copy of the application `Vite` instance, set up for the build of one m
 {{ module_vite('build-blog', 'resources/assets/js/app.js') }}
 ```
 
+The `build-<lowername>` directory holds the standalone build of a module. A build from the application root with [`vite-module-loader.js`](/laravel-modules/reference/commands/publish/#vite-module-loaderjs) writes to `public/build`, which `@vite` reads.
+
 ## config_path()
 
 ```php
