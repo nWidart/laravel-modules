@@ -557,6 +557,36 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    /**
+     * @param  array<string, bool>  $options
+     */
+    #[DataProvider('typeOptionsCombinedWithWeb')]
+    public function test_the_web_option_wins_over_the_other_type_options(array $options)
+    {
+        $code = $this->artisan('module:make', ['name' => ['Blog'], '--web' => true] + $options);
+
+        $this->assertSame(0, $code);
+        $this->assertTrue($this->finder->exists($this->getModuleAppPath().'/Providers/BlogServiceProvider.php'));
+        $this->assertTrue($this->finder->exists($this->getModuleAppPath().'/Providers/RouteServiceProvider.php'));
+        $this->assertTrue($this->finder->exists($this->getModuleBasePath().'/database/seeders/BlogDatabaseSeeder.php'));
+
+        $controller = $this->finder->get($this->getModuleAppPath().'/Http/Controllers/BlogController.php');
+        $this->assertStringContainsString("return view('blog::index');", $controller);
+        $this->assertStringNotContainsString('response()->json', $controller);
+    }
+
+    /**
+     * @return array<string, array{array<string, bool>}>
+     */
+    public static function typeOptionsCombinedWithWeb(): array
+    {
+        return [
+            'web and plain' => [['--plain' => true]],
+            'web and api' => [['--api' => true]],
+            'web, plain and api' => [['--plain' => true, '--api' => true]],
+        ];
+    }
+
     public function test_it_generate_module_when_provider_is_enable_and_route_provider_is_enable()
     {
         $this->app['config']->set('modules.paths.generator.provider.generate', true);

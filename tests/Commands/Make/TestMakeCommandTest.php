@@ -115,6 +115,32 @@ class TestMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_strips_the_app_folder_from_a_unit_test_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.test-unit.path', 'app/Tests/Unit');
+
+        $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog']);
+
+        $file = $this->finder->get($this->modulePath.'/app/Tests/Unit/EloquentPostRepositoryTest.php');
+
+        $this->assertSame(0, $code);
+        $this->assertStringContainsString('namespace Modules\Blog\Tests\Unit;', $file);
+        $this->assertMatchesSnapshot($file);
+    }
+
+    public function test_it_strips_the_app_folder_from_a_feature_test_namespace()
+    {
+        $this->app['config']->set('modules.paths.generator.test-feature.path', 'app/Tests/Feature');
+
+        $code = $this->artisan('module:make-test', ['name' => 'EloquentPostRepositoryTest', 'module' => 'Blog', '--feature' => true]);
+
+        $file = $this->finder->get($this->modulePath.'/app/Tests/Feature/EloquentPostRepositoryTest.php');
+
+        $this->assertSame(0, $code);
+        $this->assertStringContainsString('namespace Modules\Blog\Tests\Feature;', $file);
+        $this->assertMatchesSnapshot($file);
+    }
+
     public function test_it_can_change_the_default_feature_namespace_specific()
     {
         $this->app['config']->set('modules.paths.generator.test-feature.namespace', 'SuperTests\\Feature');

@@ -77,6 +77,10 @@ class MigrationMakeCommand extends GeneratorCommand
     #[\Override]
     protected function getTemplateContents()
     {
+        if ($this->option('plain')) {
+            return $this->getPlainStub();
+        }
+
         $parser = new NameParser($this->argument('name'));
 
         if ($parser->isCreate()) {
@@ -115,6 +119,14 @@ class MigrationMakeCommand extends GeneratorCommand
             ]);
         }
 
+        return $this->getPlainStub();
+    }
+
+    /**
+     * The plain migration: --plain, or a name that matches no create/add/delete/drop pattern.
+     */
+    private function getPlainStub(): Stub
+    {
         return Stub::create('/migration/plain.stub', [
             'class' => $this->getClass(),
         ]);
