@@ -13,6 +13,7 @@ use Nwidart\Modules\Commands\Actions\ModelPruneCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputInterface;
 
 class ModelPruneCommandTest extends BaseTestCase
@@ -324,6 +325,32 @@ class ModelPruneCommandTest extends BaseTestCase
             '--except' => ['Modules\Blog\Models\Comment'],
             '--no-interaction' => true,
         ]);
+    }
+
+    public function test_it_has_no_path_option()
+    {
+        $command = $this->app[Kernel::class]->all()['module:prune'];
+
+        $this->assertFalse($command->getDefinition()->hasOption('path'));
+    }
+
+    public function test_it_rejects_the_path_option_and_prunes_nothing()
+    {
+        $this->createPrunableModel('Modules\Blog\Models', 'PathPost', 'app/Models');
+
+        try {
+            $this->artisan('module:prune', [
+                'module' => ['Blog'],
+                '--path' => ['app/Models'],
+                '--no-interaction' => true,
+            ]);
+
+            $this->fail('The --path option was accepted.');
+        } catch (InvalidOptionException $exception) {
+            $this->assertSame('The "--path" option does not exist.', $exception->getMessage());
+        }
+
+        $this->assertSame(1, DB::table('pathposts')->count());
     }
 
     public function test_it_prunes_a_model_given_by_its_short_name()

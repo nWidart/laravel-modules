@@ -42,7 +42,6 @@ class ModelPruneCommand extends PruneCommand implements PromptsForMissingInput
                                 {--all : Check all Modules}
                                 {--model=* : Class names of the models to be pruned, or their names in the model folder of the selected modules}
                                 {--except=* : Class names of the models to be excluded from pruning, or their names in the model folder of the selected modules}
-                                {--path=* : Absolute path(s) to directories where models are located}
                                 {--chunk=1000 : The number of models to retrieve per chunk of models to be deleted}
                                 {--pretend : Display the number of prunable records found instead of deleting them}';
 
