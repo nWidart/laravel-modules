@@ -32,10 +32,10 @@
         "laravel/pint": "^1.16",
         "spatie/phpunit-snapshot-assertions": "^5.0",
         "larastan/larastan": "^3.9.3",
-        "nwidart/laravel-actuator": "^1.0"
+        "nwidart/laravel-actuator": "^1.1"
     },
     "suggest": {
-        "nwidart/laravel-actuator": "Report module health on the actuator health endpoint (^1.0)."
+        "nwidart/laravel-actuator": "Report module health on the actuator health endpoint (^1.1)."
     },
     "autoload": {
         "psr-4": {

@@ -121,6 +121,20 @@ class ActuatorIntegrationTest extends BaseTestCase
         ], $response->json());
     }
 
+    #[DefineEnvironment('showOnlyPing')]
+    public function test_the_health_endpoint_reports_a_single_module_indicator()
+    {
+        $this->registerModuleProvider();
+
+        $this->getJson('/actuator/health/module:blog:payments')
+            ->assertOk()
+            ->assertExactJson(['status' => 'UP', 'details' => ['gateway' => 'stripe']]);
+
+        $this->getJson('/actuator/health/module:blog:payments.eu')
+            ->assertOk()
+            ->assertExactJson(['status' => 'UP', 'details' => ['gateway' => 'adyen']]);
+    }
+
     /**
      * @param  Application  $app
      */
