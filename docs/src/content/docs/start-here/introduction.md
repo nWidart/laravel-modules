@@ -14,15 +14,15 @@ A module is a small Laravel package inside your application. By default it lives
 - a main service provider, usually with a route provider, that registers its routes, views, config, translations and migrations;
 - its own `routes/`, `resources/views/`, `database/migrations/`, `config/` and `tests/` folders.
 
-The `module:make` command generates this structure. You then work in the module as you work in `app/`. The module code is plain Laravel: controllers, Eloquent models, Blade views, migrations.
+The `module:make` command generates this structure. [Anatomy of a module](/laravel-modules/concepts/module-anatomy/) explains why each part is there. You then work in the module as you work in `app/`. The module code is plain Laravel: controllers, Eloquent models, Blade views, migrations.
 
 ## How the package finds and boots modules
 
-The package scans the module folder for `module.json` files when the application boots. It registers the service providers of every enabled module, in the order of the `priority` field. Module classes autoload through the module `composer.json`, which Composer merges into the application autoload with `wikimedia/composer-merge-plugin`.
+The package scans the module folder for `module.json` files when the application boots. It registers the service providers of every enabled module, in the order of the `priority` field. Module classes autoload through the module `composer.json`, which Composer merges into the application autoload with `wikimedia/composer-merge-plugin`. [How modules boot](/laravel-modules/concepts/how-modules-boot/) follows the whole sequence.
 
 ## Enabled and disabled
 
-A module is enabled or disabled. The package registers the providers of an enabled module, so its routes, views and migrations are active. It does not register a disabled module: its routes disappear and its migrations are not discovered. The files stay on disk.
+A module is enabled or disabled. The package registers the providers of an enabled module, so its routes, views and migrations are active. It does not register a disabled module: its routes disappear and its migrations are not discovered. The files stay on disk. See [Module status and activators](/laravel-modules/concepts/status-and-activators/) for why the status lives outside `module.json`.
 
 The package stores the status outside `module.json`, in an activator. The default activator writes a `modules_statuses.json` file at the application root. A new module is enabled, unless you create it with `--disabled`.
 
@@ -51,9 +51,9 @@ The package adds Artisan commands in three groups: commands that create modules 
 
 ## Where to go next
 
-- [Installation](/laravel-modules/start-here/installation/): install the package and set up autoloading.
-- [Your first module](/laravel-modules/start-here/first-module/): build a small `Blog` module step by step.
-- [Artisan commands](/laravel-modules/reference/commands/): every command, argument and option.
-- [Configuration](/laravel-modules/reference/configuration/): every key of `config/modules.php`.
-- [module.json](/laravel-modules/reference/module-json/): the fields of the module manifest.
-- [Module facade and repository](/laravel-modules/reference/api/repository/): find and manage modules from PHP.
+- **Start here:** [Installation](/laravel-modules/start-here/installation/) sets up the package and autoloading. [Your first module](/laravel-modules/start-here/first-module/) builds a small `Blog` module step by step.
+- **Concepts:** [Anatomy of a module](/laravel-modules/concepts/module-anatomy/) and [How modules boot](/laravel-modules/concepts/how-modules-boot/) explain how the parts fit.
+- **Guides:** task-based steps, for example [Create a module](/laravel-modules/guides/modules/create-a-module/), [Add routes to a module](/laravel-modules/guides/http/routes/) and [Deploy an application that uses modules](/laravel-modules/guides/production/deploy/).
+- **Reference:** [Artisan commands](/laravel-modules/reference/commands/) lists every command, argument and option. [Configuration](/laravel-modules/reference/configuration/) lists every key of `config/modules.php`. [module.json](/laravel-modules/reference/module-json/) describes the manifest, and [Module facade and repository](/laravel-modules/reference/api/repository/) the PHP API.
+- **Upgrading:** [Version compatibility](/laravel-modules/upgrading/compatibility/) and [Upgrade from 12 to 13](/laravel-modules/upgrading/upgrade-to-13/).
+- **Ecosystem:** [Community packages](/laravel-modules/ecosystem/community-packages/), [AI coding assistants](/laravel-modules/ecosystem/ai-assistants/) and [how to contribute and get help](/laravel-modules/ecosystem/contributing-and-support/).

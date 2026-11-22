@@ -58,9 +58,20 @@ To run a listener when the `Blog` module publishes a post, generate the event an
 
 </Steps>
 
-## Event discovery does not cover modules
+## Event discovery and modules
 
-The generated `EventServiceProvider` sets `$shouldDiscoverEvents = true`. That has no effect: Laravel discovers listeners only in the provider class `Illuminate\Foundation\Support\Providers\EventServiceProvider`, and only in `app/Listeners` of the application. It never scans `Modules/Blog/app/Listeners`. Map every module listener in `$listen`, as in step 3.
+The generated `EventServiceProvider` sets `$shouldDiscoverEvents = true`. That has no effect: Laravel discovers listeners only in the provider class `Illuminate\Foundation\Support\Providers\EventServiceProvider`, and by default only in `app/Listeners` of the application. It does not scan `Modules/Blog/app/Listeners`. Map every module listener in `$listen`, as in step 3.
+
+An application can change the folders that Laravel scans. `withEvents(discover: [...])` in `bootstrap/app.php` replaces the default folder with the list you give, and each entry may be a glob:
+
+```php title="bootstrap/app.php"
+->withEvents(discover: [
+    __DIR__.'/../app/Listeners',
+    __DIR__.'/../Modules/*/app/Listeners',
+])
+```
+
+With such an entry, Laravel discovers the module listeners, and the package maps their files to the module class names. The glob matches the folders of disabled modules as well, so their listeners are discovered too. The status of a module does not change this: see [Module status and activators](/laravel-modules/concepts/status-and-activators/). A listener that is discovered and also mapped in `$listen` runs twice: keep one of the two. Run `php artisan event:cache` again after you change the mapping. See [Changes in 13.x](/laravel-modules/upgrading/13-x-release-notes/#behaviour-changes).
 
 To skip the provider, register the listener in the `boot()` method of the module provider with `Event::listen()`. The provider must call `parent::boot()`:
 

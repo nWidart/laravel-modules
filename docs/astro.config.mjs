@@ -37,7 +37,7 @@ export default defineConfig({
                 starlightLlmsTxt(),
             ],
             // Explicit order. A slug string uses the page title as its label.
-            // Add new groups (Concepts, Upgrading, Ecosystem) as new entries in this array.
+            // All groups are present: Start here, Concepts, Guides, Reference, Upgrading, Ecosystem.
             sidebar: [
                 {
                     label: 'Start here',
@@ -45,6 +45,16 @@ export default defineConfig({
                         'start-here/introduction',
                         'start-here/installation',
                         'start-here/first-module',
+                    ],
+                },
+                {
+                    label: 'Concepts',
+                    items: [
+                        'concepts/module-anatomy',
+                        'concepts/how-modules-boot',
+                        'concepts/status-and-activators',
+                        'concepts/autoloading',
+                        'concepts/generators-and-stubs',
                     ],
                 },
                 {
@@ -170,6 +180,23 @@ export default defineConfig({
                             ],
                         },
                         'reference/stubs',
+                    ],
+                },
+                {
+                    label: 'Upgrading',
+                    items: [
+                        'upgrading/compatibility',
+                        'upgrading/upgrade-to-13',
+                        'upgrading/13-x-release-notes',
+                        'upgrading/deprecations',
+                    ],
+                },
+                {
+                    label: 'Ecosystem',
+                    items: [
+                        'ecosystem/ai-assistants',
+                        'ecosystem/community-packages',
+                        'ecosystem/contributing-and-support',
                     ],
                 },
             ],
