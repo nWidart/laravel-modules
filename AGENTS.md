@@ -22,7 +22,7 @@ composer analyse                    # phpstan + Larastan (phpstan.neon.dist, lev
 composer test-coverage              # HTML report in build/coverage; needs Xdebug or PCOV
 ```
 
-PHPStan has no baseline. Lumen is not installed in dev, so `phpstan.neon.dist` ignores `class.notFound` for `Laravel\Lumen\*`. PHPStan analyses for PHP 8.3 to 8.5 (`phpVersion` in `phpstan.neon.dist`), not for the local PHP, so local results match CI. Correct vendor types in `phpstan/stubs/` (currently `Factory.stub`), not in ignores. `MigrationLoaderTrait` has a `trait.unused` ignore because it is deprecated and removed in v14. Fix new errors. Do not add a baseline or new `ignoreErrors` entries without maintainer approval.
+PHPStan has no baseline. Lumen is not installed in dev, so `phpstan.neon.dist` ignores `class.notFound` for `Laravel\Lumen\*`. The Lumen classes are deprecated and v14 removes them and this ignore. PHPStan analyses for PHP 8.3 to 8.5 (`phpVersion` in `phpstan.neon.dist`), not for the local PHP, so local results match CI. Correct vendor types in `phpstan/stubs/` (currently `Factory.stub`), not in ignores. `MigrationLoaderTrait` has a `trait.unused` ignore because it is deprecated and removed in v14. Fix new errors. Do not add a baseline or new `ignoreErrors` entries without maintainer approval.
 
 CI (`.github/workflows/php.yml`) runs `composer test` on PHP 8.3, 8.4, and 8.5, and `composer analyse` on PHP 8.3. CI also runs Pint with `composer lint` and auto-commits style fixes; on pull requests from forks it runs `composer lint:check` instead. Plain test runs need no coverage setup, even with Xdebug loaded. Only `composer test-coverage` needs Xdebug or PCOV. Do not add coverage reports back to `phpunit.xml.dist`.
 
@@ -68,7 +68,7 @@ Gotcha: `FileRepository::scan()` and `ModuleManifest::getModulesData()` cache pe
 - `FileRepository` (abstract) / `Laravel\LaravelFileRepository`: finds, scans, orders, enables, and installs modules. Backs the `Module` facade and the `module()` helper (`src/helpers.php`).
 - `Activators\FileActivator`: stores enabled/disabled status in a JSON statuses file. Custom activators implement `Contracts\ActivatorInterface`.
 - `Support\ModuleServiceProvider`: base class for the service provider generated inside each module (stub `scaffold/provider`).
-- `Lumen*` classes are legacy and kept alongside the Laravel ones.
+- `LumenModulesServiceProvider`, `Lumen\LumenFileRepository` and `Lumen\Module` are deprecated and removed in v14. The provider cannot register since 11.1.0.
 
 ### Commands (`src/Commands/`)
 

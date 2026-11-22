@@ -86,7 +86,7 @@ The `build-<lowername>` directory holds the standalone build of a module. A buil
 config_path(string $path = ''): string
 ```
 
-Returns the application config folder, or a path inside it. The package defines this function only when no function of that name exists yet, for applications that lack it, such as Lumen.
+Returns the application config folder, or a path inside it. The package defines this function only when no function of that name exists yet, for applications that lack it.
 
 | Parameter | Description |
 | --- | --- |
@@ -104,7 +104,7 @@ config_path('blog.php'); // /var/www/app/config/blog.php
 public_path(string $path = ''): string
 ```
 
-Returns the application public folder, or a path inside it. The package defines this function only when no function of that name exists yet, for applications that lack it, such as Lumen.
+Returns the application public folder, or a path inside it. The package defines this function only when no function of that name exists yet, for applications that lack it.
 
 | Parameter | Description |
 | --- | --- |

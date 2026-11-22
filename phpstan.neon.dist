@@ -16,8 +16,9 @@ parameters:
     stubFiles:
         - phpstan/stubs/Factory.stub
     ignoreErrors:
-        # Lumen is supported (src/Lumen, LumenModulesServiceProvider) but cannot be installed
-        # alongside Laravel in dev, so its classes are unknown to PHPStan.
+        # Lumen support (src/Lumen, LumenModulesServiceProvider) is deprecated and removed in v14.
+        # Lumen cannot be installed alongside Laravel in dev, so its classes are unknown to
+        # PHPStan. Remove this ignore together with those classes.
         -
             identifier: class.notFound
             message: '#Laravel\\Lumen\\#'
