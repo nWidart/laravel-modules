@@ -5,6 +5,12 @@ namespace Nwidart\Modules\Lumen;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Module as BaseModule;
 
+/**
+ * @deprecated Lumen is no longer supported. LumenModulesServiceProvider cannot register
+ *             since v11.1.0, and Lumen has no release for Laravel 13. There is no
+ *             replacement in the package: use Laravel with LaravelModulesServiceProvider,
+ *             whose repository creates Nwidart\Modules\Laravel\Module. Will be removed in v14.
+ */
 class Module extends BaseModule
 {
     /**

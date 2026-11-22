@@ -6,6 +6,12 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\Container;
 use Nwidart\Modules\Support\Stub;
 
+/**
+ * @deprecated Lumen is no longer supported. This provider cannot register since v11.1.0
+ *             (it binds no ModuleManifest), and Lumen has no release for Laravel 13.
+ *             There is no replacement in the package: use Laravel with
+ *             LaravelModulesServiceProvider. Will be removed in v14.
+ */
 class LumenModulesServiceProvider extends ModulesServiceProvider
 {
     /**

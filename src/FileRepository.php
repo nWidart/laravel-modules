@@ -23,8 +23,9 @@ abstract class FileRepository implements Countable, RepositoryInterface
     use Macroable;
 
     /**
-     * Application instance (Laravel or Lumen). The constructor accepts any Container for
+     * Application instance. The constructor accepts any Container for
      * backwards compatibility, but the repository calls application methods on it.
+     * The Lumen application type is kept for the deprecated Lumen support, which will be removed in v14.
      *
      * @var (Container&\Illuminate\Contracts\Foundation\Application)|(Container&Application)
      */

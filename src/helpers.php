@@ -48,6 +48,9 @@ if (! function_exists('module_path')) {
 if (! function_exists('config_path')) {
     /**
      * Get the configuration path.
+     *
+     * Fallback for applications without Laravel's foundation helpers. It was added for Lumen,
+     * whose support is deprecated and will be removed in v14. Laravel defines config_path() itself.
      */
     function config_path(string $path = ''): string
     {
@@ -58,6 +61,9 @@ if (! function_exists('config_path')) {
 if (! function_exists('public_path')) {
     /**
      * Get the path to the public folder.
+     *
+     * Fallback for applications without Laravel's foundation helpers. It was added for Lumen,
+     * whose support is deprecated and will be removed in v14. Laravel defines public_path() itself.
      */
     function public_path(string $path = ''): string
     {

@@ -11,7 +11,7 @@ This page lists the public methods of one module (`Nwidart\Modules\Module`) and 
 | --- | --- |
 | `Nwidart\Modules\Module` | Abstract class. Uses `Illuminate\Support\Traits\Macroable`. |
 | `Nwidart\Modules\Laravel\Module` | The class the repository creates. It implements the three abstract methods `getCachedServicesPath()`, `registerProviders()` and `registerAliases()`. |
-| `Nwidart\Modules\Lumen\Module` | Legacy class for Lumen. Not covered here. |
+| `Nwidart\Modules\Lumen\Module` | Deprecated class for Lumen, removed in v14. Not covered here. See [Deprecations](/laravel-modules/upgrading/deprecations/). |
 
 The repository creates a module with `new Module(Container $app, string $name, string $path)` and gives it the decoded `module.json`.
 
