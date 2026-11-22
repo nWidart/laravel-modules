@@ -32,6 +32,14 @@ class BlogServiceProvider extends ModuleServiceProvider
     protected array $providers = [];
 
     /**
+     * Health indicators to register with nwidart/laravel-actuator.
+     * Each one is registered as "module:blog:{key}".
+     *
+     * @var array<string, class-string|array{0: class-string, 1?: array<string, mixed>}>
+     */
+    // protected array $healthIndicators = [];
+
+    /**
      * Define module schedules.
      * 
      * @param $schedule

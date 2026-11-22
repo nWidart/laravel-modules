@@ -147,6 +147,8 @@ Setting `generate` to `false` also skips the `stubs.files` that a key owns:
 | `test-feature` | `tests/Feature` | yes |
 | `test-unit` | `tests/Unit` | yes |
 
+The key `health` is read by the code but is not in `config/config.php`. `module:make-health-indicator` writes to `paths.app_folder` plus `Health` (`app/Health` with the default app folder). To use another folder, set `modules.paths.generator.health` with a `path` and an optional `namespace`. A configured `health` path must be inside `paths.app_folder`, like the other class generator paths, or `module:make` stops.
+
 The key `event-provider` is read by the code but is not in `config/config.php`. `module:make-event-provider` writes to the `provider` path. `module:make` generates the event provider when an `event-provider` entry has `generate` set to `true`, or, when the entry has no `path`, when `provider` is generated.
 
 ## auto-discover
@@ -196,3 +198,9 @@ Values the `composer` stub receives when `module:make` generates a module `compo
 | Key | Default | Description |
 | --- | --- | --- |
 | `inertia.frontend` | `'vue'` | Framework used by `module:make-inertia-page`, `module:make-inertia-component` and `module:publish-inertia` when no `--vue`, `--react` or `--svelte` option is given. The stubs target Inertia v3. Values: `vue`, `react`, `svelte`. |
+
+## actuator
+
+| Key | Default | Description |
+| --- | --- | --- |
+| `actuator.enabled` | `true` | When [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) is installed, register the `modules` health indicator and the indicators that modules list in `$healthIndicators`. `false` registers none. A published `config/modules.php` without the key counts as `true`. See [Report module health with the actuator](/laravel-modules/guides/production/health-checks/). |

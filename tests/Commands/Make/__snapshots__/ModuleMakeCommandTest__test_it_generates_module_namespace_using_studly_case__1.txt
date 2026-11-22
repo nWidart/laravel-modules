@@ -35,6 +35,14 @@ class ModuleNameServiceProvider extends ModuleServiceProvider
     ];
 
     /**
+     * Health indicators to register with nwidart/laravel-actuator.
+     * Each one is registered as "module:modulename:{key}".
+     *
+     * @var array<string, class-string|array{0: class-string, 1?: array<string, mixed>}>
+     */
+    // protected array $healthIndicators = [];
+
+    /**
      * Define module schedules.
      * 
      * @param $schedule

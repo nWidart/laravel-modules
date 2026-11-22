@@ -1,0 +1,14 @@
+<?php
+
+namespace $CLASS_NAMESPACE$;
+
+use Nwidart\Actuator\Health\Health;
+use Nwidart\Actuator\Health\HealthIndicator;
+
+class $CLASS$ implements HealthIndicator
+{
+    public function health(): Health
+    {
+        return Health::up();
+    }
+}

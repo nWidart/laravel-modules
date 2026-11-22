@@ -25,8 +25,10 @@ class ModuleGenerator extends Generator
     /**
      * Generator keys whose paths hold PSR-4 classes under the module namespace.
      *
-     * These are the entries in the "app/" and "app/Http/" sections of config/config.php.
-     * The module composer.json maps the module namespace to paths.app_folder, so these
+     * These are the entries in the "app/" and "app/Http/" sections of config/config.php,
+     * plus "health", which has no entry there: the health indicator generator writes to
+     * {app_folder}Health unless the application configures a path, and only a configured
+     * path is checked (keys without a path are skipped). The module composer.json maps the module namespace to paths.app_folder, so these
      * paths must sit inside it. With an empty app folder, each path must match its
      * namespace instead. The other generator paths (config, database, lang, resources,
      * routes, tests) are not checked: they hold no classes, or have their own PSR-4
@@ -45,6 +47,7 @@ class ModuleGenerator extends Generator
         'event',
         'enums',
         'exceptions',
+        'health',
         'jobs',
         'job-middleware',
         'helpers',

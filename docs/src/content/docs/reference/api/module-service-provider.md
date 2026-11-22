@@ -13,6 +13,7 @@ description: The Support\ModuleServiceProvider base class of a module provider, 
 | `$nameLower` | `string` | The lower-case module name. Required. It is the view namespace, the translation namespace and the root config key. |
 | `$commands` | `string[]` | Artisan command classes to register. Default `[]`. |
 | `$providers` | `string[]` | Provider classes to register. Default `[]`. |
+| `$healthIndicators` | `array<string, class-string\|array{0: class-string, 1?: array}>` | Health indicators for `nwidart/laravel-actuator`, keyed by indicator name. A value is a class name or `[class, [constructor arguments]]`. Default `[]`. |
 
 The constructor throws `LogicException` with the message `Module service provider must define both $name and $nameLower properties.` when either property is not set.
 
@@ -20,7 +21,7 @@ The constructor throws `LogicException` with the message `Module service provide
 
 | Signature | Description |
 | --- | --- |
-| `boot(): void` | Public. Calls, in order: `registerCommands()`, `registerCommandSchedules()`, `registerTranslations()`, `registerConfig()`, `registerViews()`, then `loadMigrationsFrom()` with the module migration folder (`modules.paths.generator.migration.path`, `database/migrations` when unset). |
+| `boot(): void` | Public. Calls, in order: `registerCommands()`, `registerCommandSchedules()`, `registerTranslations()`, `registerConfig()`, `registerViews()`, `registerHealthIndicators()`, then `loadMigrationsFrom()` with the module migration folder (`modules.paths.generator.migration.path`, `database/migrations` when unset). |
 | `register(): void` | Public. Registers each class of `$providers` with `$this->app->register()`. |
 | `registerCommands(): void` | Protected. Registers the classes of `$commands`. |
 | `registerCommandSchedules(): void` | Protected. Does nothing unless the class overrides `configureSchedules()`. Otherwise it waits until the application has booted and calls `configureSchedules()` each time a `Schedule` instance is resolved. |
@@ -28,6 +29,7 @@ The constructor throws `LogicException` with the message `Module service provide
 | `registerTranslations(): void` | Protected. See [Translations](#translations). |
 | `registerConfig(): void` | Protected. See [Config files](#config-files). |
 | `registerViews(): void` | Protected. See [Views and Blade components](#views-and-blade-components). |
+| `registerHealthIndicators(): void` | Protected. Registers each entry of `$healthIndicators` with the actuator as `module:<nameLower>:<key>`. See [Report module health with the actuator](/laravel-modules/guides/production/health-checks/). |
 
 ```php
 class BlogServiceProvider extends ModuleServiceProvider
@@ -57,6 +59,7 @@ class BlogServiceProvider extends ModuleServiceProvider
 | Commands | `registerCommands()` | The classes of `$commands`. |
 | Schedules | `registerCommandSchedules()` | The events that `configureSchedules()` defines. |
 | Sub-providers | `register()` | The classes of `$providers`. |
+| Health indicators | `registerHealthIndicators()` | The actuator components `module:<nameLower>:<key>`, when the actuator is installed and `modules.actuator.enabled` is `true`. |
 | Publish tags | `registerConfig()`, `registerViews()` | `config`, `views` and `<nameLower>-module-views`. See [Publish tags](#publish-tags). |
 
 ### Config files

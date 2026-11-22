@@ -349,4 +349,19 @@ return [
     'inertia' => [
         'frontend' => 'vue',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Actuator
+    |--------------------------------------------------------------------------
+    |
+    | When nwidart/laravel-actuator is installed, the package registers the
+    | "modules" health indicator, and the indicators each module lists in the
+    | $healthIndicators property of its service provider, as
+    | "module:{module}:{name}". Set "enabled" to false to register none.
+    |
+    */
+    'actuator' => [
+        'enabled' => true,
+    ],
 ];

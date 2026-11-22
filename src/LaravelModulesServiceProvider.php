@@ -11,6 +11,8 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Translation\Translator;
+use Nwidart\Modules\Actuator\HealthIndicators;
+use Nwidart\Modules\Actuator\ModulesHealthIndicator;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
@@ -36,6 +38,8 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
         // Create @module() blade directive.
         Blade::if('module', fn (string $name) => module($name));
+
+        HealthIndicators::register($this->app, ['modules' => ModulesHealthIndicator::class]);
     }
 
     /**

@@ -1,0 +1,123 @@
+---
+title: Report module health with the actuator
+description: Install nwidart/laravel-actuator to see the state of your modules on /actuator/health, and ship health indicators from a module.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+At the end, `/actuator/health` reports which modules are enabled and fails when an enabled module is missing from disk. A module can add its own health checks to the same endpoint.
+
+The integration uses [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) (`^1.1`, Laravel 12 and 13). Laravel Modules does not require it: the package only suggests it. Without it, nothing changes in your application. For the endpoints, the `show_details` option and the options of the actuator itself, read its [documentation](https://nwidart.github.io/laravel-actuator/).
+
+## Install the actuator
+
+```bash
+composer require nwidart/laravel-actuator
+```
+
+When the actuator is installed, Laravel Modules registers a health indicator named `modules`. You do not edit any configuration.
+
+## The `modules` indicator
+
+The indicator lists every module with its enabled state. The details are visible only when the `show_details` option of the actuator allows it, for example `ACTUATOR_HEALTH_SHOW_DETAILS=always` or `when_authorized`.
+
+```json
+{
+    "modules": {
+        "Blog": { "enabled": true },
+        "Shop": { "enabled": false }
+    }
+}
+```
+
+| Status | When |
+| --- | --- |
+| `UP` | Every enabled module is found on disk. Disabled modules do not change the status. |
+| `DOWN` | An enabled module is not found on disk: its `module.json` is gone, or it is enabled in `modules_statuses.json` and the repository never found it. `/actuator/health` then returns HTTP 503. |
+
+The indicator never reports `OUT_OF_SERVICE` or `UNKNOWN`.
+
+A missing module appears in the details with an error:
+
+```json
+{
+    "modules": {
+        "Blog": { "enabled": true, "error": "Enabled in the status store, not found on disk." }
+    }
+}
+```
+
+To fix it, restore the module folder, or remove the entry from the statuses file or set it to `false`.
+
+A module the repository scanned counts as present only while its `module.json` exists. If its folder is gone and the activator reports it enabled, the module is listed with the error and the health is `DOWN`, with any activator. If it is disabled, it is left out of the details. This also covers a folder removed while a long-lived process (Octane, a queue worker) holds a cached module scan.
+
+A name that is in the status store but that the repository never scanned is reported only with [`FileActivator`](/laravel-modules/reference/api/contracts/#fileactivator), which exposes its statuses through `getStatuses()`. With a [custom activator](/laravel-modules/guides/customise/custom-activator/) those names are not reported.
+
+## Ship a health indicator from a module
+
+<Steps>
+
+1. Generate the class.
+
+   ```bash
+   php artisan module:make-health-indicator PaymentsHealthIndicator Blog
+   ```
+
+   The command writes `Modules/Blog/app/Health/PaymentsHealthIndicator.php` and prints how to register it. See [`module:make-health-indicator`](/laravel-modules/reference/commands/generators/#modulemake-health-indicator).
+
+2. Return the health from `health()`. An indicator implements `Nwidart\Actuator\Health\HealthIndicator`. Use `Health::up()`, `Health::down()`, `Health::outOfService()` or `Health::unknown()`, each with optional details. An exception thrown from `health()` is reported as `DOWN`.
+
+   ```php title="Modules/Blog/app/Health/PaymentsHealthIndicator.php"
+   namespace Modules\Blog\Health;
+
+   use Nwidart\Actuator\Health\Health;
+   use Nwidart\Actuator\Health\HealthIndicator;
+
+   class PaymentsHealthIndicator implements HealthIndicator
+   {
+       public function health(): Health
+       {
+           return Health::up(['provider' => 'reachable']);
+       }
+   }
+   ```
+
+3. List it in the `$healthIndicators` property of the module service provider, the class that extends `Nwidart\Modules\Support\ModuleServiceProvider`. The generator does not edit the provider.
+
+   ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
+   protected array $healthIndicators = [
+       'payments' => \Modules\Blog\Health\PaymentsHealthIndicator::class,
+       'queue' => [\Modules\Blog\Health\QueueHealthIndicator::class, ['connection' => 'blog']],
+   ];
+   ```
+
+</Steps>
+
+A value is a class name, or `[class, [constructor arguments]]`. These are the two forms of the `health.indicators` option of the actuator. The container resolves the class.
+
+Each indicator is registered as `module:{lowercase module name}:{key}`. The example gives `module:blog:payments` and `module:blog:queue`. With components shown, `/actuator/health/module:blog:payments` returns one of them. Tools use the fixed pattern `^module:([^:]+):(.+)$` to attribute a component to its module, so do not rename it.
+
+- A disabled module registers nothing, so its components are absent.
+- An entry that your application defines under the same name in `config/actuator.php` wins.
+- Without the actuator, the property is ignored: nothing is registered and no actuator class is loaded.
+- A new module has a commented example of the property in its generated service provider.
+
+## Turn it off
+
+Set `modules.actuator.enabled` to `false` in `config/modules.php` to register neither the `modules` indicator nor the module indicators. The default is `true`, and a published `config/modules.php` without the key counts as enabled. See [Configuration](/laravel-modules/reference/configuration/#actuator).
+
+```php title="config/modules.php"
+'actuator' => [
+    'enabled' => false,
+],
+```
+
+## Cached configuration
+
+The indicators are registered while the application boots, so `php artisan config:cache` stores them in the cached configuration. With a cached configuration, run `config:cache` again after you enable or disable a module, change `$healthIndicators`, or change `modules.actuator.enabled`. See [Deploy an application that uses modules](/laravel-modules/guides/production/deploy/).
+
+## Limits
+
+An invalid `module.json`, or a module service provider that cannot be loaded, stops the application during boot. Every request then fails with HTTP 500 and the indicator cannot report it. Monitor the HTTP status of the application as well.
+
+A `$healthIndicators` entry whose class does not exist makes the whole `/actuator/health` endpoint fail with HTTP 500 (`BindingResolutionException: Target class [...] does not exist`), not only that component. The same happens for a missing class in the actuator `health.indicators` config. Check the class name after you add an entry.

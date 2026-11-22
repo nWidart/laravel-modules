@@ -130,7 +130,7 @@ The package registers the classes of `modules.commands` (see [Configuration](/la
 | `abstract getTemplateContents()` | Protected. Returns the content of the file, usually `Stub::create('/x.stub', [...])->render()`. |
 | `abstract getDestinationFilePath()` | Protected. Returns the path of the file. |
 | `handle(): int` | Public. Validates the name, creates the folder, writes the file through `FileGenerator`, and returns `0`. It prints an error and returns `1` for an invalid name or an existing file without `--force`. |
-| `validateNameArgument(): ?string` | Protected. Returns an error message for an empty name, an absolute path or a path with a `..` segment, otherwise `null`. |
+| `validateNameArgument(): ?string` | Protected. Returns an error message for an empty name, an absolute path or a path with a `..` segment (also a segment that becomes `..` once whitespace, hyphens and underscores are removed), otherwise `null`. |
 | `getClass()` | Public. The class name: `class_basename()` of the name argument. |
 | `getDefaultNamespace(): string` | Public. The namespace part below the module namespace. Default an empty string. |
 | `getClassNamespace($module)` | Public. The full namespace: the module namespace, `getDefaultNamespace()` and the folders in the name argument. |
@@ -236,6 +236,7 @@ Checks the `module` argument and the `--all` option before a command runs. `Base
 | --- | --- | --- |
 | `new FileActivator(Container $app)` | `FileActivator` | Reads the file at `modules.activators.file.statuses-file` (default `base_path('modules_statuses.json')`). A missing or empty file gives no statuses. Throws [`InvalidJsonException`](/laravel-modules/reference/api/exceptions/#invalidjsonexception) for a file that is not valid JSON or is a non-empty JSON list. |
 | `getStatusesFilePath()` | `string` | The path of the statuses file. |
+| `getStatuses()` | `array<string, bool>` | The stored statuses, keyed by module name. They are the ones read when the activator was created. |
 | `enable(Module $module)`, `disable(Module $module)`, `setActive(Module $module, bool $active)`, `setActiveByName(string $name, bool $status)` | `void` | Set the status, then write the whole file. |
 | `hasStatus(Module\|string $module, bool $status)` | `bool` | `true` when the stored status equals `$status`. A module with no stored status has the status `false`. |
 | `delete(Module $module)` | `void` | Removes the entry of the module and writes the file. Does nothing when there is no entry. |

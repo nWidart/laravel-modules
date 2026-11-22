@@ -946,6 +946,32 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertSame('domain/', $composer['autoload']['psr-4']['Modules\\Blog\\']);
     }
 
+    public function test_it_generates_module_in_a_custom_app_folder_without_a_health_generator_path()
+    {
+        // An application config built before the health indicator generator existed: every
+        // class generator path it knew is moved under the app folder, "health" is not set.
+        $this->app['config']->set('modules.paths.app_folder', 'domain/');
+        $this->moveClassGeneratorPathsTo('domain', except: ['health']);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code, Artisan::output());
+        $this->assertFileExists($this->modulePath.'/domain/Providers/BlogServiceProvider.php');
+    }
+
+    public function test_it_checks_a_configured_health_generator_path()
+    {
+        $this->app['config']->set('modules.paths.app_folder', 'domain/');
+        $this->moveClassGeneratorPathsTo('domain');
+        $this->app['config']->set('modules.paths.generator.health', ['path' => 'app/Health', 'generate' => false]);
+
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertMatchesRegularExpression('#^\s*⇂ health \(app/Health\)\s*$#mu', Artisan::output());
+        $this->assertDirectoryDoesNotExist($this->modulePath);
+    }
+
     public function test_it_fails_when_the_app_folder_is_empty_and_class_generator_paths_keep_the_app_prefix()
     {
         // The namespace of "app/Providers" is App\Providers, but the composer.json maps
@@ -1059,10 +1085,13 @@ class ModuleMakeCommandTest extends BaseTestCase
     /**
      * Move every "app/..." generator path under the given folder ('' for the module root).
      */
-    private function moveClassGeneratorPathsTo(string $folder): void
+    /**
+     * @param  list<string>  $except  Generator keys to leave as they are.
+     */
+    private function moveClassGeneratorPathsTo(string $folder, array $except = []): void
     {
         foreach ($this->app['config']->get('modules.paths.generator') as $key => $config) {
-            if (is_array($config) && str_starts_with($config['path'], 'app/')) {
+            if (is_array($config) && str_starts_with($config['path'], 'app/') && ! in_array($key, $except, true)) {
                 $config['path'] = ltrim($folder.substr($config['path'], strlen('app')), '/');
                 $this->app['config']->set("modules.paths.generator.$key", $config);
             }
