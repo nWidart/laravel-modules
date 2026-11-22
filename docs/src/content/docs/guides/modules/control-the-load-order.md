@@ -61,3 +61,4 @@ To list the highest priority first, add `--direction=desc`. The command lists en
 - [`priority` in module.json](/laravel-modules/reference/module-json/)
 - [`module:list`](/laravel-modules/reference/commands/module-management/#modulelist)
 - [Enable and disable modules](/laravel-modules/guides/modules/enable-and-disable-modules/)
+- [How modules boot](/laravel-modules/concepts/how-modules-boot/#2-scan-filter-and-sort): where the sort happens, and the order of modules with equal priority

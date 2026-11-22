@@ -26,7 +26,7 @@ A missing or empty file means no statuses. A file that is not valid JSON, or tha
 
 `hasStatus()` returns `false` for "enabled" when the module has no entry. A module that the scan finds but the file does not list is disabled.
 
-The default is the safe one. A folder that appears under `Modules/` is not active code until someone enables it. `module:make` writes the entry itself, as enabled unless you pass `--disabled`, and `module:delete` removes the entry together with the folder.
+The default is the safe one. A folder that appears under `Modules/` is not active code until someone enables it. A module that the scan finds in an extra location, for example under `vendor/` or `plugins/`, has no entry either, so it stays disabled until you enable it, and its classes must autoload before you do. See [Load modules from extra locations](/laravel-modules/guides/modules/scan-extra-locations/). `module:make` writes the entry itself, as enabled unless you pass `--disabled`, and `module:delete` removes the entry together with the folder.
 
 ### Commit the file, or keep it per environment
 
@@ -39,7 +39,7 @@ Whether the file belongs in version control depends on whether every environment
 | When the file is missing | Not applicable. | Every module is disabled: the application boots without module routes, views or config, and no error says so. |
 | Cost | A local `module:disable` shows up as a change in `git status`, and two branches that enable different modules conflict on the same file. | Nothing in the repository says which modules production runs. |
 
-Either way, a missing file after a fresh clone or a deploy leaves every module disabled. See [Enable and disable modules](/laravel-modules/guides/modules/enable-and-disable-modules/) for the commands and [Deploy an application that uses modules](/laravel-modules/guides/production/deploy/) for where the file fits in a deploy.
+Either way, a missing file after a fresh clone or a deploy leaves every module disabled. See [Enable and disable modules](/laravel-modules/guides/modules/enable-and-disable-modules/) for the commands and [Deploy an application that uses modules](/laravel-modules/guides/production/deploy/) for where the file fits in a deploy. That guide recommends committing it.
 
 ## What a status changes
 
@@ -53,6 +53,8 @@ The status is read when the package registers the modules. See [How modules boot
 | Migrations | Added to `php artisan migrate`, by the provider and by `auto-discover.migrations` | Not added |
 | `aliases` and `files` of `module.json` | Registered and included | Skipped |
 
+With cached routes, a status change does not reach the routes until `php artisan optimize` runs again: a disabled module keeps its routes, and a newly enabled one has none.
+
 Commands that take a module name act on a disabled module as well: `module:migrate Blog` finds the module by name. Commands that take `--all` with a `--direction` option use the enabled modules only, and the others use every module. See [Database commands](/laravel-modules/reference/commands/database/).
 
 ### What a status does not change
@@ -61,7 +63,7 @@ The status does not touch autoloading. The classes of a disabled module still lo
 
 Disabling a module therefore does not make its classes unreachable. Code in another module that imports a class from a disabled module works until it needs something that only the providers set up, such as a view namespace or a config key.
 
-Event discovery is the same. Event discovery is Laravel's: the package only teaches it to turn a file under `Modules/` into the right class name, and adds no discovery path. If your application lists a module listener directory in `withEvents(discover: [...])`, for example `Modules/*/app/Listeners`, Laravel scans that glob whether or not the module is enabled. A listener found there runs, if its class autoloads, even though the module's providers are not registered.
+Event discovery is the same. By default Laravel discovers listeners only in `app/Listeners`, and the `$shouldDiscoverEvents` setting of the generated module `EventServiceProvider` has no effect, so module listeners are mapped in `$listen` (see [Use events and listeners in a module](/laravel-modules/guides/console-and-events/events-and-listeners/)). Where you opt in to discovery, it is Laravel's: the package only teaches it to turn a file under `Modules/` into the right class name, and adds no discovery path. If your application lists a module listener directory in `withEvents(discover: [...])`, for example `Modules/*/app/Listeners`, Laravel scans that glob whether or not the module is enabled. A listener found there runs, if its class autoloads, even though the module's providers are not registered.
 
 Treat the status as "is this module wired into the application", and not as an access control.
 
@@ -79,4 +81,4 @@ The file activator suits most applications. A custom activator is worth writing 
 
 A custom activator implements `Contracts\ActivatorInterface` and is listed under `modules.activators`, with a `class` key. `modules.activator` names the one in use. The package throws `InvalidActivatorClass` when the name is unknown, the `class` key is missing or the class does not exist.
 
-The status is read at boot, on every request. A custom activator that queries a database adds that query to every request, and it needs the database to be reachable that early. For how to write one, see [Write a custom activator](/laravel-modules/guides/customise/custom-activator/).
+The status is read at boot, on every request. A custom activator that queries a database adds that query to every request, and it needs the database to be reachable that early. For how to write one, see [Store module status with a custom activator](/laravel-modules/guides/customise/custom-activator/).

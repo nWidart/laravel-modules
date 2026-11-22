@@ -93,3 +93,4 @@ A module created with `--disabled` shows `[Disabled]`. For a web or API module, 
 - [Enable and disable modules](/laravel-modules/guides/modules/enable-and-disable-modules/)
 - [Delete a module](/laravel-modules/guides/modules/delete-a-module/)
 - [Change the folder layout of modules](/laravel-modules/guides/modules/change-the-folder-layout/)
+- [Anatomy of a module](/laravel-modules/concepts/module-anatomy/): what `module:make` generates and why

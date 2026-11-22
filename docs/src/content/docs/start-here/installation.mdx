@@ -10,7 +10,7 @@ To use Laravel Modules, install the package with Composer and register the modul
 ## Requirements
 
 - PHP 8.3 or later, with the `dom`, `json` and `simplexml` extensions.
-- Laravel 13 for the current version of the package. See [Versions](#versions) for other Laravel releases.
+- Laravel 13 for the current version of the package. See [Versions](#versions) for other Laravel releases, and [Version compatibility](/laravel-modules/upgrading/compatibility/) for PHP versions and support.
 
 ## Install the package
 
@@ -57,7 +57,7 @@ To use Laravel Modules, install the package with Composer and register the modul
    },
    ```
 
-   The glob must match the folder in `paths.modules`. See [Configuration](/laravel-modules/reference/configuration/#paths).
+   The glob must match the folder in `paths.modules`. See [Configuration](/laravel-modules/reference/configuration/#paths). To learn why the package uses a plugin and what it merges, see [Autoloading and the Composer merge plugin](/laravel-modules/concepts/autoloading/).
 
    The plugin merges the `composer.json` of each module into the autoload configuration of the application.
 
@@ -89,7 +89,7 @@ To use Laravel Modules, install the package with Composer and register the modul
 
 </Steps>
 
-If you used the `"Modules\\": "modules/"` autoload entry of an older version, remove it from `composer.json`. It is no longer needed.
+If you used the `"Modules\\": "Modules/"` autoload entry of an older version, remove it from `composer.json`. It is no longer needed.
 
 To create the first module, follow [Your first module](/laravel-modules/start-here/first-module/).
 

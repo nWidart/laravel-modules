@@ -65,7 +65,7 @@ Three other namespaces have their own entries, because their folders sit outside
 | `Modules\Blog\Database\Seeders\` | `database/seeders/` |
 | `Modules\Blog\Tests\` | `tests/` (in `autoload-dev`) |
 
-The generator paths and the app folder must agree, or the classes that the generators write cannot autoload. For that reason `module:make` stops with an error when a class generator path sits outside the app folder. To change the layout, see [Change the folder layout](/laravel-modules/guides/modules/change-the-folder-layout/). How the namespace is derived from a path is in [Generators and stubs](/laravel-modules/concepts/generators-and-stubs/).
+The generator paths and the app folder must agree, or the classes that the generators write cannot autoload. For that reason `module:make` stops with an error when a class generator path sits outside the app folder. To change the layout, see [Change the folder layout of modules](/laravel-modules/guides/modules/change-the-folder-layout/). How the namespace is derived from a path is in [Generators and stubs](/laravel-modules/concepts/generators-and-stubs/).
 
 ## Providers are the main entry point
 

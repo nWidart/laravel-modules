@@ -34,11 +34,11 @@ The package also queues a callback that sets the stub base path when the applica
 
 `registerModules()` asks the `ModuleManifest` for the data of the enabled modules. The manifest:
 
-1. Finds every `module.json` in the scan paths. By default that is `modules.paths.modules`, plus the paths of `modules.scan.paths` when `modules.scan.enabled` is true.
+1. Finds every `module.json` in the scan paths. By default that is `modules.paths.modules`, plus the paths of `modules.scan.paths` when `modules.scan.enabled` is true. The package appends `/*` to a path that does not end with it and reads `<path>/module.json`, so the default entry `vendor/*/*` finds `vendor/acme/blog/module.json`. See [Load modules from extra locations](/laravel-modules/guides/modules/scan-extra-locations/).
 2. Keeps the modules for which the activator says "enabled".
 3. Sorts them by `priority` in `module.json` (a missing priority counts as `0`). The sort is ascending, so a lower number registers first. Modules with equal priority keep the order of the scan: the scan paths in their configured order, and within one path the module folders in alphabetical order.
 
-The result is a list of provider classes, plus aliases and files, in priority order.
+The result is a list of provider classes, plus aliases and files, in priority order. A module found only by scanning has no entry in the statuses file, so it counts as disabled until you enable it. Its classes must autoload before you enable it: an enabled module whose provider class cannot be loaded stops every `artisan` command.
 
 ### 3. Aliases
 
@@ -49,6 +49,8 @@ Before the providers load, the manifest registers the `aliases` of the enabled m
 The package passes the provider list to Laravel's `ProviderRepository`, the class Laravel uses for `bootstrap/cache/services.php`. It writes its own manifest next to it, `bootstrap/cache/modules.php`, and rebuilds it when the list of providers changes. It separates deferred providers, which Laravel registers only when their services are needed, from eager ones, which it registers at once.
 
 The file is always named `modules.php` and sits in the cache folder of Laravel. On Laravel Vapor, where `bootstrap/cache` is read-only, `modules.vapor_maintenance_mode` moves it next to the config cache. The file holds the provider list. It does not hold the scan. See [What is cached](#what-is-cached).
+
+No command deletes the file, and `php artisan optimize:clear` does not remove it. `module:disable` leaves the module in the file until the next request rewrites it, because the package rebuilds the file only when the list of providers differs from the list it holds.
 
 `ProviderRepository` calls `register()` on each eager provider while the package provider is still registering. The `ModuleServiceProvider` of a module registers the providers it lists in `$providers` from its own `register()`. By default those are a route provider and an event provider.
 
@@ -67,7 +69,7 @@ For the filter in step 2, see [Module status and activators](/laravel-modules/co
 The package loads the module providers from its own `register()`. Laravel registers the providers of installed packages before the providers listed in your application (`bootstrap/providers.php`). Module providers therefore sit at the position of this package among the discovered packages, ahead of your application providers. Two consequences follow:
 
 - A module `register()` runs before the `register()` of your `App\Providers` classes. When both bind the same abstract, your binding is registered later and wins.
-- A module `boot()` runs before the `boot()` of your application providers. The module merges its config files in `boot()`, with `array_replace_recursive()`, over what is already under the module's config key. Values that your providers set in `register()` are already there, and the module's values replace them for keys both define. Values that your providers set in `boot()` come after the merge, so they replace the module's.
+- A module `boot()` runs before the `boot()` of your application providers. The module merges its config files in `boot()`, with `array_replace_recursive()`, over what is already under the module's config key. Values that your providers set in `register()` are already there, and so is a copy you published to `config/`. The module's own file wins for keys both define. Values that your providers set in `boot()` come after the merge, so they replace the module's.
 
 Other packages that Laravel discovers before this one are registered first. The order among discovered packages is Laravel's, not the package's.
 
@@ -83,6 +85,8 @@ The package keeps two things, and they are separate.
 | Scan | Memory, in the repository and manifest instances | One PHP process | The decoded `module.json` files, and the `Module` objects built from them. |
 
 The package writes no other cache file. The scan is not written to disk, and there is no `module:cache` command. A cache file saved about 2 ms at 200 modules in the maintainers' measurement, and it adds the risk of a stale cache after a module change. Earlier versions skipped the in-memory scan cache in tests, so each `module_path()` call re-read every `module.json`, and the cost grew with the square of the module count (3.3 s per test at 200 modules, 249 ms after the change in 13.3.0).
+
+Laravel's route cache is a third cache, and it is not the package's. With cached routes, a disabled module keeps its routes and a new module has none until `php artisan optimize` runs again. See [Deploy an application that uses modules](/laravel-modules/guides/production/deploy/).
 
 Both the repository and the manifest are container singletons. The manifest builds its data from the `module.json` files the repository already read, so each file is read once per application. A test application starts with an empty scan.
 
