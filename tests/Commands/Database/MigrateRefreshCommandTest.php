@@ -6,6 +6,8 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Nwidart\Modules\Commands\BaseCommand;
+use Nwidart\Modules\Commands\Database\MigrateRefreshCommand;
+use Nwidart\Modules\Commands\Database\MigrateResetCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Nwidart\Modules\Tests\Commands\Database\Fixtures\FailingSeeder;
@@ -35,6 +37,8 @@ class MigrateRefreshCommandTest extends BaseTestCase
 
     protected function tearDown(): void
     {
+        MigrateRefreshCommand::prohibit(false);
+        MigrateResetCommand::prohibit(false);
         $this->app['env'] = 'testing';
 
         $this->repository->delete('Blog');
@@ -73,6 +77,35 @@ class MigrateRefreshCommandTest extends BaseTestCase
             ->expectsConfirmation(self::CONFIRMATION, 'no')
             ->assertFailed();
 
+        $this->assertSame(1, DB::table('blog_posts')->count());
+        $this->assertSame(0, RecordingSeeder::$runs);
+    }
+
+    public function test_it_does_nothing_when_prohibited()
+    {
+        MigrateRefreshCommand::prohibit();
+
+        $code = $this->artisan('module:migrate-refresh', ['module' => ['Blog'], '--seed' => true]);
+
+        $this->assertSame(1, $code);
+        $output = $this->app[Kernel::class]->output();
+        $this->assertStringContainsString('This command is prohibited from running in this environment.', $output);
+        $this->assertStringNotContainsString('Refreshing Migration Blog module', $output);
+        $this->assertSame(1, DB::table('blog_posts')->count());
+        $this->assertSame(0, RecordingSeeder::$runs);
+    }
+
+    public function test_it_fails_without_resetting_when_only_the_nested_reset_command_is_prohibited()
+    {
+        MigrateResetCommand::prohibit();
+
+        $code = $this->artisan('module:migrate-refresh', ['module' => ['Blog'], '--seed' => true]);
+
+        $this->assertSame(1, $code);
+        $output = $this->app[Kernel::class]->output();
+        // the refresh itself is allowed and starts, its nested module:migrate-reset call refuses
+        $this->assertStringContainsString('Refreshing Migration Blog module', $output);
+        $this->assertStringContainsString('This command is prohibited from running in this environment.', $output);
         $this->assertSame(1, DB::table('blog_posts')->count());
         $this->assertSame(0, RecordingSeeder::$runs);
     }

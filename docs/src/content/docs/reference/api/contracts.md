@@ -68,10 +68,12 @@ A [`BaseCommand`](#basecommand) that implements it:
 
 | Command | Confirmation applies | Prohibition applies |
 | --- | --- | --- |
-| `module:migrate-fresh`, `module:migrate-refresh`, `module:migrate-reset`, `module:migrate-rollback` | In the `production` environment | After `Module::prohibitDestructiveCommands()` |
-| `module:delete` | In every environment: its callback returns `true`, and its label is `Warning: Do you want to remove the module?` | After `Module::prohibitDestructiveCommands()` |
+| `module:migrate-fresh`, `module:migrate-refresh`, `module:migrate-reset`, `module:migrate-rollback` | In the `production` environment | After `Module::prohibitDestructiveCommands()` or its own `prohibit()` |
+| `module:delete` | In every environment: its callback returns `true`, and its label is `Warning: Do you want to remove the module?` | After `Module::prohibitDestructiveCommands()` or its own `prohibit()` |
 
-`Module::prohibitDestructiveCommands()` is the package counterpart of Laravel's `DB::prohibitDestructiveCommands()`. It calls the static `prohibit()` method of the `Illuminate\Console\Prohibitable` trait on `MigrateFreshCommand`, `MigrateRefreshCommand` and `MigrateResetCommand` (see [Destructive commands](/laravel-modules/reference/api/repository/#destructive-commands)). `BaseCommand` uses the trait, so the flag is one static property shared by every `BaseCommand` subclass. The call therefore prohibits all the commands in the table above, and the other `BaseCommand` commands are unaffected because only confirmable commands run the check.
+`Module::prohibitDestructiveCommands()` is the package counterpart of Laravel's `DB::prohibitDestructiveCommands()`. It calls the static `prohibit()` method of the `Illuminate\Console\Prohibitable` trait on the five commands in the table above (see [Destructive commands](/laravel-modules/reference/api/repository/#destructive-commands)). Each of the five commands uses the trait itself, so each has its own flag: `MigrateFreshCommand::prohibit()` prohibits only `module:migrate-fresh`.
+
+`BaseCommand` also uses the trait. A third-party command that extends `BaseCommand`, implements `ConfirmableCommand` and does not use the trait itself shares the `BaseCommand` flag. `BaseCommand::prohibit()` or the command's own `::prohibit()` prohibits it. `Module::prohibitDestructiveCommands()` does not, and `BaseCommand::prohibit()` does not prohibit the five package commands. Commands that are not confirmable never run the check.
 
 ### PublisherInterface
 

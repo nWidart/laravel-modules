@@ -2,11 +2,15 @@
 
 namespace Nwidart\Modules\Commands\Actions;
 
+use Illuminate\Console\Prohibitable;
 use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
 
 class ModuleDeleteCommand extends BaseCommand implements ConfirmableCommand
 {
+    // Its own prohibition flag: BaseCommand's flag is shared by all its subclasses.
+    use Prohibitable;
+
     protected $name = 'module:delete';
 
     protected $description = 'Delete a module from the application';

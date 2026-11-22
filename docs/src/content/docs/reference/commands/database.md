@@ -30,7 +30,7 @@ An action that fails does not stop the remaining modules. The command exits with
 
 ### Confirmation and prohibition
 
-`module:migrate-fresh`, `module:migrate-refresh`, `module:migrate-reset` and `module:migrate-rollback` are confirmable commands: they have a `--force` option, they ask for confirmation in the `production` environment, and `Module::prohibitDestructiveCommands()` prohibits them. See [ConfirmableCommand](/laravel-modules/reference/api/contracts/#confirmablecommand) for the exact behaviour, and [Destructive commands](/laravel-modules/reference/api/repository/#destructive-commands) for the prohibition.
+`module:migrate-fresh`, `module:migrate-refresh`, `module:migrate-reset` and `module:migrate-rollback` are confirmable commands: they have a `--force` option, they ask for confirmation in the `production` environment, and `Module::prohibitDestructiveCommands()` prohibits them. Each command also has its own `prohibit()` method: `MigrateFreshCommand::prohibit()` prohibits only `module:migrate-fresh`. See [ConfirmableCommand](/laravel-modules/reference/api/contracts/#confirmablecommand) for the exact behaviour, and [Destructive commands](/laravel-modules/reference/api/repository/#destructive-commands) for the prohibition.
 
 ### Migration paths
 

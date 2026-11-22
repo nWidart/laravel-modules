@@ -139,12 +139,33 @@ Module::names(); // ['blog', 'shop']
 Module::prohibitDestructiveCommands(bool $prohibit = true): void
 ```
 
-A static method of the facade, not a repository method. It is the package counterpart of Laravel's `DB::prohibitDestructiveCommands()`. It calls `prohibit()` on `MigrateFreshCommand`, `MigrateRefreshCommand` and `MigrateResetCommand`, and `false` allows them again. `prohibit()` sets one flag shared by every `BaseCommand` subclass, so the call prohibits all the confirmable commands: `module:migrate-fresh`, `module:migrate-refresh`, `module:migrate-reset`, `module:migrate-rollback` and `module:delete`. A prohibited command prints `This command is prohibited from running in this environment.` and exits with status `1`. See [ConfirmableCommand](/laravel-modules/reference/api/contracts/#confirmablecommand).
+A static method of the facade, not a repository method. It is the package counterpart of Laravel's `DB::prohibitDestructiveCommands()`. It calls `prohibit()` on five commands, and `false` allows them again:
+
+| Command class | Command |
+| --- | --- |
+| `MigrateFreshCommand` | `module:migrate-fresh` |
+| `MigrateRefreshCommand` | `module:migrate-refresh` |
+| `MigrateResetCommand` | `module:migrate-reset` |
+| `MigrateRollbackCommand` | `module:migrate-rollback` |
+| `ModuleDeleteCommand` | `module:delete` |
+
+Each of these commands has its own flag, so you can prohibit one command and leave the others. A prohibited command prints `This command is prohibited from running in this environment.` and exits with status `1`. `--force` does not lift the prohibition. See [ConfirmableCommand](/laravel-modules/reference/api/contracts/#confirmablecommand).
 
 ```php
 // In the boot() method of a service provider.
 Module::prohibitDestructiveCommands($this->app->isProduction());
 ```
+
+To prohibit a single command, call `prohibit()` on its class:
+
+```php
+use Nwidart\Modules\Commands\Database\MigrateFreshCommand;
+
+// In the boot() method of a service provider.
+MigrateFreshCommand::prohibit($this->app->isProduction());
+```
+
+`module:migrate-refresh` calls `module:migrate-reset`. If only `MigrateResetCommand` is prohibited, `module:migrate-refresh` starts, the inner reset prints the prohibition message, and the refresh stops with exit status `1` before it migrates or seeds. Nothing changes in the database.
 
 ## Collection
 
