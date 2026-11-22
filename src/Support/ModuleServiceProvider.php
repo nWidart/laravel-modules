@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Support;
 
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
@@ -152,6 +153,8 @@ abstract class ModuleServiceProvider extends ServiceProvider
             return;
         }
 
+        $moduleConfigFiles = [];
+
         foreach ($this->moduleConfigFiles($configPath) as $config => $path) {
             $configKey = str_replace(DIRECTORY_SEPARATOR, '.', $config);
             $configKey = str_replace('.php', '', $configKey);
@@ -174,8 +177,10 @@ abstract class ModuleServiceProvider extends ServiceProvider
                 $this->publishes([$path => $publishPath], 'config');
             }
 
-            $this->merge_config_from($path, $key);
+            $moduleConfigFiles[] = [$key, $path];
         }
+
+        $this->merge_config_from($moduleConfigFiles);
     }
 
     /**
@@ -203,18 +208,62 @@ abstract class ModuleServiceProvider extends ServiceProvider
     }
 
     /**
-     * Merge config from the given path recursively.
+     * Merge the module's config files into the application config.
+     *
+     * The module's files are merged first, in order, so a later file wins over an earlier one
+     * for the same key. Values the application already has under the module's key (for example
+     * a config/blog.php published with module:publish-config) then win over the module's values,
+     * like Laravel's mergeConfigFrom(), but recursively (see mergeApplicationConfig()).
+     *
+     * @param  array<int, array{string, string}>  $files  Config key and file path pairs.
      */
-    private function merge_config_from(string $path, string $key): void
+    private function merge_config_from(array $files): void
     {
         if (app()->configurationIsCached()) {
             return;
         }
 
-        $existing = config($key, []);
-        $moduleConfig = require $path;
+        $moduleConfig = [];
 
-        config([$key => array_replace_recursive($existing, $moduleConfig)]);
+        foreach ($files as [$key, $path]) {
+            Arr::set($moduleConfig, $key, array_replace_recursive(Arr::get($moduleConfig, $key, []), require $path));
+        }
+
+        foreach ($moduleConfig as $key => $values) {
+            config([$key => $this->mergeApplicationConfig($values, config($key, []))]);
+        }
+    }
+
+    /**
+     * Merge the application's config values over the module's.
+     *
+     * Where both values are associative arrays, they merge key by key, recursively. Otherwise the
+     * application's value replaces the module's as a whole, lists and empty arrays included, so a
+     * published config can remove items from a list or clear a value with [].
+     *
+     * @param  array<mixed>  $moduleConfig
+     * @param  array<mixed>  $appConfig
+     * @return array<mixed>
+     */
+    private function mergeApplicationConfig(array $moduleConfig, array $appConfig): array
+    {
+        foreach ($appConfig as $key => $value) {
+            $moduleValue = $moduleConfig[$key] ?? null;
+
+            $moduleConfig[$key] = $this->isAssociativeArray($value) && $this->isAssociativeArray($moduleValue)
+                ? $this->mergeApplicationConfig($moduleValue, $value)
+                : $value;
+        }
+
+        return $moduleConfig;
+    }
+
+    /**
+     * @phpstan-assert-if-true array<mixed> $value
+     */
+    private function isAssociativeArray(mixed $value): bool
+    {
+        return is_array($value) && ! array_is_list($value);
     }
 
     /**

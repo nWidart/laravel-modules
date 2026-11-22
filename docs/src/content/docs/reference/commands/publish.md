@@ -88,6 +88,8 @@ php artisan module:publish-config [<module>...] [-f|--force] [-a|--all]
 - The provider is `<modules.namespace>\<Module>\<provider namespace>\<Module>ServiceProvider`. The provider namespace is `paths.generator.provider.path` without `paths.app_folder`, with `/` replaced by `\`.
 - The files published are the ones that provider registers under the `config` tag. The [`ModuleServiceProvider`](/laravel-modules/reference/api/module-service-provider/#config-files) base class registers every PHP file of the module `config` directory, and publishes each to `config/<module name in lower case>.php` (for `config.php`) or to `config/<module>/<path>.php`.
 
+- The published copy overrides the module. A value in `config/<module name in lower case>.php` wins over the same key in the module config. Nested associative arrays merge key by key, and any other value, including a list or `[]`, replaces the module value as a whole. Keys missing from the copy keep the module value. Delete a key from the copy to use the module default again. See [Config files](/laravel-modules/reference/api/module-service-provider/#config-files).
+
 ```bash
 php artisan module:publish-config Blog --force
 ```
