@@ -445,11 +445,12 @@ php artisan module:prune [<module>...] [--all] [--model=MODEL] [--except=EXCEPT]
 - The command checks that every named module exists first. An unknown name prints `Module [Nope] does not exist.`, several print `Modules [Nope, Typo] do not exist.`, and the command exits with `1`. Nothing is pruned, not even for the valid names, and not when `--model` is given.
 - The command scans the `model` generator path of each module (`paths.generator.model.path`) for PHP files, and keeps the models that are prunable. When none is prunable, it prints `No prunable models found.` and exits with `0`.
 - `--model` and `--except` take the same kind of value, and the command applies one rule to each value:
-  - An existing class (fully qualified name) is used unchanged, also when it is outside the selected modules.
-  - Any other value is a name relative to the model folder of a module: `Post`, `Archive/Old` or `Archive\Old`. The command looks it up only in the selected modules: the `module` argument, or the enabled modules with `--all`.
+  - The command first looks the value up as a name relative to the model folder of a module: `Post`, `Archive/Old` or `Archive\Old`. It searches only the selected modules: the `module` argument, or the enabled modules with `--all`.
+  - When the value matches no model of the selected modules, the command takes it as a class name. An existing class (fully qualified name) is used unchanged, also when it is outside the selected modules.
+  - A module model wins over a global class or facade alias of the same name. `--except=Log` excludes `Modules\Blog\Models\Log`, not the `Log` facade.
   - Every match counts. `module:prune Blog Shop --model=Post` prunes `Modules\Blog\Models\Post` and `Modules\Shop\Models\Post`, and `--except=Post` excludes both. There is no prompt.
   - `Post` does not match a model in a sub-folder such as `Archive\Post`. Give `Archive/Post`.
-  - A value that is neither an existing class nor a model of the selected modules is an error, for `--model` and for `--except`. The command prints `Model [Nope] does not exist in the selected modules.` (or `Models [Nope, Typo] do not exist in the selected modules.`), exits with `1` and prunes nothing, also not for the valid values next to it.
+  - A value that is neither a model of the selected modules nor an existing class is an error, for `--model` and for `--except`. The command prints `Model [Nope] does not exist in the selected modules.` (or `Models [Nope, Typo] do not exist in the selected modules.`), exits with `1` and prunes nothing, also not for the valid values next to it.
 - `--model` and `--except` cannot be combined. The command throws `InvalidArgumentException`.
 
 ```bash
