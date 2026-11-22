@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Commands\Actions;
 
 use Illuminate\Console\Command;
+use InvalidArgumentException;
 use Nwidart\Modules\Json;
 use Nwidart\Modules\Process\Installer;
 use Symfony\Component\Console\Input\InputArgument;
@@ -41,14 +42,14 @@ class InstallCommand extends Command
             return $this->installFromFile();
         }
 
-        $this->install(
+        $installed = $this->install(
             $this->argument('name'),
             $this->argument('version'),
             $this->option('type'),
             $this->option('tree')
         );
 
-        return 0;
+        return $installed ? self::SUCCESS : self::FAILURE;
     }
 
     /**
@@ -66,17 +67,21 @@ class InstallCommand extends Command
 
         $dependencies = $modules->get('require', []);
 
+        $failed = false;
+
         foreach ($dependencies as $module) {
             $module = collect($module);
 
-            $this->install(
+            $installed = $this->install(
                 $module->get('name'),
                 $module->get('version'),
                 $module->get('type')
             );
+
+            $failed = $failed || ! $installed;
         }
 
-        return 0;
+        return $failed ? self::FAILURE : self::SUCCESS;
     }
 
     /**
@@ -86,8 +91,9 @@ class InstallCommand extends Command
      * @param  string  $version
      * @param  string  $type
      * @param  bool  $tree
+     * @return bool Whether the installation succeeded.
      */
-    protected function install($name, $version = 'dev-master', $type = 'composer', $tree = false)
+    protected function install($name, $version = 'dev-master', $type = 'composer', $tree = false): bool
     {
         $installer = new Installer(
             $name,
@@ -108,13 +114,27 @@ class InstallCommand extends Command
             $installer->setPath($path);
         }
 
-        $installer->run();
+        try {
+            $process = $installer->run();
+        } catch (InvalidArgumentException $e) {
+            $this->error("Failed to install module [{$name}]: {$e->getMessage()}");
+
+            return false;
+        }
+
+        if (! $process->isSuccessful()) {
+            $this->error("Failed to install module [{$name}] (exit code {$process->getExitCode()}).");
+
+            return false;
+        }
 
         if (! $this->option('no-update')) {
             $this->call('module:update', [
                 'module' => $installer->getModuleName(),
             ]);
         }
+
+        return true;
     }
 
     /**
