@@ -1,0 +1,117 @@
+---
+title: Publish a module as a Composer package
+description: Turn a module into a Composer package, and load it from the vendor folder of another application.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+At the end, the `Blog` module is a Composer package. Another application installs it with Composer, and the package loads it from `vendor/acme/blog`. Prerequisites: a `Blog` module in `Modules/Blog`, and a Git repository host. The examples use the package name `acme/blog`.
+
+## Prepare the package
+
+<Steps>
+
+1. Make the module folder the root of a Git repository. The folder already holds `module.json` and `composer.json` at its root, which is what the package looks for.
+
+   ```bash
+   cp -R Modules/Blog ../blog
+   cd ../blog
+   git init
+   ```
+
+2. Set the package name in `composer.json`. `module:make` writes `<composer.vendor>/<lower case module name>`, with `nwidart` as the default vendor.
+
+   ```json title="composer.json"
+   {
+       "name": "acme/blog",
+       "description": "Blog module"
+   }
+   ```
+
+   Keep the `autoload` and `autoload-dev` entries as generated. Composer uses them to load the module classes from `vendor/acme/blog/app`.
+
+   ```json title="composer.json"
+   "autoload": {
+       "psr-4": {
+           "Modules\\Blog\\": "app/",
+           "Modules\\Blog\\Database\\Factories\\": "database/factories/",
+           "Modules\\Blog\\Database\\Seeders\\": "database/seeders/"
+       }
+   }
+   ```
+
+3. List the packages the module needs in `require` of the same file. `module:update` and Composer both read it.
+
+4. Commit and tag a version. Composer reads the version from the tag.
+
+   ```bash
+   git add .
+   git commit -m "Initial release"
+   git tag v1.0.0
+   git push origin HEAD --tags
+   ```
+
+5. Make the package available. Submit the repository to Packagist, or, for a private repository, add it to the `composer.json` of each application that installs the module:
+
+   ```bash
+   composer config repositories.acme-blog vcs https://github.com/acme/blog
+   ```
+
+</Steps>
+
+## Load the package in an application
+
+The package does not scan `vendor/` by default. Turn scanning on in the application.
+
+<Steps>
+
+1. Publish the configuration, if you have not yet.
+
+   ```bash
+   php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
+   ```
+
+2. Enable the scan.
+
+   ```php title="config/modules.php"
+   'scan' => [
+       'enabled' => true,
+       'paths' => [
+           base_path('vendor/*/*'),
+       ],
+   ],
+   ```
+
+   The package looks for `module.json` in every path listed. To avoid reading every package in `vendor/`, use `base_path('vendor/acme/*')`.
+
+3. Install the package. Remove the original `Modules/Blog` folder from the application first, if it exists.
+
+   ```bash
+   composer require acme/blog:^1.0
+   ```
+
+4. Enable the module. A module that the package finds by scanning has no entry in `modules_statuses.json`, and a module without an entry is disabled. The status is stored in the application, not in the package.
+
+   ```bash
+   php artisan module:enable Blog
+   ```
+
+</Steps>
+
+To release a new version, commit the change, tag it (`v1.0.1`) and push. Run `composer update acme/blog` in the application to get it.
+
+### Check the result
+
+```bash
+php artisan module:list
+```
+
+The list shows `Blog` as enabled, with a path under `vendor/acme/blog`.
+
+## Related
+
+- [`scan`](/laravel-modules/reference/configuration/)
+- [`module.json` and the module `composer.json`](/laravel-modules/reference/module-json/)
+- [`module:enable`](/laravel-modules/reference/commands/module-management/)
+- [Install and update modules](/laravel-modules/guides/distribute/install-modules/)
+- [Scan extra locations](/laravel-modules/guides/modules/scan-extra-locations/)

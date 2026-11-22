@@ -1,0 +1,90 @@
+---
+title: Prohibit destructive commands in production
+description: Block the module commands that reset, roll back or delete data when the application runs in production.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+At the end, the module commands that wipe data refuse to run in production, even with `--force`.
+
+<Steps>
+
+1. Call `Module::prohibitDestructiveCommands()` in the `boot()` method of a service provider of your application. Pass `true` only in production.
+
+   ```php title="app/Providers/AppServiceProvider.php"
+   use Nwidart\Modules\Facades\Module;
+
+   public function boot(): void
+   {
+       Module::prohibitDestructiveCommands($this->app->isProduction());
+   }
+   ```
+
+   Call it without an argument to prohibit the commands in every environment.
+
+2. Deploy. Nothing else is configured.
+
+</Steps>
+
+## Which commands are blocked
+
+The call sets one flag that every confirmable module command reads. These commands are blocked:
+
+- `module:migrate-fresh`
+- `module:migrate-refresh`
+- `module:migrate-reset`
+- `module:migrate-rollback`
+- `module:delete`
+
+Commands that are not confirmable, such as `module:migrate`, `module:seed` and `module:enable`, run as usual.
+
+A blocked command prints this warning and exits with status `1`. It does not run any action.
+
+```text
+ WARN  This command is prohibited from running in this environment.
+```
+
+## Run a blocked command on purpose
+
+`--force` does not lift the prohibition. `--force` only skips the production confirmation question of a command that is not prohibited. To run a blocked command, turn the prohibition off for that run. For example, base the call on an environment variable instead of the environment:
+
+```php title="app/Providers/AppServiceProvider.php"
+Module::prohibitDestructiveCommands(
+    $this->app->isProduction() && ! env('ALLOW_DESTRUCTIVE_COMMANDS', false)
+);
+```
+
+Then run the command with the variable set:
+
+```bash
+ALLOW_DESTRUCTIVE_COMMANDS=true php artisan module:migrate-rollback Blog --force
+```
+
+Set the variable in the process environment, as in the example. With a cached configuration, Laravel does not load `.env`.
+
+## The production confirmation
+
+Without the prohibition, the four migration commands ask for confirmation in the `production` environment. `--force` skips the question:
+
+```bash
+php artisan module:migrate-fresh --all --force
+```
+
+`module:delete` asks in every environment, and `--force` skips the question too.
+
+### Check the result
+
+In the production environment, run:
+
+```bash
+php artisan module:migrate-rollback Blog --force
+```
+
+The command prints `This command is prohibited from running in this environment.` and exits with status `1`.
+
+## Related
+
+- [`Module::prohibitDestructiveCommands()`](/laravel-modules/reference/api/repository/#destructive-commands)
+- [`ConfirmableCommand`](/laravel-modules/reference/api/contracts/#confirmablecommand)
+- [Database commands](/laravel-modules/reference/commands/database/#confirmation-and-prohibition)
+- [Deploy an application that uses modules](/laravel-modules/guides/production/deploy/)

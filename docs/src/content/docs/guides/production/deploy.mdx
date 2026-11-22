@@ -1,0 +1,131 @@
+---
+title: Deploy an application that uses modules
+description: Set up the deploy script of an application with modules, from Composer autoloading to migrations, caching and assets, and configure Laravel Vapor.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+At the end, your deploy script installs the application, the modules and their assets, migrates the database and caches the configuration. Prerequisite: the modules are in the repository of the application, in `Modules/`.
+
+## Prepare the repository
+
+Commit two things that the deploy depends on.
+
+- **The merge plugin entry.** A deploy runs Composer without interaction, so Composer cannot ask whether to trust `wikimedia/composer-merge-plugin`. It does not run a plugin that `allow-plugins` does not allow, and then the module classes do not autoload. Check `composer.json`:
+
+  ```json title="composer.json"
+  "config": {
+      "allow-plugins": {
+          "wikimedia/composer-merge-plugin": true
+      }
+  },
+  "extra": {
+      "merge-plugin": {
+          "include": [
+              "Modules/*/composer.json"
+          ]
+      }
+  }
+  ```
+
+- **The status file.** `modules_statuses.json` in the application root stores which modules are enabled. The package registers enabled modules only, and a module without an entry is disabled. If the file is not in the repository, the deployed application has no module. Commit it. If you set `activators.file.statuses-file` to another path, deploy the file to that path.
+
+## Write the deploy script
+
+<Steps>
+
+1. Install the dependencies without interaction.
+
+   ```bash
+   composer install --no-dev --optimize-autoloader --no-interaction
+   ```
+
+2. Build the assets. Use the build you set up in [Build module assets with Vite](/laravel-modules/guides/frontend/vite/). One build from the application root:
+
+   ```bash
+   npm ci
+   npm run build
+   ```
+
+   Or one build for each module, where each module has its own `package.json`:
+
+   ```bash
+   for module in Modules/*/; do
+       (cd "$module" && npm install && npm run build)
+   done
+   ```
+
+   Run the build after `modules_statuses.json` is in place: the root build reads it to find the enabled modules.
+
+3. Publish the static assets of the modules, if they have any.
+
+   ```bash
+   php artisan module:publish --all
+   ```
+
+   The command copies `resources/assets` of each module to `public/modules/<name>`. It includes disabled modules. List module names instead of `--all` to publish a selection.
+
+4. Run the migrations.
+
+   ```bash
+   php artisan migrate --force
+   ```
+
+   This runs the pending migrations of the application and of every enabled module, in one batch. `--force` skips the production confirmation. To run the migrations of each module in its own batch, or to include a disabled module, use `module:migrate` instead:
+
+   ```bash
+   php artisan module:migrate --all --force
+   ```
+
+5. Cache the configuration, routes and views.
+
+   ```bash
+   php artisan optimize
+   ```
+
+   `optimize` caches the configuration, events, routes and views. With a cached configuration, the module providers skip the read of the module `config` folder on web requests. `route:cache` fails for a route that uses a closure. The routes that `module:make` generates use controllers.
+
+</Steps>
+
+## The providers manifest
+
+The package keeps a list of the providers of the enabled modules in `bootstrap/cache/modules.php`. Laravel writes it during the first boot after the list changes, for example after a deploy that enables a module. Any Artisan command boots the application, so the `php artisan migrate` step writes it.
+
+Make `bootstrap/cache` writable by the user that runs the application. If it is not writable, the boot fails with `The bootstrap/cache directory must be present and writable.`
+
+No command deletes the file, and you do not have to. Laravel rebuilds it when the list of providers differs from the list it holds. If you want to reset it, delete it:
+
+```bash
+rm bootstrap/cache/modules.php
+```
+
+`php artisan optimize:clear` does not delete this file. Do not commit it: `bootstrap/cache` is ignored by the default `.gitignore` of a Laravel application.
+
+## Deploy to Laravel Vapor
+
+On Vapor, `bootstrap/cache` is read-only at runtime, but Laravel writes the configuration cache to a writable location. To place the providers manifest and the module cache files next to the configuration cache, turn on `vapor_maintenance_mode`:
+
+```php title="config/modules.php"
+'vapor_maintenance_mode' => true,
+```
+
+The default is `env('VAPOR_MAINTENANCE_MODE', false)`.
+
+### Check the result
+
+After the deploy, run:
+
+```bash
+php artisan module:list
+```
+
+The list shows your modules as enabled. `php artisan route:list` lists the routes of the modules, and `bootstrap/cache/modules.php` exists.
+
+## Related
+
+- [`vapor_maintenance_mode` and `activators`](/laravel-modules/reference/configuration/)
+- [`module:publish`](/laravel-modules/reference/commands/publish/#modulepublish)
+- [`module:migrate`](/laravel-modules/reference/commands/database/#modulemigrate)
+- [Installation](/laravel-modules/start-here/installation/)
+- [Build module assets with Vite](/laravel-modules/guides/frontend/vite/)
+- [Prohibit destructive commands in production](/laravel-modules/guides/production/prohibit-destructive-commands/)

@@ -1,0 +1,142 @@
+---
+title: Use Inertia in a module
+description: Generate a module that renders Inertia pages, publish the Inertia entry file that resolves module pages, and add pages, components and middleware.
+---
+
+import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+At the end, the `Blog` module renders Inertia pages from `Modules/Blog/resources/js/Pages`, and the application resolves them by name.
+
+Prerequisite: Inertia is installed in the application, with the server-side adapter and the client-side adapter of your framework, as the [Inertia documentation](https://inertiajs.com) describes. Vite builds the application assets. The package does not install Inertia.
+
+## Generate an Inertia module
+
+<Steps>
+
+1. Choose the framework for the generated pages. The default is `vue`. To use React or Svelte, publish the package configuration and set the key.
+
+   ```bash
+   php artisan vendor:publish --tag=config
+   ```
+
+   ```php title="config/modules.php"
+   'inertia' => [
+       'frontend' => 'react', // vue, react or svelte
+   ],
+   ```
+
+   `module:make` has no framework option. It uses this key.
+
+2. Create the module.
+
+   ```bash
+   php artisan module:make Blog --inertia
+   ```
+
+   The command generates a module without Blade views. It adds `BlogController`, from the Inertia controller stub, and four pages: `Index`, `Create`, `Show` and `Edit`. A plain module (`--plain`) gets no Inertia files.
+
+3. Publish the Inertia entry file. The file resolves page names from every module.
+
+   <Tabs syncKey="inertia-frontend">
+     <TabItem label="Vue">
+       ```bash
+       php artisan module:publish-inertia --vue
+       ```
+     </TabItem>
+     <TabItem label="React">
+       ```bash
+       php artisan module:publish-inertia --react
+       ```
+     </TabItem>
+     <TabItem label="Svelte">
+       ```bash
+       php artisan module:publish-inertia --svelte
+       ```
+     </TabItem>
+   </Tabs>
+
+   Without a flag, the command uses `inertia.frontend`. It writes `resources/js/app.js`. If the file exists, the command stops. Add `--force` to overwrite it.
+
+4. Add `resources/js/app.js` to the inputs of the root `vite.config.js`, and the plugin of your framework.
+
+   ```js title="vite.config.js"
+   laravel({
+       input: ['resources/css/app.css', 'resources/js/app.js'],
+       refresh: true,
+   }),
+   ```
+
+5. Build the assets.
+
+   ```bash
+   npm run build
+   ```
+
+</Steps>
+
+### How a page name resolves
+
+The generated controller returns `Inertia::render('Blog/Index')`. The first segment is the module name, and the rest is the path under `resources/js/Pages`:
+
+| Page name | File |
+| --- | --- |
+| `Blog/Index` | `Modules/Blog/resources/js/Pages/Index.vue` |
+| `Blog/Posts/Show` | `Modules/Blog/resources/js/Pages/Posts/Show.vue` |
+
+The extension is `.vue`, `.jsx` or `.svelte`, as set by the framework. The entry file checks the module first. When no module page matches, it falls back to `resources/js/Pages/<name>`. The module name is case sensitive: use the folder name, `Blog`.
+
+### Check the result
+
+Log in, as the generated route uses the `auth` and `verified` middleware, and open `/blogs`. The `Index` page of the module renders. To list the routes, run `php artisan route:list --name=blog`.
+
+## Add a page
+
+To add a page to an existing module, run `module:make-inertia-page`.
+
+```bash
+php artisan module:make-inertia-page Posts/Index Blog
+```
+
+This writes `Modules/Blog/resources/js/Pages/Posts/Index.vue`. Render it from a controller with `Inertia::render('Blog/Posts/Index')`. Add `--react` or `--svelte` to override `inertia.frontend` for this page.
+
+## Add a component
+
+```bash
+php artisan module:make-inertia-component PostCard Blog
+```
+
+This writes `Modules/Blog/resources/js/Components/PostCard.vue`. The flags `--vue`, `--react` and `--svelte` work as for pages.
+
+## Add an Inertia controller
+
+To add an Inertia controller to an existing module, run:
+
+```bash
+php artisan module:make-controller PostController Blog --inertia
+```
+
+The controller has the resource methods. Each returns `Inertia::render('Blog/<Index|Create|Show|Edit>')`, where `Blog` is the module name. Create the matching pages with `module:make-inertia-page`.
+
+## Add the Inertia middleware
+
+```bash
+php artisan module:make-middleware HandleInertiaRequests Blog --inertia
+```
+
+This writes `Modules/Blog/app/Http/Middleware/HandleInertiaRequests.php`, a class that extends `Inertia\Middleware`, with `$rootView = 'app'`. The command does not register it. Register it in `bootstrap/app.php`, and keep only one `HandleInertiaRequests` in the `web` group:
+
+```php title="bootstrap/app.php"
+->withMiddleware(function (Middleware $middleware): void {
+    $middleware->web(append: [
+        \Modules\Blog\Http\Middleware\HandleInertiaRequests::class,
+    ]);
+})
+```
+
+## Related
+
+- [`module:make --inertia`](/laravel-modules/reference/commands/generators/)
+- [`module:publish-inertia`](/laravel-modules/reference/commands/publish/#modulepublish-inertia)
+- [`module:make-inertia-page`](/laravel-modules/reference/commands/generators/#modulemake-inertia-page) and [`module:make-inertia-component`](/laravel-modules/reference/commands/generators/#modulemake-inertia-component)
+- [`inertia.frontend` and the `inertia` generator paths](/laravel-modules/reference/configuration/)
+- [Build module assets with Vite](/laravel-modules/guides/frontend/vite/)
