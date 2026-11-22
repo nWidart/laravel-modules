@@ -3,7 +3,6 @@
 namespace Nwidart\Modules\Commands\Database;
 
 use ErrorException;
-use Illuminate\Console\View\TaskResult;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Commands\BaseCommand;
@@ -39,7 +38,7 @@ class SeedCommand extends BaseCommand
     private bool $seederFailed = false;
 
     /**
-     * Warnings about missing seeders, printed after the task line so they do not split it.
+     * Warnings about missing seeders, printed after the module's seed output.
      *
      * @var array<int, string>
      */
@@ -54,31 +53,32 @@ class SeedCommand extends BaseCommand
         $module = $this->getModuleModel($name);
         $this->warnings = [];
 
-        $this->components->task("Seeding <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
-            $this->seederFailed = false;
+        $this->seederFailed = false;
 
-            try {
-                $this->moduleSeed($module);
-            } catch (\Error $e) {
-                $e = new ErrorException($e->getMessage(), $e->getCode(), 1, $e->getFile(), $e->getLine(), $e);
-                $this->reportException($e);
-                $this->renderException($this->getOutput(), $e);
-                $this->markAsFailed();
+        // A header line, not a task: db:seed prints its own output, which would split a task line.
+        $this->components->twoColumnDetail("Seeding <fg=cyan;options=bold>{$module->getName()}</> Module");
 
-                return TaskResult::Failure->value;
-            } catch (\Exception $e) {
-                $this->reportException($e);
-                $this->renderException($this->getOutput(), $e);
-                $this->markAsFailed();
-
-                return TaskResult::Failure->value;
-            }
-
-            return $this->seederFailed ? TaskResult::Failure->value : TaskResult::Success->value;
-        });
+        try {
+            $this->moduleSeed($module);
+        } catch (\Error $e) {
+            $e = new ErrorException($e->getMessage(), $e->getCode(), 1, $e->getFile(), $e->getLine(), $e);
+            $this->reportException($e);
+            $this->renderException($this->getOutput(), $e);
+            $this->seederFailed = true;
+            $this->markAsFailed();
+        } catch (\Exception $e) {
+            $this->reportException($e);
+            $this->renderException($this->getOutput(), $e);
+            $this->seederFailed = true;
+            $this->markAsFailed();
+        }
 
         foreach ($this->warnings as $warning) {
             $this->components->warn($warning);
+        }
+
+        if ($this->seederFailed) {
+            $this->components->error("Module [{$module->getName()}] seeding failed.");
         }
     }
 
@@ -161,7 +161,10 @@ class SeedCommand extends BaseCommand
 
         if (count($seeders) > 0) {
             array_walk($seeders, $this->dbSeed(...));
-            $this->info("Module [$name] seeded.");
+
+            if (! $this->seederFailed) {
+                $this->components->info("Module [$name] seeded.");
+            }
         }
     }
 

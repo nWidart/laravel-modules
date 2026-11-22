@@ -54,7 +54,8 @@ class ComponentViewMakeCommand extends GeneratorCommand
     #[\Override]
     protected function getTemplateContents()
     {
-        return (new Stub('/component-view.stub', ['QUOTE' => Inspiring::quote()]))->render();
+        // quote() formats the quote for the console; the Blade comment needs the plain text.
+        return (new Stub('/component-view.stub', ['QUOTE' => Inspiring::quotes()->random()]))->render();
     }
 
     /**

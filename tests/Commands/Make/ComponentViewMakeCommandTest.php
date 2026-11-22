@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Tests\Commands\Make;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\Inspiring;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
@@ -60,5 +61,20 @@ class ComponentViewMakeCommandTest extends BaseTestCase
 
         $this->assertTrue(str_contains($file, '<div>'));
         $this->assertSame(0, $code);
+    }
+
+    public function test_it_writes_a_plain_text_quote_without_console_markup()
+    {
+        $code = $this->artisan('module:make-component-view', ['name' => 'Blog', 'module' => 'Blog']);
+        $file = $this->finder->get($this->getModuleBasePath().'/resources/views/components/blog.blade.php');
+
+        $this->assertSame(0, $code);
+        $this->assertStringNotContainsString('<options=', $file);
+        $this->assertStringNotContainsString('<fg=', $file);
+        $this->assertStringNotContainsString('</>', $file);
+        $this->assertMatchesRegularExpression('/^<div>\n    <!-- (.+) -->\n<\/div>\n$/', $file);
+
+        preg_match('/<!-- (.+) -->/', $file, $matches);
+        $this->assertContains($matches[1], Inspiring::quotes()->all());
     }
 }

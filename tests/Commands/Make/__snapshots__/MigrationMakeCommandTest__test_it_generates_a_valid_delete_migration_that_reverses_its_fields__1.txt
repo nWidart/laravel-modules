@@ -12,10 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            			$table->dropForeign(['user_id']);
-			$table->dropColumn('user_id');
-			$table->dropSoftDeletes();
-
+            $table->dropForeign(['user_id']);
+            $table->dropColumn('user_id');
+            $table->dropSoftDeletes();
         });
     }
 
@@ -25,10 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            			$table->integer('user_id')->unsigned();
-			$table->foreign('user_id')->references('id')->on('users');
-			$table->softDeletes();
-
+            $table->integer('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->softDeletes();
         });
     }
 };
