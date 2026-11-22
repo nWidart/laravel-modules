@@ -32,8 +32,8 @@ The indicator lists every module with its enabled state. The details are visible
 
 | Status | When |
 | --- | --- |
-| `UP` | Every module that is enabled in the status store is found on disk. Disabled modules do not change the status. |
-| `DOWN` | A module is enabled in `modules_statuses.json` but its folder is not found. `/actuator/health` then returns HTTP 503. |
+| `UP` | Every enabled module is found on disk. Disabled modules do not change the status. |
+| `DOWN` | An enabled module is not found on disk: its `module.json` is gone, or it is enabled in `modules_statuses.json` and the repository never found it. `/actuator/health` then returns HTTP 503. |
 
 The indicator never reports `OUT_OF_SERVICE` or `UNKNOWN`.
 
@@ -49,7 +49,9 @@ A missing module appears in the details with an error:
 
 To fix it, restore the module folder, or remove the entry from the statuses file or set it to `false`.
 
-The missing-on-disk check reads the statuses of [`FileActivator`](/laravel-modules/reference/api/contracts/#fileactivator). With a [custom activator](/laravel-modules/guides/customise/custom-activator/) the check is skipped: the indicator lists the modules and reports `UP`.
+A module the repository scanned counts as present only while its `module.json` exists. If its folder is gone and the activator reports it enabled, the module is listed with the error and the health is `DOWN`, with any activator. If it is disabled, it is left out of the details. This also covers a folder removed while a long-lived process (Octane, a queue worker) holds a cached module scan.
+
+A name that is in the status store but that the repository never scanned is reported only with [`FileActivator`](/laravel-modules/reference/api/contracts/#fileactivator), which exposes its statuses through `getStatuses()`. With a [custom activator](/laravel-modules/guides/customise/custom-activator/) those names are not reported.
 
 ## Ship a health indicator from a module
 

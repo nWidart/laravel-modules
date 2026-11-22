@@ -113,7 +113,6 @@ Setting `generate` to `false` also skips the `stubs.files` that a key owns:
 | `event` | `app/Events` | no |
 | `enums` | `app/Enums` | no |
 | `exceptions` | `app/Exceptions` | no |
-| `health` | `app/Health` | no |
 | `jobs` | `app/Jobs` | no |
 | `job-middleware` | `app/Jobs/Middleware` | no |
 | `helpers` | `app/Helpers` | no |
@@ -147,6 +146,8 @@ Setting `generate` to `false` also skips the `stubs.files` that a key owns:
 | `routes` | `routes` | yes |
 | `test-feature` | `tests/Feature` | yes |
 | `test-unit` | `tests/Unit` | yes |
+
+The key `health` is read by the code but is not in `config/config.php`. `module:make-health-indicator` writes to `paths.app_folder` plus `Health` (`app/Health` with the default app folder). To use another folder, set `modules.paths.generator.health` with a `path` and an optional `namespace`. A configured `health` path must be inside `paths.app_folder`, like the other class generator paths, or `module:make` stops.
 
 The key `event-provider` is read by the code but is not in `config/config.php`. `module:make-event-provider` writes to the `provider` path. `module:make` generates the event provider when an `event-provider` entry has `generate` set to `true`, or, when the entry has no `path`, when `provider` is generated.
 

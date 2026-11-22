@@ -130,7 +130,7 @@ The package registers the classes of `modules.commands` (see [Configuration](/la
 | `abstract getTemplateContents()` | Protected. Returns the content of the file, usually `Stub::create('/x.stub', [...])->render()`. |
 | `abstract getDestinationFilePath()` | Protected. Returns the path of the file. |
 | `handle(): int` | Public. Validates the name, creates the folder, writes the file through `FileGenerator`, and returns `0`. It prints an error and returns `1` for an invalid name or an existing file without `--force`. |
-| `validateNameArgument(): ?string` | Protected. Returns an error message for an empty name, an absolute path or a path with a `..` segment, otherwise `null`. |
+| `validateNameArgument(): ?string` | Protected. Returns an error message for an empty name, an absolute path or a path with a `..` segment (also a segment that becomes `..` once whitespace, hyphens and underscores are removed), otherwise `null`. |
 | `getClass()` | Public. The class name: `class_basename()` of the name argument. |
 | `getDefaultNamespace(): string` | Public. The namespace part below the module namespace. Default an empty string. |
 | `getClassNamespace($module)` | Public. The full namespace: the module namespace, `getDefaultNamespace()` and the folders in the name argument. |

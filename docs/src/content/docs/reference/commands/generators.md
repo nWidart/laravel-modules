@@ -19,7 +19,7 @@ Apart from `module:make`, which creates a whole module, every command on this pa
 ### Name handling
 
 - The class name is the studly-case `name`. A `name` with `/` or `\` puts the file in a sub-directory of the generator path and the class in the matching sub-namespace: `Admin/Report` gives the class `Report` in the `Admin` sub-namespace.
-- An empty name, an absolute path, or a name with a `..` segment prints an error and exits with `1`.
+- An empty name, an absolute path, or a name with a `..` segment prints an error. A segment that becomes `..` once whitespace, hyphens and underscores are removed (for example `. .`) counts as a `..` segment and exits with `1`.
 - The command creates missing directories.
 
 ### Path and namespace
@@ -568,7 +568,8 @@ php artisan module:make-health-indicator <name> [<module>] [--force]
 
 **Notes**
 
-- Writes `<Name>.php` to the `health` generator path (`paths.generator.health.path`, default `app/Health`), in the namespace `Modules\<Module>\Health`.
+- Writes `<Name>.php` to the `health` generator path. When `modules.paths.generator.health` is not set, the path is `paths.app_folder` plus `Health` (`app/Health` with the default app folder), in the namespace `Modules\<Module>\Health`. When the application sets `paths.generator.health.path` (and optionally `namespace`), that path is used. See [Configuration](/laravel-modules/reference/configuration/#default-entries).
+- Each segment of a nested name is converted to StudlyCase, for the folder and for the namespace: `api/v2/Payments` gives `app/Health/Api/V2/Payments.php` in the namespace `Modules\Blog\Health\Api\V2`.
 - Stub: `health-indicator.stub`.
 - The command works without the actuator installed, but the generated class needs the actuator to be used.
 - The command does not edit the module service provider. It prints the line to add to the `$healthIndicators` property. The suggested key is the class name without a trailing `HealthIndicator`, in camel case. See [Report module health with the actuator](/laravel-modules/guides/production/health-checks/).
