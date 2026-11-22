@@ -68,7 +68,27 @@ class BlogServiceProvider extends ModuleServiceProvider
 | `config.php` | `<nameLower>` |
 | any other file, for example `settings.php` or `nested/options.php` | `<nameLower>.<path with dots, without .php>`, with adjacent repeated segments removed: `blog.php` gives `blog`, `blog/settings.php` gives `blog.settings` |
 
-The provider merges the values over the existing config of that key with `array_replace_recursive()`. `config.php` is merged first. A dedicated file therefore wins over a key of the same name in `config.php`.
+The provider merges the config in two steps:
+
+1. It merges the module files together with `array_replace_recursive()`. `config.php` is merged first, then the other files by path. A dedicated file therefore wins over a key of the same name in `config.php`, and a list in a dedicated file replaces the matching list in `config.php` position by position.
+2. It merges the values the application already has under the module key (for example a copy in `config/<nameLower>.php`) over the result. The application values win.
+   - Where the application value and the module value are both associative arrays, they merge key by key, recursively.
+   - Otherwise the application value replaces the module value as a whole. This includes a list (even a shorter one), an empty array `[]`, and a scalar.
+   - Keys the application does not set keep the module value. Keys only the application sets are kept.
+
+The module `'tags' => ['a', 'b', 'c']` with the application `'tags' => ['x']` gives `['x']`. With the application `'tags' => []` it gives `[]`. An empty array in the application also clears an associative module value: `'cache' => []` drops the `cache` defaults of the module.
+
+With a cached configuration the merge is skipped, because the cache already holds the merged values.
+
+```php
+// Modules/Blog/config/config.php
+return ['posts_per_page' => 15];
+
+// config/blog.php (application)
+return ['posts_per_page' => 99];
+
+config('blog.posts_per_page'); // 99
+```
 
 ### Publish tags
 

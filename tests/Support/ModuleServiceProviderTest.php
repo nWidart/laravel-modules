@@ -38,24 +38,148 @@ class ModuleServiceProviderTest extends BaseTestCase
         parent::tearDown();
     }
 
-    public function test_module_config_values_override_existing_config()
+    public function test_app_config_values_override_module_defaults()
     {
-        $this->writeModuleConfig('config.php', ['name' => 'Blog']);
+        $this->writeModuleConfig('config.php', ['name' => 'Blog', 'posts_per_page' => 15]);
         $this->writeModuleConfig('settings.php', ['theme' => 'light']);
 
-        // Values already loaded, e.g. from the app's config/blog.php and config/blog/settings.php.
+        // Values already loaded from the app's config/blog.php and config/blog/settings.php (module:publish-config).
         config([
-            'blog' => ['name' => 'My Blog', 'per_page' => 10],
-            'blog.settings' => ['theme' => 'dark', 'cache' => true],
+            'blog' => ['posts_per_page' => 99],
+            'blog.settings' => ['theme' => 'dark'],
         ]);
 
         $this->registerModuleConfig();
 
-        // Module values win (deliberate, see PR #2053); keys only the app defines are kept.
+        $this->assertSame(99, config('blog.posts_per_page'));
+        $this->assertSame('dark', config('blog.settings.theme'));
+    }
+
+    public function test_module_only_config_keys_stay_available_when_the_app_overrides_others()
+    {
+        $this->writeModuleConfig('config.php', ['name' => 'Blog', 'posts_per_page' => 15]);
+        $this->writeModuleConfig('settings.php', ['theme' => 'light', 'cache' => true]);
+        config([
+            'blog' => ['posts_per_page' => 99],
+            'blog.settings' => ['theme' => 'dark'],
+        ]);
+
+        $this->registerModuleConfig();
+
+        $this->assertSame(99, config('blog.posts_per_page'));
         $this->assertSame('Blog', config('blog.name'));
-        $this->assertSame(10, config('blog.per_page'));
-        $this->assertSame('light', config('blog.settings.theme'));
+        $this->assertSame('dark', config('blog.settings.theme'));
         $this->assertTrue(config('blog.settings.cache'));
+    }
+
+    public function test_app_only_config_keys_are_kept_when_the_app_overrides_others()
+    {
+        $this->writeModuleConfig('config.php', ['name' => 'Blog']);
+        $this->writeModuleConfig('settings.php', ['theme' => 'light']);
+        config([
+            'blog' => ['name' => 'My Blog', 'featured' => 'news'],
+            'blog.settings' => ['theme' => 'dark', 'font' => 'serif'],
+        ]);
+
+        $this->registerModuleConfig();
+
+        $this->assertSame('My Blog', config('blog.name'));
+        $this->assertSame('news', config('blog.featured'));
+        $this->assertSame('dark', config('blog.settings.theme'));
+        $this->assertSame('serif', config('blog.settings.font'));
+    }
+
+    public function test_nested_config_arrays_merge_with_the_app_value_winning()
+    {
+        $this->writeModuleConfig('config.php', [
+            'cache' => ['enabled' => false, 'store' => 'file', 'ttl' => ['posts' => 60, 'tags' => 120]],
+        ]);
+        $this->writeModuleConfig('nested/options.php', ['driver' => ['name' => 'file', 'path' => 'blog']]);
+        config([
+            'blog' => ['cache' => ['enabled' => true, 'ttl' => ['posts' => 5]]],
+            'blog.nested.options' => ['driver' => ['name' => 'redis']],
+        ]);
+
+        $this->registerModuleConfig();
+
+        $this->assertSame(
+            ['enabled' => true, 'store' => 'file', 'ttl' => ['posts' => 5, 'tags' => 120]],
+            config('blog.cache')
+        );
+        $this->assertSame(['name' => 'redis', 'path' => 'blog'], config('blog.nested.options.driver'));
+    }
+
+    public function test_a_shorter_app_list_replaces_the_module_list()
+    {
+        $this->writeModuleConfig('config.php', ['tags' => ['a', 'b', 'c']]);
+        $this->writeModuleConfig('settings.php', ['themes' => ['light', 'dark']]);
+        config([
+            'blog' => ['tags' => ['x']],
+            'blog.settings' => ['themes' => ['dark']],
+        ]);
+
+        $this->registerModuleConfig();
+
+        $this->assertSame(['x'], config('blog.tags'));
+        $this->assertSame(['dark'], config('blog.settings.themes'));
+    }
+
+    public function test_an_empty_app_array_clears_the_module_value()
+    {
+        $this->writeModuleConfig('config.php', ['tags' => ['a', 'b', 'c'], 'cache' => ['store' => 'file']]);
+        config(['blog' => ['tags' => [], 'cache' => []]]);
+
+        $this->registerModuleConfig();
+
+        $this->assertSame([], config('blog.tags'));
+        $this->assertSame([], config('blog.cache'));
+    }
+
+    public function test_a_list_nested_in_an_associative_array_is_replaced_while_the_rest_merges()
+    {
+        $this->writeModuleConfig('config.php', [
+            'cache' => ['enabled' => false, 'store' => 'file', 'tags' => ['posts', 'comments', 'users']],
+        ]);
+        $this->writeModuleConfig('nested/options.php', [
+            'driver' => ['name' => 'file', 'options' => ['path' => 'blog', 'flags' => ['lock', 'gzip']]],
+        ]);
+        config([
+            'blog' => ['cache' => ['enabled' => true, 'tags' => ['posts']]],
+            'blog.nested.options' => ['driver' => ['options' => ['flags' => ['lock']]]],
+        ]);
+
+        $this->registerModuleConfig();
+
+        $this->assertSame(['enabled' => true, 'store' => 'file', 'tags' => ['posts']], config('blog.cache'));
+        $this->assertSame(
+            ['name' => 'file', 'options' => ['path' => 'blog', 'flags' => ['lock']]],
+            config('blog.nested.options.driver')
+        );
+    }
+
+    public function test_an_app_list_replaces_a_module_associative_array_and_the_reverse()
+    {
+        $this->writeModuleConfig('config.php', ['drivers' => ['file' => true], 'channels' => ['mail', 'sms']]);
+        config(['blog' => ['drivers' => ['redis'], 'channels' => ['mail' => true]]]);
+
+        $this->registerModuleConfig();
+
+        $this->assertSame(['redis'], config('blog.drivers'));
+        $this->assertSame(['mail' => true], config('blog.channels'));
+    }
+
+    public function test_a_dedicated_config_file_still_wins_over_config_php_when_the_app_has_config()
+    {
+        $this->writeModuleConfig('config.php', ['name' => 'Blog', 'settings' => ['theme' => 'dark', 'per_page' => 10]]);
+        $this->writeModuleConfig('settings.php', ['theme' => 'light']);
+        config(['blog' => ['name' => 'My Blog']]);
+
+        $this->registerModuleConfig();
+
+        // The module's own files keep their order among themselves; only app values win over them.
+        $this->assertSame('My Blog', config('blog.name'));
+        $this->assertSame('light', config('blog.settings.theme'));
+        $this->assertSame(10, config('blog.settings.per_page'));
     }
 
     public function test_a_dedicated_config_file_wins_over_the_same_key_in_config_php()
