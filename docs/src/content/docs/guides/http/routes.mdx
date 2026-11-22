@@ -1,0 +1,102 @@
+---
+title: Add routes to a module
+description: Replace the generated authenticated routes of a module with a public web route and an API route, and link to a route of another module.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To serve a public page and a JSON endpoint from the `Blog` module, replace the generated route files. You need an enabled `Blog` module and two controllers, `PostController` and `Api/PostController`:
+
+```bash
+php artisan module:make-controller Post Blog
+php artisan module:make-controller Api/Post Blog --api
+```
+
+See [Add controllers to a module](/laravel-modules/guides/http/controllers/) for the options.
+
+`module:make` writes both route files for a web module, and the `RouteServiceProvider` of the module loads them:
+
+| File | Generated content | Loaded by `RouteServiceProvider` with |
+| --- | --- | --- |
+| `Modules/Blog/routes/web.php` | `Route::resource('blogs', BlogController::class)->names('blog')` inside `Route::middleware(['auth', 'verified'])` | the `web` middleware group, no prefix |
+| `Modules/Blog/routes/api.php` | `Route::apiResource('blogs', BlogController::class)->names('blog')` inside `Route::middleware(['auth:sanctum'])->prefix('v1')` | the `api` middleware group, the prefix `api` and the name prefix `api.` |
+
+An app without authentication set up has no login page for `auth` to redirect to and no Sanctum for `auth:sanctum`, so the generated routes fail there.
+
+<Steps>
+
+1. Replace `Modules/Blog/routes/web.php` with a public route.
+
+   ```php title="Modules/Blog/routes/web.php"
+   <?php
+
+   use Illuminate\Support\Facades\Route;
+   use Modules\Blog\Http\Controllers\PostController;
+
+   Route::get('posts', [PostController::class, 'index'])->name('blog.posts.index');
+   ```
+
+   Route names are global in the application. Start every name with the module name so that two modules cannot clash.
+
+2. Replace `Modules/Blog/routes/api.php` with a public API route. The provider already adds the prefix `api` and the name prefix `api.`.
+
+   ```php title="Modules/Blog/routes/api.php"
+   <?php
+
+   use Illuminate\Support\Facades\Route;
+   use Modules\Blog\Http\Controllers\Api\PostController;
+
+   Route::prefix('v1')->group(function () {
+       Route::get('posts', [PostController::class, 'index'])->name('blog.posts.index');
+   });
+   ```
+
+   The URL is `/api/v1/posts`. The name is `api.blog.posts.index`. To generate the API controller, see [Add controllers to a module](/laravel-modules/guides/http/controllers/#add-an-api-controller).
+
+3. Check the result.
+
+   ```bash
+   php artisan route:list --path=posts
+   ```
+
+   ```text
+   GET|HEAD   api/v1/posts ......... api.blog.posts.index › Modules\Blog\Http\Controllers\Api\PostController@index
+   GET|HEAD   posts ................ blog.posts.index › Modules\Blog\Http\Controllers\PostController@index
+   ```
+
+</Steps>
+
+## Variants
+
+To put the web routes under a URL prefix, wrap them in `prefix()` and `name()`:
+
+```php title="Modules/Blog/routes/web.php"
+<?php
+
+use Illuminate\Support\Facades\Route;
+use Modules\Blog\Http\Controllers\PostController;
+
+Route::prefix('blog')->name('blog.')->group(function () {
+    Route::get('posts', [PostController::class, 'index'])->name('posts.index');
+    Route::get('posts/{post}', [PostController::class, 'show'])->name('posts.show');
+});
+```
+
+The URLs are `/blog/posts` and `/blog/posts/{post}`. The names are `blog.posts.index` and `blog.posts.show`.
+
+To require authentication again, wrap the routes in the middleware that your application provides, for example `Route::middleware('auth')->group(...)`. To apply a middleware of the module, see [Add middleware to a module](/laravel-modules/guides/http/middleware/).
+
+To link to a route of another module, use its route name. The view needs no knowledge of the namespace or URL of the other module:
+
+```blade title="Modules/Blog/resources/views/index.blade.php"
+<a href="{{ route('shop.products.index') }}">Shop</a>
+```
+
+A disabled module registers no routes. `route()` throws `RouteNotFoundException` for the names of a disabled module.
+
+## Related
+
+- [`module:route-provider`](/laravel-modules/reference/commands/generators/#moduleroute-provider): regenerate the `RouteServiceProvider`.
+- [Module service provider](/laravel-modules/reference/api/module-service-provider/): what the module provider registers.
+- [Add controllers to a module](/laravel-modules/guides/http/controllers/)
+- [Add middleware to a module](/laravel-modules/guides/http/middleware/)

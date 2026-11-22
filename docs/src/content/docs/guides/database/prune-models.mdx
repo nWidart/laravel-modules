@@ -1,0 +1,103 @@
+---
+title: Prune module models
+description: Make a model of a module prunable and delete its old records with module:prune, by hand or on a schedule.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To delete the posts of the `Blog` module that are older than a year, make `Post` prunable and run `module:prune`. You need the `Post` model of [Add Eloquent models to a module](/laravel-modules/guides/database/models/). `module:prune` wraps Laravel `model:prune`, which finds only the models of the application; the module command finds the models of the module.
+
+<Steps>
+
+1. Add the `MassPrunable` trait and a `prunable()` method to the model. `MassPrunable` deletes the matching records with one query. Use `Prunable` instead if you need model events.
+
+   ```php title="Modules/Blog/app/Models/Post.php"
+   <?php
+
+   namespace Modules\Blog\Models;
+
+   use Illuminate\Database\Eloquent\Attributes\UseFactory;
+   use Illuminate\Database\Eloquent\Builder;
+   use Illuminate\Database\Eloquent\Factories\HasFactory;
+   use Illuminate\Database\Eloquent\MassPrunable;
+   use Illuminate\Database\Eloquent\Model;
+   use Modules\Blog\Database\Factories\PostFactory;
+
+   #[UseFactory(PostFactory::class)]
+   class Post extends Model
+   {
+       /** @use HasFactory<PostFactory> */
+       use HasFactory, MassPrunable;
+
+       protected $fillable = ['title', 'body'];
+
+       public function prunable(): Builder
+       {
+           return static::where('created_at', '<=', now()->subYear());
+       }
+   }
+   ```
+
+2. Count what the command would delete. `--pretend` deletes nothing.
+
+   ```bash
+   php artisan module:prune Blog --pretend
+   ```
+
+   ```text
+   INFO  2 [Modules\Blog\Models\Post] records will be pruned.
+   ```
+
+   With no matching record, the output is `No prunable [Modules\Blog\Models\Post] records found.`
+
+3. Prune.
+
+   ```bash
+   php artisan module:prune Blog
+   ```
+
+   ```text
+   INFO  Pruning [Modules\Blog\Models\Post] records.
+
+   Modules\Blog\Models\Post ......................................... 2 records
+   ```
+
+4. Check the result. Run the count again:
+
+   ```bash
+   php artisan module:prune Blog --pretend
+   ```
+
+   The output is `No prunable [Modules\Blog\Models\Post] records found.`
+
+</Steps>
+
+## Prune on a schedule
+
+To prune every day, schedule the command in the module provider. See [Schedule tasks from a module](/laravel-modules/guides/console-and-events/schedules/).
+
+```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
+use Illuminate\Console\Scheduling\Schedule;
+
+protected function configureSchedules(Schedule $schedule): void
+{
+    $schedule->command('module:prune', ['Blog'])->daily();
+}
+```
+
+`php artisan schedule:list` shows `php artisan module:prune 'Blog'`.
+
+## Prune several modules or one model
+
+To prune every enabled module, pass `--all`. To prune one model, pass its class with `--model`. `--model` cannot be combined with `--except`:
+
+```bash
+php artisan module:prune --all
+php artisan module:prune Blog --model="Modules\Blog\Models\Post"
+```
+
+## Related
+
+- [`module:prune`](/laravel-modules/reference/commands/module-management/#moduleprune): all options.
+- [Schedule tasks from a module](/laravel-modules/guides/console-and-events/schedules/)
+- [Add Eloquent models to a module](/laravel-modules/guides/database/models/)

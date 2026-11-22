@@ -1,0 +1,77 @@
+---
+title: Add Artisan commands to a module
+description: Generate an Artisan command in a module with module:make-command, register it in the module provider and list it.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To add the command `blog:prune-old` to the `Blog` module, generate the class and register it in the module provider. You need an enabled `Blog` module. Laravel finds commands in `app/Console/Commands` of the application only, so a module command is not registered until you list it in the provider.
+
+<Steps>
+
+1. Generate the command. `--command` sets the signature.
+
+   ```bash
+   php artisan module:make-command PruneOldPosts Blog --command=blog:prune-old
+   ```
+
+   The command creates `Modules/Blog/app/Console/PruneOldPosts.php`. The class is `Modules\Blog\Console\PruneOldPosts`.
+
+2. Write the work in `handle()`.
+
+   ```php title="Modules/Blog/app/Console/PruneOldPosts.php"
+   <?php
+
+   namespace Modules\Blog\Console;
+
+   use Illuminate\Console\Attributes\Description;
+   use Illuminate\Console\Attributes\Signature;
+   use Illuminate\Console\Command;
+
+   #[Signature('blog:prune-old')]
+   #[Description('Delete the old posts of the blog')]
+   class PruneOldPosts extends Command
+   {
+       public function handle()
+       {
+           $this->info('Old posts pruned.');
+       }
+   }
+   ```
+
+3. Register the class in the `$commands` property of the module provider. The generated provider has it commented out.
+
+   ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
+   /**
+    * Command classes to register.
+    *
+    * @var string[]
+    */
+   protected array $commands = [
+       \Modules\Blog\Console\PruneOldPosts::class,
+   ];
+   ```
+
+4. Check the result. List the commands of the module, then run the command:
+
+   ```bash
+   php artisan module:list-commands Blog
+   ```
+
+   The output lists `blog:prune-old` under `Blog/Console`.
+
+   ```bash
+   php artisan blog:prune-old
+   ```
+
+   ```text
+   Old posts pruned.
+   ```
+
+</Steps>
+
+## Related
+
+- [`module:make-command`](/laravel-modules/reference/commands/generators/#modulemake-command) and [`module:list-commands`](/laravel-modules/reference/commands/module-management/#modulelist-commands)
+- [Module service provider: properties](/laravel-modules/reference/api/module-service-provider/#properties)
+- [Schedule tasks from a module](/laravel-modules/guides/console-and-events/schedules/)

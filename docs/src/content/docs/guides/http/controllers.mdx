@@ -1,0 +1,80 @@
+---
+title: Add controllers to a module
+description: Generate a controller in a module with module:make-controller and route to it.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+To serve the posts of the `Blog` module from a controller, generate `PostController` and point a route at it. You need an enabled `Blog` module. A new module already has a `BlogController` and routes that need a logged-in user; see [Add routes to a module](/laravel-modules/guides/http/routes/).
+
+<Steps>
+
+1. Generate the controller. The command appends `Controller` to the name.
+
+   ```bash
+   php artisan module:make-controller Post Blog
+   ```
+
+   The command creates `Modules/Blog/app/Http/Controllers/PostController.php`. The class is `Modules\Blog\Http\Controllers\PostController`. It extends `App\Http\Controllers\Controller` and has the seven resource methods. `index()` returns `view('blog::index')`.
+
+2. Point a route at the controller.
+
+   ```php title="Modules/Blog/routes/web.php"
+   <?php
+
+   use Illuminate\Support\Facades\Route;
+   use Modules\Blog\Http\Controllers\PostController;
+
+   Route::get('posts', [PostController::class, 'index'])->name('blog.posts.index');
+   ```
+
+3. Check the result.
+
+   ```bash
+   php artisan route:list --path=posts
+   ```
+
+   ```text
+   GET|HEAD   posts ........ blog.posts.index › Modules\Blog\Http\Controllers\PostController@index
+   ```
+
+   Start the server with `php artisan serve` and open `http://127.0.0.1:8000/posts`. The page shows "Hello World" and "Module: Blog", the content of the view `blog::index` that `index()` returns.
+
+</Steps>
+
+## Choose another controller type
+
+Each flag selects another stub. The first matching flag wins.
+
+| To get | Run |
+| --- | --- |
+| A controller without methods | `php artisan module:make-controller Post Blog --plain` |
+| A single `__invoke()` method | `php artisan module:make-controller PublishPost Blog --invokable` |
+
+Route an invokable controller by its class name: `Route::post('posts/{post}/publish', PublishPostController::class);`.
+
+To pass data to a view, return it from the method:
+
+```php title="Modules/Blog/app/Http/Controllers/PostController.php"
+public function index()
+{
+    return view('blog::index', ['posts' => \Modules\Blog\Models\Post::orderBy('id')->get()]);
+}
+```
+
+## Add an API controller
+
+To get a resource controller without `create()` and `edit()`, whose methods return JSON, use `--api`. A name with a slash puts the class in a sub-namespace:
+
+```bash
+php artisan module:make-controller Api/Post Blog --api
+```
+
+The command creates `Modules/Blog/app/Http/Controllers/Api/PostController.php` with the class `Modules\Blog\Http\Controllers\Api\PostController`. Route it from `Modules/Blog/routes/api.php`; see [Add routes to a module](/laravel-modules/guides/http/routes/).
+
+## Related
+
+- [`module:make-controller`](/laravel-modules/reference/commands/generators/#modulemake-controller): all options and the stub for each.
+- [Configuration: `paths.generator`](/laravel-modules/reference/configuration/#pathsgenerator): the `controller` path and namespace.
+- [Add routes to a module](/laravel-modules/guides/http/routes/)
+- [Add middleware to a module](/laravel-modules/guides/http/middleware/)

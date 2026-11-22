@@ -1,0 +1,166 @@
+---
+title: Build module assets with Vite
+description: Build the CSS and JavaScript of a module with its own Vite build or with the Vite build of the application, and publish static assets.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+At the end, the `Blog` module serves compiled CSS and JavaScript. Pick one of two ways: a build for each module, or one build for the whole application. Both need a `Blog` module and Node.js. See [Create a module](/laravel-modules/guides/modules/create-a-module/).
+
+## Build a module on its own
+
+Use this way when a module has its own assets and its own build. The build writes to `public/build-blog`.
+
+`module:make Blog` generates `Modules/Blog/vite.config.js` and `Modules/Blog/package.json`. The generated `package.json` pins `vite` `^4.0.0` and `laravel-vite-plugin` `^0.7.5`.
+
+<Steps>
+
+1. Install the dependencies in the module folder.
+
+   ```bash
+   cd Modules/Blog
+   npm install
+   ```
+
+2. Build the assets.
+
+   ```bash
+   npm run build
+   ```
+
+   The generated `vite.config.js` reads `resources/assets/sass/app.scss` and `resources/assets/js/app.js`. It writes the build and its manifest to `public/build-blog` (`../../public/build-blog` from the module folder).
+
+3. Load the build in the layout. The generated layout has the two `module_vite()` calls commented out. Remove the Blade comment markers.
+
+   ```blade title="Modules/Blog/resources/views/components/layouts/master.blade.php"
+   {{-- in <head> --}}
+   {{ module_vite('build-blog', 'resources/assets/sass/app.scss') }}
+
+   {{-- before </body> --}}
+   {{ module_vite('build-blog', 'resources/assets/js/app.js') }}
+   ```
+
+   The first argument is the build directory, `build-<lower case module name>`. The second is the entry point, as written in `input` of the module `vite.config.js`, relative to the module folder.
+
+</Steps>
+
+To use a Vue, React or Svelte plugin, uncomment its import and its entry in `plugins` in `Modules/Blog/vite.config.js`, then install the plugin package in `Modules/Blog`.
+
+### Check the result
+
+After the build, `public/build-blog/manifest.json` exists. Open a page that uses the layout and look for a `<link rel="stylesheet">` and a `<script type="module">` that point to `/build-blog/assets/`.
+
+## Build module assets from the application
+
+Use this way to run one Vite build, from the application root, for the application and every enabled module.
+
+<Steps>
+
+1. Publish the module loader to the application root.
+
+   ```bash
+   php artisan vendor:publish --tag=vite
+   ```
+
+   This copies `vite-module-loader.js` to the application root.
+
+2. Export the entry points of the module. Replace the content of `Modules/Blog/vite.config.js` with a `paths` export. The loader imports this file with Node.js, not with Vite, so the file must not use `__dirname`. The generated file uses it, and the loader skips the module without an error message when the import fails.
+
+   ```js title="Modules/Blog/vite.config.js"
+   export const paths = [
+       'Modules/Blog/resources/assets/sass/app.scss',
+       'Modules/Blog/resources/assets/js/app.js',
+   ];
+   ```
+
+   Write the paths relative to the application root.
+
+3. Collect the paths in the root `vite.config.js`. `collectModuleAssetsPaths(paths, 'Modules')` appends the `paths` of every enabled module to the list you give it.
+
+   ```js title="vite.config.js"
+   import { defineConfig } from 'vite';
+   import laravel, { refreshPaths } from 'laravel-vite-plugin';
+   import collectModuleAssetsPaths, { moduleRefreshPaths } from './vite-module-loader.js';
+
+   async function getConfig() {
+       const paths = [
+           'resources/css/app.css',
+           'resources/js/app.js',
+       ];
+       const allPaths = await collectModuleAssetsPaths(paths, 'Modules');
+
+       return defineConfig({
+           plugins: [
+               laravel({
+                   input: allPaths,
+                   refresh: [...refreshPaths, ...moduleRefreshPaths('Modules')],
+               }),
+           ],
+       });
+   }
+
+   export default getConfig();
+   ```
+
+   The loader reads `modules_statuses.json` in the application root. It adds only the modules whose status is `true`. `moduleRefreshPaths('Modules')` returns the Blade, `lang` and `routes` globs of every module, so a change in a module reloads the page.
+
+4. Build the assets.
+
+   ```bash
+   npm install sass
+   npm run build
+   ```
+
+   Install `sass` because the entry points include an SCSS file.
+
+5. Load the entry points with `@vite` in the layout.
+
+   ```blade title="Modules/Blog/resources/views/components/layouts/master.blade.php"
+   @vite([
+       'Modules/Blog/resources/assets/sass/app.scss',
+       'Modules/Blog/resources/assets/js/app.js',
+   ])
+   ```
+
+</Steps>
+
+### Check the result
+
+Open `public/build/manifest.json`. It has an entry named `Modules/Blog/resources/assets/js/app.js`. To find out whether a module is picked up, enable and disable it in `modules_statuses.json` and build again: the entry follows the status.
+
+## Publish static assets
+
+To serve files that Vite does not process, put them in `Modules/Blog/resources/assets` and publish them.
+
+<Steps>
+
+1. Publish the assets of the module.
+
+   ```bash
+   php artisan module:publish Blog
+   ```
+
+   The command copies `Modules/Blog/resources/assets` to `public/modules/blog` and overwrites existing files.
+
+2. Link to a published file.
+
+   ```blade title="Modules/Blog/resources/views/index.blade.php"
+   <img src="{{ Module::asset('blog:images/logo.png') }}" alt="Blog">
+   ```
+
+   The format is `<lower case module name>:<path in the assets folder>`. The URL starts with `//`, without `http:` or `https:`.
+
+</Steps>
+
+### Check the result
+
+Open `/modules/blog/images/logo.png` in the browser.
+
+## Related
+
+- [`module_vite()`](/laravel-modules/reference/api/helpers/#module_vite)
+- [`Module::asset()`](/laravel-modules/reference/api/repository/#paths-and-assets)
+- [`module:publish` and the `vite` tag](/laravel-modules/reference/commands/publish/)
+- [`paths.assets` and the `vite` stub](/laravel-modules/reference/configuration/)
+- [Use Inertia in a module](/laravel-modules/guides/frontend/inertia/)
+- [Deploy an application that uses modules](/laravel-modules/guides/production/deploy/)
