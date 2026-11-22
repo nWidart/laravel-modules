@@ -104,7 +104,11 @@ Older Laravel versions use the matching major: 5.4 uses ^1.0, 5.5 uses ^2.0, thr
 
 ## Documentation
 
-Full documentation: [https://laravelmodules.com/docs](https://laravelmodules.com/docs).
+Full documentation: [https://nwidart.github.io/laravel-modules/](https://nwidart.github.io/laravel-modules/).
+
+- [Installation](https://nwidart.github.io/laravel-modules/start-here/installation/)
+- [Your first module](https://nwidart.github.io/laravel-modules/start-here/first-module/)
+- [Artisan commands](https://nwidart.github.io/laravel-modules/reference/commands/)
 
 ## Credits
 
