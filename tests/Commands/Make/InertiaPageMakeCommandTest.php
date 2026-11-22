@@ -3,8 +3,10 @@
 namespace Nwidart\Modules\Tests\Commands\Make;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Artisan;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Snapshots\MatchesSnapshots;
 
 class InertiaPageMakeCommandTest extends BaseTestCase
@@ -149,5 +151,53 @@ class InertiaPageMakeCommandTest extends BaseTestCase
 
         $this->assertTrue(is_file($this->modulePath.'/resources/js/Pages/Contacts/Index.svelte'));
         $this->assertSame(0, $code);
+    }
+
+    #[DataProvider('conflictingFrontends')]
+    public function test_it_rejects_more_than_one_frontend_option(array $options, string $named)
+    {
+        $before = $this->moduleFiles();
+
+        $code = $this->artisan('module:make-inertia-page', ['name' => 'Index', 'module' => 'Blog'] + $options);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString(
+            "The {$named} options cannot be used together. Pass only one of --vue, --react or --svelte.",
+            preg_replace('/\s+/', ' ', Artisan::output())
+        );
+        $this->assertSame($before, $this->moduleFiles());
+    }
+
+    public function test_it_uses_the_configured_frontend_without_a_frontend_option()
+    {
+        $this->app['config']->set('modules.inertia.frontend', 'svelte');
+
+        $code = $this->artisan('module:make-inertia-page', ['name' => 'Index', 'module' => 'Blog']);
+
+        $this->assertTrue(is_file($this->modulePath.'/resources/js/Pages/Index.svelte'));
+        $this->assertSame(0, $code);
+    }
+
+    /**
+     * @return array<string, array{array<string, bool>, string}>
+     */
+    public static function conflictingFrontends(): array
+    {
+        return [
+            'react and svelte' => [['--react' => true, '--svelte' => true], '--react and --svelte'],
+            'vue and react' => [['--vue' => true, '--react' => true], '--vue and --react'],
+            'all three' => [['--svelte' => true, '--vue' => true, '--react' => true], '--vue, --react and --svelte'],
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function moduleFiles(): array
+    {
+        return array_map(
+            fn ($file) => $file->getPathname(),
+            $this->finder->allFiles($this->modulePath)
+        );
     }
 }

@@ -119,10 +119,13 @@ This command has no arguments. It has no `--all` option.
 
 **Notes**
 
-- The framework is `--react` if given, else `--svelte`, else `--vue`, else `inertia.frontend` (default `vue`).
+- The framework is the option given, else `inertia.frontend` (default `vue`). Pass at most one of `--vue`, `--react` and `--svelte`. With more than one, the command writes nothing, exits with `1` and prints, for example, `The --react and --svelte options cannot be used together. Pass only one of --vue, --react or --svelte.` The options are listed in the order vue, react, svelte. The check runs before the overwrite check, so `--force` does not bypass it.
+- The stubs target Inertia v3 (`inertiajs/inertia-laravel` ^3 and `@inertiajs/vue3`, `@inertiajs/react` or `@inertiajs/svelte` ^3). Inertia v2 is not supported.
 - Stub: `inertia/app-vue.stub`, `inertia/app-react.stub` or `inertia/app-svelte.stub`.
-- The published `app.js` mounts the app when `<div id="app">` exists and the page has Inertia page data: the `data-page` attribute of the root element (Inertia v2) or a `<script data-page="app" type="application/json">` tag (Inertia v3). A page with `<div id="app">` and no page data is skipped silently.
-- The Svelte stub uses `new App({ target: el, props })`, the Svelte 4 API. `@inertiajs/svelte` v3 requires Svelte 5, where that call needs Svelte's compatibility mode.
+- The published `app.js` mounts the app only when `<div id="app">` exists and the page has a `<script data-page="app" type="application/json">` tag, which the `@inertia` Blade directive of `inertiajs/inertia-laravel` 3 renders. A page without Inertia page data is skipped silently.
+- The React stub mounts with `createRoot(el).render(createElement(App, props))` from `react` and `react-dom/client`, without JSX: the published file is `resources/js/app.js`, and Vite parses JSX only in `.jsx` files. Pages and components for React stay `.jsx`.
+- The Svelte stub uses `mount(App, { target: el, props })` from `svelte` and needs Svelte 5.
+- Only a Vue `app.js` published earlier keeps working on Inertia v3. A React `app.js` published earlier contains JSX and fails to build. Publish React and Svelte files again with `php artisan module:publish-inertia --react --force` or `--svelte --force`.
 - A fresh Laravel application already has `resources/js/app.js`, so the first run meets the existing-file case. Without `--force`:
   - In an interactive terminal, the command asks `resources/js/app.js already exists. Overwrite?` (default no). Yes overwrites the file, prints `Published Inertia app.js to resources/js/app.js` and exits with `0`. No prints `Nothing was written. resources/js/app.js was left unchanged.` and exits with `1`.
   - With `--no-interaction` or without a TTY, the command prints `resources/js/app.js already exists. Use --force to overwrite.` and exits with `1`.

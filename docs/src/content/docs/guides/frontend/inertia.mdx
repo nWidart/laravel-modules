@@ -7,21 +7,21 @@ import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
 At the end, the `Blog` module renders Inertia pages from `Modules/Blog/resources/js/Pages`, and the application resolves them by name.
 
-Prerequisite: Inertia is installed in the application, with the server-side adapter and the client-side adapter of your framework, as the [Inertia documentation](https://inertiajs.com) describes. Vite builds the application assets. The package does not install Inertia.
+Prerequisite: Inertia v3 is installed in the application, as the [Inertia documentation](https://inertiajs.com) describes: `inertiajs/inertia-laravel` ^3 on the server, and `@inertiajs/vue3`, `@inertiajs/react` or `@inertiajs/svelte` ^3 on the client. The v3 client adapters need Vue 3, React and react-dom 19, or Svelte 5. The root view loads `resources/js/app.js` with `@vite` and renders `@inertia`, as Inertia's server-side setup creates it (with React, it also puts `@viteReactRefresh` before `@vite`, which `npm run dev` needs); the published file replaces that entry file. Vite builds the application assets. The package does not install Inertia. The stubs target Inertia v3 only; Inertia v2 is not supported.
 
 ## Generate an Inertia module
 
 <Steps>
 
-1. Choose the framework for the generated pages. The default is `vue`. To use React or Svelte, publish the package configuration and set the key.
+1. Choose the framework for the generated pages. The default is `vue`. To use React or Svelte, publish the package configuration, then set the key. If `config/modules.php` already exists, the command prints `SKIPPED`: edit the existing file.
 
    ```bash
-   php artisan vendor:publish --tag=config
+   php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
    ```
 
    ```php title="config/modules.php"
    'inertia' => [
-       'frontend' => 'react', // vue, react or svelte
+       'frontend' => 'react', // set your framework: vue, react or svelte
    ],
    ```
 
@@ -33,7 +33,7 @@ Prerequisite: Inertia is installed in the application, with the server-side adap
    php artisan module:make Blog --inertia
    ```
 
-   The command generates a module without Blade views. It adds `BlogController`, from the Inertia controller stub, and four pages: `Index`, `Create`, `Show` and `Edit`. A plain module (`--plain`) gets no Inertia files.
+   The generated module has no Blade views (`resources/views/` holds only `.gitkeep`). It adds `BlogController`, from the Inertia controller stub, and four pages: `Index`, `Create`, `Show` and `Edit`. A plain module (`--plain`) gets no Inertia files.
 
 3. Publish the Inertia entry file. The file resolves page names from every module.
 
@@ -55,18 +55,53 @@ Prerequisite: Inertia is installed in the application, with the server-side adap
      </TabItem>
    </Tabs>
 
-   Without a flag, the command uses `inertia.frontend`. It writes `resources/js/app.js`. Every new Laravel 13 app already has that file, so the command asks `resources/js/app.js already exists. Overwrite?` The default is no. Answer yes to replace the file. Answer no, and the command prints `Nothing was written. resources/js/app.js was left unchanged.` and exits with status 1. To skip the question, add `--force`. With `--no-interaction` and without `--force`, the command prints `resources/js/app.js already exists. Use --force to overwrite.` and exits with status 1. The command replaces your `resources/js/app.js`: move any code you added to it first.
+   Pass one framework flag at most. With none, the command uses `inertia.frontend`. With two or three, the command fails before it writes anything (see [`module:publish-inertia`](/laravel-modules/reference/commands/publish/#modulepublish-inertia)). It writes `resources/js/app.js`. Every new Laravel 13 app already has that file, so the command asks `resources/js/app.js already exists. Overwrite?` The default is no. Answer yes to replace the file. Answer no, and the command prints `Nothing was written. resources/js/app.js was left unchanged.` and exits with status 1. To skip the question, add `--force`. With `--no-interaction` and without `--force`, the command prints `resources/js/app.js already exists. Use --force to overwrite.` and exits with status 1. The command replaces your `resources/js/app.js`: move any code you added to it first.
 
-   The published file mounts the app with Inertia v2 and v3. A page without Inertia page data is skipped. The Svelte file uses the Svelte 4 call `new App({ target: el, props })`, and `@inertiajs/svelte` v3 requires Svelte 5, where that call needs Svelte's compatibility mode.
+   The published file mounts the app only when the page has `<div id="app">` and a `<script data-page="app" type="application/json">` tag, which the `@inertia` Blade directive of `inertiajs/inertia-laravel` 3 renders. A page without Inertia page data, such as a plain Blade page that loads the file, is skipped silently. The Svelte file uses `mount(App, { target: el, props })` and needs Svelte 5. The React file mounts with `createRoot(el).render(createElement(App, props))`, without JSX, because Vite parses JSX only in `.jsx` files.
 
-4. Add `resources/js/app.js` to the inputs of the root `vite.config.js`, and the plugin of your framework.
+   <Aside type="note" title="Upgrading from an earlier version">
+   Only a Vue `app.js` published earlier keeps working on Inertia v3. A React `app.js` published earlier contains JSX and fails to build. Publish React and Svelte files again: `php artisan module:publish-inertia --react --force` or `--svelte --force`.
+   </Aside>
 
-   ```js title="vite.config.js"
-   laravel({
-       input: ['resources/css/app.css', 'resources/js/app.js'],
-       refresh: true,
-   }),
-   ```
+4. In the root `vite.config.js`, keep your existing options and plugins (for example `fonts` and `tailwindcss()`). Add the import and the plugin call of your framework: `@vitejs/plugin-vue`, `@vitejs/plugin-react` or `@sveltejs/vite-plugin-svelte`. Make sure `resources/js/app.js` is in the `input` of your `laravel({...})` call. Install the plugin with npm if the application does not have it.
+
+   <Tabs syncKey="inertia-frontend">
+     <TabItem label="Vue">
+       ```js title="vite.config.js"
+       import vue from '@vitejs/plugin-vue'
+
+       // in defineConfig({ plugins: [...] }): add the plugin call, keep the rest
+       vue(),
+
+       // in your existing laravel({...}) call: input must include the entry file
+       // input: ['resources/css/app.css', 'resources/js/app.js'],
+       ```
+     </TabItem>
+     <TabItem label="React">
+       ```js title="vite.config.js"
+       import react from '@vitejs/plugin-react'
+
+       // in defineConfig({ plugins: [...] }): add the plugin call, keep the rest
+       react(),
+
+       // in your existing laravel({...}) call: input must include the entry file
+       // input: ['resources/css/app.css', 'resources/js/app.js'],
+       ```
+     </TabItem>
+     <TabItem label="Svelte">
+       ```js title="vite.config.js"
+       import { svelte } from '@sveltejs/vite-plugin-svelte'
+
+       // in defineConfig({ plugins: [...] }): add the plugin call, keep the rest
+       svelte(),
+
+       // in your existing laravel({...}) call: input must include the entry file
+       // input: ['resources/css/app.css', 'resources/js/app.js'],
+       ```
+
+       The build prints `[vite-plugin-svelte] no Svelte config found ... - using default configuration.` The message is harmless.
+     </TabItem>
+   </Tabs>
 
 5. Build the assets.
 
@@ -89,7 +124,7 @@ The extension is `.vue`, `.jsx` or `.svelte`, as set by the framework. The entry
 
 ### Check the result
 
-Open `/blogs`. The `Index` page of the module renders. To list the routes, run `php artisan route:list --name=blog`.
+Build the assets (step 5) or keep `npm run dev` running, and serve the application, for example with `php artisan serve`. Open `/blogs`. The `Index` page of the module renders. To list the routes, run `php artisan route:list --name=blog`.
 
 ## Add a page
 
@@ -99,7 +134,7 @@ To add a page to an existing module, run `module:make-inertia-page`.
 php artisan module:make-inertia-page Posts/Index Blog
 ```
 
-This writes `Modules/Blog/resources/js/Pages/Posts/Index.vue`. Render it from a controller with `Inertia::render('Blog/Posts/Index')`. Add `--react` or `--svelte` to override `inertia.frontend` for this page.
+This writes `Modules/Blog/resources/js/Pages/Posts/Index.vue`. The extension follows `inertia.frontend` (`.vue`, `.jsx` or `.svelte`). Add `--vue`, `--react` or `--svelte` to override it for this page. Render the page from a controller with `Inertia::render('Blog/Posts/Index')`. A new page needs a new build (`npm run build`) or a running `npm run dev`; without it the browser console shows `Page not found: ./Pages/Blog/Posts/Index.<ext>`, where `<ext>` is `vue`, `jsx` or `svelte`. Pass one framework flag at most: two or more make the command fail and write nothing.
 
 ## Add a component
 
@@ -107,7 +142,7 @@ This writes `Modules/Blog/resources/js/Pages/Posts/Index.vue`. Render it from a 
 php artisan module:make-inertia-component PostCard Blog
 ```
 
-This writes `Modules/Blog/resources/js/Components/PostCard.vue`. The flags `--vue`, `--react` and `--svelte` work as for pages.
+This writes `Modules/Blog/resources/js/Components/PostCard.vue`; the extension follows `inertia.frontend` or the flag. The flags `--vue`, `--react` and `--svelte` work as for pages, including the one-flag limit.
 
 ## Add an Inertia controller
 
@@ -117,7 +152,7 @@ To add an Inertia controller to an existing module, run:
 php artisan module:make-controller PostController Blog --inertia
 ```
 
-The controller has the resource methods. Each returns `Inertia::render('Blog/<Index|Create|Show|Edit>')`, where `Blog` is the module name. Create the matching pages with `module:make-inertia-page`.
+The controller has the resource methods. Each returns `Inertia::render('Blog/<Index|Create|Show|Edit>')`, where `Blog` is the module name, whatever the controller is called: `PostController` does not render `Blog/Posts/Index`. A module made with `--inertia` already has those four pages. To use other pages, change the names in the controller (for example to `Blog/Posts/Index`) and create the pages with `module:make-inertia-page`.
 
 ## Add the Inertia middleware
 
@@ -125,7 +160,7 @@ The controller has the resource methods. Each returns `Inertia::render('Blog/<In
 php artisan module:make-middleware HandleInertiaRequests Blog --inertia
 ```
 
-This writes `Modules/Blog/app/Http/Middleware/HandleInertiaRequests.php`, a class that extends `Inertia\Middleware`, with `$rootView = 'app'`. The command does not register it. Register it in `bootstrap/app.php`, and keep only one `HandleInertiaRequests` in the `web` group:
+This writes `Modules/Blog/app/Http/Middleware/HandleInertiaRequests.php`, a class that extends `Inertia\Middleware`, with `$rootView = 'app'`. The command does not register it. Register it in `bootstrap/app.php`. It replaces the `App\Http\Middleware\HandleInertiaRequests` entry that the Inertia setup of the prerequisite registered: keep only one `HandleInertiaRequests` in the `web` group.
 
 ```php title="bootstrap/app.php"
 ->withMiddleware(function (Middleware $middleware): void {
