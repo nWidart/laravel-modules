@@ -203,6 +203,36 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertStringNotContainsString('manifest: true', $contents);
     }
 
+    #[DataProvider('moduleHotFileProvider')]
+    public function test_it_generates_a_vite_file_and_layout_that_share_a_hot_file_per_module(string $name, string $lowerName)
+    {
+        $code = $this->artisan('module:make', ['name' => [$name]]);
+
+        $this->assertSame(0, $code);
+
+        $modulePath = $this->getModuleBasePath($name);
+
+        // The module dev server writes its own hot file, so it does not take over the app's public/hot.
+        $vite = $this->finder->get($modulePath.'/'.$this->app['modules']->config('stubs.files.vite'));
+
+        $this->assertStringContainsString("buildDirectory: 'build-{$lowerName}',", $vite);
+        $this->assertStringContainsString("hotFile: path.join(appDirectory, 'storage/vite-{$lowerName}.hot'),", $vite);
+
+        // module_vite() in the layout reads that same hot file.
+        $layout = $this->finder->get($modulePath.'/'.$this->app['modules']->config('stubs.files.views/master'));
+
+        $this->assertStringContainsString("module_vite('build-{$lowerName}', 'resources/assets/sass/app.scss', storage_path('vite-{$lowerName}.hot'))", $layout);
+        $this->assertStringContainsString("module_vite('build-{$lowerName}', 'resources/assets/js/app.js', storage_path('vite-{$lowerName}.hot'))", $layout);
+    }
+
+    public static function moduleHotFileProvider(): array
+    {
+        return [
+            'single word' => ['Blog', 'blog'],
+            'multi word' => ['ShopCart', 'shopcart'],
+        ];
+    }
+
     public function test_it_generates_package_json_with_the_vite_versions_of_a_laravel_app()
     {
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
