@@ -495,13 +495,20 @@ abstract class FileRepository implements Countable, RepositoryInterface
     /**
      * Forget the module used for cli session.
      *
+     * Fires the unused event on the module that was used. An empty file or the name of a
+     * module that no longer exists fires no event.
+     *
      * @return void
      */
     public function forgetUsed()
     {
-        if ($this->getFiles()->exists($this->getUsedStoragePath())) {
-            $this->getFiles()->delete($this->getUsedStoragePath());
-        }
+        $path = $this->getUsedStoragePath();
+
+        $module = $this->find($this->getFiles()->get($path));
+
+        $this->getFiles()->delete($path);
+
+        $module?->fireEvent(ModuleEvent::UNUSED);
     }
 
     /**
@@ -511,7 +518,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
      */
     public function getUsedNow(): string
     {
-        return $this->findOrFail($this->getFiles()->get($this->getUsedStoragePath()));
+        return $this->findOrFail($this->getFiles()->get($this->getUsedStoragePath()))->getStudlyName();
     }
 
     /**
@@ -541,7 +548,7 @@ abstract class FileRepository implements Countable, RepositoryInterface
         if (Str::contains($asset, ':') === false) {
             throw InvalidAssetPath::missingModuleName($asset);
         }
-        [$name, $url] = explode(':', $asset);
+        [$name, $url] = explode(':', $asset, 2);
 
         $baseUrl = str_replace(public_path().DIRECTORY_SEPARATOR, '', $this->getAssetsPath());
 

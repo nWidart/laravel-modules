@@ -3,7 +3,9 @@
 namespace Nwidart\Modules\Tests;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Event;
 use Nwidart\Modules\Collection;
+use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidAssetPath;
@@ -209,6 +211,46 @@ class LaravelFileRepositoryTest extends BaseTestCase
         $this->assertEquals('Recipe', $this->repository->getUsedNow());
     }
 
+    public function test_it_returns_the_used_module_name_as_a_string()
+    {
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
+        $this->repository->setUsed('recipe');
+
+        $used = $this->repository->getUsedNow();
+
+        $this->assertIsString($used);
+        $this->assertSame('Recipe', $used);
+    }
+
+    public function test_it_fires_the_unused_event_on_the_module_it_forgets()
+    {
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
+        $this->repository->setUsed('Recipe');
+        Event::fake();
+
+        $this->repository->forgetUsed();
+
+        $this->assertFileDoesNotExist(storage_path('app/modules/modules.used'));
+        Event::assertDispatched(
+            'modules.recipe.'.ModuleEvent::UNUSED,
+            fn (string $event, array $payload) => $payload[0] instanceof Module && $payload[0]->getName() === 'Recipe'
+        );
+    }
+
+    public function test_it_fires_no_unused_event_when_no_module_or_a_missing_module_is_used()
+    {
+        $this->repository->addLocation(__DIR__.'/stubs/valid');
+        Event::fake();
+
+        $this->repository->forgetUsed();
+
+        $this->repository->getFiles()->put($this->repository->getUsedStoragePath(), 'Ghost');
+        $this->repository->forgetUsed();
+
+        $this->assertFileDoesNotExist(storage_path('app/modules/modules.used'));
+        Event::assertNothingDispatched();
+    }
+
     public function test_it_returns_laravel_filesystem()
     {
         $this->assertInstanceOf(Filesystem::class, $this->repository->getFiles());
@@ -224,6 +266,13 @@ class LaravelFileRepositoryTest extends BaseTestCase
         $path = $this->repository->asset('recipe:test.js');
 
         $this->assertEquals('//localhost/modules/recipe/test.js', $path);
+    }
+
+    public function test_it_keeps_the_asset_path_after_a_second_colon()
+    {
+        $path = $this->repository->asset('recipe:img/a:b.png');
+
+        $this->assertSame('//localhost/modules/recipe/img/a:b.png', $path);
     }
 
     public function test_it_throws_exception_if_module_is_omitted()

@@ -22,7 +22,7 @@ The name has the form `modules.{lowername}.{event}`. `{lowername}` is the lower-
 | `deleting` | `ModuleEvent::DELETING` | `Module::delete()`, before the status and the folder are removed. This covers `module:delete`, `Repository::delete()` and `module:make --force` on an existing module. | the `Module` | Fired |
 | `deleted` | `ModuleEvent::DELETED` | `Module::delete()`, after the folder is removed. | the `Module` | Fired |
 | `used` | `ModuleEvent::USED` | `Repository::setUsed()`, which `module:use` calls. | the `Module` | Fired |
-| `unused` | `ModuleEvent::UNUSED` | n/a | n/a | Not fired |
+| `unused` | `ModuleEvent::UNUSED` | `Repository::forgetUsed()`, which `module:unuse` calls, after it deletes the stored file. Not fired when no module is in use or the stored name matches no module. | the `Module` | Fired |
 | `register` | `ModuleEvent::REGISTER` | `Module::register()`. | the `Module` | Deprecated. The package never calls `Module::register()`. Removed in version 14. |
 | `boot` | `ModuleEvent::BOOT` | `Module::boot()`. | the `Module` | Deprecated. The package never calls `Module::boot()`. Removed in version 14. |
 

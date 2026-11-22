@@ -13,7 +13,7 @@ use Nwidart\Modules\Module;
  * implements them.
  *
  * @method void setUsed(string $name) Set the module used for the cli session.
- * @method void forgetUsed(Module|null $module = null) Forget the module used for the cli session. module:unuse passes the module; FileRepository ignores it.
+ * @method void forgetUsed() Forget the module used for the cli session and fire the unused event on it.
  * @method string getUsedNow() Get the module used for the cli session.
  * @method void update(string $module) Update the dependencies of the given module.
  * @method $this resetModules() Clear the cached scan of the modules.

@@ -2,10 +2,16 @@
 
 namespace Nwidart\Modules\Commands\Actions;
 
-use Nwidart\Modules\Commands\BaseCommand;
+use Illuminate\Console\Command;
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
+use Nwidart\Modules\Traits\InteractsWithModuleRepository;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
-class UnUseCommand extends BaseCommand
+class UnUseCommand extends Command
 {
+    use InteractsWithModuleRepository;
+
     /**
      * The console command name.
      *
@@ -18,24 +24,60 @@ class UnUseCommand extends BaseCommand
      *
      * @var string
      */
-    protected $description = 'Forget the used module with module:use';
+    protected $description = 'Forget the module used with module:use';
 
     /**
-     * @param  string  $name
+     * Execute the console command.
      */
-    #[\Override]
-    public function executeAction($name): void
+    public function handle(): int
     {
-        $module = $this->getModuleModel($name);
+        $repository = $this->moduleRepository();
 
-        $this->components->task("Forget Using <fg=cyan;options=bold>{$module->getName()}</> Module", function () use ($module) {
-            $this->moduleRepository()->forgetUsed($module);
+        try {
+            $used = $repository->getUsedNow();
+        } catch (ModuleNotFoundException) {
+            $used = null;
+        }
+
+        if ($used === null) {
+            // still delete the file: it can hold the name of a module that no longer exists
+            $repository->forgetUsed();
+
+            $this->components->info('No module is in use.');
+
+            return self::SUCCESS;
+        }
+
+        $this->components->task("Forget Using <fg=cyan;options=bold>{$used}</> Module", function () use ($repository) {
+            $repository->forgetUsed();
         });
+
+        return self::SUCCESS;
     }
 
+    /**
+     * Get the console command arguments.
+     *
+     * @return array<int, array<int, mixed>>
+     */
     #[\Override]
-    public function getInfo(): ?string
+    protected function getArguments()
     {
-        return 'Forget Using Module ...';
+        return [
+            ['module', InputArgument::IS_ARRAY, 'Ignored: the used module is forgotten, whatever the name. Kept for backward compatibility.'],
+        ];
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array<int, array<int, mixed>>
+     */
+    #[\Override]
+    protected function getOptions()
+    {
+        return [
+            ['all', 'a', InputOption::VALUE_NONE, 'Ignored. Kept for backward compatibility.'],
+        ];
     }
 }

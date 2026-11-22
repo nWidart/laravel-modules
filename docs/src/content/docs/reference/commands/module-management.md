@@ -7,7 +7,7 @@ This page lists the commands that manage existing modules. `module:make` and the
 
 ## Shared behaviour
 
-`BaseCommand` is the base class of the commands that run one action for each selected module (see [Contracts and base classes](/laravel-modules/reference/api/contracts/#basecommand)). Nine commands on this page extend it and share the behaviour below: `module:enable`, `module:disable`, `module:delete`, `module:use`, `module:unuse`, `module:update`, `module:dump`, `module:lang` and `module:list-commands`. The other four (`module:list`, `module:install`, `module:prune` and `module:model-show`) define their own arguments and say so in their entries.
+`BaseCommand` is the base class of the commands that run one action for each selected module (see [Contracts and base classes](/laravel-modules/reference/api/contracts/#basecommand)). Eight commands on this page extend it and share the behaviour below: `module:enable`, `module:disable`, `module:delete`, `module:use`, `module:update`, `module:dump`, `module:lang` and `module:list-commands`. The other five (`module:list`, `module:unuse`, `module:install`, `module:prune` and `module:model-show`) define their own arguments and say so in their entries.
 
 ### Arguments and options of `BaseCommand` commands
 
@@ -184,7 +184,7 @@ php artisan module:use Blog
 
 ## module:unuse
 
-Clears the module stored by `module:use`.
+Forgets the module stored by `module:use`.
 
 ```bash
 php artisan module:unuse [<module>...] [-a|--all]
@@ -194,20 +194,22 @@ php artisan module:unuse [<module>...] [-a|--all]
 
 | Name | Required | Description |
 | --- | --- | --- |
-| `module` | no | Module names. See [Shared behaviour](#shared-behaviour). |
+| `module` | no | Ignored. The used module is forgotten, whatever the name. Kept for backward compatibility. An unknown name is accepted. |
 
 **Options**
 
 | Name | Shortcut | Default | Description |
 | --- | --- | --- | --- |
-| `--all` | `-a` | `false` | Run the action for every module. |
+| `--all` | `-a` | `false` | Ignored. Kept for backward compatibility. |
 
 **Notes**
 
-- The command requires a module name or `--all`, like every `BaseCommand` command. It deletes the file written by `module:use` whatever the name is, as long as the module exists.
+- The command takes no module name and never prompts. It deletes the file written by `module:use` and exits with status `0`.
+- When a module is in use, it prints `Forget Using Blog Module ......... DONE`, with the name of that module, and the module fires the `unused` [event](/laravel-modules/reference/api/events/).
+- When no module is in use, or the stored name is a module that no longer exists, it prints `No module is in use.` and fires no event. The stored file is deleted in both cases.
 
 ```bash
-php artisan module:unuse Blog
+php artisan module:unuse
 ```
 
 ## module:install
