@@ -94,4 +94,4 @@ Stubs live in `src/Commands/stubs/` and users can publish them to `stubs/nwidart
 
 ## Laravel Boost assets
 
-`.ai/laravel-modules/` contains the guideline (`core.blade.php`) and skill (`1/skill/laravel-modules-development`) that `laravel/boost` ships to end users of this package. These files are user-facing docs, not instructions for working in this repo.
+`resources/boost/` contains the guideline (`guidelines/core.blade.php`) and skill (`skills/laravel-modules-development/SKILL.blade.php`) that `laravel/boost` ships to end users of this package. These files are user-facing docs, not instructions for working in this repo.
