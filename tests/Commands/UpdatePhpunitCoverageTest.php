@@ -5,6 +5,7 @@ namespace Commands;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
 use Nwidart\Modules\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class UpdatePhpunitCoverageTest extends BaseTestCase
 {
@@ -270,6 +271,244 @@ XML);
 
         $this->assertStringContainsString('Could not remove the entry [modules/Shop/app] from phpunit.xml', Artisan::output());
         $this->assertSame($xml, file_get_contents(base_path('phpunit.xml')));
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function emptySourceElements(): array
+    {
+        return [
+            'empty element' => ['<source></source>'],
+            'self-closing element' => ['<source/>'],
+            'self-closing element with a space' => ['<source />'],
+        ];
+    }
+
+    #[DataProvider('emptySourceElements')]
+    public function test_it_expands_an_empty_source_element(string $source)
+    {
+        $this->makeModuleAppFolders('Blog');
+        $this->MakeModulesStatuses(json_encode(['Blog' => true]));
+        file_put_contents(base_path('phpunit.xml'), $this->formattedPhpunit("    {$source}\n"));
+
+        $this->assertSame(0, $this->artisan('module:update-phpunit-coverage'));
+
+        $this->assertSame($this->formattedPhpunit(<<<'XML'
+    <source>
+        <include>
+            <directory>./app</directory>
+            <directory suffix=".php">./modules/Blog/app/</directory>
+        </include>
+    </source>
+
+XML), file_get_contents(base_path('phpunit.xml')));
+        $this->assertStringContainsString('phpunit.xml updated with enabled module directories.', Artisan::output());
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function emptySourceElementsWithAttributes(): array
+    {
+        return [
+            'empty element' => ['<source ignoreIndirectDeprecations="true" restrictNotices="true"></source>'],
+            'self-closing element' => ['<source ignoreIndirectDeprecations="true" restrictNotices="true" />'],
+        ];
+    }
+
+    #[DataProvider('emptySourceElementsWithAttributes')]
+    public function test_it_keeps_the_attributes_of_an_empty_source_element(string $source)
+    {
+        $this->makeModuleAppFolders('Blog');
+        $this->MakeModulesStatuses(json_encode(['Blog' => true]));
+        file_put_contents(base_path('phpunit.xml'), $this->formattedPhpunit("    {$source}\n"));
+
+        $this->assertSame(0, $this->artisan('module:update-phpunit-coverage'));
+
+        $this->assertSame($this->formattedPhpunit(<<<'XML'
+    <source ignoreIndirectDeprecations="true" restrictNotices="true">
+        <include>
+            <directory>./app</directory>
+            <directory suffix=".php">./modules/Blog/app/</directory>
+        </include>
+    </source>
+
+XML), file_get_contents(base_path('phpunit.xml')));
+    }
+
+    public function test_it_keeps_the_windows_line_endings_when_it_expands_an_empty_source_element()
+    {
+        $this->makeModuleAppFolders('Blog');
+        $this->MakeModulesStatuses(json_encode(['Blog' => true]));
+        file_put_contents(base_path('phpunit.xml'), str_replace("\n", "\r\n", $this->formattedPhpunit("    <source/>\n")));
+
+        $this->assertSame(0, $this->artisan('module:update-phpunit-coverage'));
+
+        $this->assertSame(str_replace("\n", "\r\n", $this->formattedPhpunit(<<<'XML'
+    <source>
+        <include>
+            <directory>./app</directory>
+            <directory suffix=".php">./modules/Blog/app/</directory>
+        </include>
+    </source>
+
+XML)), file_get_contents(base_path('phpunit.xml')));
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function emptyIncludeElements(): array
+    {
+        return [
+            'empty element' => ['<include></include>'],
+            'self-closing element' => ['<include/>'],
+        ];
+    }
+
+    #[DataProvider('emptyIncludeElements')]
+    public function test_it_expands_an_empty_include_element(string $include)
+    {
+        $this->makeModuleAppFolders('Blog');
+        $this->MakeModulesStatuses(json_encode(['Blog' => true]));
+        file_put_contents(base_path('phpunit.xml'), str_replace("\n", "\r\n", $this->formattedPhpunit(<<<XML
+    <source>
+        {$include}
+        <exclude>
+            <directory>./app/Legacy</directory>
+        </exclude>
+    </source>
+
+XML)));
+
+        $this->assertSame(0, $this->artisan('module:update-phpunit-coverage'));
+
+        // The element exists, so only the module entries are added, as in a non-empty <include>.
+        $this->assertSame(str_replace("\n", "\r\n", $this->formattedPhpunit(<<<'XML'
+    <source>
+        <include>
+            <directory suffix=".php">./modules/Blog/app/</directory>
+        </include>
+        <exclude>
+            <directory>./app/Legacy</directory>
+        </exclude>
+    </source>
+
+XML)), file_get_contents(base_path('phpunit.xml')));
+    }
+
+    public function test_it_splits_a_source_element_written_on_one_line()
+    {
+        $this->makeModuleAppFolders('Blog');
+        $this->MakeModulesStatuses(json_encode(['Blog' => true]));
+        file_put_contents(base_path('phpunit.xml'), $this->formattedPhpunit(<<<'XML'
+    <source><exclude><directory>./app/Legacy</directory></exclude></source>
+
+XML));
+
+        $this->assertSame(0, $this->artisan('module:update-phpunit-coverage'));
+
+        $this->assertSame($this->formattedPhpunit(<<<'XML'
+    <source>
+        <include>
+            <directory>./app</directory>
+            <directory suffix=".php">./modules/Blog/app/</directory>
+        </include>
+        <exclude><directory>./app/Legacy</directory></exclude>
+    </source>
+
+XML), file_get_contents(base_path('phpunit.xml')));
+    }
+
+    public function test_it_adds_the_include_element_after_a_source_tag_followed_by_content()
+    {
+        $this->makeModuleAppFolders('Blog');
+        $this->MakeModulesStatuses(json_encode(['Blog' => true]));
+        file_put_contents(base_path('phpunit.xml'), $this->formattedPhpunit(<<<'XML'
+    <source><exclude>
+            <directory>./app/Legacy</directory>
+        </exclude>
+    </source>
+
+XML));
+
+        $this->assertSame(0, $this->artisan('module:update-phpunit-coverage'));
+
+        $this->assertSame($this->formattedPhpunit(<<<'XML'
+    <source>
+        <include>
+            <directory>./app</directory>
+            <directory suffix=".php">./modules/Blog/app/</directory>
+        </include>
+        <exclude>
+            <directory>./app/Legacy</directory>
+        </exclude>
+    </source>
+
+XML), file_get_contents(base_path('phpunit.xml')));
+    }
+
+    public function test_it_adds_entries_to_an_include_tag_on_the_source_line()
+    {
+        $this->makeModuleAppFolders('Blog');
+        $this->MakeModulesStatuses(json_encode(['Blog' => true]));
+        file_put_contents(base_path('phpunit.xml'), $this->formattedPhpunit(<<<'XML'
+    <source><include>
+            <directory>./app</directory>
+        </include>
+    </source>
+
+XML));
+
+        $this->assertSame(0, $this->artisan('module:update-phpunit-coverage'));
+
+        $this->assertSame($this->formattedPhpunit(<<<'XML'
+    <source><include>
+            <directory>./app</directory>
+            <directory suffix=".php">./modules/Blog/app/</directory>
+        </include>
+    </source>
+
+XML), file_get_contents(base_path('phpunit.xml')));
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function layoutsItCannotEdit(): array
+    {
+        return [
+            'source and include on one line' => ["    <source><include><directory>./app</directory></include></source>\n"],
+            'include closed on a directory line' => ["    <source>\n        <include>\n            <directory>./app</directory></include>\n    </source>\n"],
+            'self-closing source followed by content' => ["    <source/><!-- coverage -->\n"],
+        ];
+    }
+
+    #[DataProvider('layoutsItCannotEdit')]
+    public function test_it_warns_without_reporting_success_when_it_cannot_add_the_entries(string $source)
+    {
+        $this->makeModuleAppFolders('Blog');
+        $this->MakeModulesStatuses(json_encode(['Blog' => true]));
+        $xml = $this->formattedPhpunit($source);
+        file_put_contents(base_path('phpunit.xml'), $xml);
+
+        $this->assertSame(0, $this->artisan('module:update-phpunit-coverage'));
+
+        $output = Artisan::output();
+        $this->assertStringContainsString('Could not find where to add the module entries in phpunit.xml: add them by hand.', $output);
+        $this->assertStringNotContainsString('phpunit.xml updated', $output);
+        $this->assertSame($xml, file_get_contents(base_path('phpunit.xml')));
+    }
+
+    public function test_invalid_statuses_json_fails_with_a_clear_message()
+    {
+        // With the file activator, artisan stops at boot on such a file; another activator lets the command run.
+        $this->makePhpunit();
+        $this->MakeModulesStatuses('{"Blog": tru');
+
+        $this->assertSame(98, $this->artisan('module:update-phpunit-coverage'));
+        $this->assertStringContainsString('Error decoding JSON from', Artisan::output());
     }
 
     public function test_invalid_phpunit_xml_fails_with_a_clear_message()

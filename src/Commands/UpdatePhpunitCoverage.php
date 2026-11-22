@@ -91,13 +91,29 @@ class UpdatePhpunitCoverage extends Command
         $eol = str_contains($xml, "\r\n") ? "\r\n" : "\n";
         $unit = preg_match('/^([ \t]+)</m', $xml, $match) === 1 ? $match[1] : '    ';
         $inSource = $inInclude = false;
-        $sourceLine = $includeEnd = $siblingIndent = null;
+        $sourceLine = $sourceRest = $emptyInclude = $includeEnd = $siblingIndent = null;
 
         foreach ($lines as $i => $line) {
-            if (preg_match('#^\s*<source\b[^>]*(?<!/)>\s*$#', $line)) {
-                [$inSource, $sourceLine] = [true, $i];
+            if (! $inSource && preg_match('#^[ \t]*<source\b([^>]*?)(/?)>(.*?)\s*$#s', $line, $match)) {
+                // <source> alone, <source></source>, <source/>, or <source> followed by content on its line.
+                [, $attributes, $selfClosing, $rest] = $match;
+                $closed = $selfClosing === '/' || str_ends_with($rest, '</source>');
+                $inner = trim($closed && $selfClosing === '' ? substr($rest, 0, -strlen('</source>')) : $rest);
+
+                if (($selfClosing === '/' && $rest !== '') || str_contains($inner, '</source>')) {
+                    continue;
+                }
+
+                $sourceLine = $i;
+                $inSource = ! $closed;
+                $inInclude = $inSource && preg_match('#^<include\b[^>]*(?<!/)>$#', $inner) === 1;
+                // The line is rewritten only when the <source> tag is not alone on it.
+                $sourceRest = $rest === '' && ! $closed ? null : ['<source'.rtrim($attributes).'>', $inner, $closed];
             } elseif (str_contains($line, '</source>')) {
                 $inSource = false;
+            } elseif ($inSource && ! $inInclude && preg_match('#^[ \t]*<include\b([^>]*?)\s*(/>|>\s*</include>)\s*$#', $line, $match)) {
+                // <include></include> or <include/>.
+                $emptyInclude = [$i, '<include'.rtrim($match[1]).'>'];
             } elseif ($inSource && preg_match('#^\s*<include\b[^>]*(?<!/)>\s*$#', $line)) {
                 $inInclude = true;
             } elseif ($inInclude && preg_match('#^\s*</include>\s*$#', $line)) {
@@ -120,6 +136,8 @@ class UpdatePhpunitCoverage extends Command
             $this->warn("Could not remove the entry [{$path}] from phpunit.xml: remove it by hand.");
         }
 
+        $complete = true;
+
         if ($add !== []) {
             $block = fn (string $indent, array $entries) => implode('', array_map(fn ($entry) => $indent.$entry.$eol, $entries));
             $include = fn (string $indent) => $block($indent, ['<include>'])
@@ -130,15 +148,35 @@ class UpdatePhpunitCoverage extends Command
             if ($includeEnd !== null) {
                 // Before </include>, indented like the other entries.
                 $lines[$includeEnd] = $block($siblingIndent ?? $this->indentOf($lines[$includeEnd]).$unit, $add).$lines[$includeEnd];
+            } elseif ($emptyInclude !== null) {
+                // Expand <include></include> or <include/>.
+                [$at, $tag] = $emptyInclude;
+                $indent = $this->indentOf($lines[$at]);
+                $lines[$at] = $block($indent, [$tag]).$block($indent.$unit, $add).$indent.'</include>'.$this->lineEnding($lines[$at]);
             } elseif ($xpath->query('/*/source/include')->length === 0 && $sourceLine !== null) {
-                // Right after <source>.
-                $lines[$sourceLine] .= $include($this->indentOf($lines[$sourceLine]).$unit);
+                $indent = $this->indentOf($lines[$sourceLine]);
+
+                if ($sourceRest === null) {
+                    // Right after <source>.
+                    $lines[$sourceLine] .= $include($indent.$unit);
+                } else {
+                    // Split the line: <source>, the new <include>, the rest of the line, then </source> if it was on it.
+                    [$tag, $inner, $closed] = $sourceRest;
+                    $ending = $this->lineEnding($lines[$sourceLine]);
+                    $lines[$sourceLine] = $block($indent, [$tag]).$include($indent.$unit)
+                        .($inner === '' ? '' : $indent.$unit.$inner.($closed ? $eol : $ending))
+                        .($closed ? $indent.'</source>'.$ending : '');
+                }
             } elseif ($xpath->query('/*/source')->length === 0 && $rootEnd !== null) {
                 // Before </phpunit>.
                 $indent = $this->indentOf($lines[$rootEnd]).$unit;
                 $lines[$rootEnd] = $block($indent, ['<source>']).$include($indent.$unit).$block($indent, ['</source>']).$lines[$rootEnd];
             } else {
                 $this->warn('Could not find where to add the module entries in phpunit.xml: add them by hand.');
+
+                // Not a failure exit: the layout stays the same on every run, and scripts that run
+                // this command after each module change must not fail until the file is edited.
+                $complete = false;
             }
         }
 
@@ -146,7 +184,9 @@ class UpdatePhpunitCoverage extends Command
             file_put_contents($phpunitXmlPath, $updated);
         }
 
-        $this->info('phpunit.xml updated with enabled module directories.');
+        if ($complete) {
+            $this->info('phpunit.xml updated with enabled module directories.');
+        }
 
         return 0;
     }
@@ -174,5 +214,10 @@ class UpdatePhpunitCoverage extends Command
     private function indentOf(string $line): string
     {
         return substr($line, 0, strspn($line, " \t"));
+    }
+
+    private function lineEnding(string $line): string
+    {
+        return substr($line, strlen(rtrim($line, "\r\n")));
     }
 }
