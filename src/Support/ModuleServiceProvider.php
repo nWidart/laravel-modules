@@ -4,8 +4,8 @@ namespace Nwidart\Modules\Support;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\View\Compilers\BladeCompiler;
 use Nwidart\Modules\Actuator\HealthIndicators;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
@@ -312,7 +312,10 @@ abstract class ModuleServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        Blade::componentNamespace(config('modules.namespace').'\\'.$this->name.'\\View\\Components', $this->nameLower);
+        $namespace = config('modules.namespace').'\\'.$this->name.'\\View\\Components';
+        $prefix = $this->nameLower;
+
+        $this->callAfterResolving('blade.compiler', fn (BladeCompiler $blade) => $blade->componentNamespace($namespace, $prefix));
     }
 
     /**

@@ -3,10 +3,14 @@
 namespace Nwidart\Modules\Tests\Support;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\LaravelModulesServiceProvider;
 use Nwidart\Modules\Support\ModuleServiceProvider;
+use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Tests\BaseTestCase;
+use Orchestra\Testbench\Attributes\DefineEnvironment;
 
 /**
  * Boots the application as for an HTTP request.
@@ -30,6 +34,10 @@ class ModuleServiceProviderOutsideConsoleTest extends BaseTestCase
     {
         $_SERVER['APP_RUNNING_IN_CONSOLE'] = 'false';
 
+        // Publish paths are static and keyed by provider class.
+        ServiceProvider::$publishes = [];
+        ServiceProvider::$publishGroups = [];
+
         parent::setUp();
 
         $this->assertFalse($this->app->runningInConsole());
@@ -37,10 +45,6 @@ class ModuleServiceProviderOutsideConsoleTest extends BaseTestCase
         $this->finder = $this->app['files'];
         $this->createModule();
         $this->configPath = module_path('Blog', config('modules.paths.generator.config.path'));
-
-        // Publish paths are static and keyed by provider class; the anonymous provider below keeps its class name across tests.
-        ServiceProvider::$publishes = [];
-        ServiceProvider::$publishGroups = [];
     }
 
     protected function tearDown(): void
@@ -90,6 +94,30 @@ class ModuleServiceProviderOutsideConsoleTest extends BaseTestCase
         $this->assertContains($sourcePath, $this->app['view']->getFinder()->getHints()['blog']);
         $this->assertSame([], ServiceProvider::pathsToPublish($provider::class, 'views'));
         $this->assertSame([], ServiceProvider::pathsToPublish($provider::class, 'blog-module-views'));
+    }
+
+    public function test_package_publish_paths_are_skipped()
+    {
+        $this->assertSame([], ServiceProvider::pathsToPublish(LaravelModulesServiceProvider::class));
+    }
+
+    public function test_package_about_info_is_skipped()
+    {
+        $this->assertSame(0, Artisan::call('about', ['--only' => 'Laravel-Modules']));
+        $this->assertStringNotContainsString('Laravel-Modules', Artisan::output());
+    }
+
+    #[DefineEnvironment('enableCustomStubs')]
+    public function test_programmatic_commands_and_custom_stubs_are_available()
+    {
+        $this->assertSame(0, Artisan::call('module:list'));
+        $this->assertSame('stub-override', Stub::create('/model.stub')->render());
+    }
+
+    protected function enableCustomStubs($app): void
+    {
+        $app['config']->set('modules.stubs.enabled', true);
+        $app['config']->set('modules.stubs.path', __DIR__.'/../stubs');
     }
 
     private function writeModuleConfig(string $file, array $values): void
