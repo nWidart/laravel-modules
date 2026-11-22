@@ -293,6 +293,7 @@ This command has no options besides `--force`.
 
 - Writes `<name in lower case>.blade.php` to the `component-view` generator path (`paths.generator.component-view.path`, default `resources/views/components`).
 - Stub: `component-view.stub`.
+- The Blade comment in the view holds a random inspiring quote as plain text, like the one `module:make-view` writes.
 
 ```bash
 php artisan module:make-component-view Alert Blog
@@ -819,6 +820,7 @@ php artisan module:make-migration <name> [<module>] [--fields=FIELDS] [--plain]
 - Writes `<Y_m_d_His>_<name>.php` to the `migration` generator path (`paths.generator.migration.path`, default `database/migrations`). The class name is the studly-case name.
 - Stub: with `--plain`, always `migration/plain.stub`. Without it, the first word of the name selects the stub. `create` or `make` gives `migration/create.stub`; `add`, `update`, `append` or `insert` gives `migration/add.stub`; `delete` or `remove` gives `migration/delete.stub`; `destroy` or `drop` gives `migration/drop.stub`; any other word gives `migration/plain.stub`.
 - The table name comes from the rest of the name: `create_posts_table` gives `posts`, `add_slug_to_posts_table` gives `posts`.
+- The generated column lines are indented with four spaces per level (12 spaces inside `Schema::create`), without tab characters or a blank line before `});`.
 - Each field is `column:type[:modifier...]`. The shortcuts `soft_delete` and `remember_token`, and `belongsTo:column:key:table`, are also accepted.
 
 ```bash

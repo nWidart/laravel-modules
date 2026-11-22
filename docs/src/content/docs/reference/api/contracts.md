@@ -196,7 +196,7 @@ Path and namespace helpers. They build the class namespaces of the generators fr
 
 | Signature | Returns | Description |
 | --- | --- | --- |
-| `clearCache()` | `void` | Calls `resetModules()` on the repository. For commands. |
+| `clearCache()` | `void` | Calls `resetModules()` on the repository, so the next lookup reads the `module.json` files again. It does not delete `bootstrap/cache/modules.php`. For commands. |
 
 ### MigrationLoaderTrait
 

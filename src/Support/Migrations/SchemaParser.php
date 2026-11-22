@@ -36,6 +36,11 @@ class SchemaParser implements Arrayable
     protected ?string $schema;
 
     /**
+     * The indentation of the fields placeholder in the migration stubs (inside the Schema closure).
+     */
+    protected string $indentation = '            ';
+
+    /**
      * The relationship keys.
      *
      * @var array<int, string>
@@ -124,16 +129,19 @@ class SchemaParser implements Arrayable
 
     /**
      * Render the migration to formatted script.
+     *
+     * The stubs indent the placeholder, so the first line has no indentation and every
+     * following line is indented with spaces to match it. There is no trailing line break.
      */
     public function render(): string
     {
-        $results = '';
+        $statements = [];
 
         foreach ($this->getFields() as [$column, $attributes]) {
-            $results .= $this->createField($column, $attributes);
+            $statements[] = $this->createField($column, $attributes);
         }
 
-        return $results;
+        return $this->joinStatements($statements);
     }
 
     /**
@@ -149,24 +157,36 @@ class SchemaParser implements Arrayable
      */
     public function down(): string
     {
-        $results = '';
+        $statements = [];
 
         foreach ($this->getFields() as [$column, $attributes]) {
             $attributes = [head($attributes)];
-            $results .= $this->createField($column, $attributes, 'remove');
+            $statements[] = $this->createField($column, $attributes, 'remove');
         }
 
-        return $results;
+        return $this->joinStatements($statements);
     }
 
     /**
-     * Create field.
+     * Join the statements of the fields, one per line, indented like the stub placeholder.
+     *
+     * @param  array<int, string>  $statements
+     */
+    protected function joinStatements(array $statements): string
+    {
+        return implode(PHP_EOL.$this->indentation, $statements);
+    }
+
+    /**
+     * Create the statement of a field, without leading indentation or trailing line break.
+     *
+     * A relation takes two lines; the second is indented like the stub placeholder.
      *
      * @param  array<int, string>  $attributes
      */
     public function createField(string $column, array $attributes, string $type = 'add'): string
     {
-        $results = "\t\t\t".'$table';
+        $results = '$table';
 
         foreach ($attributes as $key => $field) {
             if (in_array($column, $this->relationshipKeys)) {
@@ -176,7 +196,7 @@ class SchemaParser implements Arrayable
             }
         }
 
-        return $results.';'.PHP_EOL;
+        return $results.';';
     }
 
     /**
@@ -187,7 +207,7 @@ class SchemaParser implements Arrayable
         if ($key === 0) {
             $relatedColumn = $this->getRelatedColumn($field);
 
-            return "->integer('{$relatedColumn}')->unsigned();".PHP_EOL."\t\t\t"."\$table->foreign('{$relatedColumn}')";
+            return "->integer('{$relatedColumn}')->unsigned();".PHP_EOL.$this->indentation."\$table->foreign('{$relatedColumn}')";
         }
         if ($key === 1) {
             return "->references('{$field}')";
@@ -213,7 +233,7 @@ class SchemaParser implements Arrayable
 
         $relatedColumn = $this->getRelatedColumn($field);
 
-        return "->dropForeign(['{$relatedColumn}']);".PHP_EOL."\t\t\t"."\$table->dropColumn('{$relatedColumn}')";
+        return "->dropForeign(['{$relatedColumn}']);".PHP_EOL.$this->indentation."\$table->dropColumn('{$relatedColumn}')";
     }
 
     /**

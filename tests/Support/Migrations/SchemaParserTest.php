@@ -11,9 +11,9 @@ class SchemaParserTest extends TestCase
     {
         $parser = new SchemaParser('username:string, password:integer');
 
-        $expected = <<<TEXT
-\t\t\t\$table->string('username');
-\t\t\t\$table->integer('password');\n
+        $expected = <<<'TEXT'
+$table->string('username');
+            $table->integer('password');
 TEXT;
 
         self::assertEquals($expected, $parser->render());
@@ -23,9 +23,9 @@ TEXT;
     {
         $parser = new SchemaParser('username:string, password:integer');
 
-        $expected = <<<TEXT
-\t\t\t\$table->string('username');
-\t\t\t\$table->integer('password');\n
+        $expected = <<<'TEXT'
+$table->string('username');
+            $table->integer('password');
 TEXT;
 
         self::assertEquals($expected, $parser->up());
@@ -35,9 +35,9 @@ TEXT;
     {
         $parser = new SchemaParser('username:string, password:integer');
 
-        $expected = <<<TEXT
-\t\t\t\$table->dropColumn('username');
-\t\t\t\$table->dropColumn('password');\n
+        $expected = <<<'TEXT'
+$table->dropColumn('username');
+            $table->dropColumn('password');
 TEXT;
 
         self::assertEquals($expected, $parser->down());
@@ -47,11 +47,11 @@ TEXT;
     {
         $parser = new SchemaParser('belongsTo:user:id:users, belongsTo:category:id:categories');
 
-        $expected = <<<TEXT
-\t\t\t\$table->integer('user_id')->unsigned();
-\t\t\t\$table->foreign('user_id')->references('id')->on('users');
-\t\t\t\$table->integer('category_id')->unsigned();
-\t\t\t\$table->foreign('category_id')->references('id')->on('categories');\n
+        $expected = <<<'TEXT'
+$table->integer('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->integer('category_id')->unsigned();
+            $table->foreign('category_id')->references('id')->on('categories');
 TEXT;
 
         self::assertEquals($expected, $parser->up());
@@ -62,11 +62,11 @@ TEXT;
     {
         $parser = new SchemaParser('belongsTo:user:id:users:onDelete(\'cascade\'), belongsTo:category:id:categories');
 
-        $expected = <<<TEXT
-\t\t\t\$table->dropForeign(['user_id']);
-\t\t\t\$table->dropColumn('user_id');
-\t\t\t\$table->dropForeign(['category_id']);
-\t\t\t\$table->dropColumn('category_id');\n
+        $expected = <<<'TEXT'
+$table->dropForeign(['user_id']);
+            $table->dropColumn('user_id');
+            $table->dropForeign(['category_id']);
+            $table->dropColumn('category_id');
 TEXT;
 
         self::assertEquals($expected, $parser->down());
@@ -76,14 +76,14 @@ TEXT;
     {
         $parser = new SchemaParser('soft_delete, remember_token');
 
-        $up = <<<TEXT
-\t\t\t\$table->softDeletes();
-\t\t\t\$table->rememberToken();\n
+        $up = <<<'TEXT'
+$table->softDeletes();
+            $table->rememberToken();
 TEXT;
 
-        $down = <<<TEXT
-\t\t\t\$table->dropSoftDeletes();
-\t\t\t\$table->dropRememberToken();\n
+        $down = <<<'TEXT'
+$table->dropSoftDeletes();
+            $table->dropRememberToken();
 TEXT;
 
         self::assertEquals($up, $parser->up());
@@ -94,9 +94,9 @@ TEXT;
     {
         $parser = new SchemaParser("title:string:default('Hello World'), body:text:comment(\"A long body\")");
 
-        $expected = <<<TEXT
-\t\t\t\$table->string('title')->default('Hello World');
-\t\t\t\$table->text('body')->comment("A long body");\n
+        $expected = <<<'TEXT'
+$table->string('title')->default('Hello World');
+            $table->text('body')->comment("A long body");
 TEXT;
 
         self::assertEquals($expected, $parser->up());
@@ -106,9 +106,9 @@ TEXT;
     {
         $parser = new SchemaParser(' title : string : nullable ,  body:text ');
 
-        $expected = <<<TEXT
-\t\t\t\$table->string('title')->nullable();
-\t\t\t\$table->text('body');\n
+        $expected = <<<'TEXT'
+$table->string('title')->nullable();
+            $table->text('body');
 TEXT;
 
         self::assertEquals($expected, $parser->up());
@@ -118,10 +118,10 @@ TEXT;
     {
         $parser = new SchemaParser("votes:integer:default(1,5), name:string:default('a,b'), price:float:default(1.5)");
 
-        $expected = <<<TEXT
-\t\t\t\$table->integer('votes')->default(1,5);
-\t\t\t\$table->string('name')->default('a,b');
-\t\t\t\$table->float('price')->default(1.5);\n
+        $expected = <<<'TEXT'
+$table->integer('votes')->default(1,5);
+            $table->string('name')->default('a,b');
+            $table->float('price')->default(1.5);
 TEXT;
 
         self::assertEquals($expected, $parser->up());
@@ -131,9 +131,9 @@ TEXT;
     {
         $parser = new SchemaParser("starts_at:time:default('12:00'), total:integer:default(DB::raw('0'))");
 
-        $expected = <<<TEXT
-\t\t\t\$table->time('starts_at')->default('12:00');
-\t\t\t\$table->integer('total')->default(DB::raw('0'));\n
+        $expected = <<<'TEXT'
+$table->time('starts_at')->default('12:00');
+            $table->integer('total')->default(DB::raw('0'));
 TEXT;
 
         self::assertEquals($expected, $parser->up());
@@ -143,16 +143,16 @@ TEXT;
     {
         $parser = new SchemaParser('amount:decimal(8, 2):default(0), code:string(10):unique, flag:boolean()');
 
-        $expected = <<<TEXT
-\t\t\t\$table->decimal('amount', 8, 2)->default(0);
-\t\t\t\$table->string('code', 10)->unique();
-\t\t\t\$table->boolean('flag');\n
+        $expected = <<<'TEXT'
+$table->decimal('amount', 8, 2)->default(0);
+            $table->string('code', 10)->unique();
+            $table->boolean('flag');
 TEXT;
 
-        $down = <<<TEXT
-\t\t\t\$table->dropColumn('amount');
-\t\t\t\$table->dropColumn('code');
-\t\t\t\$table->dropColumn('flag');\n
+        $down = <<<'TEXT'
+$table->dropColumn('amount');
+            $table->dropColumn('code');
+            $table->dropColumn('flag');
 TEXT;
 
         self::assertEquals($expected, $parser->up());
@@ -163,9 +163,9 @@ TEXT;
     {
         $parser = new SchemaParser('username:string,, password:integer,');
 
-        $expected = <<<TEXT
-\t\t\t\$table->string('username');
-\t\t\t\$table->integer('password');\n
+        $expected = <<<'TEXT'
+$table->string('username');
+            $table->integer('password');
 TEXT;
 
         self::assertEquals($expected, $parser->up());

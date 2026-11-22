@@ -291,6 +291,9 @@ php artisan module:seed [<module>...] [-d|--direction=DIRECTION] [--class=CLASS]
 - A class listed in `migration.seeds` that does not exist prints a warning and is skipped. A module without a seeder prints a warning and does not count as a failure.
 - With `--class`, the command replaces the short class name of each seeder found with the given class name, in the same namespace.
 - A seeder that throws an exception is reported through the exception handler and counts as a failure.
+- Each module starts with a header line, `Seeding <Name> Module ......`, followed by the output of `db:seed`. Warnings follow that output.
+- When every seeder of a module ran, the command prints `INFO  Module [Blog] seeded.`.
+- When a `db:seed` call failed, threw an exception, or was cancelled at the production confirmation, the command prints `ERROR  Module [Blog] seeding failed.` instead, and the exit status is 1. The other modules are still seeded.
 
 ```bash
 php artisan module:seed Blog --class=PostSeeder

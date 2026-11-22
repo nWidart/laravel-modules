@@ -225,6 +225,65 @@ class MigrationMakeCommandTest extends BaseTestCase
         $this->assertStringNotContainsString("Schema::table('',", $file);
     }
 
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function migrationsWithFieldsProvider(): array
+    {
+        return [
+            'create' => ['create_posts_table'],
+            'add' => ['add_author_to_posts_table'],
+            'delete' => ['remove_author_from_posts_table'],
+            'drop' => ['drop_posts_table'],
+        ];
+    }
+
+    #[DataProvider('migrationsWithFieldsProvider')]
+    public function test_it_indents_every_field_line_with_spaces_only(string $name)
+    {
+        $code = $this->artisan('module:make-migration', [
+            'name' => $name,
+            'module' => 'Blog',
+            '--fields' => 'title:string, body:text:nullable, belongsTo:user:id:users, soft_delete',
+        ]);
+
+        $file = $this->getGeneratedMigration();
+
+        $this->assertSame(0, $code);
+        $this->assertValidPhp($file);
+        $this->assertStringNotContainsString("\t", $file);
+        // No blank line between the last field and the end of the closure.
+        $this->assertStringNotContainsString("\n\n        });", $file);
+
+        $lines = array_filter(explode("\n", $file), fn (string $line) => str_contains($line, '$table->'));
+        $this->assertNotEmpty($lines);
+
+        foreach ($lines as $line) {
+            $this->assertMatchesRegularExpression('/^ {12}\$table->/', $line);
+        }
+    }
+
+    public function test_it_aligns_the_fields_of_a_create_migration_with_the_stub()
+    {
+        $this->artisan('module:make-migration', [
+            'name' => 'create_posts_table',
+            'module' => 'Blog',
+            '--fields' => 'title:string, belongsTo:user:id:users',
+        ]);
+
+        $expected = <<<'PHP'
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->integer('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->timestamps();
+        });
+PHP;
+
+        $this->assertStringContainsString($expected, $this->getGeneratedMigration());
+    }
+
     private function getGeneratedMigration(): string
     {
         $migrations = $this->finder->allFiles($this->modulePath.'/database/migrations');
