@@ -151,15 +151,24 @@ class GeneratorCommandTest extends BaseTestCase
             'absolute windows path' => ['module:make-job', 'name', 'C:\\Escaped\\Pwned'],
             'migration parent segments' => ['module:make-migration', 'name', '../../../../Escaped/create_pwned_table'],
             'health indicator parent segments' => ['module:make-health-indicator', 'name', '../../../../Escaped/Pwned'],
+            // Str::studly() removes whitespace, hyphens and underscores, so these segments become "..".
+            'health indicator spaced parent segments' => ['module:make-health-indicator', 'name', 'Foo/. ./. ./. ./. ./. ./Escaped/Pwned'],
+            'health indicator hyphenated parent segments' => ['module:make-health-indicator', 'name', '.-./.-./.-./.-./Escaped/Pwned'],
+            'health indicator underscored parent segments' => ['module:make-health-indicator', 'name', '._./._./._./._./Escaped/Pwned'],
+            'health indicator overwrite with force' => ['module:make-health-indicator', 'name', '. ./. ./. ./. ./Escaped/Pwned', ['--force' => true]],
+            'action tab parent segments' => ['module:make-action', 'name', ".\t./.\t./.\t./.\t./Escaped/Pwned"],
+            'controller mixed parent segments' => ['module:make-controller', 'controller', '. ./-../.._/. -./Escaped/Pwned'],
+            'model spaced parent segments' => ['module:make-model', 'model', 'Sub/. ./. ./. ./. ./. ./Escaped/Pwned'],
+            'request backslash spaced parent segments' => ['module:make-request', 'name', '. .\\. .\\. .\\. .\\Escaped\\Pwned'],
         ];
     }
 
     #[DataProvider('unsafeNames')]
-    public function test_it_rejects_names_that_escape_the_module(string $command, string $argument, string $name)
+    public function test_it_rejects_names_that_escape_the_module(string $command, string $argument, string $name, array $options = [])
     {
         $before = $this->moduleFiles();
 
-        $code = $this->artisan($command, [$argument => $name, 'module' => 'Blog']);
+        $code = $this->artisan($command, [$argument => $name, 'module' => 'Blog'] + $options);
 
         $this->assertSame(E_ERROR, $code);
         $this->assertStringContainsString('must not be an absolute path or contain ".." segments', Artisan::output());
@@ -288,6 +297,14 @@ class GeneratorCommandTest extends BaseTestCase
 
         $this->assertSame(0, $code);
         $this->assertFileExists($this->getModuleBasePath().'/resources/views/posts.index.blade.php');
+    }
+
+    public function test_it_accepts_names_with_hyphens_and_underscores()
+    {
+        $code = $this->artisan('module:make-action', ['name' => 'Api/Payment-Gateway_Check', 'module' => 'Blog']);
+
+        $this->assertSame(0, $code);
+        $this->assertFileExists($this->modulePath.'/Actions/Api/PaymentGatewayCheck.php');
     }
 
     /**

@@ -3,11 +3,11 @@
 namespace Nwidart\Modules\Commands\Make;
 
 use Illuminate\Support\Str;
+use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 
 class HealthIndicatorMakeCommand extends GeneratorCommand
 {
@@ -65,23 +65,36 @@ class HealthIndicatorMakeCommand extends GeneratorCommand
     }
 
     #[\Override]
-    protected function getOptions(): array
-    {
-        return [
-            ['force', 'f', InputOption::VALUE_NONE, 'Overwrite the file if it already exists'],
-        ];
-    }
-
-    #[\Override]
     public function getDefaultNamespace(): string
     {
         return config('modules.paths.generator.health.namespace')
             ?? $this->strip_app_folder(config('modules.paths.generator.health.path', 'Health'));
     }
 
+    /**
+     * The class name with its sub folders, each segment in StudlyCase ("api/v2/payments"
+     * becomes "Api/V2/Payments"), so the file path and the namespace agree.
+     */
     protected function getIndicatorName(): string
     {
-        return Str::studly($this->argument('name'));
+        return $this->studly_path(str_replace('\\', '/', $this->argument('name')));
+    }
+
+    /**
+     * The namespace of the generated class, built from the same segments as the file path.
+     *
+     * @param  Module  $module
+     */
+    #[\Override]
+    public function getClassNamespace($module): string
+    {
+        $name = $this->getIndicatorName();
+        $folder = str_contains($name, '/') ? Str::beforeLast($name, '/') : '';
+
+        return $this->module_namespace(
+            $module->getStudlyName(),
+            $this->getDefaultNamespace().($folder !== '' ? '\\'.$this->path_namespace($folder) : '')
+        );
     }
 
     private function getClassNameWithoutNamespace(): string

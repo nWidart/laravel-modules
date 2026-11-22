@@ -6,6 +6,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Snapshots\MatchesSnapshots;
 
 class HealthIndicatorMakeCommandTest extends BaseTestCase
@@ -119,5 +120,53 @@ class HealthIndicatorMakeCommandTest extends BaseTestCase
         $this->assertStringContainsString('namespace Modules\\Blog\\Support\\Health;', $file);
         $this->assertStringContainsString("'payments' => \\Modules\\Blog\\Support\\Health\\PaymentsHealthIndicator::class,", Artisan::output());
         $this->assertSame(0, $code);
+    }
+
+    public function test_it_studly_cases_every_segment_of_a_nested_lowercase_name()
+    {
+        $code = $this->artisan('module:make-health-indicator', ['name' => 'api/v2/Payments', 'module' => 'Blog']);
+
+        $path = $this->modulePath.'/Health/Api/V2/Payments.php';
+        $this->assertSame(0, $code);
+        $this->assertFileExists($path);
+        // Compare the folder names as written, also on a case-insensitive filesystem.
+        $this->assertSame(['Api'], array_values(array_diff(scandir($this->modulePath.'/Health'), ['.', '..'])));
+        $this->assertSame(['V2'], array_values(array_diff(scandir($this->modulePath.'/Health/Api'), ['.', '..'])));
+        $file = $this->finder->get($path);
+        $this->assertStringContainsString('namespace Modules\\Blog\\Health\\Api\\V2;', $file);
+        $this->assertStringContainsString('class Payments ', $file);
+        $this->assertStringContainsString("'payments' => \\Modules\\Blog\\Health\\Api\\V2\\Payments::class,", Artisan::output());
+    }
+
+    public function test_a_folder_named_like_the_class_stays_in_the_namespace()
+    {
+        $code = $this->artisan('module:make-health-indicator', ['name' => 'Payments/Payments', 'module' => 'Blog']);
+
+        $this->assertSame(0, $code);
+        $file = $this->finder->get($this->modulePath.'/Health/Payments/Payments.php');
+        $this->assertStringContainsString('namespace Modules\\Blog\\Health\\Payments;', $file);
+        $this->assertStringContainsString("'payments' => \\Modules\\Blog\\Health\\Payments\\Payments::class,", Artisan::output());
+    }
+
+    public static function appFolders(): array
+    {
+        return [
+            'app/' => ['app/', 'app/Health'],
+            'domain/' => ['domain/', 'domain/Health'],
+            'empty' => ['', 'Health'],
+        ];
+    }
+
+    #[DataProvider('appFolders')]
+    public function test_without_a_health_generator_config_the_path_and_namespace_follow_the_app_folder(string $appFolder, string $folder)
+    {
+        $this->assertNull($this->app['config']->get('modules.paths.generator.health'));
+        $this->app['config']->set('modules.paths.app_folder', $appFolder);
+
+        $code = $this->artisan('module:make-health-indicator', ['name' => 'PaymentsHealthIndicator', 'module' => 'Blog']);
+
+        $this->assertSame(0, $code);
+        $file = $this->finder->get($this->getModuleBasePath().'/'.$folder.'/PaymentsHealthIndicator.php');
+        $this->assertStringContainsString('namespace Modules\\Blog\\Health;', $file);
     }
 }

@@ -167,7 +167,6 @@ return [
             'event' => ['path' => 'app/Events', 'generate' => false],
             'enums' => ['path' => 'app/Enums', 'generate' => false],
             'exceptions' => ['path' => 'app/Exceptions', 'generate' => false],
-            'health' => ['path' => 'app/Health', 'generate' => false],
             'jobs' => ['path' => 'app/Jobs', 'generate' => false],
             'job-middleware' => ['path' => 'app/Jobs/Middleware', 'generate' => false],
             'helpers' => ['path' => 'app/Helpers', 'generate' => false],

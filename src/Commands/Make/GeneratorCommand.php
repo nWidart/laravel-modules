@@ -106,7 +106,8 @@ abstract class GeneratorCommand extends Command
 
     /**
      * Reject an empty name, or a name that would write outside the module: an
-     * absolute path or a path with a ".." segment. Returns the error message,
+     * absolute path or a path with a ".." segment, also once whitespace, hyphens
+     * and underscores are removed from the segment. Returns the error message,
      * or null when valid.
      */
     protected function validateNameArgument(): ?string
@@ -128,7 +129,11 @@ abstract class GeneratorCommand extends Command
         $normalized = str_replace('\\', '/', $name);
 
         $isAbsolute = str_starts_with($normalized, '/') || preg_match('/^[A-Za-z]:/', $normalized) === 1;
-        $hasParentSegment = in_array('..', explode('/', $normalized), true);
+
+        // Generators pass the name through Str::studly(), which removes whitespace, hyphens
+        // and underscores, so a segment such as ". ." or "._." becomes ".." in the path.
+        $hasParentSegment = collect(explode('/', $normalized))
+            ->contains(fn (string $segment) => preg_replace('/[\s\-_]+/u', '', $segment) === '..');
 
         if ($isAbsolute || $hasParentSegment) {
             return "The {$this->argumentName} [{$name}] must not be an absolute path or contain \"..\" segments.";

@@ -15,13 +15,19 @@ touches:
   - src/Support/ModuleServiceProvider.php
   - src/Commands/Make/HealthIndicatorMakeCommand.php
   - config/config.php
+  - src/Commands/Make/GeneratorCommand.php
+  - src/Generators/ModuleGenerator.php
 ---
 
 ## Decided
 - The actuator is a `suggest` and `require-dev`, never `require`. `Actuator\HealthIndicators::register()` is the one place that guards and merges: it returns unless `getProviders(ActuatorServiceProvider::class) !== []` and `modules.actuator.enabled` (missing or null counts as true). `::class` does not autoload, so nothing from `Nwidart\Actuator` loads without the actuator.
 - Registration runs in `boot()` (package provider and `ModuleServiceProvider::boot()`): every provider has registered, so the actuator config is merged. The whole `actuator.health.indicators` array is written back (`$app + $ours`), so application entries win and keys with dots work.
 - Module indicators are named `module:{nameLower}:{key}`; a module without `$healthIndicators` returns before any check.
-- `ModulesHealthIndicator` reads only what the repository and activator already hold: `RepositoryInterface::all()` and `FileActivator::getStatuses()` (new, public). `ActivatorInterface` was not changed, so other activators skip the missing-on-disk check. Stored names are matched to modules by lower case name, like `FileRepository::find()`.
+- `ModulesHealthIndicator` reads only what the repository and activator already hold: `RepositoryInterface::all()` and `FileActivator::getStatuses()` (new, public). `ActivatorInterface` was not changed, so other activators skip the check for stored names the repository does not know. Stored names are matched to modules by lower case name, like `FileRepository::find()`.
+- The scan is cached in long-lived processes (Octane, queue workers), so a scanned module counts as present only while its `module.json` exists (one `is_file` per module, no rescan). Gone and enabled (`hasStatus()`, any activator): listed with the missing error, DOWN. Gone and disabled: left out.
+- `paths.generator.health` has no entry in `config/config.php`. With one, an app that inherits the package defaults and moves `paths.app_folder` plus its known class paths had `module:make` rejected for a key it never set. The generator falls back to `{app_folder}Health` and namespace `Health`; `health` stays in `ModuleGenerator::APP_FOLDER_GENERATOR_KEYS`, so a path the app configures is still checked.
+- `module:make-health-indicator` StudlyCases each segment (`studly_path()`) and builds the namespace from the same segments, so `api/v2/Payments` gives `Health/Api/V2/Payments.php` in `...\Health\Api\V2`.
+- `GeneratorCommand::validateNameArgument()` rejects a segment that is `..` once whitespace, hyphens and underscores are removed (`/[\s\-_]+/u`, the characters `Str::studly()` drops), so `. .`, `.-.`, `._.` cannot escape the module in any generator.
 
 ## Tried and ruled out
 - `providerIsLoaded()` as the guard: O(1), but not on the `Application` contract the provider holds.
@@ -29,4 +35,5 @@ touches:
 
 ## Watch out
 - `config:cache` bakes the registered indicators into the cached config, since registration happens during the boot that `config:cache` runs. With a cached config a cached entry counts as an application entry and wins: a changed definition, a removed indicator or `modules.actuator.enabled => false` only take effect after `config:cache` again. New names are still added at boot (registration does not skip cached config).
+- Other generators still run `Str::studly()` on the whole name (`api/v2/x` gives folder `Api/v2`, namespace `Api\V2`), and the base `getClassNamespace()` strips the class name with `str_replace` everywhere in the argument (`Payments/Payments` loses the folder). Not changed in this PR.
 - Testbench ignores package discovery here, so the actuator provider is absent in `BaseTestCase`; tests that need it add `ActuatorServiceProvider` to `getPackageProviders()`.
