@@ -1010,7 +1010,7 @@ This command has no options besides `--force`.
 
 - Writes `<Name>.php` to the `command_replacements` generator path (`paths.generator.command_replacements.path`, default `app/Console/Replacements`).
 - Stub: `replacement.stub`.
-- The generated class extends `Nwidart\Modules\Support\ReplacementKeyCommand`. Its `handle()` body calls `getModule()->getLowerName()` on the generator, which throws a `TypeError` when `module:make` runs it. See [Generating a class](/laravel-modules/reference/stubs/#generating-a-class).
+- The generated class extends `Nwidart\Modules\Support\ReplacementKeyCommand`. Its `handle()` body returns `strtolower($this->generator->getName())`, the lower-case module name. See [Generating a class](/laravel-modules/reference/stubs/#generating-a-class).
 
 ```bash
 php artisan module:make-replacement AppUrl Blog

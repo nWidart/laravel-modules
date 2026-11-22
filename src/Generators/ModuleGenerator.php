@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\ActivatorInterface;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\FileRepository;
-use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\ReplacementKeyCommand;
 use Nwidart\Modules\Support\Stub;
@@ -302,15 +302,19 @@ class ModuleGenerator extends Generator
     }
 
     /**
-     * Get the module instance.
+     * Get the module repository the module is created in.
+     *
+     * This is the repository, not a Module: the module does not exist yet while its stubs render.
      */
-    public function getModule(): Module
+    public function getModule(): ?RepositoryInterface
     {
         return $this->module;
     }
 
     /**
-     * Set the module instance.
+     * Set the module repository the module is created in.
+     *
+     * @param  RepositoryInterface|null  $module  module:make passes the bound 'modules' repository.
      */
     public function setModule(mixed $module): self
     {
@@ -793,14 +797,13 @@ class ModuleGenerator extends Generator
         $replacements = $this->module->config('stubs.replacements');
 
         // Temporarily check if the replacements are defined; remove in the next major version.
-        if (! isset($replacements['composer']['APP_FOLDER_NAME'])) {
-            $replacements['composer'][] = 'APP_FOLDER_NAME';
-        }
-        if (! isset($replacements['routes/web']['PLURAL_LOWER_NAME'])) {
-            $replacements['routes/web'][] = 'PLURAL_LOWER_NAME';
-        }
-        if (! isset($replacements['routes/api']['PLURAL_LOWER_NAME'])) {
-            $replacements['routes/api'][] = 'PLURAL_LOWER_NAME';
+        // A key is listed by name, or mapped to a ReplacementKeyCommand class.
+        foreach (['composer' => 'APP_FOLDER_NAME', 'routes/web' => 'PLURAL_LOWER_NAME', 'routes/api' => 'PLURAL_LOWER_NAME'] as $section => $key) {
+            $keys = (array) ($replacements[$section] ?? []);
+
+            if (! in_array($key, $keys, true) && ! array_key_exists($key, $keys)) {
+                $replacements[$section][] = $key;
+            }
         }
 
         if (! isset($replacements[$stub])) {

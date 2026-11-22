@@ -155,7 +155,7 @@ class CustomKey extends ReplacementKeyCommand
 }
 ```
 
-`module:make-replacement` generates a class whose `handle()` body is `return $this->generator->getModule()->getLowerName();`. When `module:make` runs that body, it throws a `TypeError`: `ModuleGenerator::getModule()` is declared to return a `Module`, but the generator holds the repository. The example above uses `ModuleGenerator::getName()`, which returns the studly-case module name. The same facts are in [Stubs and placeholders](/laravel-modules/reference/stubs/#generating-a-class).
+`module:make-replacement` generates a class with this `handle()` body, which returns the lower-case module name. See [Stubs and placeholders](/laravel-modules/reference/stubs/#generating-a-class).
 
 ### Controller
 

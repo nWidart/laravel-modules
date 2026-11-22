@@ -8,6 +8,6 @@ class $CLASS$ extends ReplacementKeyCommand
 {
     public function handle(): string
     {
-        return $this->generator->getModule()->getLowerName();
+        return strtolower($this->generator->getName());
     }
 }
