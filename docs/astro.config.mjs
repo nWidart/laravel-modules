@@ -25,6 +25,13 @@ export default defineConfig({
                 baseUrl: 'https://github.com/nWidart/laravel-modules/edit/master/docs/',
             },
             lastUpdated: true,
+            // Open Graph images: src/pages/og/ renders them, src/routeData.ts adds their meta tags.
+            routeMiddleware: './src/routeData.ts',
+            head: [
+                // Links in `head` do not get the base path.
+                { tag: 'link', attrs: { rel: 'apple-touch-icon', href: '/laravel-modules/apple-touch-icon.png' } },
+                { tag: 'meta', attrs: { name: 'theme-color', content: '#0B1220' } },
+            ],
             customCss: [
                 '@fontsource-variable/space-grotesk',
                 '@fontsource-variable/jetbrains-mono',
