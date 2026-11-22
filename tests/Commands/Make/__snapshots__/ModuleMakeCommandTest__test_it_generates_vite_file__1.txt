@@ -28,7 +28,7 @@ export default defineConfig({
     build: {
         outDir: '../../public/build-blog',
         emptyOutDir: true,
-        manifest: true,
+        manifest: 'manifest.json',
     },
     plugins: [
         laravel({

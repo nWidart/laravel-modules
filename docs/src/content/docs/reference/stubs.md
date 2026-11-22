@@ -107,7 +107,7 @@ A `-duck` stub (`listener-duck.stub`, `listener-queued-duck.stub`) generates a l
 
 `vite.stub` generates the `vite.config.js` of a module. The file does two things.
 
-- Its default export builds the module on its own, from the module folder, into `public/build-<lower-name>`. The module folder comes from `import.meta.url`. The application root is two levels up from it, the same assumption as `publicDirectory: '../../public'`.
+- Its default export builds the module on its own, from the module folder, into `public/build-<lower-name>`. It writes the manifest to `public/build-<lower-name>/manifest.json` (`manifest: 'manifest.json'`), the path that `module_vite()` reads. The module folder comes from `import.meta.url`. The application root is two levels up from it, the same assumption as `publicDirectory: '../../public'`.
 - Its `paths` export lists the asset entry points of the module relative to the application root, for example `Modules/Blog/resources/assets/sass/app.scss` and `Modules/Blog/resources/assets/js/app.js`. The paths are computed from the file location when the file loads.
 
 The `vite-module-loader.js` script reads `paths` to build the module assets from the application root. See [`vendor:publish` tags](/laravel-modules/reference/commands/publish/#vendorpublish-tags).

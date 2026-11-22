@@ -190,6 +190,31 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_it_generates_vite_file_that_writes_the_manifest_where_laravel_reads_it()
+    {
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+
+        // Vite 5+ writes `manifest: true` to .vite/manifest.json; Laravel reads <buildDirectory>/manifest.json.
+        $contents = $this->finder->get($this->modulePath.'/'.$this->app['modules']->config('stubs.files.vite'));
+
+        $this->assertStringContainsString("manifest: 'manifest.json',", $contents);
+        $this->assertStringNotContainsString('manifest: true', $contents);
+    }
+
+    public function test_it_generates_package_json_with_the_vite_versions_of_a_laravel_app()
+    {
+        $code = $this->artisan('module:make', ['name' => ['Blog']]);
+
+        $this->assertSame(0, $code);
+
+        $package = json_decode($this->finder->get($this->modulePath.'/package.json'), true, flags: JSON_THROW_ON_ERROR);
+
+        $this->assertSame('^8.0.0', $package['devDependencies']['vite']);
+        $this->assertSame('^3.1', $package['devDependencies']['laravel-vite-plugin']);
+    }
+
     public function test_it_generates_module_resources()
     {
         $code = $this->artisan('module:make', ['name' => ['Blog']]);
