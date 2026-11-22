@@ -21,7 +21,7 @@ This page lists the commands that copy files from a module to the application, a
 - With names, the command runs the action once per name.
 - With `--all`, or with `All` chosen in the interactive prompt, the command uses every module, enabled or disabled.
 - With no module and no interactive input, the command prints `No module given. Pass a module name or --all.` and exits with `1`.
-- An unknown module name throws `ModuleNotFoundException` before any action runs.
+- An unknown module name prints `Module [Nope] does not exist.` (several names: `Modules [Nope, Typo] do not exist.`) and the command exits with `1` before any action runs.
 
 ### Exit status
 

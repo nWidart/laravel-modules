@@ -36,9 +36,16 @@ class ModelMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new model for the specified module.';
 
+    /**
+     * Whether a generator called for an option (-m, -c, ...) failed during this run.
+     */
+    private bool $generatorFailed = false;
+
     #[\Override]
     public function handle(): int
     {
+        $this->generatorFailed = false;
+
         // Resolve --all before the model is rendered: the model stub depends on --factory.
         if ($this->option('all')) {
             $this->input->setOption('controller', true);
@@ -62,7 +69,21 @@ class ModelMakeCommand extends GeneratorCommand
         $this->handleOptionalSeedOption();
         $this->handleOptionalPolicyOption();
 
-        return 0;
+        // Each failed generator printed its own error line, for example "File : ... already exists."
+        return $this->generatorFailed ? E_ERROR : 0;
+    }
+
+    /**
+     * Call the generator for an option and remember when it fails, so the
+     * command exits with a failure status after running the other options.
+     *
+     * @param  array<string, mixed>  $arguments
+     */
+    protected function callGenerator(string $command, array $arguments): void
+    {
+        if ($this->call($command, $arguments) !== self::SUCCESS) {
+            $this->generatorFailed = true;
+        }
     }
 
     /**
@@ -125,7 +146,7 @@ class ModelMakeCommand extends GeneratorCommand
     {
         if ($this->option('migration') === true) {
             $migrationName = 'create_'.$this->createMigrationName().'_table';
-            $this->call('module:make-migration', ['name' => $migrationName, 'module' => $this->argument('module')]);
+            $this->callGenerator('module:make-migration', ['name' => $migrationName, 'module' => $this->argument('module')]);
         }
     }
 
@@ -137,7 +158,7 @@ class ModelMakeCommand extends GeneratorCommand
         if ($this->option('controller') === true) {
             $controllerName = "{$this->getModelName()}Controller";
 
-            $this->call('module:make-controller', array_filter([
+            $this->callGenerator('module:make-controller', array_filter([
                 'controller' => $controllerName,
                 'module' => $this->argument('module'),
             ]));
@@ -150,7 +171,7 @@ class ModelMakeCommand extends GeneratorCommand
     protected function handleOptionalFactoryOption(): void
     {
         if ($this->option('factory') === true) {
-            $this->call('module:make-factory', array_filter([
+            $this->callGenerator('module:make-factory', array_filter([
                 'name' => $this->getModelName(),
                 'module' => $this->argument('module'),
             ]));
@@ -165,7 +186,7 @@ class ModelMakeCommand extends GeneratorCommand
         if ($this->option('request') === true) {
             $requestName = "{$this->getModelName()}Request";
 
-            $this->call('module:make-request', array_filter([
+            $this->callGenerator('module:make-request', array_filter([
                 'name' => $requestName,
                 'module' => $this->argument('module'),
             ]));
@@ -180,7 +201,7 @@ class ModelMakeCommand extends GeneratorCommand
         if ($this->option('resource') === true) {
             $resourceName = "{$this->getModelName()}Resource";
 
-            $this->call('module:make-resource', array_filter([
+            $this->callGenerator('module:make-resource', array_filter([
                 'name' => $resourceName,
                 'module' => $this->argument('module'),
             ]));
@@ -195,7 +216,7 @@ class ModelMakeCommand extends GeneratorCommand
         if ($this->option('seed') === true) {
             $seedName = "{$this->getModelName()}Seeder";
 
-            $this->call('module:make-seed', array_filter([
+            $this->callGenerator('module:make-seed', array_filter([
                 'name' => $seedName,
                 'module' => $this->argument('module'),
             ]));
@@ -210,7 +231,7 @@ class ModelMakeCommand extends GeneratorCommand
         if ($this->option('policy') === true) {
             $policyName = "{$this->getModelName()}Policy";
 
-            $this->call('module:make-policy', array_filter([
+            $this->callGenerator('module:make-policy', array_filter([
                 'name' => $policyName,
                 'module' => $this->argument('module'),
             ]));

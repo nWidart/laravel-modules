@@ -12,7 +12,8 @@ Apart from `module:make`, which creates a whole module, every command on this pa
 ### Arguments
 
 - `name` is the first argument. Two generators name it differently: `module:make-controller` uses `controller` and `module:make-model` uses `model`. `module:make-event-provider` and `module:route-provider` have no name argument.
-- `module` is optional on every generator except `module:make-class`, where it is required. When `module` is empty, the command uses the module stored by [`module:use`](/laravel-modules/reference/commands/module-management/#moduleuse). If no module is stored, the command throws `ModuleNotFoundException` with the message `Module [] does not exist!`.
+- `module` is optional on every generator except `module:make-class`, where it is required. When `module` is empty, the command uses the module stored by [`module:use`](/laravel-modules/reference/commands/module-management/#moduleuse). If no module is stored, or the stored module no longer exists, the command prints `No module given, and no module is set with module:use. Pass the module name, or run php artisan module:use <module> first.`, writes nothing and exits with `1`.
+- An unknown module name prints `Module [Nope] does not exist.`, writes nothing and exits with `1`.
 - Generators do not check whether the module is enabled.
 
 ### Name handling
@@ -34,7 +35,7 @@ Apart from `module:make`, which creates a whole module, every command on this pa
 
 ### Exit status
 
-`0` on success. `1` on an invalid name, an existing file or any other error.
+`0` on success. `1` on an invalid name, an unknown or missing module, an existing file or any other error.
 
 ## module:make
 
@@ -886,6 +887,7 @@ php artisan module:make-model <model> [<module>] [-a|--all] [--attributes] [-c|-
 - Writes `<Model>.php` to the `model` generator path (`paths.generator.model.path`, default `app/Models`).
 - Stub: `model.stub`, with the sections `ATTRIBUTES`, `FACTORY` and `PROPERTIES`.
 - The related commands run after the model is written, and only when the model was written. They receive no `--force`. A migration name for `BlogPost` is `create_blog_posts_table`.
+- The command runs every related command it was asked for. It exits with `1` when one of them fails, for example when the migration or controller file already exists.
 - `--fillable=title,body` writes `['title','body']` to the model.
 
 ```bash

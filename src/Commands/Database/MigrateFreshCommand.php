@@ -61,7 +61,9 @@ class MigrateFreshCommand extends BaseCommand implements ConfirmableCommand
         }
 
         // an unknown module must fail before the database is wiped
-        $this->validateModules();
+        if (! $this->validateModules()) {
+            return self::FAILURE;
+        }
 
         // confirm before anything destructive runs, the nested calls below are forced
         if (! $this->canProceed()) {

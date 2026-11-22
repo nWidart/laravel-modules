@@ -19,8 +19,8 @@ Each exception has the same fields: the code that throws it, the condition, the 
 
 | Field | Value |
 | --- | --- |
-| Thrown by | `FileRepository::findOrFail()`. Callers pass it on: `isEnabled()`, `isDisabled()`, `enable()`, `disable()`, `delete()`, `setUsed()` and `getUsedNow()` of the repository, `module_path()`, `BaseCommand`, `GeneratorCommand::module()` and `ModuleCommandTrait::getModuleName()`. |
-| Thrown when | A module does not exist. `getUsedNow()` throws when no module is used (the name is empty). A command with an unknown module name stops with this exception: `BaseCommand` checks every name before it runs any action. |
+| Thrown by | `FileRepository::findOrFail()`. Callers pass it on: `isEnabled()`, `isDisabled()`, `enable()`, `disable()`, `delete()`, `setUsed()` and `getUsedNow()` of the repository, `module_path()`, `GeneratorCommand::module()` and `ModuleCommandTrait::getModuleName()`. |
+| Thrown when | A module does not exist. `getUsedNow()` throws when no module is used (the name is empty). Commands do not let it escape: `BaseCommand` and the generators check the module names first, print `Module [<name>] does not exist.` and exit with `1`. `Artisan::call()` returns `1` instead of throwing. `module:prune` still throws it for an unknown module name. |
 | Message | `Module [<name>] does not exist!` |
 
 Two callers catch it: `module()` returns `false`, and `FileRepository::getModulePath()` returns the path the module would have. `find()` and `has()` never throw it.
