@@ -11,6 +11,7 @@ use Laravel\Prompts\Exceptions\NonInteractiveValidationException;
 use Nwidart\Modules\Contracts\ConfirmableCommand;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Traits\InteractsWithModuleRepository;
+use Nwidart\Modules\Traits\ValidatesModuleArgument;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,6 +24,7 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
     use ConfirmableTrait;
     use InteractsWithModuleRepository;
     use Prohibitable;
+    use ValidatesModuleArgument;
 
     public const ALL = 'All';
 
@@ -110,45 +112,6 @@ abstract class BaseCommand extends Command implements PromptsForMissingInput
         $this->executeModules();
 
         return $this->hasFailures() ? Command::FAILURE : Command::SUCCESS;
-    }
-
-    /**
-     * Check that a module or --all was given. Without interaction there is no prompt,
-     * so an empty module argument would otherwise silently do nothing.
-     */
-    protected function hasModulesToRun(): bool
-    {
-        if ($this->option(strtolower(self::ALL)) || ! empty($this->argument('module'))) {
-            return true;
-        }
-
-        $this->components->error('No module given. Pass a module name or --all.');
-
-        return false;
-    }
-
-    /**
-     * Check that every given module exists before any action runs, so a misspelled
-     * name does not fail halfway, after the modules before it were processed.
-     * Prints one error line that names every unknown module.
-     *
-     * @return bool Whether every given module exists.
-     */
-    protected function validateModules(): bool
-    {
-        $unknown = collect((array) $this->argument('module'))
-            ->reject(fn ($module) => $module instanceof Module || $this->moduleRepository()->find((string) $module) !== null)
-            ->values();
-
-        if ($unknown->isEmpty()) {
-            return true;
-        }
-
-        $this->components->error($unknown->count() === 1
-            ? "Module [{$unknown->first()}] does not exist."
-            : 'Modules ['.$unknown->implode(', ').'] do not exist.');
-
-        return false;
     }
 
     /**
