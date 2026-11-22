@@ -20,7 +20,7 @@ Commands that list, enable, disable, install, update and delete existing modules
 | [`module:disable`](/laravel-modules/reference/commands/module-management/#moduledisable) | Marks the given modules as disabled. |
 | [`module:delete`](/laravel-modules/reference/commands/module-management/#moduledelete) | Deletes the module directory and removes the module from the activator. |
 | [`module:use`](/laravel-modules/reference/commands/module-management/#moduleuse) | Stores a module name as the module to use when a generator command gets no `module` argument. |
-| [`module:unuse`](/laravel-modules/reference/commands/module-management/#moduleunuse) | Clears the module stored by `module:use`. |
+| [`module:unuse`](/laravel-modules/reference/commands/module-management/#moduleunuse) | Forgets the module stored by `module:use`. |
 | [`module:install`](/laravel-modules/reference/commands/module-management/#moduleinstall) | Installs a module from Composer or from a Git repository, then runs `module:update` for it. |
 | [`module:update`](/laravel-modules/reference/commands/module-management/#moduleupdate) | Installs the Composer dependencies a module declares. |
 | [`module:dump`](/laravel-modules/reference/commands/module-management/#moduledump) | Runs `composer dump -o -n -q` inside each module directory. |

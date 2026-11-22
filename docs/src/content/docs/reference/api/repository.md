@@ -73,7 +73,7 @@ Enabling and disabling fire the module events. See [Events](/laravel-modules/ref
 | `getModulePath(string $moduleName)` | `string` | The module folder, with a trailing `/`. For a module that does not exist, the path it would have: `getPath()`, the studly-case name and `/`. Never throws. |
 | `assetPath(string $module)` | `string` | `modules.paths.assets`, `/` and the name as given. |
 | `getAssetsPath()` | `string` | `modules.paths.assets`. Not in the interface. |
-| `asset(string $asset)` | `string` | The URL of a module asset, from the form `module:path`. The result starts with `//`: the scheme `http://` or `https://` is replaced. Throws [`InvalidAssetPath`](/laravel-modules/reference/api/exceptions/#invalidassetpath) when `$asset` has no `:`. Only the text between the first and the second `:` is used as the path. Not in the interface. |
+| `asset(string $asset)` | `string` | The URL of a module asset, from the form `module:path`. The result starts with `//`: the scheme `http://` or `https://` is replaced. Throws [`InvalidAssetPath`](/laravel-modules/reference/api/exceptions/#invalidassetpath) when `$asset` has no `:`. The text before the first `:` is the module name. Everything after it is the path, and the path may contain `:`. Not in the interface. |
 | `getFiles()` | `Illuminate\Filesystem\Filesystem` | The filesystem instance. |
 | `config(string $key, mixed $default = null)` | `mixed` | `config('modules.'.$key, $default)`. |
 
@@ -88,7 +88,7 @@ Module::asset('blog:css/app.css'); // //example.test/modules/blog/css/app.css
 | Signature | Returns | Description |
 | --- | --- | --- |
 | `setUsed($name)` | `void` | Writes the module name to `storage/app/modules/modules.used` and fires the `used` event. Throws `ModuleNotFoundException` for an unknown module. |
-| `forgetUsed()` | `void` | Deletes the `modules.used` file. It takes no argument: `module:unuse` passes the module and the method ignores it. It fires no event. See [`module:unuse`](/laravel-modules/reference/commands/module-management/#moduleunuse). |
+| `forgetUsed()` | `void` | Deletes the `modules.used` file and fires the `unused` event on the module that was in use. It takes no argument. It fires no event when no module is in use or the stored name matches no module. See [`module:unuse`](/laravel-modules/reference/commands/module-management/#moduleunuse). |
 | `getUsedNow()` | `string` | The studly-case name of the used module. Throws `ModuleNotFoundException` when no module is used. |
 | `getUsedStoragePath()` | `string` | The path of `modules.used`. Creates the folder and an empty file when they do not exist. |
 
