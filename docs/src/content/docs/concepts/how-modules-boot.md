@@ -52,7 +52,7 @@ The file is always named `modules.php` and sits in the cache folder of Laravel. 
 
 No command deletes the file, and `php artisan optimize:clear` does not remove it. `module:disable` leaves the module in the file until the next request rewrites it, because the package rebuilds the file only when the list of providers differs from the list it holds.
 
-`ProviderRepository` calls `register()` on each eager provider while the package provider is still registering. The `ModuleServiceProvider` of a module registers the providers it lists in `$providers` from its own `register()`. By default those are a route provider and an event provider.
+`ProviderRepository` calls `register()` on each eager provider while the package provider is still registering. The `ModuleServiceProvider` of a module first merges the config of the module, then registers the providers it lists in `$providers`, all from its own `register()`. By default those are a route provider and an event provider. They can read the module config in their `register()`.
 
 ### 5. Files
 
@@ -60,7 +60,7 @@ After every provider of every enabled module has registered, the manifest includ
 
 ### 6. Boot
 
-Laravel calls `boot()` on all providers once every provider has registered. The `ModuleServiceProvider` of a module registers its commands and schedules, translations, config, views and migrations. The route provider that the generator adds extends Laravel's `RouteServiceProvider`, which loads the route files of the module. The reference page [Module service provider](/laravel-modules/reference/api/module-service-provider/) lists each step.
+Laravel calls `boot()` on all providers once every provider has registered. The `ModuleServiceProvider` of a module registers its commands and schedules, translations, views and migrations. It has merged its config before, in `register()`. The route provider that the generator adds extends Laravel's `RouteServiceProvider`, which loads the route files of the module. The reference page [Module service provider](/laravel-modules/reference/api/module-service-provider/) lists each step.
 
 For the filter in step 2, see [Module status and activators](/laravel-modules/concepts/status-and-activators/).
 
@@ -69,7 +69,9 @@ For the filter in step 2, see [Module status and activators](/laravel-modules/co
 The package loads the module providers from its own `register()`. Laravel registers the providers of installed packages before the providers listed in your application (`bootstrap/providers.php`). Module providers therefore sit at the position of this package among the discovered packages, ahead of your application providers. Two consequences follow:
 
 - A module `register()` runs before the `register()` of your `App\Providers` classes. When both bind the same abstract, your binding is registered later and wins.
-- A module `boot()` runs before the `boot()` of your application providers. The module merges its config files in `boot()`, with `array_replace_recursive()`, over what is already under the module's config key. Values that your providers set in `register()` are already there, and so is a copy you published to `config/`. The module's own file wins for keys both define. Values that your providers set in `boot()` come after the merge, so they replace the module's.
+- A module `boot()` runs before the `boot()` of your application providers.
+- The module merges its config files in `register()`, before it registers its `$providers`. The module config is therefore available in the `register()` of its own sub-providers and of every provider that registers after it, and in the `boot()` of every provider. The merge keeps what is already under the module's config key: a copy you published to `config/`, and values that providers registered before the module set. Those values win over the module files. Values that your providers set in `register()` or `boot()` come after the merge, so they replace the module's.
+- A provider that registers before the module provider, such as a package that Laravel discovers before this one, cannot read the module config in its `register()`. Read it in `boot()`.
 
 Other packages that Laravel discovers before this one are registered first. The order among discovered packages is Laravel's, not the package's.
 

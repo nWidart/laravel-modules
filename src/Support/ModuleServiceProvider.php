@@ -47,6 +47,8 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     protected array $healthIndicators = [];
 
+    private bool $configRegistered = false;
+
     /**
      * Create a new service provider instance.
      */
@@ -60,14 +62,18 @@ abstract class ModuleServiceProvider extends ServiceProvider
     }
 
     /**
-     * Boot the application events.
+     * Boot the module, including config for providers that skip the base register().
      */
     public function boot(): void
     {
         $this->registerCommands();
         $this->registerCommandSchedules();
         $this->registerTranslations();
-        $this->registerConfig();
+
+        if (! $this->configRegistered) {
+            $this->registerConfig();
+        }
+
         $this->registerViews();
         $this->registerHealthIndicators();
         $generatorMigrationPath = config('modules.paths.generator.migration.path') ?? 'database/migrations';
@@ -75,11 +81,14 @@ abstract class ModuleServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the service providers.
+     * Register the module config before its service providers.
      */
     #[\Override]
     public function register(): void
     {
+        $this->registerConfig();
+        $this->configRegistered = true;
+
         foreach ($this->providers as $provider) {
             $this->app->register($provider);
         }

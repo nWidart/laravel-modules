@@ -78,6 +78,8 @@ class ModuleServiceProviderScheduleTest extends BaseTestCase
 
             protected string $nameLower = 'blog';
 
+            public function register(): void {}
+
             public function boot(): void
             {
                 $this->registerCommandSchedules();
@@ -92,6 +94,8 @@ class ModuleServiceProviderScheduleTest extends BaseTestCase
             protected string $name = 'Blog';
 
             protected string $nameLower = 'blog';
+
+            public function register(): void {}
 
             public function boot(): void
             {
