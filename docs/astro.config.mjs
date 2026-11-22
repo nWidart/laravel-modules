@@ -155,6 +155,7 @@ export default defineConfig({
                                 'guides/production/deploy',
                                 'guides/production/prohibit-destructive-commands',
                                 'guides/production/health-checks',
+                                'guides/production/actuator-modules-endpoint',
                             ],
                         },
                     ],

@@ -1,0 +1,129 @@
+---
+title: Expose the modules on the actuator
+description: Add a modules endpoint to nwidart/laravel-actuator to read the modules of a running application over HTTP, and protect it.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+At the end, `GET /actuator/modules` returns the modules of your application, enabled and disabled, as JSON. A dashboard or a desktop companion app that has only HTTP access to an environment, such as staging or production, can read which modules exist and which are enabled.
+
+[`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) adds Spring Boot Actuator style endpoints under `/actuator` to a Laravel application. When it is installed, Laravel Modules registers the endpoint `modules`. You edit no code to register it.
+
+## Requirements
+
+`nwidart/laravel-actuator` 1.1.0 or later. Version 1.0.0 does not support custom endpoints: with it installed, the `modules` endpoint is not registered, there is no error, and `/actuator/modules` answers 404.
+
+The actuator is optional. Without it, Laravel Modules behaves as before.
+
+<Steps>
+
+1. Install the actuator.
+
+   ```bash
+   composer require nwidart/laravel-actuator
+   ```
+
+2. Publish its configuration.
+
+   ```bash
+   php artisan vendor:publish --tag=actuator-config
+   ```
+
+3. Add `modules` to `exposure.include` in `config/actuator.php`.
+
+   ```php title="config/actuator.php"
+   'exposure' => [
+       'include' => ['health', 'modules'],
+       'exclude' => [],
+   ],
+   ```
+
+   The endpoint is not exposed by default: the actuator exposes `health` only. `'*'` in `include` exposes `modules` too, together with every other actuator endpoint, such as `env` and `mappings`. A `modules` entry in `exclude` always wins. Laravel Modules has no configuration key for this: `modules.actuator.enabled` in `config/modules.php` does not switch this endpoint off. It controls the health indicators only, see [Report module health with the actuator](/laravel-modules/guides/production/health-checks/).
+
+</Steps>
+
+## Read the modules
+
+```bash
+curl -H 'Accept: application/json' http://127.0.0.1:8000/actuator/modules
+```
+
+The base path is `actuator`, the actuator default. The response holds the installed package version and every module, sorted by name (case-insensitive):
+
+```json
+{
+  "package": { "name": "nwidart/laravel-modules", "version": "v13.3.0" },
+  "modules": [
+    { "name": "Blog", "enabled": true, "version": "1.2.0", "description": "Blog posts", "priority": 0, "providers": ["Modules\\Blog\\Providers\\BlogServiceProvider"] },
+    { "name": "Shop", "enabled": false, "version": null, "description": "", "priority": 10, "providers": ["Modules\\Shop\\Providers\\ShopServiceProvider"] }
+  ]
+}
+```
+
+`package.version` is the Laravel Modules version as Composer reports it.
+
+Each module has exactly these six fields:
+
+| Field | Value |
+| --- | --- |
+| `name` | The `name` in `module.json`. |
+| `enabled` | The status in the activator. |
+| `version` | The `version` in `module.json` as a string, or `null` when the key is absent or empty. `module:make` writes no `version` key, so a generated module reports `null` until you add one. |
+| `description` | The `description` in `module.json`, or `""`. |
+| `priority` | The `priority` in `module.json` as a number, or `0`. |
+| `providers` | The `providers` list in `module.json`. |
+
+The endpoint returns this fixed set and nothing else. It never returns filesystem paths, `files`, `alias`, `keywords`, custom `module.json` keys, the `composer.json` of the module or the package configuration.
+
+## Read one module
+
+```bash
+curl -H 'Accept: application/json' http://127.0.0.1:8000/actuator/modules/shop
+```
+
+The response is one module object:
+
+```json
+{ "name": "Shop", "enabled": false, "version": null, "description": "", "priority": 10, "providers": ["Modules\\Shop\\Providers\\ShopServiceProvider"] }
+```
+
+The name is resolved like [`Module::find()`](/laravel-modules/reference/api/repository/): case-insensitive, and a kebab or snake name finds the studly module. `blog`, `Blog` and `blog-post` find `Blog` and `BlogPost`. The response carries the canonical name. An unknown name answers 404, with a JSON body only when the client sends `Accept: application/json`.
+
+The route names are `actuator.modules` and `actuator.modules-name`. When exposed, `GET /actuator` lists both as links, `modules` and `modules-name` (the second one templated with `{name}`).
+
+The endpoint is read-only. No operation enables, disables or changes a module over HTTP.
+
+## Protect the endpoint
+
+<Aside type="caution">
+The response lists module names, provider class names and the package version. Protect it outside local development.
+</Aside>
+
+`actuator.middleware` applies to every actuator route. To protect this endpoint only, add a `modules.middleware` key to `config/actuator.php`. The published file does not have it.
+
+```php title="config/actuator.php"
+'modules' => [
+    'middleware' => ['auth.basic'],
+],
+```
+
+With `auth.basic`, `/actuator/modules` answers 401 without credentials and 200 with them, and `/actuator/health` stays public.
+
+## Caching
+
+The endpoint works with `php artisan config:cache` and `php artisan route:cache`. Enabling or disabling a module shows on the next request: there is no cache to clear for it.
+
+### Check the result
+
+```bash
+php artisan route:list --path=actuator
+```
+
+The list shows `actuator/modules` and `actuator/modules/{name}`. If it does not, `modules` is missing from `exposure.include`, or the installed actuator is older than 1.1.0.
+
+## Related
+
+- [Enable and disable modules](/laravel-modules/guides/modules/enable-and-disable-modules/)
+- [Deploy an application that uses modules](/laravel-modules/guides/production/deploy/)
+- [Report module health with the actuator](/laravel-modules/guides/production/health-checks/)
+- [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator)

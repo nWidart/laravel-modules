@@ -104,7 +104,7 @@ Each indicator is registered as `module:{lowercase module name}:{key}`. The exam
 
 ## Turn it off
 
-Set `modules.actuator.enabled` to `false` in `config/modules.php` to register neither the `modules` indicator nor the module indicators. The default is `true`, and a published `config/modules.php` without the key counts as enabled. See [Configuration](/laravel-modules/reference/configuration/#actuator).
+Set `modules.actuator.enabled` to `false` in `config/modules.php` to register neither the `modules` indicator nor the module indicators. It affects health indicators only: the `modules` endpoint of the actuator stays registered, see [Expose the modules on the actuator](/laravel-modules/guides/production/actuator-modules-endpoint/). The default is `true`, and a published `config/modules.php` without the key counts as enabled. See [Configuration](/laravel-modules/reference/configuration/#actuator).
 
 ```php title="config/modules.php"
 'actuator' => [

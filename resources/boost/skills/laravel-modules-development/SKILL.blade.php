@@ -36,6 +36,15 @@ Use `search-docs` for detailed laravel-modules patterns and documentation.
 {{ $assist->artisanCommand('module:list') }}
 ```
 
+### Reading Modules Over HTTP
+
+With `nwidart/laravel-actuator` 1.1.0 or later installed, the `modules` actuator endpoint is registered. It is read-only and not exposed by default: publish the actuator config (`{{ $assist->artisanCommand('vendor:publish --tag=actuator-config') }}`) and add `modules` to `actuator.exposure.include` in `config/actuator.php`.
+
+- `GET /actuator/modules`: the package version and every module (`name`, `enabled`, `version`, `description`, `priority`, `providers`).
+- `GET /actuator/modules/{name}`: one module. The name is case-insensitive (`blog-post` finds `BlogPost`).
+
+Protect it outside local development: set `actuator.modules.middleware` in `config/actuator.php`.
+
 ## Module Structure
 
 A generated module lives under `Modules/Blog/` and contains:
@@ -190,7 +199,7 @@ protected array $healthIndicators = [
 
 - The component name is `module:{lowercase module}:{key}` (`module:blog:payments`).
 - A value is a class name or `[class, [constructor arguments]]`.
-- The package registers a `modules` indicator too. `modules.actuator.enabled` set to `false` turns both off.
+- The package registers a `modules` indicator too. `modules.actuator.enabled` set to `false` turns off both the `modules` indicator and the module indicators. It does not affect the `modules` actuator endpoint.
 - With a cached config, run `{{ $assist->artisanCommand('config:cache') }}` again after changing `$healthIndicators`.
 
 ## Running Module Migrations

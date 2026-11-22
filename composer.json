@@ -35,7 +35,7 @@
         "nwidart/laravel-actuator": "^1.1"
     },
     "suggest": {
-        "nwidart/laravel-actuator": "Report module health on the actuator health endpoint (^1.1)."
+        "nwidart/laravel-actuator": "Report module health on the actuator health endpoint and list the modules on a modules endpoint (^1.1)."
     },
     "autoload": {
         "psr-4": {
