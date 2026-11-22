@@ -3,7 +3,7 @@ title: Create a module
 description: Generate a web, API, plain or Inertia module with module:make, create several at once, and set the author.
 ---
 
-To get a new, enabled module in `Modules/Blog`, run `module:make`. The package must be installed as described in [Installation](/laravel-modules/start-here/installation/). The command runs `composer dump-autoload`, so `composer` must be on the `PATH`.
+To generate a new, enabled module in `Modules/Blog`, run `module:make`. Prerequisites: the package is installed (see [Installation](/laravel-modules/start-here/installation/)) and `composer` is on your `PATH`, because `module:make` runs `composer dump-autoload`.
 
 ## Create a web module
 
@@ -11,33 +11,35 @@ To get a new, enabled module in `Modules/Blog`, run `module:make`. The package m
 php artisan module:make Blog
 ```
 
-The command creates `Modules/Blog` with the folders, `module.json`, `composer.json`, a service provider, a route provider, a controller, views, routes and a seeder. It ends with `Module [Blog] created successfully.`
+This creates `Modules/Blog` with its folders, `module.json`, `composer.json`, service providers, a controller, views, routes, and a seeder, then prints `Module [Blog] created successfully.`
 
 ## Choose another module type
 
-To create an API module, add `--api`. The controller returns JSON. The views, `routes/web.php` and the other files of a web module are still written.
+Pass a type flag to change the generated scaffold:
 
-```bash
-php artisan module:make Blog --api
-```
+- **API module (`--api`):** generates a JSON controller alongside the standard web files.
 
-To create a plain module, add `--plain` (`-p`). It has the folders and `module.json` only: no providers, no routes, no views and no `composer.json`.
+  ```bash
+  php artisan module:make Blog --api
+  ```
 
-```bash
-php artisan module:make Blog --plain
-```
+- **Plain module (`--plain` / `-p`):** creates only the folders and `module.json`, with no providers, routes, views, or `composer.json`.
 
-To create an Inertia module, add `--inertia`. It has an Inertia controller and the pages `Index`, `Create`, `Show` and `Edit` in `resources/js/Pages`, and no Blade views. The page format follows `inertia.frontend` in `config/modules.php` (default `vue`). See [Use Inertia in a module](/laravel-modules/guides/frontend/inertia/).
+  ```bash
+  php artisan module:make Blog --plain
+  ```
 
-```bash
-php artisan module:make Blog --inertia
-```
+- **Inertia module (`--inertia`):** creates an Inertia controller and `Index`, `Create`, `Show`, and `Edit` pages in `resources/js/Pages`, without Blade views. The framework follows `inertia.frontend` in `config/modules.php` (default `vue`); see [Use Inertia in a module](/laravel-modules/guides/frontend/inertia/).
 
-A web module is the default. To get one whatever the other options say, add `--web`: it wins over `--plain` and `--api`. `--plain` with `--api` also gives a web module, so do not combine them.
+  ```bash
+  php artisan module:make Blog --inertia
+  ```
+
+Web is the default. Passing `--web` overrides `--plain` and `--api`. Do not combine `--plain` with `--api` (the combination also falls back to a web module).
 
 ## Create several modules at once
 
-To create more than one module, list the names. Every option applies to all of them.
+Pass multiple names to generate several modules in one command. Every flag applies to all of them:
 
 ```bash
 php artisan module:make Blog Shop --api
@@ -45,7 +47,7 @@ php artisan module:make Blog Shop --api
 
 ## Create a module that starts disabled
 
-To create the module without enabling it, add `--disabled` (`-d`). Enable it later with [`module:enable`](/laravel-modules/guides/modules/enable-and-disable-modules/).
+Add `--disabled` (`-d`) to leave the new module disabled until you enable it with [`module:enable`](/laravel-modules/guides/modules/enable-and-disable-modules/):
 
 ```bash
 php artisan module:make Blog --disabled
@@ -53,17 +55,17 @@ php artisan module:make Blog --disabled
 
 ## Set the author and vendor
 
-To write another author or vendor into the `composer.json` of the module, pass the author options.
+Override the author and vendor written to the module's `composer.json`:
 
 ```bash
 php artisan module:make Blog --author-name="Jane Doe" --author-email=jane@example.com --author-vendor=acme
 ```
 
-The package name becomes `acme/blog`. To set the values for every module, set `MODULE_VENDOR`, `MODULE_AUTHOR_NAME` and `MODULE_AUTHOR_EMAIL` in `.env`, or change the `composer` section of `config/modules.php`.
+This sets the package name to `acme/blog`. To change defaults for every new module, set `MODULE_VENDOR`, `MODULE_AUTHOR_NAME`, and `MODULE_AUTHOR_EMAIL` in `.env`, or edit the `composer` section of `config/modules.php`.
 
-## If the module already exists
+## Overwrite an existing module
 
-`module:make` stops with `Module [Blog] already exists!`. To delete the module and create it again, add `--force`. The files of the existing module are lost.
+`module:make` stops if the module already exists. Pass `--force` to delete the existing module folder and regenerate it from scratch:
 
 ```bash
 php artisan module:make Blog --force
@@ -71,20 +73,18 @@ php artisan module:make Blog --force
 
 ## Check the result
 
-List the modules.
+List your modules:
 
 ```bash
 php artisan module:list
 ```
-
-The output has a header line and a line for each module, like this for the new one:
 
 ```text
 Status / Name ........................................ Path / priority
 [Enabled] Blog ................................... Modules/Blog [0]
 ```
 
-A module created with `--disabled` shows `[Disabled]`. For a web or API module, `php artisan route:list --name=blog` lists its routes: for a web module, 12 routes, the `blog.*` web routes and the `api.blog.*` API routes. The web routes need no login, so `/blogs` opens in an application without authentication. The API routes use the `auth:sanctum` middleware.
+Modules created with `--disabled` show `[Disabled]`. For web and API modules, run `php artisan route:list --name=blog` to see the generated `blog.*` web routes (no authentication required) and `api.blog.*` API routes (protected by `auth:sanctum`).
 
 ## Related
 

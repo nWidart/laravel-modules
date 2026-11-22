@@ -7,31 +7,36 @@ This page lists `module:make`, the 41 `module:make-*` generators and `module:rou
 
 ## Shared behaviour
 
-Apart from `module:make`, which creates a whole module, every command on this page is a generator: it creates one file in a module. Two generators write more than one file. `module:make-model` also runs other generators for its flags (`--controller`, `--factory`, `--migration`, `--request`, `--resource`, `--policy`, `--seed`), and `module:make-component` also runs `module:make-component-view`.
+Except for `module:make` (which creates a whole module), every command on this page generates a file inside a module. Two commands generate multiple files:
+
+- `module:make-model` runs related generators for its flags (`--controller`, `--factory`, `--migration`, `--request`, `--resource`, `--policy`, `--seed`).
+- `module:make-component` also runs `module:make-component-view`.
 
 ### Arguments
 
-- `name` is the first argument. Two generators name it differently: `module:make-controller` uses `controller` and `module:make-model` uses `model`. `module:make-event-provider` and `module:route-provider` have no name argument.
-- `module` is optional on every generator except `module:make-class`, where it is required. When `module` is empty, the command uses the module stored by [`module:use`](/laravel-modules/reference/commands/module-management/#moduleuse). If no module is stored, or the stored module no longer exists, the command prints `No module given, and no module is set with module:use. Pass the module name, or run php artisan module:use <module> first.`, writes nothing and exits with `1`.
-- An unknown module name prints `Module [Nope] does not exist.`, writes nothing and exits with `1`.
+- `name` is the first argument. `module:make-controller` names it `controller` and `module:make-model` names it `model`. `module:make-event-provider` and `module:route-provider` take no name argument.
+- `module` is optional on every generator except `module:make-class`, where it is required. When omitted, the command uses the module stored by [`module:use`](/laravel-modules/reference/commands/module-management/#moduleuse). If none is stored or the stored module is missing, the command prints `No module given, and no module is set with module:use. Pass the module name, or run php artisan module:use <module> first.`, writes nothing, and exits with `1`.
+- An unknown module name prints `Module [Nope] does not exist.`, writes nothing, and exits with `1`.
 - Generators do not check whether the module is enabled.
 
 ### Name handling
 
-- The class name is the studly-case `name`. A `name` with `/` or `\` puts the file in a sub-directory of the generator path and the class in the matching sub-namespace: `Admin/Report` gives the class `Report` in the `Admin` sub-namespace.
-- An empty name, an absolute path, or a name with a `..` segment prints an error. A segment that becomes `..` once whitespace, hyphens and underscores are removed (for example `. .`) counts as a `..` segment and exits with `1`.
-- The command creates missing directories.
+- Class names are converted to studly case. A `name` with `/` or `\` places the file in a sub-directory and matching sub-namespace (`Admin/Report` creates `Report` under `Admin`).
+- An empty name, an absolute path, or a `..` segment fails with exit status `1`. Segments that reduce to `..` after removing whitespace, hyphens, and underscores (such as `. .`) are also rejected.
+- Missing directories are created automatically.
 
 ### Path and namespace
 
-- The target folder is `<module path>/<paths.generator.<key>.path>`. The `<key>` of each command is in its notes. See [Configuration](/laravel-modules/reference/configuration/#pathsgenerator).
-- The namespace is `<namespace>\<Module>\<generator namespace>`. The generator namespace is `paths.generator.<key>.namespace` when set, otherwise the generator path without `paths.app_folder`.
-- The `generate` flag of a generator key does not affect a generator command. It controls what `module:make` creates.
+- Target folder: `<module path>/<paths.generator.<key>.path>`. Each command's `<key>` is in its notes. See [Configuration](/laravel-modules/reference/configuration/#pathsgenerator).
+- Namespace: `<namespace>\<Module>\<generator namespace>`. The generator namespace uses `paths.generator.<key>.namespace` when set, else the generator path without `paths.app_folder`. Two exceptions apply:
+  - `module:make-observer` ignores `paths.generator.observer.namespace` and always derives its namespace from `paths.generator.observer.path`.
+  - `module:make-scope` derives its namespace from the last segment of `paths.generator.model.path` plus `\Scopes`.
+- The `generate` flag of a generator key affects only `module:make`, not individual generator commands.
 
 ### Existing files
 
-- A file that exists stops the command with `File : <path> already exists.` and exit status `1`.
-- `--force` overwrites the file. Each generator accepts `--force` with the shortcut `-f`, except `module:make-model` (`-f` is `--factory`), `module:route-provider` and `module:make`, which define `--force` without a shortcut. The per-command tables do not repeat `--force`, except where it differs.
+- An existing file stops the command with `File : <path> already exists.` and exit status `1`.
+- Pass `--force` to overwrite an existing file. Every generator accepts `-f|--force`, except `module:make-model` (`-f` is `--factory`), `module:route-provider`, and `module:make`, which define `--force` without a shortcut. Per-command tables omit `--force` unless it differs.
 
 ### Exit status
 
@@ -56,7 +61,7 @@ php artisan module:make <name>... [-p|--plain] [--api] [--web] [--inertia] [-d|-
 | Name | Shortcut | Default | Description |
 | --- | --- | --- | --- |
 | `--plain` | `-p` | `false` | Generate a plain module: folders and `module.json` only. |
-| `--api` |  | `false` | Generate an API module. The controller is generated with `module:make-controller --api` (the `controller-api.stub` stub). Everything else is the same as in a web module: the views, `routes/web.php`, `routes/api.php`, the assets and the other `stubs.files` are still written. |
+| `--api` |  | `false` | Generate an API module (`module:make-controller --api` using `controller-api.stub`). All other `stubs.files` (views, routes, assets) are still written. |
 | `--web` |  | `false` | Generate a web module (default). Wins over `--plain` and `--api`. |
 | `--inertia` |  | `false` | Generate an Inertia module: an Inertia controller and four Inertia pages, no Blade views. |
 | `--disabled` | `-d` | `false` | Create the module in the disabled state. |
@@ -69,12 +74,27 @@ php artisan module:make <name>... [-p|--plain] [--api] [--web] [--inertia] [-d|-
 
 - This command is not a generator in the sense of the shared behaviour above: it has no `module` argument and does not read `module:use`. Without `name`, an interactive terminal asks `What is the name of the module?`.
 - The name is converted to studly case. It becomes the module folder and namespace. The converted name must match `^[A-Za-z_][A-Za-z0-9_]*$`. A name that does not match prints an error, the command goes on with the next name, and the exit status is `1`.
-- Type, first match wins: `--web` gives `web`; `--plain` with `--api` gives `web`; `--plain` alone gives `plain`; `--api` alone gives `api`; no type option gives `web`. `--inertia` has no effect on a plain module.
+- Module type precedence (first match wins):
+  1. `--web` -> `web`
+  2. `--plain` with `--api` -> `web`
+  3. `--plain` -> `plain`
+  4. `--api` -> `api`
+  5. Default -> `web`
+  `--inertia` has no effect on a `plain` module.
 - An existing module stops with `Module [<name>] already exists!` unless `--force` is given. With `--force`, the command deletes the existing module and creates it again.
-- Before it writes anything, the command renders every stub. A JSON stub that renders invalid JSON stops the command, and the existing module stays in place.
-- If `composer.json` is generated and uses the app folder, every class generator path must be inside `paths.app_folder` (or match its namespace when `paths.app_folder` is empty). Otherwise the command prints the offending keys and stops.
-- Steps, in order: (1) create the folder of every `paths.generator` entry whose `generate` is `true`, with a `.gitkeep` file when `stubs.gitkeep` is `true`; (2) write `module.json`; (3) unless the type is `plain`, write the files of `stubs.files` (see [Configuration](/laravel-modules/reference/configuration/#stubs)) and then run the resource generators below; (4) set the module status.
-- Resource generators, unless the type is `plain`: `module:make-seed <Name> --master` (the main seeder, `<Name>DatabaseSeeder`) when `seeder.generate` is `true`; `module:make-provider <Name>ServiceProvider --master` (the main provider, which registers the other providers) when `provider.generate` is `true`, otherwise the command removes the `providers` entry of `module.json`; `module:make-event-provider` and `module:route-provider` when their `generate` flag is `true` (a missing `event-provider` key follows `provider`); `module:make-controller <Name>Controller` when `controller.generate` is `true`, with `--api` for an API module and `--inertia` for an Inertia module; `module:make-inertia-page` for `Index`, `Create`, `Show` and `Edit` with `--inertia`.
+- Before writing anything, the command renders every stub. A JSON stub that renders invalid JSON stops the command and leaves any existing module intact.
+- If `composer.json` uses the app folder, every class generator path must sit inside `paths.app_folder` (or match its namespace when `paths.app_folder` is empty). Otherwise the command prints the offending keys and stops.
+- Execution order:
+  1. Create every `paths.generator` folder with `generate` set to `true` (adding `.gitkeep` when `stubs.gitkeep` is `true`).
+  2. Write `module.json`.
+  3. Unless `plain`, write `stubs.files` (see [Configuration](/laravel-modules/reference/configuration/#stubs)) and run the resource generators below.
+  4. Set the module status in the activator.
+- Resource generators (skipped for `plain` modules):
+  - `module:make-seed <Name> --master` (`<Name>DatabaseSeeder`) when `seeder.generate` is `true`.
+  - `module:make-provider <Name>ServiceProvider --master` when `provider.generate` is `true`; otherwise removes the `providers` entry from `module.json`.
+  - `module:make-event-provider` and `module:route-provider` when their `generate` flag is `true` (a missing `event-provider` key follows `provider`).
+  - `module:make-controller <Name>Controller` when `controller.generate` is `true` (with `--api` for API modules, `--inertia` for Inertia modules).
+  - `module:make-inertia-page` for `Index`, `Create`, `Show`, and `Edit` when `--inertia` is passed.
 - A `plain` module also loses the default service provider from the `providers` list of `module.json`.
 - The module fires the `creating` and `created` [events](/laravel-modules/reference/api/events/).
 - At the end, the command runs `composer dump-autoload` in the application root. If Composer fails, the command prints the error and exits with `1`. The command exits with `1` too when no module was created.
@@ -179,7 +199,7 @@ php artisan module:make-channel OrderChannel Blog
 Creates a class of any type in a module. The type decides the folder.
 
 ```bash
-php artisan module:make-class <name> <module> [-t|--type=TYPE] [-s|--suffix] [-i|--invokable] [-f|--force]
+php artisan module:make-class <name> <module> [-t|--type=TYPE] [-s|--suffix] [-i|--invokable]
 ```
 
 **Arguments**
@@ -196,14 +216,13 @@ php artisan module:make-class <name> <module> [-t|--type=TYPE] [-s|--suffix] [-i
 | `--type` | `-t` | `class` | Type of the class, for example `class`, `service`, `repository`, `contract`. |
 | `--suffix` | `-s` | `false` | Append the type to the class name. See the notes. |
 | `--invokable` | `-i` | `false` | Generate a class with a single `__invoke()` method. |
-| `--force` | `-f` | `false` | Overwrite the file when it exists. |
 
 **Notes**
 
-- Stub: `class.stub`, or `class-invoke.stub` with `--invokable`. The type is made singular.
-- With the type `class`, the file goes to the `class` generator path (default `app/Classes`). With any other type, the last `Classes` segment of that path is replaced by the plural studly-case type, for example `app/Services` for `--type=service`. The `services` generator key is not read for the path.
-- The namespace is `paths.generator.<plural type>.namespace`, else `paths.generator.<type>.namespace`, else the namespace of the computed path.
-- With `--suffix`, the command removes the plural or singular type from the end of the name, then appends the studly-case type: `Mailer` and `MailerService` with `--type=service --suffix` both give `MailerService`.
+- Stub: `class.stub`, or `class-invoke.stub` with `--invokable`. The type is singularized.
+- For type `class`, the file goes to `paths.generator.class.path` (default `app/Classes`). For other types, the trailing `Classes` segment is replaced with the plural studly-case type (e.g. `app/Services` for `--type=service`). The `services` generator key is not read for the path.
+- Namespace lookup order: `paths.generator.<plural type>.namespace`, `paths.generator.<type>.namespace`, then the computed path's namespace.
+- `--suffix` strips any trailing singular or plural type from `name`, then appends the studly-case type (`Mailer` and `MailerService` with `--type=service --suffix` both become `MailerService`).
 
 ```bash
 php artisan module:make-class Mailer Blog --type=service --suffix
@@ -357,7 +376,7 @@ php artisan module:make-controller <controller> [<module>] [-p|--plain] [--api] 
 **Notes**
 
 - Writes `<Name>Controller.php` to the `controller` generator path (`paths.generator.controller.path`, default `app/Http/Controllers`). The command appends `Controller` unless the name already contains `controller`, in any case.
-- Stub: `controller-plain.stub` for `--plain`, else `controller-api.stub` for `--api`, else `controller.invokable.stub` for `--invokable`, else `controller-inertia.stub` for `--inertia`, else `controller.stub`. The first matching option wins.
+- Stub precedence (first match wins): `--plain` (`controller-plain.stub`), `--api` (`controller-api.stub`), `--invokable` (`controller.invokable.stub`), `--inertia` (`controller-inertia.stub`), default (`controller.stub`).
 
 ```bash
 php artisan module:make-controller PostController Blog --api
@@ -446,7 +465,7 @@ This command has no options besides `--force`.
 - Stub: `event-provider.stub`.
 - The command has no `name` argument. The `event-provider` generator key is not in `config/config.php`. `module:make` treats a missing key as following the `provider` entry.
 - The generated provider registers only the listeners in its `$listen` array. It never discovers listeners. See [Listener discovery](/laravel-modules/reference/commands/generators/#listener-discovery).
-- The provider overrides `configureEmailVerification()` with an empty body. The application already registers `SendEmailVerificationNotification` on `Registered`; without the override, each module provider registers it again and users get one extra verification email per module.
+- Overrides `configureEmailVerification()` with an empty body. Without this override, each module provider would register `SendEmailVerificationNotification` on `Registered` again, sending duplicate verification emails.
 
 ```bash
 php artisan module:make-event-provider Blog
@@ -550,7 +569,7 @@ php artisan module:make-helper Str Blog
 Creates a health indicator class for [`nwidart/laravel-actuator`](https://github.com/nWidart/laravel-actuator) in a module.
 
 ```bash
-php artisan module:make-health-indicator <name> [<module>] [--force]
+php artisan module:make-health-indicator <name> [<module>]
 ```
 
 **Arguments**
@@ -562,13 +581,11 @@ php artisan module:make-health-indicator <name> [<module>] [--force]
 
 **Options**
 
-| Name | Shortcut | Default | Description |
-| --- | --- | --- | --- |
-| `--force` | `-f` | `false` | Overwrite the file if it already exists. |
+This command has no options besides `--force`.
 
 **Notes**
 
-- Writes `<Name>.php` to the `health` generator path. When `modules.paths.generator.health` is not set, the path is `paths.app_folder` plus `Health` (`app/Health` with the default app folder), in the namespace `Modules\<Module>\Health`. When the application sets `paths.generator.health.path` (and optionally `namespace`), that path is used. See [Configuration](/laravel-modules/reference/configuration/#default-entries).
+- Writes `<Name>.php` to `paths.generator.health.path` when set, otherwise `<paths.app_folder>Health` (default `app/Health`, namespace `Modules\<Module>\Health`). See [Configuration](/laravel-modules/reference/configuration/#default-entries).
 - Each segment of a nested name is converted to StudlyCase, for the folder and for the namespace: `api/v2/Payments` gives `app/Health/Api/V2/Payments.php` in the namespace `Modules\Blog\Health\Api\V2`.
 - Stub: `health-indicator.stub`.
 - The command works without the actuator installed, but the generated class needs the actuator to be used.
@@ -609,7 +626,7 @@ php artisan module:make-inertia-component <name> [<module>] [--vue] [--react] [-
 
 - Writes `<Name>.vue`, `<Name>.jsx` or `<Name>.svelte` to the `inertia-components` generator path (`paths.generator.inertia-components.path`, default `resources/js/Components`).
 - Stub: `inertia/component-vue.stub`, `inertia/component-react.stub` or `inertia/component-svelte.stub`.
-- The framework is the option given, else `inertia.frontend` (default `vue`). Pass at most one of `--vue`, `--react` and `--svelte`. With more than one, the command writes nothing, exits with `1` and prints, for example, `The --react and --svelte options cannot be used together. Pass only one of --vue, --react or --svelte.`
+- Framework comes from the flag given, else `inertia.frontend` (default `vue`). Passing more than one of `--vue`, `--react`, and `--svelte` writes nothing, exits with `1`, and prints an error (for example `The --react and --svelte options cannot be used together. Pass only one of --vue, --react or --svelte.`).
 
 ```bash
 php artisan module:make-inertia-component Posts/Index Blog --react
@@ -643,7 +660,7 @@ php artisan module:make-inertia-page <name> [<module>] [--vue] [--react] [--svel
 
 - Writes `<Name>.vue`, `<Name>.jsx` or `<Name>.svelte` to the `inertia` generator path (`paths.generator.inertia.path`, default `resources/js/Pages`).
 - Stub: `inertia/page-vue.stub`, `inertia/page-react.stub` or `inertia/page-svelte.stub`.
-- The framework is the option given, else `inertia.frontend` (default `vue`). Pass at most one of `--vue`, `--react` and `--svelte`. With more than one, the command writes nothing, exits with `1` and prints, for example, `The --react and --svelte options cannot be used together. Pass only one of --vue, --react or --svelte.`
+- Framework comes from the flag given, else `inertia.frontend` (default `vue`). Passing more than one of `--vue`, `--react`, and `--svelte` writes nothing, exits with `1`, and prints an error (for example `The --react and --svelte options cannot be used together. Pass only one of --vue, --react or --svelte.`).
 
 ```bash
 php artisan module:make-inertia-page Posts/Index Blog --react
@@ -765,8 +782,8 @@ php artisan module:make-listener <name> [<module>] [-e|--event=EVENT] [--queued]
 **Notes**
 
 - Writes `<Name>.php` to the `listener` generator path (`paths.generator.listener.path`, default `app/Listeners`).
-- Stub: `listener.stub` with `--event`, `listener-duck.stub` without it (a "duck" listener has an untyped `$event` parameter); the queued variants are `listener-queued.stub` and `listener-queued-duck.stub`.
-- An event that starts with `\`, the application namespace, `Illuminate\` or the modules namespace is used as a fully qualified class name. Any other value resolves to `<modules namespace>\<Module>\<event namespace>\<event>`.
+- Stub: `listener.stub` with `--event`, or `listener-duck.stub` without it (untyped `$event`). With `--queued`: `listener-queued.stub` or `listener-queued-duck.stub`.
+- An event starting with `\`, the application namespace, `Illuminate\`, or the modules namespace is used as a fully qualified class name. Other values resolve to `<modules namespace>\<Module>\<event namespace>\<event>`.
 
 ```bash
 php artisan module:make-listener SendNotification Blog --event=PostPublished --queued
@@ -775,23 +792,14 @@ php artisan module:make-listener SendNotification Blog --event=PostPublished --q
 
 ### Listener discovery
 
-Laravel discovers listeners only in `app/Listeners`. It does not discover `Modules/<Name>/app/Listeners`. Register a module listener in one of two ways:
+Laravel discovers listeners only in `app/Listeners` by default; `Modules/<Name>/app/Listeners` is not added automatically. Module listeners are registered either via `$listen` on the module `EventServiceProvider` or by adding module listener paths to Laravel event discovery (`bootstrap/app.php` `withEvents(discover: ...)` or `EventServiceProvider::addEventDiscoveryPaths()`).
 
-- List it in the `$listen` array of the module `EventServiceProvider`.
-- Add the module listener directories to the application's discovery paths in `bootstrap/app.php`:
+- `LaravelModulesServiceProvider` registers `Nwidart\Modules\Support\ListenerClassNameGuesser` so discovered files under `Modules/<Name>/app/Listeners/` resolve to `Modules\<Name>\Listeners\...`.
+- Glob discovery paths match disabled modules too.
+- When using `php artisan event:cache`, re-cache after enabling or disabling a module.
+- Listing a discovered listener in `$listen` registers it twice.
 
-```php
-->withEvents(discover: [
-    __DIR__.'/../app/Listeners',
-    __DIR__.'/../Modules/*/app/Listeners',
-])
-```
-
-`EventServiceProvider::addEventDiscoveryPaths()` adds the same paths. The package registers `Nwidart\Modules\Support\ListenerClassNameGuesser`, so Laravel resolves `Modules/Blog/app/Listeners/SyncPoints.php` to the class `Modules\Blog\Listeners\SyncPoints`.
-
-- The glob also matches disabled modules.
-- With `php artisan event:cache`, run it again after you enable or disable a module.
-- A listener that is both discovered and listed in a module `$listen` array is registered twice. Use one way per listener.
+For setup steps, see [Register events and listeners](/laravel-modules/guides/console-and-events/events-and-listeners/).
 
 ## module:make-mail
 
@@ -877,8 +885,13 @@ php artisan module:make-migration <name> [<module>] [--fields=FIELDS] [--plain]
 
 **Notes**
 
-- Writes `<Y_m_d_His>_<name>.php` to the `migration` generator path (`paths.generator.migration.path`, default `database/migrations`). The class name is the studly-case name.
-- Stub: with `--plain`, always `migration/plain.stub`. Without it, the first word of the name selects the stub. `create` or `make` gives `migration/create.stub`; `add`, `update`, `append` or `insert` gives `migration/add.stub`; `delete` or `remove` gives `migration/delete.stub`; `destroy` or `drop` gives `migration/drop.stub`; any other word gives `migration/plain.stub`.
+- Writes `<Y_m_d_His>_<name>.php` to the `migration` generator path (`paths.generator.migration.path`, default `database/migrations`). All five shipped stubs generate anonymous classes (`return new class extends Migration`); the studly-case name is still passed as `$CLASS$` for custom stubs.
+- Stub selection: `--plain` always uses `migration/plain.stub`. Otherwise the first word of `name` selects the stub:
+  - `create`, `make` -> `migration/create.stub`
+  - `add`, `update`, `append`, `insert` -> `migration/add.stub`
+  - `delete`, `remove` -> `migration/delete.stub`
+  - `destroy`, `drop` -> `migration/drop.stub`
+  - any other word -> `migration/plain.stub`
 - The table name comes from the rest of the name: `create_posts_table` gives `posts`, `add_slug_to_posts_table` gives `posts`.
 - The generated column lines are indented with four spaces per level (12 spaces inside `Schema::create`), without tab characters or a blank line before `});`.
 - Each field is `column:type[:modifier...]`. The shortcuts `soft_delete` and `remember_token`, and `belongsTo:column:key:table`, are also accepted.
@@ -1413,7 +1426,7 @@ php artisan module:route-provider [<module>] [--force]
 - The command name has no `make-` prefix and the command has no `name` argument.
 - Writes `RouteServiceProvider.php` to the `provider` generator path (`paths.generator.provider.path`, default `app/Providers`).
 - Stub: `route-provider.stub`.
-- The `WEB_ROUTES` and `API_ROUTES` sections of the stub stay only when `stubs.files` lists `routes/web` or `routes/api` and the `routes` generator entry has `generate` set to `true`.
+- `WEB_ROUTES` and `API_ROUTES` stay only when `routes.generate` is `true` and `stubs.files` lists `routes/web` or `routes/api`.
 
 ```bash
 php artisan module:route-provider Blog

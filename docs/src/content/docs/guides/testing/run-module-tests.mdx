@@ -5,21 +5,21 @@ description: Generate unit and feature tests in a module, run them by path, and 
 
 import { Steps } from '@astrojs/starlight/components';
 
-At the end, `php artisan test` runs the tests of every module, and you can run the tests of one module on its own. Prerequisite: a `Blog` module. See [Create a module](/laravel-modules/guides/modules/create-a-module/).
+At the end, `php artisan test` runs tests across all modules, and you can run tests for a single module on demand. Prerequisite: a `Blog` module (see [Create a module](/laravel-modules/guides/modules/create-a-module/)).
 
 ## Generate a test
 
-To create a feature test in the `Blog` module, run:
+Create a feature test in the `Blog` module:
 
 ```bash
 php artisan module:make-test PostIndexTest Blog --feature
 ```
 
-This writes `Modules/Blog/tests/Feature/PostIndexTest.php`. Without `--feature`, the command writes a unit test to `Modules/Blog/tests/Unit/`.
+This writes `Modules/Blog/tests/Feature/PostIndexTest.php`. Omit `--feature` to create a unit test in `Modules/Blog/tests/Unit/`.
 
-End the name with `Test`. The command does not add the suffix, and PHPUnit only runs files whose name ends in `Test.php`.
+Always end the class name with `Test`. The generator does not append it, and PHPUnit only discovers files ending in `Test.php`.
 
-Both generated tests extend the application `Tests\TestCase`, so the module test boots your application. To use the database, add `RefreshDatabase`. It also runs the migrations of the modules.
+Generated tests extend your application's `Tests\TestCase`, so they boot the full application. Add `RefreshDatabase` to migrate both application and module tables during tests:
 
 ```php title="Modules/Blog/tests/Feature/PostIndexTest.php"
 <?php
@@ -44,25 +44,20 @@ class PostIndexTest extends TestCase
 
 ## Run the tests of one module
 
-To run one test file, pass its path.
+Pass a file path to run one test, or the module's `tests` folder to run all of its tests:
 
 ```bash
 php artisan test Modules/Blog/tests/Feature/PostIndexTest.php
-```
-
-To run every test of a module, pass the module folder.
-
-```bash
 php artisan test Modules/Blog/tests
 ```
 
-## Run the module tests with the application tests
+## Run module tests with application tests
 
-The default `phpunit.xml` of a Laravel application lists only `tests/Unit` and `tests/Feature`. A bare `php artisan test` does not run the tests in `Modules/`.
+By default, `phpunit.xml` includes only `tests/Unit` and `tests/Feature`, so `php artisan test` skips `Modules/`.
 
 <Steps>
 
-1. Add the module folders to the test suites. The `*` matches every module.
+1. Add the module test globs to `phpunit.xml`.
 
    ```xml title="phpunit.xml"
    <testsuites>
@@ -77,7 +72,7 @@ The default `phpunit.xml` of a Laravel application lists only `tests/Unit` and `
    </testsuites>
    ```
 
-2. Run the tests.
+2. Run the test suite.
 
    ```bash
    php artisan test
@@ -85,14 +80,14 @@ The default `phpunit.xml` of a Laravel application lists only `tests/Unit` and `
 
 </Steps>
 
-To run one suite, add `--testsuite=Feature`.
+Add `--testsuite=Feature` to run a single suite.
 
 ### Check the result
 
-The output lists `Modules\Blog\Tests\Feature\PostIndexTest` and the test passes.
+The output includes `Modules\Blog\Tests\Feature\PostIndexTest` and reports a passing run.
 
 ## Related
 
-- [`module:make-test`](/laravel-modules/reference/commands/generators/)
+- [`module:make-test`](/laravel-modules/reference/commands/generators/#modulemake-test)
 - [Include modules in code coverage](/laravel-modules/guides/testing/coverage/)
-- [Migrations in a module](/laravel-modules/guides/database/migrations/)
+- [Create and run module migrations](/laravel-modules/guides/database/migrations/)

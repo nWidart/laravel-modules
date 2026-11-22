@@ -24,7 +24,7 @@ Read [CONTRIBUTING.md](https://github.com/nWidart/laravel-modules/blob/master/CO
 
 ## Contribute to this documentation
 
-To add a package to the [community packages](/laravel-modules/ecosystem/community-packages/) list, open a pull request that changes that page. Each page has an edit link at the bottom that opens the Markdown file on GitHub. To run the site locally, see [docs/README.md](https://github.com/nWidart/laravel-modules/blob/master/docs/README.md). A change to user-facing behaviour should update the matching page in the same pull request.
+To add a package to the [community packages](/laravel-modules/ecosystem/community-packages/) list, open a pull request that changes that page. Each page has an edit link at the bottom that opens the Markdown file on GitHub. To run the site locally, see [docs/README.md](https://github.com/nWidart/laravel-modules/blob/master/docs/README.md). Update the matching documentation page in the same pull request whenever you change user-facing behaviour.
 
 ## Sponsor the project
 

@@ -5,18 +5,18 @@ description: Add config files to a module with module:make-config, read their va
 
 import { Steps } from '@astrojs/starlight/components';
 
-To give the `Blog` module its own settings, add values to its `config/config.php` or to a second config file, and read them with `config()`. You need an enabled `Blog` module. A new module has `Modules/Blog/config/config.php`, which holds `'name' => 'Blog'`.
+To give the `Blog` module its own settings, edit `Modules/Blog/config/config.php` or generate extra config files and read them with `config()`. You need an enabled `Blog` module. A new module already has `Modules/Blog/config/config.php` containing `'name' => 'Blog'`.
 
-The module provider registers every PHP file of the module `config` folder. The file name decides the config key:
+`ModuleServiceProvider` registers every PHP file in the module's `config/` folder:
 
-| File | Key prefix |
+| File | Config key prefix |
 | --- | --- |
 | `config/config.php` | `blog` |
 | `config/settings.php` | `blog.settings` |
 
 <Steps>
 
-1. Add a value to `config/config.php`.
+1. Add a setting to `Modules/Blog/config/config.php`.
 
    ```php title="Modules/Blog/config/config.php"
    <?php
@@ -27,13 +27,13 @@ The module provider registers every PHP file of the module `config` folder. The 
    ];
    ```
 
-2. To keep a group of settings apart, create a second file.
+2. Optional: create a second config file to group related settings.
 
    ```bash
    php artisan module:make-config settings Blog
    ```
 
-   The command creates `Modules/Blog/config/settings.php` with an empty array. Add a value:
+   This creates `Modules/Blog/config/settings.php`. Add a setting:
 
    ```php title="Modules/Blog/config/settings.php"
    <?php
@@ -43,7 +43,7 @@ The module provider registers every PHP file of the module `config` folder. The 
    ];
    ```
 
-3. Check the result. List the keys, then read one:
+3. Check the result.
 
    ```bash
    php artisan config:show blog
@@ -56,25 +56,25 @@ The module provider registers every PHP file of the module `config` folder. The 
    settings ⇁ per_page ..................................................... 10
    ```
 
-   In code, call `config('blog.posts_per_page')` and `config('blog.settings.per_page')`.
+   Read the values with `config('blog.posts_per_page')` and `config('blog.settings.per_page')`.
 
 </Steps>
 
 ## Publish the config files
 
-The published copy of a config file overrides the module. To change a value from the application, publish the files, edit the copy, and check the result.
+Publish a module's config files to override values from your application.
 
 <Steps>
 
-1. Publish the config files of the module.
+1. Publish the config files.
 
    ```bash
    php artisan module:publish-config Blog
    ```
 
-   The command creates `config/blog.php` and `config/blog/settings.php`. Add `--force` to overwrite files that exist.
+   This creates `config/blog.php` and `config/blog/settings.php`. Add `--force` to overwrite existing files.
 
-2. Edit the value in the copy. The module value of `posts_per_page` is `15`:
+2. Override a value in the published file.
 
    ```php title="config/blog.php"
    <?php
@@ -84,7 +84,7 @@ The published copy of a config file overrides the module. To change a value from
    ];
    ```
 
-3. Read the value:
+3. Verify the merged value.
 
    ```bash
    php artisan tinker --execute="echo config('blog.posts_per_page');"
@@ -94,13 +94,13 @@ The published copy of a config file overrides the module. To change a value from
 
 </Steps>
 
-The application values win:
+Published values override module defaults:
 
-- Where the copy and the module both have an associative array, they merge key by key.
-- Any other value in the copy replaces the module value as a whole. This includes a scalar, a list, and an empty array `[]`.
-- A key the copy does not set keeps the module default. A key only the copy defines stays.
+- Associative arrays merge recursively key by key.
+- Scalars, lists, and empty arrays (`[]`) replace the module's value as a whole.
+- Unset keys keep their module defaults, and extra application keys stay intact.
 
-With a cached configuration, run `php artisan config:cache` again after you edit the copy, because the cache holds the merged values. For the exact merge order, see [Config files](/laravel-modules/reference/api/module-service-provider/#config-files).
+If configuration is cached, run `php artisan config:cache` after editing a published file. See [Config files](/laravel-modules/reference/api/module-service-provider/#config-files) for the exact merge order.
 
 ## Related
 

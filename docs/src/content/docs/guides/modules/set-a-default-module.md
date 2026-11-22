@@ -3,7 +3,7 @@ title: Set a default module for commands
 description: Store a module with module:use so generator commands need no module argument, and clear it with module:unuse.
 ---
 
-To stop typing the module name on every generator command, store a default module with `module:use`.
+Store a default module with `module:use` so you do not have to pass the module name to every generator command.
 
 ## Set the default module
 
@@ -11,21 +11,21 @@ To stop typing the module name on every generator command, store a default modul
 php artisan module:use Blog
 ```
 
-The name is written to `storage/app/modules/modules.used`. It stays there until you clear it, so it applies to every later command in any terminal.
+This writes the module name to `storage/app/modules/modules.used`. Every subsequent generator command in any terminal uses `Blog` until you clear it.
 
 ## Generate without the module argument
 
-A generator command with an empty `module` argument uses the stored module.
+Omit the `module` argument on any generator command to target the stored module:
 
 ```bash
 php artisan module:make-controller PostController
 ```
 
-The file is `Modules/Blog/app/Http/Controllers/PostController.php`. An explicit module still wins: `php artisan module:make-controller PostController Shop` writes into `Shop`.
+This creates `Modules/Blog/app/Http/Controllers/PostController.php`. Passing an explicit module name overrides the default (for example `php artisan module:make-controller PostController Shop` writes into `Shop`).
 
 ## Clear the default module
 
-`module:unuse` takes no module name. It deletes the stored module. The command accepts a name or `--all` and ignores them.
+Run `module:unuse` to clear the stored module (any module name or `--all` flag passed to it is ignored):
 
 ```bash
 php artisan module:unuse
@@ -35,11 +35,11 @@ php artisan module:unuse
 Forget Using Blog Module ........................................ DONE
 ```
 
-When no module is in use, the command prints `No module is in use.` and exits with status 0. The `modules.blog.unused` event fires when a module was in use.
+If no module is currently set, `module:unuse` prints `No module is in use.` and exits with status `0`. When a module was in use, it fires `modules.blog.unused`.
 
 ## Check the result
 
-After `module:unuse`, a generator without a module fails:
+After `module:unuse`, running a generator without a module name fails with exit status `1`:
 
 ```bash
 php artisan module:make-controller PostController
@@ -48,10 +48,6 @@ php artisan module:make-controller PostController
 ```text
 ERROR  No module given, and no module is set with module:use. Pass the module name, or run php artisan module:use <module> first.
 ```
-
-The command exits with status 1 and prints no stack trace.
-
-While a module is in use, the same command writes into that module.
 
 ## Related
 

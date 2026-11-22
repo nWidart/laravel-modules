@@ -1,21 +1,21 @@
 ---
 title: Add Eloquent models to a module
-description: Generate a model with module:make-model, give it a factory that Laravel can find with UseFactory, and relate it to a model of another module.
+description: Generate module models with attributes and factories, register observers and policies, and relate models across modules.
 ---
 
 import { Steps } from '@astrojs/starlight/components';
 
-To get a `Post` model with a factory in the `Blog` module, generate both with one command. You need an enabled `Blog` module and the `posts` table from [Create and run module migrations](/laravel-modules/guides/database/migrations/).
+To create a `Post` model and its factory in the `Blog` module, generate both with one command. You need an enabled `Blog` module and the `posts` table from [Create and run module migrations](/laravel-modules/guides/database/migrations/).
 
 <Steps>
 
-1. Generate the model and its factory.
+1. Generate the model and its factory (`-f` is `--factory`).
 
    ```bash
    php artisan module:make-model Post Blog --fillable=title,body -f
    ```
 
-   The command creates `Modules/Blog/app/Models/Post.php` and `Modules/Blog/database/factories/PostFactory.php`. `-f` is `--factory`.
+   This creates `Modules/Blog/app/Models/Post.php` and `Modules/Blog/database/factories/PostFactory.php`.
 
    ```php title="Modules/Blog/app/Models/Post.php"
    <?php
@@ -40,9 +40,15 @@ To get a `Post` model with a factory in the `Blog` module, generate both with on
    }
    ```
 
-   The `#[UseFactory]` attribute is required. Laravel guesses the factory of `Modules\Blog\Models\Post` as `Database\Factories\Modules\Blog\Models\PostFactory`, which does not exist. The attribute names the module factory, so `Post::factory()` finds it.
+   Keep the `#[UseFactory]` attribute. Laravel's default factory guesser looks under `Database\Factories\Modules\...`, so `#[UseFactory]` tells `Post::factory()` where the module factory lives.
 
-2. Fill the `definition()` of the factory.
+   To generate Laravel 13 Eloquent attributes (`#[Fillable([...])]`) instead of a `$fillable` property, add `--attributes`:
+
+   ```bash
+   php artisan module:make-model Post Blog --fillable=title,body --attributes
+   ```
+
+2. Implement `definition()` in the factory.
 
    ```php title="Modules/Blog/database/factories/PostFactory.php"
    public function definition(): array
@@ -54,13 +60,13 @@ To get a `Post` model with a factory in the `Blog` module, generate both with on
    }
    ```
 
-3. Check the result. Show the model, then create a post with the factory:
+3. Check the result. Inspect the model and create a record with the factory.
 
    ```bash
    php artisan module:model-show Post
    ```
 
-   `module:model-show` finds `Post` in the modules. A model of the application with the same name wins, and an ambiguous name asks which one, or lists the candidates when the run is not interactive. The fully qualified class name, `'Modules\Blog\Models\Post'`, always works.
+   `module:model-show` resolves `Post` across your modules (pass `'Modules\Blog\Models\Post'` if another module or the app defines `Post`).
 
    ```text
    Modules\Blog\Models\Post ...................................................
@@ -72,29 +78,59 @@ To get a `Post` model with a factory in the `Blog` module, generate both with on
    php artisan tinker --execute="echo Modules\Blog\Models\Post::factory()->create()->title;"
    ```
 
-   The command prints the title of the new post.
+   The command prints the generated post title.
 
 </Steps>
 
 ## Generate more files with the model
 
-Each flag runs another generator after the model is written:
+Combine flags to run extra generators alongside `module:make-model`:
 
 | Flag | Also creates |
 | --- | --- |
-| `-m` | a migration `create_posts_table` |
+| `-m` | Migration `create_posts_table` |
 | `-c` | `PostController` |
 | `-s` | `PostSeeder` |
+| `-p` | `PostPolicy` |
 
 ```bash
 php artisan module:make-model Post Blog -mfcs
 ```
 
-Without `-f`, the model has no `HasFactory` trait. To add a factory to an existing model, run `php artisan module:make-factory Post Blog`, then add the `#[UseFactory(PostFactory::class)]` attribute and the `HasFactory` trait as in step 1.
+Without `-f`, the model omits `HasFactory`. To add a factory later, run `php artisan module:make-factory Post Blog` and add `#[UseFactory(PostFactory::class)]` and `use HasFactory;` to the model.
+
+## Register observers and policies
+
+Generate an observer or policy inside the module:
+
+```bash
+php artisan module:make-observer Post Blog
+php artisan module:make-policy PostPolicy Blog
+```
+
+`module:make-observer` appends `Observer` (`Modules/Blog/app/Observers/PostObserver.php`). `module:make-policy` uses the name as given (`Modules/Blog/app/Policies/PostPolicy.php`).
+
+Laravel does not auto-discover observers or policies under `Modules\`. Register them explicitly:
+
+- **Observer:** attach `#[ObservedBy([PostObserver::class])]` to the model class, or call `Post::observe(PostObserver::class)` in the module service provider.
+- **Policy:** call `Gate::policy()` in your module service provider's `boot()` method (always call `parent::boot()`):
+
+```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
+use Illuminate\Support\Facades\Gate;
+use Modules\Blog\Models\Post;
+use Modules\Blog\Policies\PostPolicy;
+
+public function boot(): void
+{
+    parent::boot();
+
+    Gate::policy(Post::class, PostPolicy::class);
+}
+```
 
 ## Relate a model to a model of another module
 
-To relate `Post` of `Blog` to `Product` of `Shop`, import the class of the other module:
+Import the other module's model class directly:
 
 ```php title="Modules/Blog/app/Models/Post.php"
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -116,11 +152,11 @@ public function posts(): HasMany
 }
 ```
 
-A foreign key needs the table of the other module. `php artisan migrate` runs migrations in the order of their file names, which start with the timestamp. Create the migration that adds `product_id` after the migration of `products`. Then the table exists when the key is created.
+`php artisan migrate` runs migrations in filename (timestamp) order. Create any migration that adds a foreign key after the migration that creates the referenced table.
 
 ## Related
 
-- [`module:make-model`](/laravel-modules/reference/commands/generators/#modulemake-model) and [`module:make-factory`](/laravel-modules/reference/commands/generators/#modulemake-factory): all flags.
+- [`module:make-model`](/laravel-modules/reference/commands/generators/#modulemake-model), [`module:make-factory`](/laravel-modules/reference/commands/generators/#modulemake-factory), [`module:make-observer`](/laravel-modules/reference/commands/generators/#modulemake-observer) and [`module:make-policy`](/laravel-modules/reference/commands/generators/#modulemake-policy)
 - [Create and run module migrations](/laravel-modules/guides/database/migrations/)
 - [Seed a module with factories and seeders](/laravel-modules/guides/database/factories-and-seeders/)
 - [Prune module models](/laravel-modules/guides/database/prune-models/)

@@ -5,13 +5,13 @@ description: Implement ActivatorInterface, register it under activators.<key>.cl
 
 import { Steps } from '@astrojs/starlight/components';
 
-To store the enabled or disabled status of modules somewhere other than `modules_statuses.json`, write a class that implements `ActivatorInterface` and select it in `config/modules.php`. This guide builds an activator that keeps one status file for each environment, such as `modules_statuses.local.json` and `modules_statuses.production.json`.
+To store module statuses somewhere other than `modules_statuses.json`, implement `ActivatorInterface` and select your class in `config/modules.php`. This guide builds an activator that stores one JSON file per environment (`modules_statuses.local.json`, `modules_statuses.production.json`, and so on).
 
-The package creates the activator with `new $class($app)` while it registers, before the application has booted. The constructor and the methods may use the container and the file system, but not a service that needs a booted application, such as the database.
+The package constructs the activator via `new $class($app)` during registration, before the application boots. Your activator can use the container and filesystem, but not services that require a booted application (such as Eloquent or the database).
 
 <Steps>
 
-1. Create the class.
+1. Create the activator class.
 
    ```php title="app/Support/EnvironmentActivator.php"
    <?php
@@ -89,7 +89,7 @@ The package creates the activator with `new $class($app)` while it registers, be
    }
    ```
 
-2. Register the class under a key of your choice, and select that key. Publish the config file first if you have not:
+2. Publish `config/modules.php` (if you have not already), register your activator under `activators`, and select it in `activator`.
 
    ```bash
    php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
@@ -109,13 +109,11 @@ The package creates the activator with `new $class($app)` while it registers, be
    'activator' => 'environment',
    ```
 
-3. Carry over the current statuses. The new activator starts with no entries, so every module counts as disabled. Copy the old file to the file of your environment. The file name uses the value of `APP_ENV`, here `local`:
+3. Seed the new status file. Without entries, every module starts disabled. Copy your existing file for the current `APP_ENV` (here `local`), or run `php artisan module:enable --all`:
 
    ```bash
    cp modules_statuses.json modules_statuses.local.json
    ```
-
-   Or enable the modules again with `php artisan module:enable --all`.
 
 4. Check the result.
 
@@ -125,11 +123,11 @@ The package creates the activator with `new $class($app)` while it registers, be
    cat modules_statuses.local.json
    ```
 
-   `module:list` shows `Blog` as `[Disabled]`, and the JSON file has `"Blog": false`. The old `modules_statuses.json` did not change.
+   `module:list` shows `Blog` as `[Disabled]`, `modules_statuses.local.json` contains `"Blog": false`, and `modules_statuses.json` stays unchanged.
 
 </Steps>
 
-The class name must exist when the package registers: an unknown `activator` key, a missing `class` entry or a class that does not exist throws `InvalidActivatorClass`.
+An unknown `activator` key, a missing `class` key, or a nonexistent class throws `InvalidActivatorClass` during registration.
 
 ## Related
 

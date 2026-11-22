@@ -5,13 +5,13 @@ description: Set up the deploy script of an application with modules, from Compo
 
 import { Steps } from '@astrojs/starlight/components';
 
-At the end, your deploy script installs the application, the modules and their assets, migrates the database and caches the configuration. Prerequisite: the modules are in the repository of the application, in `Modules/`.
+At the end, your deploy script installs dependencies, builds module assets, runs migrations, and caches the application. Prerequisite: your modules live in `Modules/` inside the application repository.
 
 ## Prepare the repository
 
-Commit three things that the deploy depends on.
+Commit three things before deploying:
 
-- **The merge plugin entry.** A deploy runs Composer without interaction, so Composer cannot ask whether to trust `wikimedia/composer-merge-plugin`. It does not run a plugin that `allow-plugins` does not allow, and then the module classes do not autoload. Check `composer.json`:
+- **The Composer merge plugin configuration.** Non-interactive deploys do not prompt to trust plugins, so Composer skips `wikimedia/composer-merge-plugin` unless `allow-plugins` permits it. Without it, module classes do not autoload:
 
   ```json title="composer.json"
   "config": {
@@ -28,28 +28,30 @@ Commit three things that the deploy depends on.
   }
   ```
 
-- **The status file.** `modules_statuses.json` in the application root stores which modules are enabled. The package registers enabled modules only, and a module without an entry is disabled. If the file is not in the repository, the deployed application has no module. Commit it. If you set `activators.file.statuses-file` to another path, deploy the file to that path.
+- **The status file.** Commit `modules_statuses.json` (or deploy the custom path in `activators.file.statuses-file`). The package registers enabled modules only, and any module missing from this file is disabled.
 
-- **The npm lock file.** `npm ci` needs a committed `package-lock.json`, which a new Laravel 13 app does not have. Run `npm install` once and commit `package-lock.json`.
+- **The npm lock file.** `npm ci` requires a committed `package-lock.json`. Run `npm install` once and commit it if your project does not have one.
 
 ## Write the deploy script
 
 <Steps>
 
-1. Install the dependencies without interaction.
+1. Install Composer dependencies without interaction.
 
    ```bash
    composer install --no-dev --optimize-autoloader --no-interaction
    ```
 
-2. Build the assets. Use the build you set up in [Build module assets with Vite](/laravel-modules/guides/frontend/vite/). One build from the application root:
+2. Build assets using the workflow from [Build module assets with Vite](/laravel-modules/guides/frontend/vite/). Ensure `modules_statuses.json` is in place first, because the root Vite loader reads it to find enabled modules.
+
+   For one root Vite build:
 
    ```bash
    npm ci
    npm run build
    ```
 
-   Or one build for each module, where each module has its own `package.json`:
+   For standalone per-module builds:
 
    ```bash
    for module in Modules/*/; do
@@ -57,73 +59,70 @@ Commit three things that the deploy depends on.
    done
    ```
 
-   Run the build after `modules_statuses.json` is in place: the root build reads it to find the enabled modules.
-
-3. Publish the static assets of the modules, if they have any.
+3. Publish static module assets, if any module ships them.
 
    ```bash
    php artisan module:publish --all
    ```
 
-   The command copies `resources/assets` of each module to `public/modules/<name>`. It includes the assets of disabled modules. Without `modules_statuses.json`, every module is disabled. List module names instead of `--all` to publish a selection.
+   This copies `resources/assets` from every module on disk (enabled and disabled) to `public/modules/<name>`. Pass module names instead of `--all` to publish only specific modules.
 
-4. Run the migrations.
+4. Run database migrations.
 
    ```bash
    php artisan migrate --force
    ```
 
-   This runs the pending migrations of the application and of every enabled module, in one batch. `--force` skips the production confirmation. To run the migrations of each module in its own batch, or to include a disabled module, use `module:migrate` instead:
+   This runs pending migrations for the application and every enabled module in one batch. `--force` skips the production confirmation prompt.
+
+   To run each enabled module's migrations in its own batch (in ascending priority order), use `module:migrate --all --force`:
 
    ```bash
    php artisan module:migrate --all --force
    ```
 
-5. Cache the configuration, routes and views.
+   `--all` migrates enabled modules only. To migrate a disabled module, pass its name explicitly (for example `php artisan module:migrate Blog --force`).
+
+5. Cache configuration, events, routes, and views.
 
    ```bash
    php artisan optimize
    ```
 
-   `optimize` caches the configuration, events, routes and views. With a cached configuration, the module providers skip the read of the module `config` folder on web requests.
-
-   After you enable, disable or add a module on a server with cached routes, run `php artisan optimize` again. The cached routes keep the routes of a disabled module and miss the routes of a new module.
+   With cached config, module providers skip scanning module `config/` directories on web requests. Re-run `php artisan optimize` whenever you enable, disable, or add a module on a server with cached routes.
 
 </Steps>
 
 ## The providers manifest
 
-The package keeps a list of the providers of the enabled modules in `bootstrap/cache/modules.php`. Laravel writes it during the first boot after the list changes, for example after a deploy that enables a module. Any Artisan command boots the application, so the `php artisan migrate` step writes it.
+Laravel caches enabled module providers in `bootstrap/cache/modules.php` during boot and rebuilds it automatically whenever the provider list changes. Ensure `bootstrap/cache` is writable by the application user, and do not commit this file.
 
-Make `bootstrap/cache` writable by the user that runs the application. If it is not writable, the boot fails with `The /path/to/app/bootstrap/cache directory must be present and writable.`, with the absolute path of your application.
-
-No command deletes the file, and you do not have to. Laravel rebuilds it when the list of providers differs from the list it holds. `module:disable` leaves the module in the file until the next request rewrites it. If you want to reset it, delete it. This is safe: the file is rebuilt.
+To force a rebuild manually, delete the file (`php artisan optimize:clear` does not remove it):
 
 ```bash
 rm bootstrap/cache/modules.php
 ```
 
-`php artisan optimize:clear` does not delete this file. Do not commit it: `bootstrap/cache` is ignored by the default `.gitignore` of a Laravel application.
+See [How modules boot](/laravel-modules/concepts/how-modules-boot/#what-is-cached) for full details on what the package caches.
 
 ## Deploy to Laravel Vapor
 
-On Vapor, `bootstrap/cache` is read-only at runtime, but Laravel writes the configuration cache to a writable location. To place the providers manifest next to the configuration cache, turn on `vapor_maintenance_mode`:
+On Laravel Vapor, `bootstrap/cache` is read-only at runtime. Enable `vapor_maintenance_mode` in `config/modules.php` (or set `VAPOR_MAINTENANCE_MODE=true` in the environment) so the providers manifest writes next to the writable configuration cache:
 
 ```php title="config/modules.php"
 'vapor_maintenance_mode' => true,
 ```
 
-The default is `env('VAPOR_MAINTENANCE_MODE', false)`.
+## Check the result
 
-### Check the result
-
-After the deploy, run:
+After deploying, verify the active modules and routes:
 
 ```bash
 php artisan module:list
+php artisan route:list
 ```
 
-The list shows your modules as enabled. `php artisan route:list` lists the routes of the modules, and `bootstrap/cache/modules.php` exists.
+`module:list` shows your modules as enabled, `route:list` includes module routes, and `bootstrap/cache/modules.php` exists.
 
 ## Related
 

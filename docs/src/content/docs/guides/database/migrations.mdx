@@ -1,6 +1,6 @@
 ---
 title: Create and run module migrations
-description: Generate a migration in a module, run it with php artisan migrate or module:migrate, roll it back, and publish it to the application.
+description: Generate a migration in a module, run it with php artisan migrate or module:migrate, target subpaths, roll it back, and publish it to the application.
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -9,13 +9,13 @@ To create the `posts` table for the `Blog` module, generate a migration inside t
 
 <Steps>
 
-1. Generate the migration. The first word of the name selects the stub: `create` writes `Schema::create()`.
+1. Generate the migration. The first word of the name selects the stub (`create` writes `Schema::create()`).
 
    ```bash
    php artisan module:make-migration create_posts_table Blog --fields="title:string,body:text"
    ```
 
-   The command creates `Modules/Blog/database/migrations/<timestamp>_create_posts_table.php`. `--fields` adds one column for each `column:type` pair:
+   This creates `Modules/Blog/database/migrations/<timestamp>_create_posts_table.php` with one column per `column:type` pair:
 
    ```php title="Modules/Blog/database/migrations/<timestamp>_create_posts_table.php"
    Schema::create('posts', function (Blueprint $table) {
@@ -26,13 +26,13 @@ To create the `posts` table for the `Blog` module, generate a migration inside t
    });
    ```
 
-2. Run the migrations. `php artisan migrate` runs the pending migrations of the application and of every enabled module.
+2. Run the migrations. `php artisan migrate` runs pending migrations for the application and every enabled module in one batch.
 
    ```bash
    php artisan migrate
    ```
 
-   To run only the migrations of the module, use `module:migrate`:
+   To run only one module's migrations, use `module:migrate`:
 
    ```bash
    php artisan module:migrate Blog
@@ -49,52 +49,69 @@ To create the `posts` table for the `Blog` module, generate a migration inside t
    <timestamp>_create_posts_table ..................................... [2] Ran
    ```
 
-   The batch is `[2]` in a new Laravel app, because the migrations of the application itself are batch 1. In an application with no earlier migration it is `[1]`.
+   In a fresh Laravel app, the application's own migrations are batch 1, so the new migration runs in batch 2.
 
 </Steps>
 
 ## Add a column later
 
-To change an existing table, name the migration after the action. `add_slug_to_posts_table` selects the `add` stub and the table `posts`:
+Name the migration after the action. `add_slug_to_posts_table` selects the `add` stub for the `posts` table:
 
 ```bash
 php artisan module:make-migration add_slug_to_posts_table Blog --fields="slug:string:nullable"
 ```
 
-The migration adds `$table->string('slug')->nullable()` in `up()` and drops the column in `down()`. Run it with `php artisan migrate` or `php artisan module:migrate Blog`.
+This adds `$table->string('slug')->nullable()` in `up()` and drops it in `down()`. Run it with `php artisan migrate` or `php artisan module:migrate Blog`.
 
-To get an empty migration whatever the name is, add `--plain`. The command then ignores `--fields`.
+Pass `--plain` for an empty migration regardless of the name (`--fields` is ignored):
 
 ```bash
 php artisan module:make-migration seed_default_posts Blog --plain
 ```
 
+## Migrate a subdirectory or file
+
+Pass `--subpath` to `module:migrate`, `module:migrate-rollback`, or `module:migrate-reset` to target a subdirectory, a single file, or a glob pattern relative to the module's migrations directory:
+
+```bash
+php artisan module:migrate Blog --subpath=tenant
+php artisan module:migrate-rollback Blog --subpath=2026_01_01_000000_create_posts_table.php
+```
+
 ## Roll back
 
-To undo the last batch of the module, run:
+Undo the last batch of a module with `module:migrate-rollback`:
 
 ```bash
 php artisan module:migrate-rollback Blog
 ```
 
-`module:migrate` puts each module in its own batch. `php artisan migrate` puts everything it runs in one batch. To undo all migrations of the module, run `php artisan module:migrate-reset Blog`. To reset and run them again, run `php artisan module:migrate-refresh Blog`. In the `production` environment these commands ask for confirmation.
+- `module:migrate` places each module in its own batch; `php artisan migrate` puts all pending migrations in one batch.
+- Run `php artisan module:migrate-reset Blog` to roll back all migrations in the module.
+- Run `php artisan module:migrate-refresh Blog` to reset and re-run them. With `--all`, it refreshes enabled modules only in ascending `priority` order; naming a module runs it regardless of status.
+- In `production`, rollback, reset, and refresh commands ask for confirmation unless you pass `--force`.
 
-With `--all`, `module:migrate-refresh` refreshes the enabled modules only, in ascending `priority` order. A module you name runs whatever its status.
+## Control migration auto-discovery
+
+By default, `modules.auto-discover.migrations` is `true` in `config/modules.php`, so the package registers every enabled module's migration path with Laravel's migrator.
+
+Setting it to `false` stops that package-level hook. Modules extending `ModuleServiceProvider` still load their own migrations in `boot()`, so disabling `auto-discover.migrations` only skips modules without `ModuleServiceProvider` (such as `--plain` modules) during `php artisan migrate`. `module:migrate` is unaffected.
 
 ## Publish the migrations to the application
 
-To move the migrations of the module into the application, for example before you remove the module, run:
+Copy a module's migrations into `database/migrations` (for example before removing the module):
 
 ```bash
 php artisan module:publish-migration Blog
 ```
 
-The command copies the files to `database/migrations` and keeps their names. It skips files that exist. Add `--force` to overwrite them. A migration that exists in both places has one name, so the migrator runs it once.
+Existing files are skipped unless you pass `--force`. Because filenames stay the same, Laravel tracks each migration once even if it exists in both locations.
 
 ## Related
 
 - [Database commands](/laravel-modules/reference/commands/database/): every `module:migrate*` command and option.
 - [Module migrations and `php artisan migrate`](/laravel-modules/reference/commands/database/#module-migrations-and-php-artisan-migrate)
+- [`auto-discover` configuration](/laravel-modules/reference/configuration/#auto-discover)
 - [`module:make-migration`](/laravel-modules/reference/commands/generators/#modulemake-migration) and [`module:publish-migration`](/laravel-modules/reference/commands/publish/#modulepublish-migration)
 - [Add Eloquent models to a module](/laravel-modules/guides/database/models/)
 - [Seed a module with factories and seeders](/laravel-modules/guides/database/factories-and-seeders/)

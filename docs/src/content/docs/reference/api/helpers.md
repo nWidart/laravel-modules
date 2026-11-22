@@ -3,7 +3,7 @@ title: Helpers and Blade directive
 description: The module, module_path and module_vite functions, the config_path and public_path fallbacks, the @module Blade directive and the php artisan about entry.
 ---
 
-This page lists the global functions that `src/helpers.php` defines, the `@module` Blade directive and the entry the package adds to `php artisan about`. Composer loads `src/helpers.php` through the `autoload.files` key of the package.
+This page lists the global functions in `src/helpers.php`, the `@module` Blade directive, and the `php artisan about` entry. Composer loads `src/helpers.php` via `autoload.files`.
 
 Each function is defined only when no function of that name exists yet.
 
@@ -70,7 +70,7 @@ Returns a copy of the application `Vite` instance, set up for the build of one m
 | --- | --- |
 | `$module` | Build directory, passed to `useBuildDirectory()`. The generated layout passes `build-<lowername>`. |
 | `$asset` | The entry point, passed to `withEntryPoints()`. |
-| `$hotFilePath` | Hot file, passed to `useHotFile()`. Default: `storage_path('vite.hot')`. The generated layout passes `storage_path('vite-<lowername>.hot')`. It must be the file that the module `vite.config.js` writes (`hotFile`). While that file exists, the tags point to the dev server. |
+| `$hotFilePath` | Hot file passed to `useHotFile()`. Defaults to `storage_path('vite.hot')`. Generated layouts pass `storage_path('vite-<lowername>.hot')`, matching `hotFile` in the module `vite.config.js`. |
 
 **Returns** the configured `Vite` instance. Printing it in a Blade view (`{{ module_vite(...) }}`) outputs the tags.
 
@@ -85,15 +85,17 @@ The `build-<lowername>` directory holds the standalone build of a module. A buil
 
 ## config_path()
 
+**Deprecated** Lumen compatibility shim, removed in version 14. Laravel defines `config_path()` itself.
+
 ```php
 config_path(string $path = ''): string
 ```
 
-Returns the application config folder, or a path inside it. The package defines this function only when no function of that name exists yet, for applications that lack it.
+Returns the application config folder, or a path inside it. Defined only when no `config_path()` function exists yet.
 
 | Parameter | Description |
 | --- | --- |
-| `$path` | Optional path inside the config folder. It is joined to the folder with `DIRECTORY_SEPARATOR`, as given. |
+| `$path` | Optional path inside the config folder. Joined with `DIRECTORY_SEPARATOR` as given. |
 
 **Returns** `<base path>/config`, followed by the separator and `$path` when `$path` is not empty.
 
@@ -103,15 +105,17 @@ config_path('blog.php'); // /var/www/app/config/blog.php
 
 ## public_path()
 
+**Deprecated** Lumen compatibility shim, removed in version 14. Laravel defines `public_path()` itself.
+
 ```php
 public_path(string $path = ''): string
 ```
 
-Returns the application public folder, or a path inside it. The package defines this function only when no function of that name exists yet, for applications that lack it.
+Returns the application public folder, or a path inside it. Defined only when no `public_path()` function exists yet.
 
 | Parameter | Description |
 | --- | --- |
-| `$path` | Optional path inside the public folder. It is joined to the folder with `DIRECTORY_SEPARATOR`, after its leading separators are removed. |
+| `$path` | Optional path inside the public folder. Leading separators are stripped before joining with `DIRECTORY_SEPARATOR`. |
 
 **Returns** the `path.public` binding, followed by the separator and `$path` when `$path` is not empty.
 
@@ -121,7 +125,7 @@ public_path('modules/blog'); // /var/www/app/public/modules/blog
 
 ## @module
 
-The package registers the directive with `Blade::if('module', ...)`. The condition is `module($name)`: `true` when the module exists and is enabled. The directive has the usual `@else`, `@elseif` and `@endmodule` forms.
+`LaravelModulesServiceProvider::boot()` registers the directive via `callAfterResolving('blade.compiler')` using `$blade->if('module', ...)`, so booting does not eagerly resolve Blade. The condition is `module($name)`: `true` when the module exists and is enabled. Supports `@else`, `@elseif`, and `@endmodule`.
 
 ```blade
 @module('Blog')
@@ -131,7 +135,7 @@ The package registers the directive with `Blade::if('module', ...)`. The conditi
 
 ## php artisan about
 
-`LaravelModulesServiceProvider` adds a section to the `about` command.
+When running in the console, `LaravelModulesServiceProvider::boot()` adds a section to the `about` command.
 
 | Section | Entry | Value |
 | --- | --- | --- |

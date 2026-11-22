@@ -5,19 +5,19 @@ description: Generate an Artisan command in a module with module:make-command, r
 
 import { Steps } from '@astrojs/starlight/components';
 
-To add the command `blog:prune-old` to the `Blog` module, generate the class and register it in the module provider. You need an enabled `Blog` module. Laravel finds commands in `app/Console/Commands` of the application only, so a module command is not registered until you list it in the provider.
+To add the `blog:prune-old` Artisan command to the `Blog` module, generate the class and register it in the module's service provider. You need an enabled `Blog` module. Laravel auto-discovers commands only in `app/Console/Commands`, so module commands require explicit registration.
 
 <Steps>
 
-1. Generate the command. `--command` sets the signature.
+1. Generate the command with `--command` to set its signature.
 
    ```bash
    php artisan module:make-command PruneOldPosts Blog --command=blog:prune-old
    ```
 
-   The command creates `Modules/Blog/app/Console/PruneOldPosts.php`. The class is `Modules\Blog\Console\PruneOldPosts`.
+   This creates `Modules/Blog/app/Console/PruneOldPosts.php` (`Modules\Blog\Console\PruneOldPosts`).
 
-2. Write the work in `handle()`.
+2. Implement `handle()`.
 
    ```php title="Modules/Blog/app/Console/PruneOldPosts.php"
    <?php
@@ -39,7 +39,7 @@ To add the command `blog:prune-old` to the `Blog` module, generate the class and
    }
    ```
 
-3. Register the class in the `$commands` property of the module provider. The generated provider has it commented out.
+3. Register the class in the `$commands` property of the module service provider (uncomment the property in the generated provider).
 
    ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
    /**
@@ -52,7 +52,7 @@ To add the command `blog:prune-old` to the `Blog` module, generate the class and
    ];
    ```
 
-4. Check the result. List the commands of the module, then run the command:
+4. Check the result by listing the module's commands and running the new command.
 
    ```bash
    php artisan module:list-commands Blog

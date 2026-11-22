@@ -5,7 +5,7 @@ description: Move modules to another folder, set a different root namespace, and
 
 import { Steps } from '@astrojs/starlight/components';
 
-To generate modules in `app-modules` under the root namespace `AppModules`, change three things together: `paths.modules` and `namespace` in `config/modules.php`, and the `merge-plugin` glob in `composer.json`. Publish the config file first if you have not:
+To store modules in `app-modules/` under the `AppModules` root namespace, update `paths.modules` and `namespace` in `config/modules.php`, plus the `merge-plugin` glob in `composer.json`. Publish `config/modules.php` first if you have not already:
 
 ```bash
 php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
@@ -13,7 +13,7 @@ php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProv
 
 <Steps>
 
-1. Set the folder and the namespace.
+1. Update the namespace and modules path in `config/modules.php`.
 
    ```php title="config/modules.php"
    'namespace' => 'AppModules',
@@ -24,7 +24,7 @@ php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProv
    ],
    ```
 
-2. Make the `merge-plugin` glob match the folder. Without it, Composer does not autoload the classes of your modules.
+2. Update the `merge-plugin` glob in `composer.json` so Composer autoloads classes from the new folder.
 
    ```json title="composer.json"
    "extra": {
@@ -36,56 +36,54 @@ php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProv
    }
    ```
 
-3. Regenerate the autoloader.
+3. Rebuild the autoloader.
 
    ```bash
    composer dump-autoload
    ```
 
-4. Create a module and check the result.
+4. Create a module and verify its location and namespace.
 
    ```bash
    php artisan module:make Blog
    ```
 
-   The module is in `app-modules/Blog`. Its `composer.json` maps `AppModules\Blog\` to `app/`, and `module.json` lists the provider `AppModules\Blog\Providers\BlogServiceProvider`.
+   This creates `app-modules/Blog`. Its `composer.json` maps `AppModules\Blog\` to `app/`, and `module.json` registers `AppModules\Blog\Providers\BlogServiceProvider`.
 
 </Steps>
 
-## Modules that already exist
+## Move modules that already exist
 
-Changing the config does not move or rename anything. For each existing module, do these steps.
+Config changes do not move or rewrite existing modules. Migrate each existing module manually:
 
 <Steps>
 
-1. Move the folder to the new location.
+1. Move the module folder.
 
    ```bash
    mkdir -p app-modules
    mv Modules/Blog app-modules/Blog
    ```
 
-2. If you changed `namespace`, replace the old root namespace with the new one in the files of the module. This command rewrites `Modules\Blog` to `AppModules\Blog`, in PHP files and in the escaped form (`Modules\\Blog`) of `module.json` and `composer.json`. It leaves `Nwidart\Modules\...` alone:
+2. If you changed `namespace`, replace `Modules\Blog` (and escaped `Modules\\Blog` in `module.json` and `composer.json`) with `AppModules\Blog`. This command leaves `Nwidart\Modules\...` untouched:
 
    ```bash
    grep -rl 'Modules' app-modules/Blog | xargs perl -pi -e 's/(?<!\w)(?<!\w\\)Modules(\\{1,2})Blog\b/AppModules$1Blog/g'
    ```
 
-3. Update the glob in `composer.json` as in the steps above, then run `composer dump-autoload`.
+3. Update the `merge-plugin` glob in `composer.json` as above and run `composer dump-autoload`.
 
-4. Check that the module is found:
+4. Check the result.
 
    ```bash
    php artisan module:list
    ```
 
-   The path column shows `app-modules/Blog`. The status of the module does not change: `modules_statuses.json` is keyed by module name.
+   `Blog` shows `app-modules/Blog` as its path. Its enabled status stays unchanged because `modules_statuses.json` is keyed by module name.
 
 </Steps>
 
-References to the old namespace outside the module, such as `use` statements in your application code, are not rewritten. Update them yourself.
-
-`module:composer-update` does not do this. It rewrites only a legacy `Modules\Blog\App\` entry in the `autoload.psr-4` of a module `composer.json`.
+Update imports of the old namespace in your application code manually. `module:composer-update` does not rename namespaces; it only updates legacy `Modules\<Name>\App\` PSR-4 entries.
 
 ## Related
 

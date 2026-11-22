@@ -114,4 +114,4 @@ Commands for setup, autoload rewriting, version 5 status migration and PHPUnit c
 | [`module:setup`](/laravel-modules/reference/commands/utility/#modulesetup) | Creates the modules directory and the public assets directory when they do not exist. |
 | [`module:composer-update`](/laravel-modules/reference/commands/utility/#modulecomposer-update) | Rewrites the legacy `autoload.psr-4` entry of a module `composer.json` so that the module namespace maps to the app folder. |
 | [`module:v6:migrate`](/laravel-modules/reference/commands/utility/#modulev6migrate) | Copies the `active` field of each `module.json` (the version 5 way to store the status) into the activator. |
-| [`module:update-phpunit-coverage`](/laravel-modules/reference/commands/utility/#moduleupdate-phpunit-coverage) | Adds the app folder of each enabled module to the `<source><include>` list of `phpunit.xml`, and removes the entries of modules that are not enabled. |
+| [`module:update-phpunit-coverage`](/laravel-modules/reference/commands/utility/#moduleupdate-phpunit-coverage) | Syncs `<source><include>` in `phpunit.xml` with the app folders of enabled modules. |

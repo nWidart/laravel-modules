@@ -5,41 +5,14 @@ description: Register command classes from a module provider or from config/modu
 
 import { Steps } from '@astrojs/starlight/components';
 
-To add an Artisan command to the application, register its class in one of two places: the `$commands` list of a module provider, or the `commands` key of `config/modules.php`. Use the provider for a command that belongs to a module. Use the config for a command that belongs to the application, such as a new generator.
+Register a custom Artisan command in one of two places:
 
-## Register a command from a module
-
-<Steps>
-
-1. Generate the command class in `Blog`.
-
-   ```bash
-   php artisan module:make-command SendDigest Blog --command=blog:send-digest
-   ```
-
-   The file is `Modules/Blog/app/Console/SendDigest.php`, with the signature `blog:send-digest`.
-
-2. List the class in the provider of the module.
-
-   ```php title="Modules/Blog/app/Providers/BlogServiceProvider.php"
-   protected array $commands = [
-       \Modules\Blog\Console\SendDigest::class,
-   ];
-   ```
-
-3. Check the result.
-
-   ```bash
-   php artisan list blog
-   ```
-
-   The output lists `blog:send-digest`.
-
-</Steps>
+- The `$commands` property of a module provider, for commands owned by that module. See [Add Artisan commands to a module](/laravel-modules/guides/console-and-events/commands/).
+- The `commands` key in `config/modules.php`, for application-level commands and custom module generators.
 
 ## Register a command from the application
 
-Add the class to the list in `config/modules.php`. The class must exist first: an entry for a missing class stops every `artisan` command with `Target class [...] does not exist.` Keep `defaultCommands()`: the `commands` key holds the full list, so a list without it unregisters the package commands. Publish the config file first if you have not:
+Publish `config/modules.php` if you have not already, then merge your command class into `commands`:
 
 ```bash
 php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag=config
@@ -52,15 +25,15 @@ php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProv
     ])->toArray(),
 ```
 
-To add the generator below, make this change in its step 4, after you write the class.
+Create the class before adding it to `commands`; a missing class stops every `artisan` command with a class-not-found error. Keep `ConsoleServiceProvider::defaultCommands()` so the built-in package commands stay registered.
 
 ## Write a generator
 
-This example adds `module:make-dto`, which writes a data class into a module. It assumes the stubs are published and enabled: do the first three steps of [Customise the generator stubs](/laravel-modules/guides/customise/stubs/) first.
+This example adds `module:make-dto`, which generates a DTO class inside any module. Prerequisite: publish and enable stubs using the first three steps of [Customise the generator stubs](/laravel-modules/guides/customise/stubs/).
 
 <Steps>
 
-1. Add a generator path for the new kind of file.
+1. Add a generator path in `config/modules.php`.
 
    ```php title="config/modules.php"
    'generator' => [
@@ -69,7 +42,7 @@ This example adds `module:make-dto`, which writes a data class into a module. It
    ],
    ```
 
-2. Add the stub.
+2. Create the stub file.
 
    ```php title="stubs/nwidart-stubs/dto.stub"
    <?php
@@ -82,7 +55,7 @@ This example adds `module:make-dto`, which writes a data class into a module. It
    }
    ```
 
-3. Write the command. It extends `GeneratorCommand`, uses `ModuleCommandTrait` to resolve the module (the `module` argument, or the module set by `module:use`), and sets `$argumentName` so the base class rejects an empty name, an absolute path and a `..` segment.
+3. Write the generator command. Extend `GeneratorCommand`, use `ModuleCommandTrait` to resolve the target module (from the argument or `module:use`), and set `$argumentName` so the base class validates the name.
 
    ```php title="app/Console/Commands/MakeDtoCommand.php"
    <?php
@@ -141,7 +114,7 @@ This example adds `module:make-dto`, which writes a data class into a module. It
    }
    ```
 
-4. Register the command in the `commands` list, as shown above, with `\App\Console\Commands\MakeDtoCommand::class`. The class exists now, so the entry is safe.
+4. Register `\App\Console\Commands\MakeDtoCommand::class` in the `commands` list of `config/modules.php`, as shown above.
 
 5. Check the result.
 
@@ -149,7 +122,7 @@ This example adds `module:make-dto`, which writes a data class into a module. It
    php artisan module:make-dto OrderData Blog
    ```
 
-   `Modules/Blog/app/DTOs/OrderData.php` exists and has the namespace `Modules\Blog\DTOs`. The base class adds `--force` (`-f`) to overwrite an existing file.
+   This creates `Modules/Blog/app/DTOs/OrderData.php` in the `Modules\Blog\DTOs` namespace. `GeneratorCommand` adds `--force` (`-f`) automatically to overwrite an existing file.
 
 </Steps>
 

@@ -1,84 +1,92 @@
 ---
 title: Module status and activators
-description: Why the enabled or disabled status of a module is not stored in module.json, what the file activator keeps, and what a status changes.
+description: Why module status lives outside module.json, what FileActivator stores, and what disabling a module changes.
 ---
 
-Every module is enabled or disabled. This page explains where the status lives, why, and what the status changes at runtime. For the commands, see [Enable and disable modules](/laravel-modules/guides/modules/enable-and-disable-modules/).
+Every module is enabled or disabled. This page explains where the status lives, why, and what it changes at runtime. For commands, see [Enable and disable modules](/laravel-modules/guides/modules/enable-and-disable-modules/).
 
 ## Why the status is not in `module.json`
 
-Before version 6, a module kept its status in its own `module.json`. Version 6 moved it out. The 6.0.0 entry of the changelog states the reason: it lets the status live somewhere other than a file, for example a database.
+Before version 6, each module stored its status in `module.json`. Version 6 moved status out of the manifest so it can live elsewhere, such as a database.
 
-Two things follow from keeping the status out of the manifest:
+Keeping status outside `module.json` gives two benefits:
 
-- `module.json` describes the module, and the status describes this installation. The same module can be enabled in production and disabled on a developer machine, without a change to the module.
-- A module that arrives from elsewhere, for example from a package, is turned on or off without rewriting its manifest.
+- `module.json` describes the module, while status describes a specific installation. The same module can be enabled in production and disabled locally without modifying module files.
+- Modules installed from packages can be enabled or disabled without editing files in `vendor/`.
 
-The package reads status through an interface, `ActivatorInterface`, so the storage is replaceable. Version 6 shipped the interface together with the file activator.
+The package reads status through `ActivatorInterface`, making the storage replaceable.
 
 ## What the file activator stores
 
-The default activator, `FileActivator`, keeps one JSON file that maps module names to booleans. It loads the file once when it is created and rewrites it on each change. The default location is `modules_statuses.json` at the application root, so that the file is visible and can be committed. The file format, the path setting and the failure cases are in [FileActivator](/laravel-modules/reference/api/contracts/#fileactivator) and [Configuration](/laravel-modules/reference/configuration/#activators). With `nwidart/laravel-actuator` installed, the health endpoint reports the enabled modules and fails when an enabled one is missing from disk: see [Report module health with the actuator](/laravel-modules/guides/production/health-checks/).
+The default activator, `FileActivator`, stores a JSON object mapping module names to booleans. It loads the file once on instantiation and rewrites it on each change. By default, it writes to `modules_statuses.json` at the application root so you can inspect and commit it. See [FileActivator](/laravel-modules/reference/api/contracts/#fileactivator) and [Configuration](/laravel-modules/reference/configuration/#activators) for format details and failure cases.
 
-A missing or empty file means no statuses. A file that is not valid JSON, or that holds a non-empty JSON list, throws an `InvalidJsonException`. The activator does not treat a corrupt file as empty, because the next write would replace it and lose every status.
+With `nwidart/laravel-actuator` installed, the `modules` health indicator reports every module (enabled and disabled) with `enabled: true` or `false`. It reports `DOWN` when an enabled module is missing from disk. The package also registers the read-only `/actuator/modules` endpoint to inspect module metadata. See [Report module health with the actuator](/laravel-modules/guides/production/health-checks/) and [Expose modules through the actuator](/laravel-modules/guides/production/actuator-modules-endpoint/).
+
+A missing or empty file means no statuses. Invalid JSON or a non-empty JSON list throws `InvalidJsonException`. The activator refuses to treat a corrupt file as empty so a later write cannot wipe existing statuses.
 
 ### A missing entry means disabled
 
-`hasStatus()` returns `false` for "enabled" when the module has no entry. A module that the scan finds but the file does not list is disabled.
+`hasStatus()` returns `false` for "enabled" when a module has no entry. Any scanned module absent from the statuses file is disabled.
 
-The default is the safe one. A folder that appears under `Modules/` is not active code until someone enables it. A module that the scan finds in an extra location, for example under `vendor/` or `plugins/`, has no entry either, so it stays disabled until you enable it, and its classes must autoload before you do. See [Load modules from extra locations](/laravel-modules/guides/modules/scan-extra-locations/). `module:make` writes the entry itself, as enabled unless you pass `--disabled`, and `module:delete` removes the entry together with the folder.
+This default is safe. A folder added under `Modules/` or an extra scan location (such as `vendor/` or `plugins/`) stays inactive until you enable it. Its classes must autoload before you enable it. See [Load modules from extra locations](/laravel-modules/guides/modules/scan-extra-locations/).
+
+`module:make` writes the status entry as enabled unless you pass `--disabled`. `module:delete` removes the status entry along with the folder.
 
 ### Commit the file, or keep it per environment
 
-Whether the file belongs in version control depends on whether every environment should run the same modules.
+Commit `modules_statuses.json` when every environment should run the same modules. Keep it per environment when deployments differ.
 
 | | File committed | File kept per environment |
 | --- | --- | --- |
-| What you get | The set of enabled modules is reviewed and deployed with the code. A fresh clone runs the same modules as production. | Each environment chooses its own modules, for example a module disabled only on a developer machine. |
-| What a deploy does | Nothing to do: the file arrives with the code. | The file must exist on the server before the first request. |
-| When the file is missing | Not applicable. | Every module is disabled: the application boots without module routes, views or config, and no error says so. |
-| Cost | A local `module:disable` shows up as a change in `git status`, and two branches that enable different modules conflict on the same file. | Nothing in the repository says which modules production runs. |
+| What you get | Enabled modules are reviewed and deployed with code. Fresh clones match production. | Each environment chooses its own modules, such as disabling a module locally. |
+| What a deploy does | Nothing extra: the file arrives with the code. | The file must exist on the server before the first request. |
+| When the file is missing | Not applicable. | Every module is disabled. The app boots without module routes, views, or config, with no error. |
+| Cost | A local `module:disable` appears in `git status`. Branches enabling different modules can conflict on this file. | Nothing in the repository records which modules production runs. |
 
-Either way, a missing file after a fresh clone or a deploy leaves every module disabled. See [Enable and disable modules](/laravel-modules/guides/modules/enable-and-disable-modules/) for the commands and [Deploy an application that uses modules](/laravel-modules/guides/production/deploy/) for where the file fits in a deploy. That guide recommends committing it.
+Either way, a missing file leaves every module disabled. See [Enable and disable modules](/laravel-modules/guides/modules/enable-and-disable-modules/) for commands and [Deploy an application that uses modules](/laravel-modules/guides/production/deploy/) for deploy practices. That guide recommends committing the file.
 
 ## What a status changes
 
-The status is read when the package registers the modules. See [How modules boot](/laravel-modules/concepts/how-modules-boot/).
+The package reads module status during registration. See [How modules boot](/laravel-modules/concepts/how-modules-boot/).
 
 | Part of the module | Enabled | Disabled |
 | --- | --- | --- |
 | Providers in `module.json` | Registered | Not registered |
-| Routes, views, config, translations, schedules | Registered by the providers | Absent, because the providers are absent |
-| Commands in the provider `$commands` | Registered | Not registered |
-| Migrations | Added to `php artisan migrate`, by the provider and by `auto-discover.migrations` | Not added |
+| Routes, views, config, translations, schedules | Registered by providers | Absent, because providers do not load |
+| Commands in provider `$commands` | Registered | Not registered |
+| Health indicators in `$healthIndicators` | Registered with `nwidart/laravel-actuator` | Not registered |
+| Migrations | Added to `php artisan migrate` by provider and `auto-discover.migrations` | Not added |
 | `aliases` and `files` of `module.json` | Registered and included | Skipped |
+| Root Vite builds (`vite-module-loader.js`) | Entry points included | Skipped |
 
-With cached routes, a status change does not reach the routes until `php artisan optimize` runs again: a disabled module keeps its routes, and a newly enabled one has none.
+With cached routes, status changes do not affect routing until `php artisan optimize` runs again. Disabled modules keep cached routes, and newly enabled ones have none.
 
-Commands that take a module name act on a disabled module as well: `module:migrate Blog` finds the module by name. Commands that take `--all` with a `--direction` option use the enabled modules only, and the others use every module. See [Database commands](/laravel-modules/reference/commands/database/).
+Commands that take a module name act on disabled modules too: `module:migrate Blog` finds `Blog` by name. With `--all`, commands that declare `--direction`, plus `module:migrate-refresh` and `module:prune`, run on enabled modules only. Other `--all` commands run on every module, enabled or disabled. See [Database commands](/laravel-modules/reference/commands/database/) and [Module management commands](/laravel-modules/reference/commands/module-management/).
 
 ### What a status does not change
 
-The status does not touch autoloading. The classes of a disabled module still load when code asks for them, because Composer maps the namespace from the module `composer.json` regardless of status. See [Autoloading and the Composer merge plugin](/laravel-modules/concepts/autoloading/).
+Status does not affect Composer autoloading. Classes in a disabled module still load when referenced, because Composer merges each module's `composer.json` regardless of status. See [Autoloading and the Composer merge plugin](/laravel-modules/concepts/autoloading/).
 
-Disabling a module therefore does not make its classes unreachable. Code in another module that imports a class from a disabled module works until it needs something that only the providers set up, such as a view namespace or a config key.
+Disabling a module does not block imports of its classes. Code in another module can still instantiate a class from a disabled module until it relies on provider setup, such as a view namespace or config key.
 
-Event discovery is the same. By default Laravel discovers listeners only in `app/Listeners`, and the generated module `EventServiceProvider` registers only its `$listen` entries, so module listeners are mapped there (see [Use events and listeners in a module](/laravel-modules/guides/console-and-events/events-and-listeners/)). Where you opt in to discovery, it is Laravel's: the package only teaches it to turn a file under `Modules/` into the right class name, and adds no discovery path. If your application lists a module listener directory in `withEvents(discover: [...])`, for example `Modules/*/app/Listeners`, Laravel scans that glob whether or not the module is enabled. A listener found there runs, if its class autoloads, even though the module's providers are not registered.
+Event discovery works the same way. By default, Laravel discovers listeners only in `app/Listeners`, while a generated module `EventServiceProvider` registers only its `$listen` array. See [Use events and listeners in a module](/laravel-modules/guides/console-and-events/events-and-listeners/).
 
-Treat the status as "is this module wired into the application", and not as an access control.
+When you opt in to discovery, Laravel scans the directories you list in `withEvents(discover: [...])`. The package only maps discovered files under `Modules/` to module class names; it adds no discovery paths itself. A glob like `Modules/*/app/Listeners` matches disabled modules too, so their listeners still run if their classes autoload.
+
+Treat module status as "is this module wired into the application", not as an access control boundary.
 
 ## What a disabled module costs
 
-A disabled module costs its `module.json` read and one lookup in the statuses file. See [How modules boot](/laravel-modules/concepts/how-modules-boot/#what-a-disabled-module-costs).
+A disabled module costs one `module.json` read and one lookup in the statuses file. See [How modules boot](/laravel-modules/concepts/how-modules-boot/#what-a-disabled-module-costs).
 
 ## When a custom activator makes sense
 
-The file activator suits most applications. A custom activator is worth writing when:
+The file activator fits most applications. Write a custom activator when:
 
-- the status must differ per environment, tenant or customer, and a file in the repository cannot express that;
-- several application servers must agree on one status, and a file on each server cannot;
-- the status must be changed from an admin interface and audited.
+- status must differ per environment, tenant, or customer;
+- multiple application servers must share one status store;
+- status must change from an admin interface with an audit trail.
 
-A custom activator implements `Contracts\ActivatorInterface` and is listed under `modules.activators`, with a `class` key. `modules.activator` names the one in use. The package throws `InvalidActivatorClass` when the name is unknown, the `class` key is missing or the class does not exist.
+A custom activator implements `Contracts\ActivatorInterface` and is registered under `modules.activators` with a `class` key. `modules.activator` selects the active entry. The package throws `InvalidActivatorClass` if the name is unknown, the `class` key is missing, or the class does not exist.
 
-The status is read at boot, on every request. A custom activator that queries a database adds that query to every request, and it needs the database to be reachable that early. For how to write one, see [Store module status with a custom activator](/laravel-modules/guides/customise/custom-activator/).
+Status is read at boot on every request. A database-backed activator adds a query to every request and requires the database to be reachable during boot. See [Store module status with a custom activator](/laravel-modules/guides/customise/custom-activator/).

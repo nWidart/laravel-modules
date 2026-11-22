@@ -1,11 +1,11 @@
 ---
 title: Use views and Blade components in a module
-description: Render views and Blade components of a module with the blog namespace, and override module views from the application.
+description: Render views and Blade components of a module with the blog namespace, show conditional markup with @module, and override module views from the application.
 ---
 
 import { Steps } from '@astrojs/starlight/components';
 
-To render a view and a Blade component that live in the `Blog` module, address them with the `blog` namespace. You need an enabled `Blog` module. A new module has `resources/views/index.blade.php` and the layout component `resources/views/components/layouts/master.blade.php`.
+To render views and Blade components from the `Blog` module, prefix them with the `blog` namespace. You need an enabled `Blog` module. A generated module already contains `resources/views/index.blade.php` and the layout component `resources/views/components/layouts/master.blade.php`.
 
 <Steps>
 
@@ -15,9 +15,9 @@ To render a view and a Blade component that live in the `Blog` module, address t
    php artisan module:make-view posts/show Blog
    ```
 
-   The command creates `Modules/Blog/resources/views/posts/show.blade.php`. The file name is the name in lower case. A controller returns it as `view('blog::posts.show')`.
+   This creates `Modules/Blog/resources/views/posts/show.blade.php` (lowercased). Return it from a controller with `view('blog::posts.show')`.
 
-2. Wrap the view in the layout component of the module. The layout is `x-blog::layouts.master`.
+2. Wrap the view in the module's layout component (`x-blog::layouts.master`).
 
    ```blade title="Modules/Blog/resources/views/posts/show.blade.php"
    <x-blog::layouts.master>
@@ -25,18 +25,18 @@ To render a view and a Blade component that live in the `Blog` module, address t
    </x-blog::layouts.master>
    ```
 
-3. Create a component with a class.
+3. Create a class-based component.
 
    ```bash
    php artisan module:make-component Alert Blog
    ```
 
-   The command creates two files:
+   This creates two files:
 
-   - `Modules/Blog/app/View/Components/Alert.php`, the class `Modules\Blog\View\Components\Alert`. Its `render()` returns `view('blog::components.alert')`.
-   - `Modules/Blog/resources/views/components/alert.blade.php`, the view of the component.
+   - `Modules/Blog/app/View/Components/Alert.php` (`Modules\Blog\View\Components\Alert`), whose `render()` returns `view('blog::components.alert')`.
+   - `Modules/Blog/resources/views/components/alert.blade.php`.
 
-4. Use the component with the `blog::` prefix.
+4. Render the component with the `blog::` prefix.
 
    ```blade title="Modules/Blog/resources/views/posts/show.blade.php"
    <x-blog::layouts.master>
@@ -46,7 +46,7 @@ To render a view and a Blade component that live in the `Blog` module, address t
    </x-blog::layouts.master>
    ```
 
-5. Check the result. Add this line to `Modules/Blog/routes/web.php`, which already imports `Route`, then open the page:
+5. Check the result. Add a route to `Modules/Blog/routes/web.php` and open the page.
 
    ```php title="Modules/Blog/routes/web.php"
    Route::view('posts/show', 'blog::posts.show')->name('blog.posts.show');
@@ -56,35 +56,48 @@ To render a view and a Blade component that live in the `Blog` module, address t
    php artisan serve
    ```
 
-   Open `http://127.0.0.1:8000/posts/show`. The page shows the heading "A post" and the content of the `alert` view.
+   Open `http://127.0.0.1:8000/posts/show`. The page displays the heading "A post" and the `alert` component.
 
 </Steps>
 
-## Create a component without a class
+## Create an anonymous component
 
-To get an anonymous component, which has only a view, run `module:make-component-view`:
+Run `module:make-component-view` to generate a component view without a PHP class:
 
 ```bash
 php artisan module:make-component-view Card Blog
 ```
 
-The command creates `Modules/Blog/resources/views/components/card.blade.php`. Use it as `<x-blog::card />`. The same naming applies as for the layout component, which is also a view in the `components` folder.
+This creates `Modules/Blog/resources/views/components/card.blade.php`. Render it as `<x-blog::card />`.
+
+## Show markup only when a module is enabled
+
+Use the `@module` Blade directive in application or module views to render markup only when a module exists and is enabled:
+
+```blade title="resources/views/layouts/navigation.blade.php"
+@module('Blog')
+    <a href="{{ route('blog.posts.index') }}">Blog</a>
+@endmodule
+```
+
+Because the package registers `@module` with `Blade::if()`, `@else` and `@unlessmodule('Blog')` also work.
 
 ## Override a module view from the application
 
-To change a view of the module without editing the module, publish the views. The package registers the tag `blog-module-views`:
+Publish a module's views to customize them in the application without editing the module:
 
 ```bash
 php artisan vendor:publish --tag=blog-module-views
 ```
 
-The command copies the whole views folder of the module to `resources/views/modules/blog`. The application folder is searched first, then the module folder. Delete the files you do not change: a published copy hides later changes to the module view of the same name.
+This copies `Modules/Blog/resources/views` to `resources/views/modules/blog`. Laravel checks the published directory before the module directory. Delete any published files you do not modify so future module updates stay visible.
 
-To override one view, edit `resources/views/modules/blog/posts/show.blade.php`. The name `blog::posts.show` now renders that file.
+Edit `resources/views/modules/blog/posts/show.blade.php` to override `blog::posts.show`.
 
 ## Related
 
 - [`module:make-view`](/laravel-modules/reference/commands/generators/#modulemake-view), [`module:make-component`](/laravel-modules/reference/commands/generators/#modulemake-component) and [`module:make-component-view`](/laravel-modules/reference/commands/generators/#modulemake-component-view)
+- [Helpers and Blade directive](/laravel-modules/reference/api/helpers/)
 - [Module service provider: views and Blade components](/laravel-modules/reference/api/module-service-provider/#views-and-blade-components)
 - [Module service provider: publish tags](/laravel-modules/reference/api/module-service-provider/#publish-tags)
 - [Add routes to a module](/laravel-modules/guides/http/routes/)

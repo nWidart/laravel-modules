@@ -1,11 +1,11 @@
 ---
 title: Your first module
-description: Build a Blog module in a new Laravel app. Create it, serve a page from it, add a model, test it, then disable and enable it.
+description: "Build a Blog module step by step: create it, add routes, a model, a seeder, a test, then toggle its status."
 ---
 
 import { Steps, FileTree } from '@astrojs/starlight/components';
 
-In this tutorial we build a `Blog` module that lists posts from the database. We start from a new Laravel 13 app with the package installed as described in [Installation](/laravel-modules/start-here/installation/), and the default SQLite database. The `composer` command must be on the `PATH`: `module:make` runs `composer dump-autoload`.
+In this tutorial, you build a `Blog` module that lists posts from the database. Start from a new Laravel 13 app with the package installed as described in [Installation](/laravel-modules/start-here/installation/), using the default SQLite database. Ensure `composer` is on your `PATH`, because `module:make` runs `composer dump-autoload`.
 
 <Steps>
 
@@ -74,7 +74,7 @@ In this tutorial we build a `Blog` module that lists posts from the database. We
 
    ```text
    Status / Name ........................................ Path / priority
-   [Enabled] Blog ...................................... Modules/Blog [0]
+   [Enabled] Blog ........................... /path/to/app/Modules/Blog [0]
    ```
 
 3. Open `Modules/Blog/routes/web.php`. It holds one resource route for the generated controller, with no middleware:
@@ -165,7 +165,7 @@ In this tutorial we build a `Blog` module that lists posts from the database. We
    ```
 
    ```text
-      INFO  Seeding module.
+      INFO  Seeding module ...
 
      Seeding Blog Module ...........................................
       INFO  Seeding database.
@@ -267,7 +267,7 @@ In this tutorial we build a `Blog` module that lists posts from the database. We
     ```
 
     ```text
-       INFO  Disabling module.
+       INFO  Disabling module ...
 
       Disabling Blog Module, old status: Enabled ................... <time> DONE
     ```
@@ -291,7 +291,7 @@ In this tutorial we build a `Blog` module that lists posts from the database. We
     ```
 
     ```text
-       INFO  Enabling module.
+       INFO  Enabling module ...
 
       Enabling Blog Module, old status: Disabled ................... <time> DONE
     ```
@@ -304,7 +304,7 @@ In this tutorial we build a `Blog` module that lists posts from the database. We
 
 </Steps>
 
-We now have a module that owns its route, controller, model, migration, seeder, view and test, and we can switch it off and on.
+You now have a module that owns its route, controller, model, migration, seeder, view, and test. You can switch it off and on.
 
 To go further:
 

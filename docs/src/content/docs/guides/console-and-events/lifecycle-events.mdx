@@ -7,11 +7,11 @@ import { Steps } from '@astrojs/starlight/components';
 
 To run code when the `Blog` module is enabled or disabled, listen to its lifecycle events in your application. You need an enabled `Blog` module.
 
-A module fires string events named `modules.{lowercase name}.{event}`. The payload is the `Nwidart\Modules\Module` instance. Listen from the application, not from the module: a process that enables a module booted before the module was enabled, so a listener inside the module does not exist yet when `enabled` fires.
+Modules fire string events named `modules.{lowercase name}.{event}` with the `Nwidart\Modules\Module` instance as the payload. Register listeners in your application, not inside the module. When `enabled` fires, the process booted before the module was enabled, so module listeners are not registered yet.
 
 <Steps>
 
-1. Register the listeners in the `boot()` method of a provider of your application.
+1. Register a listener in the `boot()` method of an application service provider.
 
    ```php title="app/Providers/AppServiceProvider.php"
    <?php
@@ -34,7 +34,7 @@ A module fires string events named `modules.{lowercase name}.{event}`. The paylo
    }
    ```
 
-2. To listen to an event of every module, use a wildcard. A wildcard listener receives the event name and an array that holds the payload.
+2. Use a wildcard to listen across all modules. Wildcard listeners receive the event name and an array containing the payload.
 
    ```php title="app/Providers/AppServiceProvider.php"
    Event::listen('modules.*.disabled', function (string $event, array $payload) {
@@ -44,7 +44,7 @@ A module fires string events named `modules.{lowercase name}.{event}`. The paylo
    });
    ```
 
-3. Check the result. Disable and enable the module, then read the log.
+3. Check the result. Disable and enable the module, then inspect the log.
 
    ```bash
    php artisan module:disable Blog
@@ -59,16 +59,9 @@ A module fires string events named `modules.{lowercase name}.{event}`. The paylo
 
 </Steps>
 
-## Events you can listen to
+## Available lifecycle events
 
-| Event | Fired |
-| --- | --- |
-| `modules.blog.creating`, `modules.blog.created` | by `module:make`. `creating` has no payload. |
-| `modules.blog.enabling`, `modules.blog.enabled` | around `module:enable`. |
-| `modules.blog.disabling`, `modules.blog.disabled` | around `module:disable`. |
-| `modules.blog.deleting`, `modules.blog.deleted` | around `module:delete`. |
-| `modules.blog.used` | by `module:use`. |
-| `modules.blog.unused` | by `module:unuse`, when a module is in use. |
+Modules fire events around creation (`creating`, `created`), status changes (`enabling`, `enabled`, `disabling`, `disabled`), deletion (`deleting`, `deleted`), and active selection (`used`, `unused`). See [Events](/laravel-modules/reference/api/events/) for the complete list, triggers, and payloads.
 
 ## Related
 

@@ -53,20 +53,25 @@ A generated module lives under `Modules/Blog/` and contains:
 Modules/Blog/
   app/
     Http/Controllers/
-    Models/
     Providers/
   config/
   database/
+    factories/
     migrations/
     seeders/
   resources/
+    assets/
     views/
   routes/
     web.php
     api.php
   tests/
-  module.json
+    Feature/
+    Unit/
   composer.json
+  module.json
+  package.json
+  vite.config.js
 ```
 
 ## Generating Module Components
@@ -206,9 +211,12 @@ protected array $healthIndicators = [
 
 ```bash
 {{ $assist->artisanCommand('module:migrate Blog') }}
+{{ $assist->artisanCommand('module:migrate-fresh Blog') }}
 {{ $assist->artisanCommand('module:migrate-rollback Blog') }}
 {{ $assist->artisanCommand('module:migrate-refresh Blog') }}
 {{ $assist->artisanCommand('module:migrate-reset Blog') }}
+{{ $assist->artisanCommand('module:migrate-status Blog') }}
+{{ $assist->artisanCommand('module:seed Blog') }}
 ```
 
 ## Inertia Support
@@ -237,8 +245,8 @@ When using Inertia.js inside a module (the stubs target Inertia v3; pass at most
 - Module classes are namespaced as `Modules\{ModuleName}` (e.g. `Modules\Blog\Http\Controllers\PostController`).
 - Module routes are loaded from `Modules/{Name}/routes/web.php` and `api.php`.
 - Module views are referenced as `{lowercase-name}::{view}` (e.g. `blog::index`).
-- Module configs live in `Modules/{Name}/config/{name}.php` and are merged at `{name}`. A copy published with `module:publish-config` (`config/{name}.php`) overrides the module's values.
+- Module configs live in `Modules/{Name}/config/config.php` and are merged at `{name}`. A copy published with `module:publish-config` (`config/{name}.php`) overrides the module's values.
 - Module service providers are auto-discovered from `module.json` `providers` key.
 - Keep business logic inside the module; avoid coupling modules together — use events/listeners instead.
-- Use `module:publish-config`, `module:publish-migration`, or `module:publish-translation` to publish module assets to the host application.
+- Publish module files to the host application with `module:publish` (static assets), `module:publish-config` (configuration), `module:publish-migration` (migrations), or `module:publish-translation` (translations).
 

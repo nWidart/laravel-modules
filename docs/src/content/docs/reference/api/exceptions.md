@@ -19,8 +19,8 @@ Each exception has the same fields: the code that throws it, the condition, the 
 
 | Field | Value |
 | --- | --- |
-| Thrown by | `FileRepository::findOrFail()`. Callers pass it on: `isEnabled()`, `isDisabled()`, `enable()`, `disable()`, `delete()`, `setUsed()` and `getUsedNow()` of the repository, `module_path()`, `GeneratorCommand::module()` and `ModuleCommandTrait::getModuleName()`. |
-| Thrown when | A module does not exist. `getUsedNow()` throws when no module is used (the name is empty). Commands do not let it escape: `BaseCommand`, `module:prune` and the generators check the module names first, print `Module [<name>] does not exist.` and exit with `1`. `Artisan::call()` returns `1` instead of throwing. |
+| Thrown by | `FileRepository::findOrFail()`, plus callers that forward it: `isEnabled()`, `isDisabled()`, `enable()`, `disable()`, `delete()`, `setUsed()`, `getUsedNow()`, `module_path()`, `GeneratorCommand::module()`, and `ModuleCommandTrait::getModuleName()`. |
+| Thrown when | A module does not exist, or no module is in use (`getUsedNow()`). Package commands validate names first, print `Module [<name>] does not exist.`, and return `1` instead of throwing. |
 | Message | `Module [<name>] does not exist!` |
 
 Two callers catch it: `module()` returns `false`, and `FileRepository::getModulePath()` returns the path the module would have. `find()` and `has()` never throw it.
@@ -41,7 +41,7 @@ try {
 | Field | Value |
 | --- | --- |
 | Thrown by | `Json::decodeContents()`, and so `new Json()`, `Json::make()` and the reading of `module.json` and `composer.json`. The `FileActivator` constructor. |
-| Thrown when | A file cannot be decoded as JSON. For `Json`: the content is not valid JSON, including an empty file. For `FileActivator`: the statuses file is not valid JSON, is not an object, or is a non-empty list. The activator never treats such a file as empty, because the next write would replace it. |
+| Thrown when | A file is not valid JSON. `Json` also rejects empty files. `FileActivator` rejects invalid JSON, non-objects, and non-empty lists rather than overwriting the file on the next write. |
 | Message | `Json`: `Error processing file: <path>. Error: <json error>`. `FileActivator`: `The module statuses file [<path>] is not valid: <error>. Fix or restore the file (it maps module names to true or false).` |
 
 A `module.json` that is not valid makes `scan()` throw, so every repository call that scans throws it.
@@ -62,7 +62,7 @@ try {
 | Field | Value |
 | --- | --- |
 | Thrown by | The container binding of `ActivatorInterface`, through three static factory methods. |
-| Thrown when | `unknownActivator(mixed $activator)`: `modules.activator` is not a string, `modules.activators` is not an array, or the activator is not a key of it. `missingConfig()`: the entry of the activator has no `class` key. `classNotFound(string $activator, string $class)`: the `class` does not exist. |
+| Thrown when | `unknownActivator($activator)`: `modules.activator` is not a string, `modules.activators` is not an array, or the key is missing. `missingConfig()`: the entry lacks a `class` key. `classNotFound($activator, $class)`: the class does not exist. |
 | Message | `unknownActivator()`: starts with `The modules activator [<name>] is not defined.` `missingConfig()`: starts with `You don't have a valid activator configuration class.` and tells you to republish the config. `classNotFound()`: starts with `The class [<class>] of the modules activator [<activator>] does not exist.` |
 
 ```php

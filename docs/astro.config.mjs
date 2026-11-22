@@ -186,6 +186,7 @@ export default defineConfig({
                                 'reference/api/events',
                                 'reference/api/contracts',
                                 'reference/api/exceptions',
+                                'reference/api/actuator',
                             ],
                         },
                         'reference/stubs',
