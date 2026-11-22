@@ -10,21 +10,21 @@ description: Where to ask questions, report bugs and security problems, contribu
 
 ## Report a security problem
 
-The repository has no `SECURITY.md`, and private vulnerability reporting is not enabled on it. Do not post the details of a vulnerability in a public issue. Contact the maintainer, [Nicolas Widart](https://github.com/nwidart), through the contact details on their GitHub profile, and say that the message concerns a security problem.
+The repository has no `SECURITY.md`, and GitHub private vulnerability reporting is off. The only route to report a vulnerability privately is to contact the maintainer, [Nicolas Widart](https://github.com/nWidart), through the contact details on their GitHub profile. Say in the first line that the message concerns a security problem. Do not post the details in a public issue.
 
-Security fixes go to the current major and to `12.x`. See [Version compatibility](/laravel-modules/upgrading/compatibility/).
+A security fix lands on `master` and, when the problem exists in version 12, on `12.x`. See [Version compatibility](/laravel-modules/upgrading/compatibility/).
 
 ## Contribute code
 
 Read [CONTRIBUTING.md](https://github.com/nWidart/laravel-modules/blob/master/CONTRIBUTING.md) first. In short:
 
-1. Fork the repository and branch from the branch that matches your Laravel version (`master` for Laravel 13).
+1. Fork the repository and branch from `master`. Changes target `master`. `12.x` accepts security fixes only.
 2. Run `composer check` before you open a pull request. It runs the style check, static analysis and the tests.
 3. Write commit messages as [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/), for example `fix(migrations): honour --pretend on module:migrate-rollback`. CI checks every commit, and the changelog and version number come from them.
 
 ## Contribute to this documentation
 
-Each page has an edit link at the bottom that opens the Markdown file on GitHub. To run the site locally, see [docs/README.md](https://github.com/nWidart/laravel-modules/blob/master/docs/README.md). A change to user-facing behaviour should update the matching page in the same pull request.
+To add a package to the [community packages](/laravel-modules/ecosystem/community-packages/) list, open a pull request that changes that page. Each page has an edit link at the bottom that opens the Markdown file on GitHub. To run the site locally, see [docs/README.md](https://github.com/nWidart/laravel-modules/blob/master/docs/README.md). A change to user-facing behaviour should update the matching page in the same pull request.
 
 ## Sponsor the project
 

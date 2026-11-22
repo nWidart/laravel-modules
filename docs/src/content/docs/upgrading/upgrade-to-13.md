@@ -3,9 +3,10 @@ title: Upgrade from 12 to 13
 description: Move an application from laravel-modules 12 to 13, together with Laravel 13 and PHP 8.3.
 ---
 
-Version 13 of `nwidart/laravel-modules` supports Laravel 13 and PHP 8.3 or later. Between `v12.0.5` and `v13.0.0` the package changed only its dependency constraints. The source (`src/` and `config/`) is identical, so the move from 12 to 13 has no breaking change of its own.
+Are there breaking changes? It depends on the level:
 
-The release you install is the latest 13.x, not 13.0.0. Releases 13.1 to 13.3 changed behaviour, and step 5 sends you to them.
+- **Version 13.0.0 itself: one, the PHP version.** It requires PHP `^8.3`, where 12 allowed `>=8.2`. Its `src/` and `config/` files are identical to `v12.0.5`. See [13.0.0](/laravel-modules/upgrading/13-x-release-notes/#1300).
+- **Releases 13.1 to 13.3: yes, behaviour changes.** Composer installs the latest 13.x, not 13.0.0, so you get them with the upgrade. 13.1.0 adds production confirmations to two migration commands, 13.2.0 changes generators, stubs, publishing and exit codes, and 13.3.0 rejects some generator names. Each change says whether you must act: see [Changes in 13.x](/laravel-modules/upgrading/13-x-release-notes/).
 
 ## Steps
 
@@ -15,27 +16,26 @@ The release you install is the latest 13.x, not 13.0.0. Releases 13.1 to 13.3 ch
    php -v
    ```
 
-2. Upgrade Laravel to 13. Follow the [Laravel 13 upgrade guide](https://laravel.com/docs/13.x/upgrade). Do this first: the package does not require `laravel/framework` itself, and 13.x is built and tested against Laravel 13.
-
-3. Change the version constraint in your `composer.json`:
+2. Change the constraints in your `composer.json`: Laravel to 13, and the package to 13. Follow the [Laravel 13 upgrade guide](https://laravel.com/docs/13.x/upgrade) for the Laravel side.
 
    ```json
    "require": {
+       "laravel/framework": "^13.0",
        "nwidart/laravel-modules": "^13.0"
    }
    ```
 
-4. Update the package.
+3. Update both in one command.
 
    ```bash
-   composer update nwidart/laravel-modules
+   composer update laravel/framework nwidart/laravel-modules --with-all-dependencies
    ```
 
    Keep the `wikimedia/composer-merge-plugin` entries in `extra` and `allow-plugins` as they are. Version 13 uses the same autoload setup as 12.
 
-5. Read [Changes in 13.x](/laravel-modules/upgrading/13-x-release-notes/). Release 13.2.0 lists changes that may need an action in your application, for example custom stubs, custom generator paths, and module commands in scripts or deploys. Most applications on the default config need no change.
+4. Read [Changes in 13.x](/laravel-modules/upgrading/13-x-release-notes/) and act on the items that match your application. If you published `config/modules.php` or the stubs, see [Published config and stubs](#published-config-and-stubs).
 
-6. Check the result.
+5. Check the result.
 
    ```bash
    php artisan module:list
@@ -43,14 +43,29 @@ The release you install is the latest 13.x, not 13.0.0. Releases 13.1 to 13.3 ch
 
    Each module shows the status it had before the update.
 
-## What changed in 13.0.0
+### Why one update step
 
-The 13.0.0 release notes list two changes: Laravel 13 compatibility and a preparation commit. The diff of `composer.json` shows the PHP requirement going from `>=8.2` to `^8.3`, and the test dependencies moving to Laravel 13, Testbench 11 and PHPUnit 12. These are development dependencies of the package, and they do not change what you install.
+The order of Laravel and package does not matter to Composer. The package does not require `laravel/framework`: `v12.0.5` and `v13.x` list it under `require-dev` only, so Composer would install `v12.0.5` next to Laravel 13 without complaint. That combination is not tested: 12.x is developed against Laravel 12 and 13.x against Laravel 13. Updating both together keeps them in step.
+
+## Published config and stubs
+
+The published `config/modules.php` of version 12 keeps working. Between `v12.0.5` and `v13.3.0` the config has one new optional entry, `paths.generator.job-middleware` (without it, `module:make-job-middleware` uses the `jobs` path plus `Middleware`), and no key was removed or renamed. Check these 13.2.0 items against your copy:
+
+- `stubs.path` is ignored unless `stubs.enabled` is `true`.
+- A custom `app_folder` or generator `path` must agree, or `module:make` stops with an error.
+- A `generate` flag set to `false` now also skips the stub files its key owns.
+- The `register` keys are deprecated and have no effect.
+
+Published stubs never change by themselves. These stubs changed between `v12.0.5` and `v13.3.0`: `command.stub`, `config.stub`, `job.stub`, `job-queued.stub`, `model.stub`, `route-provider.stub` and `scaffold/provider.stub`. Compare your copy with `src/Commands/stubs/` and merge what you want. The notes for [13.2.0](/laravel-modules/upgrading/13-x-release-notes/#action-may-be-required) and [13.3.0](/laravel-modules/upgrading/13-x-release-notes/#1330) say which change gives which behaviour.
+
+## Deprecated code
+
+Version 13.2.0 deprecates `Module::boot()`, `Module::register()` and related items. They still exist, and v14 removes them. Search your code for them: [Deprecations](/laravel-modules/upgrading/deprecations/).
 
 ## If something fails
 
-- `composer update` reports a conflict on `laravel/framework`: your application is not on Laravel 13 yet. Do step 2 first.
+- `composer update` reports a conflict: the message names the package that blocks the update. The package itself does not constrain the Laravel version. The cause is your own `composer.json`, another package that does not support Laravel 13 yet, or a platform PHP older than 8.3.
 - A module does not load after the update: run `composer dump-autoload` and confirm `allow-plugins` still allows `wikimedia/composer-merge-plugin`.
-- The 13.2.0 notes mention a stricter `modules_statuses.json`. It must be a JSON object. A corrupt file now throws.
+- `modules_statuses.json` throws `InvalidJsonException`: since 13.2.0 the file must be a JSON object. See [Changes in 13.x](/laravel-modules/upgrading/13-x-release-notes/#action-may-be-required).
 
 Version 12 stays on the `12.x` branch with security fixes only. See [Version compatibility](/laravel-modules/upgrading/compatibility/).

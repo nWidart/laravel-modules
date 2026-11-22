@@ -1,39 +1,45 @@
 ---
 title: Use the package with AI coding assistants
-description: The Laravel Boost guideline and skill that laravel-modules ships, what they contain, and the llms.txt files of this site.
+description: The Laravel Boost guideline and skill that laravel-modules ships, why Boost does not install them, how to add them by hand, and the llms.txt files of this site.
 ---
 
-The package ships two files for [Laravel Boost](https://github.com/laravel/boost), the Laravel package that gives AI coding assistants guidelines and skills for your application. This page lists what they contain and where to find them. The site also publishes text files for language models.
+The package ships a guideline and a skill in the format of [Laravel Boost](https://github.com/laravel/boost), the Laravel package that gives AI coding assistants guidelines and skills for your application. Boost does not install them today. This page lists what they contain, why, and how to add them to your project yourself. The site also publishes text files for language models.
 
 ## What the package ships
 
-The files are in the repository under `.ai/laravel-modules/`.
+The package ships two files, in the repository and in the Composer install under `vendor/nwidart/laravel-modules/.ai/laravel-modules/`.
 
 | File | Kind | Content |
 | --- | --- | --- |
-| `.ai/laravel-modules/core.blade.php` | Guideline | Five lines: what the package is, `module:make ModuleName` to scaffold a module in `Modules/`, the `Modules\ModuleName` namespace pattern, and the rule to keep module logic in the module folder, not in `app/`. |
-| `.ai/laravel-modules/1/skill/laravel-modules-development/SKILL.blade.php` | Skill `laravel-modules-development` | Example commands for creating, enabling and disabling modules, for the `module:make-*` generators, for module migrations and for Inertia, plus key conventions, such as the namespace, the `blog::index` view naming and the config key. |
+| `core.blade.php` | Guideline | Five lines: what the package is, `module:make ModuleName` to scaffold a module in `Modules/`, the `Modules\ModuleName` namespace pattern, and the rule to keep module logic in the module folder, not in `app/`. |
+| `1/skill/laravel-modules-development/SKILL.blade.php` | Skill `laravel-modules-development` | Example commands for creating, enabling and disabling modules, for the `module:make-*` generators, for module migrations and for Inertia, plus key conventions, such as the namespace, the `blog::index` view naming and the config key. |
 
-The skill describes itself as the one to use for any task that mentions `module:make`, module commands or a `Modules/` folder. It sends the assistant to Boost's `search-docs` tool for details. Both files are Blade templates. The skill calls `$assist->artisanCommand()` for each command.
+The skill describes itself as the one to use for any task that mentions `module:make`, module commands or a `Modules/` folder. Both files are Blade templates. The skill calls `$assist->artisanCommand()` for each command.
 
 A guideline is loaded when the assistant starts. A skill is loaded when a task needs it. This is how Laravel Boost describes the two.
 
-## Install Boost
+## Boost does not install these files
+
+`php artisan boost:install` does not install the two files. Laravel Boost reads the guidelines and skills of a third-party package from `resources/boost/guidelines/` and `resources/boost/skills/` inside the package, and only for packages that your application requires directly. `nwidart/laravel-modules` has no `resources/boost/` folder. Boost reads `.ai/<package-name>/` only in its own repository (for the packages it supports itself) and in your project, and the package name there is `nwidart-laravel-modules`, not `laravel-modules`. Nothing in `vendor/nwidart/laravel-modules/.ai/` is read. This holds for Laravel Boost 2.10, the release checked for this page.
+
+After `boost:install`, your assistant therefore has no Laravel Modules guideline and no `laravel-modules-development` skill. This is a gap in the package, and a fix belongs in the package: the files must move to `resources/boost/`.
+
+The skill file has a second problem. In `SKILL.blade.php` the line that closes the front matter (`---`) is indented, and Boost rejects a front matter that has no closing line at the start of a line. Boost then skips the skill and records a parse failure.
+
+## Give the assistant the same context by hand
+
+Install Boost, then add the content to your own project:
 
 ```bash
 composer require laravel/boost --dev
 php artisan boost:install
 ```
 
-`boost:install` writes the guideline and skill files for the assistants you select. Run `php artisan boost:update` after you update packages. See the [Laravel Boost documentation](https://laravel.com/docs/13.x/boost).
+1. **Guideline.** Copy `vendor/nwidart/laravel-modules/.ai/laravel-modules/core.blade.php` to `.ai/guidelines/laravel-modules.blade.php` in your project. The file holds plain Markdown and no Blade directives, so it works as it is. Boost reads every `.md` and `.blade.php` file in `.ai/guidelines/`.
+2. **Skill.** Create `.ai/skills/laravel-modules-development/SKILL.md` and write the content of `SKILL.blade.php` into it, with two changes. Put the front matter (`name`, `description`) at the start of the file with a closing `---` that has no indentation. Replace each `{{ $assist->artisanCommand('module:make Blog') }}` with the plain command `php artisan module:make Blog`. Remove the indentation that the source file puts before every line after `metadata:`, because indented lines render as code blocks in Markdown, and drop its `@php` block. Boost reads `SKILL.md` and `SKILL.blade.php` from `.ai/skills/{skill-name}/`.
+3. Run `php artisan boost:update`, then check that your assistant lists `laravel-modules-development` among its skills.
 
-## How Boost finds the files
-
-The Laravel Boost documentation describes how a third-party package ships guidelines and skills: `resources/boost/guidelines/core.blade.php` for a guideline, and `resources/boost/skills/{skill-name}/SKILL.md` for a skill, inside the package.
-
-Laravel Modules ships its files under `.ai/laravel-modules/` instead, and the repository has no `resources/boost/` folder. The Boost documentation does not describe a `.ai/<package>/` folder inside a third-party package. The documentation does not confirm that `boost:install` installs these two files from `vendor/nwidart/laravel-modules`. Check the result on your project: after `boost:install`, look for `laravel-modules-development` among the installed skills, and for the Laravel Modules text in the guideline file of your assistant.
-
-If the files are not picked up, you can give the assistant the same context yourself. Boost reads your own `.ai/guidelines/` folder for guidelines, and `.ai/skills/{skill-name}/SKILL.md` for skills. Copy the content of the two files there.
+See the [Laravel Boost documentation](https://laravel.com/docs/13.x/boost) for the commands of Boost itself.
 
 ## Site files for language models
 
