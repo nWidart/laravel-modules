@@ -7,6 +7,8 @@ use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Support\Stub;
 use Symfony\Component\Console\Input\InputOption;
 
+use function Laravel\Prompts\confirm;
+
 class PublishInertiaCommand extends Command
 {
     protected $name = 'module:publish-inertia';
@@ -24,9 +26,17 @@ class PublishInertiaCommand extends Command
         $files = $this->laravel->make(Filesystem::class);
 
         if ($files->exists($destination) && ! $this->option('force')) {
-            $this->components->error('resources/js/app.js already exists. Use --force to overwrite.');
+            if (! $this->canPrompt()) {
+                $this->components->error('resources/js/app.js already exists. Use --force to overwrite.');
 
-            return E_ERROR;
+                return E_ERROR;
+            }
+
+            if (! confirm('resources/js/app.js already exists. Overwrite?', default: false)) {
+                $this->components->warn('Nothing was written. resources/js/app.js was left unchanged.');
+
+                return E_ERROR;
+            }
         }
 
         $contents = (new Stub($stub))->render();
@@ -38,6 +48,21 @@ class PublishInertiaCommand extends Command
         $this->components->info('Make sure your vite.config.js includes resources/js/app.js as an input.');
 
         return 0;
+    }
+
+    /**
+     * Whether the overwrite question can be asked.
+     *
+     * Without a TTY, Prompts would return the default answer without asking,
+     * so the command keeps the error that tells the user to pass --force.
+     */
+    private function canPrompt(): bool
+    {
+        if (! $this->input->isInteractive()) {
+            return false;
+        }
+
+        return $this->laravel->runningUnitTests() || (defined('STDIN') && stream_isatty(STDIN));
     }
 
     private function getInertiaFrontend(): string

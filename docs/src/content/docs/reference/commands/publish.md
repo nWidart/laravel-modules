@@ -113,13 +113,18 @@ This command has no arguments. It has no `--all` option.
 | `--vue` | | `false` | Publish the Vue version. |
 | `--react` | | `false` | Publish the React version. |
 | `--svelte` | | `false` | Publish the Svelte version. |
-| `--force` | `-f` | `false` | Overwrite an existing `resources/js/app.js`. |
+| `--force` | `-f` | `false` | Overwrite an existing `resources/js/app.js` without asking. |
 
 **Notes**
 
 - The framework is `--react` if given, else `--svelte`, else `--vue`, else `inertia.frontend` (default `vue`).
 - Stub: `inertia/app-vue.stub`, `inertia/app-react.stub` or `inertia/app-svelte.stub`.
-- An existing `resources/js/app.js` without `--force` prints `resources/js/app.js already exists. Use --force to overwrite.` and exits with `1`.
+- The published `app.js` mounts the app when `<div id="app">` exists and the page has Inertia page data: the `data-page` attribute of the root element (Inertia v2) or a `<script data-page="app" type="application/json">` tag (Inertia v3). A page with `<div id="app">` and no page data is skipped silently.
+- The Svelte stub uses `new App({ target: el, props })`, the Svelte 4 API. `@inertiajs/svelte` v3 requires Svelte 5, where that call needs Svelte's compatibility mode.
+- A fresh Laravel application already has `resources/js/app.js`, so the first run meets the existing-file case. Without `--force`:
+  - In an interactive terminal, the command asks `resources/js/app.js already exists. Overwrite?` (default no). Yes overwrites the file, prints `Published Inertia app.js to resources/js/app.js` and exits with `0`. No prints `Nothing was written. resources/js/app.js was left unchanged.` and exits with `1`.
+  - With `--no-interaction` or without a TTY, the command prints `resources/js/app.js already exists. Use --force to overwrite.` and exits with `1`.
+- With `--force`, the command overwrites the file without asking.
 - On success the command prints a reminder that `vite.config.js` must include `resources/js/app.js` as an input.
 
 ```bash
