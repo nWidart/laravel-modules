@@ -34,7 +34,7 @@ class Updater extends Runner
 
         $concatenatedPackages = '';
         foreach ($packages as $name => $version) {
-            $concatenatedPackages .= "\"{$name}:{$version}\" ";
+            $concatenatedPackages .= escapeshellarg("{$name}:{$version}").' ';
         }
 
         if (! empty($concatenatedPackages)) {
@@ -48,7 +48,7 @@ class Updater extends Runner
 
         $concatenatedPackages = '';
         foreach ($devPackages as $name => $version) {
-            $concatenatedPackages .= "\"{$name}:{$version}\" ";
+            $concatenatedPackages .= escapeshellarg("{$name}:{$version}").' ';
         }
 
         if (! empty($concatenatedPackages)) {
