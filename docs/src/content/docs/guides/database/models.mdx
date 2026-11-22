@@ -57,8 +57,10 @@ To get a `Post` model with a factory in the `Blog` module, generate both with on
 3. Check the result. Show the model, then create a post with the factory:
 
    ```bash
-   php artisan model:show 'Modules\Blog\Models\Post'
+   php artisan module:model-show Post
    ```
+
+   `module:model-show` finds `Post` in the modules. A model of the application with the same name wins, and an ambiguous name asks which one, or lists the candidates when the run is not interactive. The fully qualified class name, `'Modules\Blog\Models\Post'`, always works.
 
    ```text
    Modules\Blog\Models\Post ...................................................

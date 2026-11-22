@@ -33,7 +33,7 @@ To create an Inertia module, add `--inertia`. It has an Inertia controller and t
 php artisan module:make Blog --inertia
 ```
 
-Do not combine `--plain` and `--api`: the module becomes a web module.
+A web module is the default. To get one whatever the other options say, add `--web`: it wins over `--plain` and `--api`. `--plain` with `--api` also gives a web module, so do not combine them.
 
 ## Create several modules at once
 
@@ -84,7 +84,7 @@ Status / Name ........................................ Path / priority
 [Enabled] Blog ................................... Modules/Blog [0]
 ```
 
-A module created with `--disabled` shows `[Disabled]`. For a web or API module, `php artisan route:list --name=blog` lists its routes: for a web module, 12 routes, the `blog.*` web routes and the `api.blog.*` API routes.
+A module created with `--disabled` shows `[Disabled]`. For a web or API module, `php artisan route:list --name=blog` lists its routes: for a web module, 12 routes, the `blog.*` web routes and the `api.blog.*` API routes. The web routes need no login, so `/blogs` opens in an application without authentication. The API routes use the `auth:sanctum` middleware.
 
 ## Related
 

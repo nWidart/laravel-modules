@@ -63,6 +63,12 @@ php artisan module:make-migration add_slug_to_posts_table Blog --fields="slug:st
 
 The migration adds `$table->string('slug')->nullable()` in `up()` and drops the column in `down()`. Run it with `php artisan migrate` or `php artisan module:migrate Blog`.
 
+To get an empty migration whatever the name is, add `--plain`. The command then ignores `--fields`.
+
+```bash
+php artisan module:make-migration seed_default_posts Blog --plain
+```
+
 ## Roll back
 
 To undo the last batch of the module, run:
@@ -72,6 +78,8 @@ php artisan module:migrate-rollback Blog
 ```
 
 `module:migrate` puts each module in its own batch. `php artisan migrate` puts everything it runs in one batch. To undo all migrations of the module, run `php artisan module:migrate-reset Blog`. To reset and run them again, run `php artisan module:migrate-refresh Blog`. In the `production` environment these commands ask for confirmation.
+
+With `--all`, `module:migrate-refresh` refreshes the enabled modules only, in ascending `priority` order. A module you name runs whatever its status.
 
 ## Publish the migrations to the application
 

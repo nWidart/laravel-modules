@@ -54,7 +54,7 @@ To clone the module into the modules folder (`Modules/Blog`), pass `--type`.
 
    The command runs `git clone https://github.com/acme/blog.git Modules/Blog`, checks out `1.2.0` (a branch, tag or commit, `master` by default), then runs `module:update`. The module name is the `name` in the `module.json` of the clone.
 
-   `--type` takes `github` (SSH), `github-https`, `gitlab`, `bitbucket`, a repository URL (`https://...` or `file:///...`) or a `user@host` SSH address. A plain local path is rejected with `Unable to resolve a git repository URL`. To install to another folder, add `--path=Modules/Blog`.
+   `--type` takes `github` (SSH), `github-https`, `gitlab`, `bitbucket`, a repository URL (`https://...` or `file:///...`) or a `user@host` SSH address. A plain local path is rejected with `Unable to resolve a git repository URL`: use `file:///srv/git/blog.git` for a local repository. To install to another folder, add `--path=Modules/Blog`.
 
 2. Regenerate the autoloader, so that the merge plugin reads the `composer.json` of the new module.
 
@@ -70,7 +70,7 @@ To clone the module into the modules folder (`Modules/Blog`), pass `--type`.
 
 </Steps>
 
-To keep the module code in the history of your application instead of a nested clone, add `--tree`. The application must be a Git repository with at least one commit and no uncommitted changes. Otherwise git fails with `fatal: not a git repository` or `fatal: working tree has modifications.  Cannot add.` The command adds a Git remote named `Blog` and runs `git subtree add --squash`. The destination must be inside the project.
+To keep the module code in the history of your application instead of a nested clone, add `--tree`. The application must be a Git repository with at least one commit and no staged or unstaged changes to tracked files. Untracked files are fine. The command checks this before it runs `git` and stops with a message such as `A subtree install (--tree) needs a clean working tree: commit or stash your changes first. Untracked files are fine.` The command adds a Git remote named `Blog` and runs `git subtree add --squash`. The destination must be inside the project.
 
 ```bash
 php artisan module:install acme/blog 1.2.0 --type=github-https --tree
@@ -100,7 +100,7 @@ To install several modules with one command, list them in `modules.json` in the 
    }
    ```
 
-   An entry without `type` installs from Composer.
+   An entry without `type` installs from Composer. A Git entry may set `path`, the folder it installs into, for example `"path": "Modules/Blog"`. `--path` is for a single module: with more than one entry, the command exits with `1` before any install.
 
 2. Run the command without a name.
 
@@ -108,7 +108,7 @@ To install several modules with one command, list them in `modules.json` in the 
    php artisan module:install
    ```
 
-   The command installs each entry in order. A failing entry does not stop the next ones, and the command exits with `1`.
+   The command installs each entry in order. A failing entry does not stop the next ones, and the command exits with `1`. A bad entry, such as one without `name`, prints one error line with its position in the list and is skipped.
 
 </Steps>
 

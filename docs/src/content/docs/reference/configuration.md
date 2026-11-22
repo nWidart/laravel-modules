@@ -12,7 +12,7 @@ Keys marked **deprecated** have no effect in version 13 and are removed in versi
 | Key | Default | Description |
 | --- | --- | --- |
 | `namespace` | `'Modules'` | Root namespace of the modules. Generators and `ModuleServiceProvider` prefix every class namespace with it, and `module:make` writes it into the `autoload.psr-4` entry of the module `composer.json`. A module class autoloads only when the `composer.json` of the application merges that file: its `extra.merge-plugin.include` glob must match the modules folder (see `paths.modules`). |
-| `vapor_maintenance_mode` | `env('VAPOR_MAINTENANCE_MODE', false)` | When `true`, the providers manifest and the per-module cache files are placed next to Laravel's config cache file instead of its services cache file. The providers manifest is the cache file `modules.php` (by default `bootstrap/cache/modules.php`) that lists the providers of the enabled modules. |
+| `vapor_maintenance_mode` | `env('VAPOR_MAINTENANCE_MODE', false)` | When `true`, the providers manifest is placed next to Laravel's config cache file instead of its services cache file. The providers manifest is the cache file `modules.php` (by default `bootstrap/cache/modules.php`) that lists the providers of the enabled modules. |
 | `activator` | `'file'` | Name of the active activator: a key of `activators`. An unknown name throws `InvalidActivatorClass`. |
 | `commands` | `ConsoleServiceProvider::defaultCommands()` merged with an empty list | A list of Artisan command class names. `ConsoleServiceProvider` registers every class of the list. |
 

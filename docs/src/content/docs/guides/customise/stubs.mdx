@@ -33,6 +33,8 @@ To change the code the generators write, edit a copy of the stubs in your applic
    ],
    ```
 
+   Set the path in the config. `FileRepository::setStubPath()` does not change where the generators read stubs, and it is deprecated.
+
 4. Edit a stub. This example adds `declare(strict_types=1);` to the enum generator.
 
    ```php title="stubs/nwidart-stubs/enum.stub"

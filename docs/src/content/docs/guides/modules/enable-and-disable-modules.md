@@ -28,7 +28,13 @@ php artisan module:disable Blog Shop
 php artisan module:enable --all
 ```
 
-An unknown name stops the command before it changes any module. The error, `Module [Nope] does not exist!`, prints as an exception with a stack trace, not as a one-line message.
+An unknown name stops the command before it changes any module. The command prints one error line and exits with status 1, with no stack trace:
+
+```text
+ERROR  Module [Nope] does not exist.
+```
+
+With several unknown names, the line is `Modules [Nope, Typo] do not exist.`
 
 ## Change the status from PHP code
 

@@ -107,7 +107,7 @@ rm bootstrap/cache/modules.php
 
 ## Deploy to Laravel Vapor
 
-On Vapor, `bootstrap/cache` is read-only at runtime, but Laravel writes the configuration cache to a writable location. To place the providers manifest and the module cache files next to the configuration cache, turn on `vapor_maintenance_mode`:
+On Vapor, `bootstrap/cache` is read-only at runtime, but Laravel writes the configuration cache to a writable location. To place the providers manifest next to the configuration cache, turn on `vapor_maintenance_mode`:
 
 ```php title="config/modules.php"
 'vapor_maintenance_mode' => true,

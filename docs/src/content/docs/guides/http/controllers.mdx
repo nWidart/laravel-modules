@@ -5,7 +5,7 @@ description: Generate a controller in a module with module:make-controller and r
 
 import { Steps } from '@astrojs/starlight/components';
 
-To serve the posts of the `Blog` module from a controller, generate `PostController` and point a route at it. You need an enabled `Blog` module. A new module already has a `BlogController` and routes that need a logged-in user; see [Add routes to a module](/laravel-modules/guides/http/routes/).
+To serve the posts of the `Blog` module from a controller, generate `PostController` and point a route at it. You need an enabled `Blog` module. A new module already has a `BlogController` and a `Route::resource()` route for it in `routes/web.php`; see [Add routes to a module](/laravel-modules/guides/http/routes/).
 
 <Steps>
 
@@ -17,14 +17,16 @@ To serve the posts of the `Blog` module from a controller, generate `PostControl
 
    The command creates `Modules/Blog/app/Http/Controllers/PostController.php`. The class is `Modules\Blog\Http\Controllers\PostController`. It extends `App\Http\Controllers\Controller` and has the seven resource methods. `index()` returns `view('blog::index')`.
 
-2. Point a route at the controller.
+2. Add a route for the controller to `Modules/Blog/routes/web.php`, below the generated line. The block shows the whole file.
 
    ```php title="Modules/Blog/routes/web.php"
    <?php
 
    use Illuminate\Support\Facades\Route;
+   use Modules\Blog\Http\Controllers\BlogController;
    use Modules\Blog\Http\Controllers\PostController;
 
+   Route::resource('blogs', BlogController::class)->names('blog');
    Route::get('posts', [PostController::class, 'index'])->name('blog.posts.index');
    ```
 

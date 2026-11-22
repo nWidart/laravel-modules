@@ -26,7 +26,7 @@ At the end, the coverage report of your application includes the code in `Module
    </source>
    ```
 
-   The command also removes the entries of modules that are disabled or deleted. If `<source>` has other content, or the file has no `<source>` element, but no `<include>`, the command creates the `<include>` with `<directory>./app</directory>` and the module entries. With an empty `<source></source>` or `<source/>`, the command adds nothing, prints a warning, and still prints the success line.
+   The command also removes the entries of modules that are disabled or deleted. If `<source>` has no `<include>`, the command creates one with `<directory>./app</directory>` and the module entries. This includes an empty `<source></source>` or `<source/>`. An empty `<include/>`, `<include />` or `<include></include>` on its own line inside `<source>` gets the module entries only. With `<source>` and `<include>` on the same line, such as `<source><include/></source>`, the command prints `Could not find where to add the module entries in phpunit.xml: add them by hand.`, leaves the file unchanged and exits 0. The command prints `phpunit.xml updated with enabled module directories.` when it placed the entries. When it cannot find where to add them, it prints a warning, leaves the file unchanged and prints no success line.
 
 2. Run the tests with coverage.
 
@@ -34,7 +34,7 @@ At the end, the coverage report of your application includes the code in `Module
    php artisan test --coverage
    ```
 
-   Without a coverage driver mode, the run prints `ERROR Code coverage driver not available`. With Xdebug, set its mode for the run:
+   Without a coverage driver mode, the run prints `ERROR  Code coverage driver not available. Did you set Xdebug's coverage mode?` and exits with status 1. With Xdebug, set its mode for the run:
 
    ```bash
    XDEBUG_MODE=coverage php artisan test --coverage
@@ -48,7 +48,7 @@ Run the command again after you enable, disable, add or delete a module. The mod
 
 Open `phpunit.xml` and look for the `Modules/Blog/app` entry. The coverage report lists file paths under `Modules/Blog/app`, not namespaces.
 
-If the command fails, its exit status tells why: `100` no `phpunit.xml`, `99` no statuses file, `97` invalid XML in `phpunit.xml`. Invalid JSON in the statuses file does not reach this command: it stops every Artisan command with an `InvalidJsonException` before the command runs.
+If the command fails, its exit status tells why: `100` no `phpunit.xml`, `99` no statuses file, `97` empty or invalid XML in `phpunit.xml`, `98` the command cannot decode the statuses file. That happens when the file is empty or holds only whitespace, which the file activator accepts at boot, or when the file holds invalid JSON and the active activator is not `FileActivator`, so nothing else reads the file. With a custom activator and a valid file, the command succeeds. With `FileActivator` and non-empty invalid JSON, the application fails at boot with an `InvalidJsonException` and exit status 1.
 
 ## Related
 
