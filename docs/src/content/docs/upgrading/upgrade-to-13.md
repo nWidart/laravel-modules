@@ -76,10 +76,10 @@ If you track `master` or upgrade once these changes release, note three updates:
 Published stubs never update automatically. Compare your copies with `src/Commands/stubs/` and merge changes you want:
 
 - **Changed between `v12.0.5` and `v13.3.0`:** `command.stub`, `config.stub`, `job.stub`, `job-queued.stub`, `model.stub`, `route-provider.stub`, and `scaffold/provider.stub`.
-- **Changed after `v13.3.0` (`master`):** `package.stub` (Vite 8), `vite.stub` (`hotFile` and `manifest: 'manifest.json'`), `views/master.stub`, `inertia/*` and `middleware/handle-inertia-requests.stub` (Inertia v3), `scaffold/provider.stub` (`$healthIndicators`), `event-provider.stub`, `routes/web.stub`, and `replacement.stub`.
+- **Changed in 13.4.0:** `package.stub` (Vite 8), `vite.stub` (`hotFile` and `manifest: 'manifest.json'`), `views/master.stub`, `inertia/*` and `middleware/handle-inertia-requests.stub` (Inertia v3), `scaffold/provider.stub` (`$healthIndicators`), `event-provider.stub`, `routes/web.stub`, and `replacement.stub`.
 - **New stubs (need no action; missing stubs fall back to package copies):** `job-middleware.stub`, `resource-json-api.stub`, and `health-indicator.stub`.
 
-See [13.2.0](/laravel-modules/upgrading/13-x-release-notes/#action-may-be-required), [13.3.0](/laravel-modules/upgrading/13-x-release-notes/#1330), and [Unreleased (master)](/laravel-modules/upgrading/13-x-release-notes/#unreleased-master) for details.
+See [13.2.0](/laravel-modules/upgrading/13-x-release-notes/#action-may-be-required-1), [13.3.0](/laravel-modules/upgrading/13-x-release-notes/#1330), and [13.4.0](/laravel-modules/upgrading/13-x-release-notes/#1340) for details.
 
 ## Deprecated code
 
@@ -89,6 +89,6 @@ Version 13.2.0 deprecates `Module::boot()`, `Module::register()`, and related me
 
 - `composer update` reports a conflict: check the package named in the error. The cause is usually another package without Laravel 13 support or a platform PHP constraint older than 8.3.
 - A module does not load after the update: run `composer dump-autoload` and check that `allow-plugins` still allows `wikimedia/composer-merge-plugin`.
-- `modules_statuses.json` throws `InvalidJsonException`: since 13.2.0, the file must hold a JSON object. See [Changes in 13.x](/laravel-modules/upgrading/13-x-release-notes/#action-may-be-required).
+- `modules_statuses.json` throws `InvalidJsonException`: since 13.2.0, the file must hold a JSON object. See [Changes in 13.x](/laravel-modules/upgrading/13-x-release-notes/#action-may-be-required-1).
 
 Version 12 stays on the `12.x` branch for security fixes only. See [Version compatibility](/laravel-modules/upgrading/compatibility/).
