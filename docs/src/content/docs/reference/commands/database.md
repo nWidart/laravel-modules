@@ -239,7 +239,7 @@ php artisan module:migrate-rollback Blog
 Shows which migrations of the given modules ran.
 
 ```bash
-php artisan module:migrate-status [<module>...] [-d|--direction=DIRECTION] [--database=DATABASE] [-a|--all]
+php artisan module:migrate-status [<module>...] [-d|--direction=DIRECTION] [--database=DATABASE] [-a|--all] [--json]
 ```
 
 **Arguments**
@@ -255,15 +255,41 @@ php artisan module:migrate-status [<module>...] [-d|--direction=DIRECTION] [--da
 | `--direction` | `-d` | `asc` | Order of the modules selected with `--all`. |
 | `--database` | | none | Database connection. |
 | `--all` | `-a` | `false` | Show migration status for every enabled module. |
+| `--json` | | `false` | Print the status as one JSON document. See [JSON output](/laravel-modules/reference/commands/#json-output). |
 
 **Notes**
 
 - The command calls Laravel `migrate:status --path=<module paths> --realpath` for each module.
 - It uses the same paths as `module:migrate`, `module:migrate-rollback` and `module:migrate-reset`.
+- With `--json`, the command follows the [JSON output](/laravel-modules/reference/commands/#json-output) rules and does not call `migrate:status`. It lists the migration files of each module from the same paths, sorted by name, and reads the ran migrations and their batches from the migrations table on the `--database` connection.
+- The modules appear in the same order and selection as without `--json` (`--all`, `--direction`).
 
 ```bash
 php artisan module:migrate-status Blog
+php artisan module:migrate-status --all --json | jq '.modules[].migrations[] | select(.ran | not) | .name'
 ```
+
+**JSON output**
+
+The document is an object with two keys.
+
+| Key | Type | Description |
+| --- | --- | --- |
+| `modules` | array | One entry per module. |
+| `modules[].name` | string | Module name. |
+| `modules[].migrations` | array | Migrations of the module, sorted by name. `[]` when the module has none. |
+| `modules[].migrations[].name` | string | Migration file name without `.php`. |
+| `modules[].migrations[].ran` | boolean | `true` when the migration ran. |
+| `modules[].migrations[].batch` | integer or `null` | Batch number when the migration ran, `null` when it is pending. |
+| `migration_table` | boolean | `false` when the migrations table does not exist. |
+
+```json
+{"modules":[{"name":"Blog","migrations":[{"name":"2026_01_01_000000_create_posts_table","ran":true,"batch":1},{"name":"2026_01_02_000000_create_tags_table","ran":false,"batch":null}]},{"name":"Shop","migrations":[]}],"migration_table":true}
+```
+
+- A migration whose `shouldRun()` returns `false` is reported as `ran: false`. Without `--json`, the command shows it as `Skipped`.
+- Without a migrations table, the command without `--json` prints `Migration table not found.` and exits with `1`. With `--json`, every migration has `ran: false` and `batch: null`, `migration_table` is `false`, and the exit code is `0`.
+- With an unknown module, or with no module given, the command writes the error to standard error, prints `{"modules":[],"migration_table":...}` to standard output, and exits with `1`. Check the exit code before you read the document.
 
 ## module:seed
 
