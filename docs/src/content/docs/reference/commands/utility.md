@@ -1,13 +1,13 @@
 ---
 title: Utility commands
-description: Setup, Composer autoload, v5 status migration and PHPUnit coverage commands.
+description: Setup, Composer autoload, v5 status migration, PHPUnit coverage and module test commands.
 ---
 
-This page lists four commands that do not manage a single module's lifecycle, generate a file, or touch the database.
+This page lists five commands that do not manage a single module's lifecycle, generate a file, or touch the database.
 
 ## Shared behaviour
 
-`module:composer-update` extends `BaseCommand`. It inherits the behaviour in [Module management commands](/laravel-modules/reference/commands/module-management/#shared-behaviour): variadic `module`, `--all` (`-a`), the interactive prompt, and exit status `1` on failure. `module:setup`, `module:v6:migrate`, and `module:update-phpunit-coverage` do not extend `BaseCommand`.
+`module:composer-update` and `module:test` extend `BaseCommand`. It inherits the behaviour in [Module management commands](/laravel-modules/reference/commands/module-management/#shared-behaviour): variadic `module`, `--all` (`-a`), the interactive prompt, and exit status `1` on failure. `module:setup`, `module:v6:migrate`, and `module:update-phpunit-coverage` do not extend `BaseCommand`.
 
 Each entry lists its arguments and its options. A command without arguments and options has no separate example: its synopsis is the example.
 
@@ -133,3 +133,65 @@ Status `98` happens only when decoding the statuses file fails, in two cases:
 - The file holds invalid JSON and the active activator is not `FileActivator`. The command still reads the file named by `modules.activators.file.statuses-file`, and nothing else reads it at boot.
 
 With a custom activator and a valid statuses file, the command exits with `0`. With `FileActivator` and non-empty invalid JSON, the command never runs: `FileActivator` throws [`InvalidJsonException`](/laravel-modules/reference/api/exceptions/#invalidjsonexception) during boot and `artisan` exits with `1`.
+
+## module:test
+
+Runs the tests in the `tests` folder of each given module.
+
+```bash
+php artisan module:test [<module>...] [-a|--all] [--filter=<pattern>] [--parallel] [--json]
+```
+
+**Arguments**
+
+| Name | Required | Description |
+| --- | --- | --- |
+| `module` | no | Module names. See [Shared behaviour](#shared-behaviour). |
+
+**Options**
+
+| Name | Shortcut | Default | Description |
+| --- | --- | --- | --- |
+| `--all` | `-a` | `false` | Run the tests of every module, enabled or disabled. |
+| `--filter` |  |  | Run only the tests that match the pattern. Passed to the runner. |
+| `--parallel` |  | `false` | Run the tests in parallel. Passed to the runner. Needs `artisan test` or Pest. |
+| `--json` |  | `false` | Print the result as one JSON document. See [JSON output](/laravel-modules/reference/commands/#json-output). |
+
+**Notes**
+
+- The command runs from the application root, with no timeout, and streams the runner output.
+- The runner is `php artisan test <folder>` when the application has the `test` command (a default Laravel application does, through `nunomaduro/collision`). Otherwise it is `vendor/bin/pest <folder>`, then `vendor/bin/phpunit <folder>`.
+- `--parallel` with plain PHPUnit prints `--parallel needs artisan test or Pest.` and exits with `1`.
+- With Pest or PHPUnit as the runner, the command unsets the variables of the application's `.env` file for the child process, as `artisan test` does, so the values in `phpunit.xml` apply. Pass `--env` to keep them.
+- A module without a `tests` folder prints `Module [<Module>] has no tests folder.`, is skipped, and does not change the exit status.
+
+**Exit status**
+
+The exit status of the test run. With several modules, the first non-zero status of a module, else `0`.
+
+**JSON output**
+
+With `--json`, the runner output goes to standard error. Standard output holds one JSON line at the end:
+
+```json
+{"modules":[{"name":"Blog","ran":true,"passed":4,"failed":3,"skipped":3,"exit_code":1},{"name":"Shop","ran":false,"passed":null,"failed":null,"skipped":null,"exit_code":null}],"passed":4,"failed":3,"skipped":3,"exit_code":1}
+```
+
+| Key | Description |
+| --- | --- |
+| `modules[].name` | The module name. |
+| `modules[].ran` | `false` when the module has no `tests` folder. |
+| `modules[].passed` | Tests that passed: tests minus failures, errors and skipped. |
+| `modules[].failed` | Failures plus errors. |
+| `modules[].skipped` | Skipped tests. |
+| `modules[].exit_code` | The exit status of the runner for this module. |
+| `passed`, `failed`, `skipped` | The sums over the modules that have counts. |
+| `exit_code` | The exit status of the command. |
+
+- The counts come from a JUnit report. For a module with `ran: false`, `passed`, `failed`, `skipped` and `exit_code` are `null`.
+- The counts are also `null` when the runner wrote no report, for example after a crash.
+
+```bash
+php artisan module:test Blog --filter=PostIndexTest
+php artisan module:test --all --json 2>/dev/null | jq '.failed'
+```

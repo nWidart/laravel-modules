@@ -44,7 +44,29 @@ class PostIndexTest extends TestCase
 
 ## Run the tests of one module
 
-Pass a file path to run one test, or the module's `tests` folder to run all of its tests:
+Run the tests of the `Blog` module:
+
+```bash
+php artisan module:test Blog
+```
+
+The command runs every test in `Modules/Blog/tests`. Pass several names to run several modules, or `--all` for every module:
+
+```bash
+php artisan module:test Blog Shop
+php artisan module:test --all
+```
+
+Narrow the run with `--filter`, or run in parallel with `--parallel`:
+
+```bash
+php artisan module:test Blog --filter=PostIndexTest
+php artisan module:test Blog --parallel
+```
+
+The command exits with the exit code of the test run, so it works in CI. See [`module:test`](/laravel-modules/reference/commands/utility/#moduletest) for all options, including `--json`.
+
+You can also pass a file path or the module's `tests` folder to `php artisan test`:
 
 ```bash
 php artisan test Modules/Blog/tests/Feature/PostIndexTest.php
@@ -88,6 +110,7 @@ The output includes `Modules\Blog\Tests\Feature\PostIndexTest` and reports a pas
 
 ## Related
 
+- [`module:test`](/laravel-modules/reference/commands/utility/#moduletest)
 - [`module:make-test`](/laravel-modules/reference/commands/generators/#modulemake-test)
 - [Include modules in code coverage](/laravel-modules/guides/testing/coverage/)
 - [Create and run module migrations](/laravel-modules/guides/database/migrations/)

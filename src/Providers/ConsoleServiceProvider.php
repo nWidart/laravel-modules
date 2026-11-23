@@ -43,6 +43,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\Actions\ModelPruneCommand::class,
             Commands\Actions\ModelShowCommand::class,
             Commands\Actions\ModuleDeleteCommand::class,
+            Commands\Actions\ModuleTestCommand::class,
             Commands\Actions\UnUseCommand::class,
             Commands\Actions\UpdateCommand::class,
             Commands\Actions\UseCommand::class,
