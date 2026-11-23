@@ -3,7 +3,7 @@ title: Artisan commands
 description: Every Artisan command the package registers, grouped by page, with its purpose and a link to its entry.
 ---
 
-The package registers 73 Artisan commands. Each group has one page with the arguments, options and notes of every command. Open the group page for the shared behaviour of a group.
+The package registers 74 Artisan commands. Each group has one page with the arguments, options and notes of every command. Open the group page for the shared behaviour of a group.
 
 In a synopsis, `<name>` is a required argument, `[<name>]` an optional one, and `...` marks an argument that takes several values. Options follow the arguments.
 
@@ -125,7 +125,7 @@ Commands that copy module files to the application. Details: [Publish commands](
 
 ## Utility
 
-Commands for setup, autoload rewriting, version 5 status migration and PHPUnit coverage. Details: [Utility commands](/laravel-modules/reference/commands/utility/).
+Commands for setup, autoload rewriting, version 5 status migration, PHPUnit coverage and running module tests. Details: [Utility commands](/laravel-modules/reference/commands/utility/).
 
 | Command | Purpose |
 | --- | --- |
@@ -133,3 +133,4 @@ Commands for setup, autoload rewriting, version 5 status migration and PHPUnit c
 | [`module:composer-update`](/laravel-modules/reference/commands/utility/#modulecomposer-update) | Rewrites the legacy `autoload.psr-4` entry of a module `composer.json` so that the module namespace maps to the app folder. |
 | [`module:v6:migrate`](/laravel-modules/reference/commands/utility/#modulev6migrate) | Copies the `active` field of each `module.json` (the version 5 way to store the status) into the activator. |
 | [`module:update-phpunit-coverage`](/laravel-modules/reference/commands/utility/#moduleupdate-phpunit-coverage) | Syncs `<source><include>` in `phpunit.xml` with the app folders of enabled modules. |
+| [`module:test`](/laravel-modules/reference/commands/utility/#moduletest) | Runs the tests in the `tests` folder of the given modules. |
