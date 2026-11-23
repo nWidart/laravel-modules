@@ -68,7 +68,7 @@ To translate strings in the `Blog` module, add language files under `Modules/Blo
    php artisan module:lang Blog
    ```
 
-   This compares PHP language files across locales (it skips JSON files). If any file or key is missing in a locale, the command lists the differences and exits with `1`.
+   This compares PHP language files across locales (it skips JSON files). If any file or key is missing in a locale, the command lists the differences and exits with `1`. Add `--json` for a machine-readable report: see [`module:lang`](/laravel-modules/reference/commands/module-management/#modulelang).
 
 5. Check the result in the `fr` locale.
 

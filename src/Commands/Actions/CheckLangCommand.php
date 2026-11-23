@@ -8,16 +8,30 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Nwidart\Modules\Commands\BaseCommand;
 use Nwidart\Modules\Module;
+use Nwidart\Modules\Traits\WritesJsonOutput;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * @phpstan-type LangDirectory array{name: string, module: string, path: string, files: array<string>}
+ * @phpstan-type MissingFile array{locale: string, file: string}
+ * @phpstan-type MissingKey array{locale: string, file: string, key: string}
+ * @phpstan-type Findings array{missing_files: list<MissingFile>, missing_keys: list<MissingKey>}
  */
 class CheckLangCommand extends BaseCommand
 {
+    use WritesJsonOutput;
+
     /**
      * The lang path inside a module, with a leading directory separator.
      */
     private readonly string $langPath;
+
+    /**
+     * The findings of each checked module, in the order the modules ran, for --json.
+     *
+     * @var list<array{name: string, checked: bool, locales: object}>
+     */
+    private array $modules = [];
 
     /**
      * The console command name.
@@ -40,6 +54,21 @@ class CheckLangCommand extends BaseCommand
         $this->langPath = DIRECTORY_SEPARATOR.config('modules.paths.generator.lang.path', 'Resources/lang');
     }
 
+    #[\Override]
+    public function handle()
+    {
+        $this->enterJsonMode();
+        $this->modules = [];
+
+        $code = parent::handle();
+
+        if ($this->inJsonMode()) {
+            $this->writeJson(['modules' => $this->modules]);
+        }
+
+        return $code;
+    }
+
     /**
      * @param  string  $name
      */
@@ -47,18 +76,34 @@ class CheckLangCommand extends BaseCommand
     public function executeAction($name): void
     {
         $module = $this->getModuleModel($name);
+        $moduleName = $module->getStudlyName();
 
         $directories = $this->getDirectories($module);
 
-        if (! $directories) {
-            return;
+        $checked = $directories->count() >= 2;
+
+        if ($directories->isEmpty()) {
+            $this->components->info("No language files found in module $moduleName");
+        } elseif (! $checked) {
+            $this->components->warn("Only one language file found in module $moduleName");
         }
 
-        // Run both checks, so every missing file and key is reported, not only the first kind.
-        $missingFiles = $this->checkMissingFiles($directories);
-        $missingKeys = $this->checkMissingKeys($directories);
+        $findings = $checked
+            ? $this->findMissing($directories)
+            : ['missing_files' => [], 'missing_keys' => []];
 
-        if ($missingFiles || $missingKeys) {
+        if ($this->inJsonMode()) {
+            $this->modules[] = [
+                'name' => $module->getName(),
+                'checked' => $checked,
+                'locales' => $this->localesDocument($directories->pluck('name')->all(), $findings),
+            ];
+        } elseif ($checked) {
+            $this->reportMissingFiles($moduleName, $findings['missing_files']);
+            $this->reportMissingKeys($moduleName, $findings['missing_keys']);
+        }
+
+        if ($findings['missing_files'] || $findings['missing_keys']) {
             $this->markAsFailed();
         }
     }
@@ -70,165 +115,182 @@ class CheckLangCommand extends BaseCommand
     }
 
     /**
-     * Get the locale directories of the module, or false when there are fewer than two.
-     *
-     * @param  Module  $module
-     * @return Collection<int, LangDirectory>|false
+     * @return array<int, array<int, mixed>>
      */
-    private function getDirectories($module)
+    #[\Override]
+    protected function getOptions()
     {
-        $moduleName = $module->getStudlyName();
+        return [
+            ['json', null, InputOption::VALUE_NONE, 'Print the missing files and keys as one JSON document'],
+        ];
+    }
+
+    /**
+     * Get the locale directories of the module.
+     *
+     * @return Collection<int, LangDirectory>
+     */
+    private function getDirectories(Module $module): Collection
+    {
         $path = $module->getPath().$this->langPath;
-        $directories = [];
-        if (is_dir($path)) {
-            // Filesystem::directories() is typed as a plain array; it holds the directory paths.
-            /** @var array<int, string> $directories */
-            $directories = $this->laravel->make(Filesystem::class)->directories($path);
-            $directories = array_map(fn ($directory) => [
-                'name' => basename($directory),
-                'module' => $moduleName,
-                'path' => $directory,
-                'files' => array_map(fn ($file) => basename($file), File::glob($directory.DIRECTORY_SEPARATOR.'*')),
-            ], $directories);
+
+        if (! is_dir($path)) {
+            return collect();
         }
 
-        if (count($directories) == 0) {
-            $this->components->info("No language files found in module $moduleName");
+        // Filesystem::directories() is typed as a plain array; it holds the directory paths.
+        /** @var array<int, string> $directories */
+        $directories = $this->laravel->make(Filesystem::class)->directories($path);
 
-            return false;
-        }
-
-        if (count($directories) == 1) {
-            $this->components->warn("Only one language file found in module $moduleName");
-
-            return false;
-        }
-
-        return collect($directories);
+        return collect($directories)->map(fn ($directory) => [
+            'name' => basename($directory),
+            'module' => $module->getStudlyName(),
+            'path' => $directory,
+            'files' => array_map(fn ($file) => basename($file), File::glob($directory.DIRECTORY_SEPARATOR.'*')),
+        ]);
     }
 
     /**
-     * Report the language files missing from a locale. Returns whether any file is missing.
+     * Find the language files and keys missing from each locale, in the order they are found.
+     *
+     * A file is missing from a locale when another locale has it. A key is missing from a
+     * locale when another locale has it in the same file, and the locale has that file.
      *
      * @param  Collection<int, LangDirectory>  $directories
+     * @return Findings
      */
-    private function checkMissingFiles(Collection $directories): bool
+    private function findMissing(Collection $directories): array
     {
-        // show missing files
-        $missingFilesMessage = [];
+        $uniqueLangFiles = $directories->pluck('files')->flatten()->unique()->values();
 
-        $uniqeLangFiles = $directories->pluck('files')->flatten()->unique()->values();
-
-        $directories->each(function ($directory) use ($uniqeLangFiles, &$missingFilesMessage) {
-
-            $missingFiles = $uniqeLangFiles->diff($directory['files']);
-
-            if ($missingFiles->count() > 0) {
-                $missingFiles->each(function ($missingFile) use ($directory, &$missingFilesMessage) {
-                    $missingFilesMessage[$directory['name']][] = " {$directory['module']} - Missing language file: {$directory['name']}/{$missingFile}";
-                });
+        $missingFiles = [];
+        foreach ($directories as $directory) {
+            foreach ($uniqueLangFiles->diff($directory['files']) as $file) {
+                $missingFiles[] = ['locale' => $directory['name'], 'file' => (string) $file];
             }
-
-        });
-
-        if (count($missingFilesMessage) > 0) {
-
-            collect($missingFilesMessage)->each(function ($messages, $langDirectory) {
-
-                $this->components->error("Missing language files in $langDirectory directory");
-
-                $this->components->bulletList(
-                    collect($messages)->unique()->values()->toArray()
-                );
-
-                $this->newLine();
-
-            });
-
         }
 
-        return count($missingFilesMessage) > 0;
-    }
+        // The dotted keys of each locale file, or false when the locale has no such file.
+        $keys = [];
+        foreach ($directories as $directory) {
+            foreach ($uniqueLangFiles as $file) {
+                $keys[$directory['name']][$file] = $this->getLangKeys($directory['path'].DIRECTORY_SEPARATOR.$file);
+            }
+        }
 
-    /**
-     * Report the language keys missing from a locale. Returns whether any key is missing.
-     *
-     * @param  Collection<int, LangDirectory>  $directories
-     */
-    private function checkMissingKeys(Collection $directories): bool
-    {
-        // show missing keys
-        $uniqeLangFiles = $directories->pluck('files')->flatten()->unique();
-        $langDirectories = $directories->pluck('name');
+        $missingKeys = [];
+        foreach ($directories as $directory) {
+            foreach ($uniqueLangFiles as $file) {
+                $langKeys = $keys[$directory['name']][$file];
 
-        $missingKeysMessage = [];
-        $directories->each(function ($directory) use ($uniqeLangFiles, $langDirectories, &$missingKeysMessage) {
-
-            $uniqeLangFiles->each(function ($file) use ($directory, $langDirectories, &$missingKeysMessage) {
-                $langKeys = $this->getLangKeys($directory['path'].DIRECTORY_SEPARATOR.$file);
-
-                if ($langKeys == false) {
-                    return;
+                if ($langKeys === false) {
+                    continue;
                 }
 
-                $langDirectories->each(function ($langDirectory) use ($directory, $file, $langKeys, &$missingKeysMessage) {
+                foreach ($directories as $other) {
+                    $otherLangKeys = $keys[$other['name']][$file];
 
-                    if ($directory['name'] != $langDirectory) {
-
-                        // Swap only the locale directory: the locale can also appear elsewhere in the path (en in /home/ben/).
-                        $basePath = dirname($directory['path']).DIRECTORY_SEPARATOR.$langDirectory;
-
-                        $otherLangKeys = $this->getLangKeys($basePath.DIRECTORY_SEPARATOR.$file);
-
-                        if ($otherLangKeys == false) {
-                            // The file is missing in this locale; checkMissingFiles() already reported it.
-                            return;
-                        }
-
-                        $missingKeys = $langKeys->diff($otherLangKeys);
-                        if ($missingKeys->count() > 0) {
-
-                            $missingKeys->each(function ($missingKey) use ($directory, $langDirectory, $file, &$missingKeysMessage) {
-                                $missingKeysMessage[$langDirectory][] = " {$directory['module']} - Missing language key: {$langDirectory}/{$file} | key: $missingKey";
-                            });
-
-                        }
+                    // A missing file is reported as such, not as missing keys.
+                    if ($other['name'] === $directory['name'] || $otherLangKeys === false) {
+                        continue;
                     }
-                });
-            });
-        });
 
-        if (count($missingKeysMessage) > 0) {
-
-            collect($missingKeysMessage)->each(function ($messages, $langDirectory) {
-
-                $this->components->error("Missing language keys for directory $langDirectory:");
-
-                $this->components->bulletList(
-                    collect($messages)->unique()->values()->toArray()
-                );
-
-                $this->newLine();
-            });
+                    foreach ($langKeys->diff($otherLangKeys) as $key) {
+                        $missingKeys["{$other['name']}\0{$file}\0{$key}"] = [
+                            'locale' => $other['name'],
+                            'file' => (string) $file,
+                            'key' => (string) $key,
+                        ];
+                    }
+                }
+            }
         }
 
-        return count($missingKeysMessage) > 0;
+        return ['missing_files' => $missingFiles, 'missing_keys' => array_values($missingKeys)];
+    }
+
+    /**
+     * Print the language files missing from each locale.
+     *
+     * @param  list<MissingFile>  $missingFiles
+     */
+    private function reportMissingFiles(string $moduleName, array $missingFiles): void
+    {
+        collect($missingFiles)->groupBy('locale')->each(function (Collection $missing, $locale) use ($moduleName) {
+            $this->components->error("Missing language files in $locale directory");
+
+            $this->components->bulletList(
+                $missing->map(fn ($file) => " $moduleName - Missing language file: {$file['locale']}/{$file['file']}")->all()
+            );
+
+            $this->newLine();
+        });
+    }
+
+    /**
+     * Print the language keys missing from each locale.
+     *
+     * @param  list<MissingKey>  $missingKeys
+     */
+    private function reportMissingKeys(string $moduleName, array $missingKeys): void
+    {
+        collect($missingKeys)->groupBy('locale')->each(function (Collection $missing, $locale) use ($moduleName) {
+            $this->components->error("Missing language keys for directory $locale:");
+
+            $this->components->bulletList(
+                $missing->map(fn ($key) => " $moduleName - Missing language key: {$key['locale']}/{$key['file']} | key: {$key['key']}")->all()
+            );
+
+            $this->newLine();
+        });
+    }
+
+    /**
+     * Build the --json locales object: each locale, sorted, with the files and keys missing from it.
+     *
+     * Maps are objects, so an empty one encodes as {} rather than [].
+     *
+     * @param  array<int, string>  $locales
+     * @param  Findings  $findings
+     */
+    private function localesDocument(array $locales, array $findings): object
+    {
+        $document = [];
+
+        sort($locales, SORT_STRING);
+
+        foreach ($locales as $locale) {
+            $missingKeys = [];
+
+            foreach ($findings['missing_keys'] as $missing) {
+                if ($missing['locale'] === $locale) {
+                    $missingKeys[$missing['file']][] = $missing['key'];
+                }
+            }
+
+            $document[$locale] = [
+                'missing_files' => array_values(array_map(
+                    fn ($missing) => $missing['file'],
+                    array_filter($findings['missing_files'], fn ($missing) => $missing['locale'] === $locale),
+                )),
+                'missing_keys' => (object) $missingKeys,
+            ];
+        }
+
+        return (object) $document;
     }
 
     /**
      * Get the dotted keys of a language file, or false when the file does not exist.
      *
-     * @param  string  $file
      * @return Collection<int, array-key>|false
      */
-    private function getLangKeys($file)
+    private function getLangKeys(string $file): Collection|false
     {
-        if (File::exists($file)) {
-            $lang = File::getRequire($file);
-
-            return collect(Arr::dot($lang))->keys();
-        } else {
+        if (! File::exists($file)) {
             return false;
         }
+
+        return collect(Arr::dot(File::getRequire($file)))->keys();
     }
 }
