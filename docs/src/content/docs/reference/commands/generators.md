@@ -38,6 +38,67 @@ Except for `module:make` (which creates a whole module), every command on this p
 - An existing file stops the command with `File : <path> already exists.` and exit status `1`.
 - Pass `--force` to overwrite an existing file. Every generator accepts `-f|--force`, except `module:make-model` (`-f` is `--factory`), `module:route-provider`, and `module:make`, which define `--force` without a shortcut. Per-command tables omit `--force` unless it differs.
 
+### Dry run
+
+Every generator and `module:make` accept `--dry-run` and `--json`. Per-command tables omit both, except in `module:make`.
+
+| Name | Shortcut | Default | Description |
+| --- | --- | --- | --- |
+| `--dry-run` |  | `false` | List the files the command would write, and write nothing. |
+| `--json` |  | `false` | Print the result as one JSON document. Needs `--dry-run`. |
+
+```bash
+php artisan module:make-model Post Blog --all --dry-run
+```
+
+`--dry-run` lists every file the command would write, in write order. The list includes the files of the generators the command calls: the sub-generators of `module:make`, the related generators of `module:make-model --all`, and the view of `module:make-component`. The command writes nothing: no files, folders, `.gitkeep`, `module.json` or status file, no `composer dump-autoload`, and no deletion with `--force`. The exit status is the one the real run would return.
+
+The text output starts with `Dry run: these files would be written. Nothing was written.`, then one line per file, then the errors:
+
+```text
+  create  /app/Modules/Blog/app/Models/Post.php
+  keep  /app/Modules/Blog/app/Http/Requests/PostRequest.php (exists)
+```
+
+With `--dry-run --json`, the command follows the [JSON output](/laravel-modules/reference/commands/#json-output) rules and prints one object:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `command` | string | The command name, such as `module:make-model`. |
+| `dry_run` | boolean | Always `true`. |
+| `files` | array | The files the command would write, in write order. |
+| `errors` | array | The error messages the real run would print. Empty when the run would succeed. |
+
+Each item of `files`:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `path` | string | Absolute path, with forward slashes. |
+| `exists` | boolean | `true` when the file exists on disk now. |
+| `action` | string | What the real run does with the file. See below. |
+
+| `action` | Meaning |
+| --- | --- |
+| `create` | The file does not exist. |
+| `replace` | The file exists and `--force` is given. |
+| `keep` | The file exists and `--force` is not given. The real run stops with `File : <path> already exists.` |
+| `delete` | The module folder that `module:make --force` deletes first. The files of the new module follow with `create`, and can show `exists: true`. |
+
+```json
+{"command":"module:make-model","dry_run":true,"files":[{"path":"/app/Modules/Blog/app/Models/Post.php","exists":false,"action":"create"},{"path":"/app/Modules/Blog/app/Http/Requests/PostRequest.php","exists":true,"action":"keep"}],"errors":["File : /app/Modules/Blog/app/Http/Requests/PostRequest.php already exists."]}
+```
+
+An error that stops the run leaves `files` empty:
+
+```json
+{"command":"module:make-model","dry_run":true,"files":[],"errors":["Module [Missing] does not exist."]}
+```
+
+- `--json` alone fails with `The --json option needs --dry-run.` and exit status `1`.
+- A dry run does not report warnings, such as an unreplaced stub token.
+- A dry run cannot predict a `composer dump-autoload` failure.
+- A custom module repository that does not extend `FileRepository` cannot resolve a module that does not exist yet, so `module:make --dry-run` fails for it.
+
 ### Exit status
 
 `0` on success. `1` on an invalid name, an unknown or missing module, an existing file or any other error.
@@ -47,7 +108,7 @@ Except for `module:make` (which creates a whole module), every command on this p
 Creates one or more modules: the folder structure, `module.json`, `composer.json` and the starting classes.
 
 ```bash
-php artisan module:make <name>... [-p|--plain] [--api] [--web] [--inertia] [-d|--disabled] [--force] [--author-name=AUTHOR-NAME] [--author-email=AUTHOR-EMAIL] [--author-vendor=AUTHOR-VENDOR]
+php artisan module:make <name>... [-p|--plain] [--api] [--web] [--inertia] [-d|--disabled] [--force] [--dry-run] [--json] [--author-name=AUTHOR-NAME] [--author-email=AUTHOR-EMAIL] [--author-vendor=AUTHOR-VENDOR]
 ```
 
 **Arguments**
@@ -66,6 +127,8 @@ php artisan module:make <name>... [-p|--plain] [--api] [--web] [--inertia] [-d|-
 | `--inertia` |  | `false` | Generate an Inertia module: an Inertia controller and four Inertia pages, no Blade views. |
 | `--disabled` | `-d` | `false` | Create the module in the disabled state. |
 | `--force` |  | `false` | Recreate the module when it already exists. |
+| `--dry-run` |  | `false` | List the files the command would write, and write nothing. See [Dry run](#dry-run). |
+| `--json` |  | `false` | Print the dry run as one JSON document. Needs `--dry-run`. |
 | `--author-name` |  | `composer.author.name` | Author name written to `composer.json`. |
 | `--author-email` |  | `composer.author.email` | Author email written to `composer.json`. |
 | `--author-vendor` |  | `composer.vendor` | Vendor part of the package name in `composer.json`. |
@@ -1506,7 +1569,7 @@ Each item of `options`:
 | `default` | mixed | Default value: `false` for a flag, `null` for no default. |
 | `description` | string | Option description. |
 
-The document is one line. This example shows one generator, pretty-printed and with two of its options:
+The document is one line. This example shows one generator, pretty-printed and with some of its options:
 
 ```json
 {
@@ -1551,6 +1614,26 @@ The document is one line. This example shows one generator, pretty-printed and w
           "negatable": false,
           "default": false,
           "description": "Overwrite the file if it already exists"
+        },
+        {
+          "name": "dry-run",
+          "shortcut": null,
+          "accepts_value": false,
+          "value_required": false,
+          "array": false,
+          "negatable": false,
+          "default": false,
+          "description": "List the files the command would write, and write nothing"
+        },
+        {
+          "name": "json",
+          "shortcut": null,
+          "accepts_value": false,
+          "value_required": false,
+          "array": false,
+          "negatable": false,
+          "default": false,
+          "description": "Print the result as one JSON document"
         }
       ]
     }

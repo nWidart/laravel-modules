@@ -8,8 +8,10 @@ use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Generators\FileGenerator;
 use Nwidart\Modules\Module;
+use Nwidart\Modules\Support\GeneratorRun;
 use Nwidart\Modules\Traits\InteractsWithModuleRepository;
 use Nwidart\Modules\Traits\PathNamespace;
+use Nwidart\Modules\Traits\PlansGeneratorRun;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
@@ -19,6 +21,7 @@ abstract class GeneratorCommand extends Command
 {
     use InteractsWithModuleRepository;
     use PathNamespace;
+    use PlansGeneratorRun;
 
     /**
      * The name of 'name' argument.
@@ -44,8 +47,8 @@ abstract class GeneratorCommand extends Command
     /**
      * Create a new generator command instance.
      *
-     * Every generator accepts --force. Commands that declare their own
-     * --force option keep it; -f is added only when no other option uses it.
+     * Every generator accepts --force, --dry-run and --json. Commands that declare
+     * their own option keep it; -f is added only when no other option uses it.
      */
     public function __construct()
     {
@@ -61,6 +64,8 @@ abstract class GeneratorCommand extends Command
                 'Overwrite the file if it already exists',
             );
         }
+
+        $this->addGeneratorRunOptions();
     }
 
     /**
@@ -69,13 +74,13 @@ abstract class GeneratorCommand extends Command
     public function handle(): int
     {
         if (($error = $this->validateNameArgument()) !== null) {
-            $this->components->error($error);
+            $this->reportError($error);
 
             return E_ERROR;
         }
 
         if (($error = $this->validateModuleArgument()) !== null) {
-            $this->components->error($error);
+            $this->reportError($error);
 
             return E_ERROR;
         }
@@ -84,7 +89,8 @@ abstract class GeneratorCommand extends Command
 
         $files = $this->laravel->make(Filesystem::class);
 
-        if (! $files->isDirectory($dir = dirname($path))) {
+        // A dry run writes nothing, not even the folder.
+        if (! GeneratorRun::current()?->isDryRun() && ! $files->isDirectory($dir = dirname($path))) {
             $files->makeDirectory($dir, 0777, true);
         }
 
@@ -96,7 +102,7 @@ abstract class GeneratorCommand extends Command
                 (new FileGenerator($path, $contents))->withFileOverwrite($overwriteFile)->generate();
             });
         } catch (FileAlreadyExistException $e) {
-            $this->components->error("File : {$path} already exists.");
+            $this->reportError("File : {$path} already exists.");
 
             return E_ERROR;
         }

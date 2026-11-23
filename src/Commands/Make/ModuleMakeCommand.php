@@ -10,13 +10,16 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Generators\ModuleGenerator;
+use Nwidart\Modules\Support\GeneratorRun;
 use Nwidart\Modules\Traits\InteractsWithModuleRepository;
+use Nwidart\Modules\Traits\PlansGeneratorRun;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class ModuleMakeCommand extends Command implements PromptsForMissingInput
 {
     use InteractsWithModuleRepository;
+    use PlansGeneratorRun;
 
     /**
      * The console command name.
@@ -33,6 +36,16 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
     protected $description = 'Create a new module.';
 
     /**
+     * Create a new command instance, with the --dry-run and --json options of every generator.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->addGeneratorRunOptions();
+    }
+
+    /**
      * Execute the console command.
      */
     public function handle(): int
@@ -44,7 +57,7 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
         foreach ($names as $name) {
             // ModuleGenerator::getName() studly-cases the name; it becomes the folder and the namespace.
             if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', Str::studly($name)) !== 1) {
-                $this->components->error("The module name [{$name}] is not valid. Use letters, digits, \"-\", \"_\" or spaces, starting with a letter.");
+                $this->reportError("The module name [{$name}] is not valid. Use letters, digits, \"-\", \"_\" or spaces, starting with a letter.");
                 $success = false;
 
                 continue;
@@ -75,6 +88,11 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
         // Nothing was created, so there are no new service providers to discover.
         if (! $generated) {
             return E_ERROR;
+        }
+
+        // A dry run created nothing to discover.
+        if (GeneratorRun::current()?->isDryRun()) {
+            return $success ? 0 : E_ERROR;
         }
 
         // to discover new service providers

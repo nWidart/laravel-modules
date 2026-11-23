@@ -16,6 +16,7 @@ use Nwidart\Modules\Exceptions\InvalidAssetPath;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Process\Installer;
 use Nwidart\Modules\Process\Updater;
+use Nwidart\Modules\Support\GeneratorRun;
 use Symfony\Component\Process\Process;
 
 abstract class FileRepository implements Countable, RepositoryInterface
@@ -372,6 +373,10 @@ abstract class FileRepository implements Countable, RepositoryInterface
     #[\Override]
     public function find(string $name): ?Module
     {
+        if (($planned = $this->findPlanned($name)) !== null) {
+            return $planned;
+        }
+
         $module = $this->findScanned($name);
 
         // The scan is kept per instance. On a miss, scan again if the scan paths changed
@@ -383,6 +388,19 @@ abstract class FileRepository implements Countable, RepositoryInterface
         }
 
         return $module;
+    }
+
+    /**
+     * Find a module that a module:make dry run creates, but did not write to disk.
+     *
+     * The generators module:make calls look their module up by name; in a dry run
+     * Support\GeneratorRun holds its name and path instead of the disk.
+     */
+    private function findPlanned(string $name): ?Module
+    {
+        $planned = GeneratorRun::current()?->plannedModule($name);
+
+        return $planned === null ? null : $this->createModule($this->app, $planned[0], $planned[1]);
     }
 
     /**
