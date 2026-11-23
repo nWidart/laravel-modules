@@ -22,18 +22,27 @@ use Symfony\Component\Console\Output\OutputInterface;
 trait WritesJsonOutput
 {
     /**
-     * The output that receives the JSON document; null outside JSON mode.
+     * The output that receives the JSON document of the run that entered JSON mode.
      */
     private ?OutputInterface $jsonOutput = null;
+
+    /**
+     * The output style for messages that enterJsonMode() put in place of $this->output.
+     */
+    private ?OutputStyle $jsonMessages = null;
 
     /**
      * Switch into JSON mode when the command runs with --json. Returns whether JSON mode is on.
      */
     protected function enterJsonMode(): bool
     {
-        if ($this->jsonOutput !== null) {
+        if ($this->inJsonMode()) {
             return true;
         }
+
+        // A command instance can run again (Artisan::call() reuses it): start this run fresh.
+        $this->jsonOutput = null;
+        $this->jsonMessages = null;
 
         if (! $this->hasOption('json') || ! $this->option('json')) {
             return false;
@@ -45,7 +54,7 @@ trait WritesJsonOutput
             ? $this->jsonOutput->getErrorOutput()
             : new NullOutput;
 
-        $this->output = $this->laravel->make(OutputStyle::class, ['input' => $this->input, 'output' => $messages]);
+        $this->output = $this->jsonMessages = $this->laravel->make(OutputStyle::class, ['input' => $this->input, 'output' => $messages]);
         $this->components = $this->laravel->make(Factory::class, ['output' => $this->output]);
 
         Prompt::setOutput($this->output);
@@ -54,11 +63,12 @@ trait WritesJsonOutput
     }
 
     /**
-     * Whether the command is in JSON mode.
+     * Whether the command is in JSON mode. Command::run() sets a new $this->output for each
+     * run, so a run after a --json run is not in JSON mode until it calls enterJsonMode().
      */
     protected function inJsonMode(): bool
     {
-        return $this->jsonOutput !== null;
+        return $this->jsonOutput !== null && $this->output === $this->jsonMessages;
     }
 
     /**
@@ -70,7 +80,7 @@ trait WritesJsonOutput
     {
         $json = json_encode($document, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
 
-        ($this->jsonOutput ?? $this->output->getOutput())
+        ($this->inJsonMode() ? $this->jsonOutput : $this->output->getOutput())
             ->writeln($json, OutputInterface::OUTPUT_RAW | OutputInterface::VERBOSITY_QUIET);
     }
 }

@@ -131,6 +131,18 @@ class ListGeneratorsCommandTest extends BaseTestCase
         $this->assertIsArray(json_decode($output, true, flags: JSON_THROW_ON_ERROR));
     }
 
+    public function test_json_is_printed_on_each_call_in_one_process()
+    {
+        foreach ([1, 2] as $call) {
+            $code = Artisan::call('module:generators', ['--json' => true]);
+            $output = Artisan::output();
+
+            $this->assertSame(0, $code);
+            $this->assertSame(1, substr_count($output, "\n"), "Call $call prints one line.");
+            $this->assertCount(43, json_decode($output, true, flags: JSON_THROW_ON_ERROR)['generators']);
+        }
+    }
+
     public function test_json_output_has_no_ansi_codes_with_ansi()
     {
         Artisan::call('module:generators', ['--json' => true, '--ansi' => true]);

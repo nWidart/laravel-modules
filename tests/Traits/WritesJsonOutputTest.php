@@ -10,10 +10,7 @@ use Nwidart\Modules\Tests\BaseTestCase;
 use Nwidart\Modules\Traits\WritesJsonOutput;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
-use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\StreamOutput;
 
 class WritesJsonOutputTest extends BaseTestCase
 {
@@ -91,6 +88,25 @@ class WritesJsonOutputTest extends BaseTestCase
         $this->assertStringContainsString('a plain line', $output->stdout());
         $this->assertStringNotContainsString('{"status"', $output->stdout());
         $this->assertSame('', $output->stderr());
+    }
+
+    public function test_each_run_of_the_same_command_instance_uses_its_own_output()
+    {
+        $command = $this->plainCommand();
+        $first = new MemoryConsoleOutput;
+        $second = new MemoryConsoleOutput;
+        $third = new MemoryConsoleOutput;
+
+        $this->runCommand($command, ['--json' => true], $first);
+        $this->runCommand($command, [], $second);
+        $this->runCommand($command, ['--json' => true], $third);
+
+        $this->assertStringStartsWith('{"status":"done"', $first->stdout());
+        $this->assertSame(1, substr_count($first->stdout(), "\n"));
+        $this->assertStringContainsString('Working on it', $second->stdout());
+        $this->assertStringNotContainsString('{"status"', $second->stdout());
+        $this->assertStringStartsWith('{"status":"done"', $third->stdout());
+        $this->assertStringContainsString('Working on it', $third->stderr());
     }
 
     public function test_it_works_for_a_base_command()
@@ -227,52 +243,5 @@ class WritesJsonOutputTest extends BaseTestCase
         $command->path = $this->generatedFile;
 
         return $command;
-    }
-}
-
-/**
- * A console output with separate in-memory streams for standard output and standard error.
- */
-class MemoryConsoleOutput extends StreamOutput implements ConsoleOutputInterface
-{
-    private OutputInterface $errorOutput;
-
-    public function __construct(bool $decorated = false)
-    {
-        parent::__construct(fopen('php://memory', 'w+'), self::VERBOSITY_NORMAL, $decorated);
-
-        $this->errorOutput = new StreamOutput(fopen('php://memory', 'w+'), self::VERBOSITY_NORMAL, $decorated);
-    }
-
-    public function getErrorOutput(): OutputInterface
-    {
-        return $this->errorOutput;
-    }
-
-    public function setErrorOutput(OutputInterface $error): void
-    {
-        $this->errorOutput = $error;
-    }
-
-    public function section(): ConsoleSectionOutput
-    {
-        throw new \LogicException('Sections are not supported.');
-    }
-
-    public function stdout(): string
-    {
-        return $this->contents($this);
-    }
-
-    public function stderr(): string
-    {
-        return $this->errorOutput instanceof StreamOutput ? $this->contents($this->errorOutput) : '';
-    }
-
-    private function contents(StreamOutput $output): string
-    {
-        rewind($output->getStream());
-
-        return (string) stream_get_contents($output->getStream());
     }
 }
