@@ -22,7 +22,7 @@ Except for `module:make` (which creates a whole module), every command on this p
 ### Name handling
 
 - Class names are converted to studly case. A `name` with `/` or `\` places the file in a sub-directory and matching sub-namespace (`Admin/Report` creates `Report` under `Admin`).
-- An empty name, an absolute path, or a `..` segment fails with exit status `1`. Segments that reduce to `..` after removing whitespace, hyphens, and underscores (such as `. .`) are also rejected.
+- An empty name, an absolute path, or a `.` or `..` segment fails with exit status `1`. Segments that reduce to `.` or `..` after removing whitespace, hyphens, and underscores (such as `. .` or `-.-`) are also rejected.
 - Missing directories are created automatically.
 
 ### Path and namespace

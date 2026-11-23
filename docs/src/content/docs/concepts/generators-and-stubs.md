@@ -9,7 +9,7 @@ Every `module:make*` command writes files from templates. This page explains how
 
 Each file generator answers two questions: where the file goes and what it contains. `Make\GeneratorCommand` handles the shared workflow:
 
-- rejects empty names, absolute paths, and `..` segments;
+- rejects empty names, absolute paths, and `.` or `..` segments;
 - creates parent folders;
 - writes the file, or returns an error when it exists and `--force` is not passed.
 
