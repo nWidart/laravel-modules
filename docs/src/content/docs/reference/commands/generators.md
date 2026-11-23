@@ -3,7 +3,7 @@ title: Generator commands
 description: Artisan commands that create modules and generate classes and files inside a module.
 ---
 
-This page lists `module:make`, the 41 `module:make-*` generators and `module:route-provider`. Commands that manage existing modules are in [Module management commands](/laravel-modules/reference/commands/module-management/).
+This page lists `module:make`, the 41 `module:make-*` generators and `module:route-provider`. It also documents `module:generators`, which lists them. Commands that manage existing modules are in [Module management commands](/laravel-modules/reference/commands/module-management/).
 
 ## Shared behaviour
 
@@ -1431,4 +1431,135 @@ php artisan module:route-provider [<module>] [--force]
 ```bash
 php artisan module:route-provider Blog
 # Modules/Blog/app/Providers/RouteServiceProvider.php
+```
+
+## module:generators
+
+Lists every generator: `module:make` and every registered command that extends `Nwidart\Modules\Commands\Make\GeneratorCommand`. The package ships 43. A `GeneratorCommand` subclass in your application appears too, in the group `other`. The list is sorted by name and includes hidden commands.
+
+```bash
+php artisan module:generators [--json]
+```
+
+**Arguments**
+
+This command has no arguments.
+
+**Options**
+
+| Name | Shortcut | Default | Description |
+| --- | --- | --- | --- |
+| `--json` |  | `false` | Print the generators as one JSON document. See [JSON output](/laravel-modules/reference/commands/#json-output). |
+
+**Notes**
+
+- Without `--json`, the command prints a table with the columns `Command`, `Group` and `Description`.
+- With `--json`, the command follows the [JSON output](/laravel-modules/reference/commands/#json-output) rules. The document is an object with one key, `generators`.
+- Application-wide options (`--help`, `--quiet`, `--verbose`, `--ansi`, `--no-interaction`, `--env` and the like) are not listed.
+
+**Groups**
+
+| Group | Generators |
+| --- | --- |
+| `module` | `module:make` |
+| `data` | `module:make-model`, `-migration`, `-factory`, `-seed`, `-observer`, `-scope`, `-cast`, `-policy`, `-repository` |
+| `http` | `module:make-controller`, `-request`, `-resource`, `-middleware`, `-rule`, and `module:route-provider` |
+| `events` | `module:make-event`, `-listener`, `-job`, `-job-middleware`, `-notification`, `-mail`, `-channel`, `-event-provider` |
+| `views` | `module:make-view`, `-component`, `-component-view`, `-inertia-page`, `-inertia-component` |
+| `classes` | `module:make-class`, `-action`, `-service`, `-interface`, `-trait`, `-enum`, `-helper`, `-exception` |
+| `console` | `module:make-command`, `-config`, `-provider`, `-replacement`, `-health-indicator` |
+| `tests` | `module:make-test` |
+| `other` | A generator that is not in the groups above, such as one from your application. |
+
+**JSON fields**
+
+Each item of `generators` has these fields:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | string | Command name, such as `module:make-model`. |
+| `group` | string | One of the groups above. |
+| `description` | string | The command description. |
+| `arguments` | array | The arguments of the command, in order. |
+| `options` | array | The options of the command, without the application-wide options. |
+
+Each item of `arguments`:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | string | Argument name. |
+| `required` | boolean | `true` when the argument must be given. |
+| `array` | boolean | `true` when the argument takes several values. |
+| `default` | mixed | Default value, or `null`. |
+| `description` | string | Argument description. |
+
+Each item of `options`:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | string | Option name, without the leading `--`. |
+| `shortcut` | string or null | The shortcut letter without the dash, or `null`. |
+| `accepts_value` | boolean | `true` when the option takes a value. |
+| `value_required` | boolean | `true` when the option needs a value once given. |
+| `array` | boolean | `true` when the option can repeat. |
+| `negatable` | boolean | `true` when a `--no-<name>` form exists. |
+| `default` | mixed | Default value: `false` for a flag, `null` for no default. |
+| `description` | string | Option description. |
+
+The document is one line. This example shows one generator, pretty-printed and with two of its options:
+
+```json
+{
+  "generators": [
+    {
+      "name": "module:make-model",
+      "group": "data",
+      "description": "Create a new model for the specified module.",
+      "arguments": [
+        {
+          "name": "model",
+          "required": true,
+          "array": false,
+          "default": null,
+          "description": "The name of model will be created."
+        },
+        {
+          "name": "module",
+          "required": false,
+          "array": false,
+          "default": null,
+          "description": "The name of module will be used."
+        }
+      ],
+      "options": [
+        {
+          "name": "fillable",
+          "shortcut": null,
+          "accepts_value": true,
+          "value_required": false,
+          "array": false,
+          "negatable": false,
+          "default": null,
+          "description": "The fillable attributes."
+        },
+        {
+          "name": "force",
+          "shortcut": null,
+          "accepts_value": false,
+          "value_required": false,
+          "array": false,
+          "negatable": false,
+          "default": false,
+          "description": "Overwrite the file if it already exists"
+        }
+      ]
+    }
+  ]
+}
+```
+
+List the names of the generators in the `data` group:
+
+```bash
+php artisan module:generators --json | jq -r '.generators[] | select(.group == "data") | .name'
 ```
