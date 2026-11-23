@@ -7,6 +7,49 @@ From 11.0.11 until the first automated release (made by `.github/workflows/relea
 
 ## 13.4.0 - 2026-11-23
 
+### Upgrade notes
+
+Most apps need no changes. Open the block if you published config or stubs, use module Vite builds or Inertia, or extend the package.
+
+<details><summary>Show upgrade notes</summary>
+
+#### Action may be required
+
+- **Application config now overrides module config.** A published `config/<module>.php` wins over the module's own file (the module won before). Associative arrays merge recursively; lists, `[]` and scalars replace. Review your published copies and delete stale ones ([#2275](https://github.com/nWidart/laravel-modules/pull/2275))
+- **Unknown or missing module: commands print one error line and exit 1** instead of throwing `ModuleNotFoundException`. `module:make-model -m/-c/...` also exits 1 when a nested generator fails. Check the exit code in scripts instead of catching the exception ([#2274](https://github.com/nWidart/laravel-modules/pull/2274))
+- **`module:prune --path` is removed** (it did nothing) and now fails with `The "--path" option does not exist.` Remove it from schedules and scripts ([#2282](https://github.com/nWidart/laravel-modules/pull/2282))
+- **Module `vite.config.js` must export `paths`.** Without it the root build silently skips the module's assets (the loader now warns `Skipping the assets of module X`). Run `php artisan vendor:publish --tag=vite --force`, then port `export const paths` and `import.meta.url` into each existing module's `vite.config.js` and any published `vite.stub`. `package.stub` now generates Vite 8 and `laravel-vite-plugin` `^3.1`, and `vite.stub` sets `manifest: 'manifest.json'`; set `build.manifest: 'manifest.json'` in modules that move to Vite 5+ ([#2272](https://github.com/nWidart/laravel-modules/pull/2272), [#2281](https://github.com/nWidart/laravel-modules/pull/2281))
+- **Module `npm run dev` wrote `public/hot` and hijacked the app's `@vite`.** `vite.stub` now sets `hotFile: storage/vite-<module>.hot` and `views/master.stub` passes `storage_path('vite-<module>.hot')` as the third argument of `module_vite()`. Add both to existing modules; with published stubs, merge `vite.stub` and `views/master.stub` together ([#2285](https://github.com/nWidart/laravel-modules/pull/2285))
+- **Inertia stubs target Inertia v3 only.** Passing more than one of `--vue`, `--react`, `--svelte` exits 1. On Inertia v3 with an older published `resources/js/app.js`, re-run `module:publish-inertia --force` (it now asks before overwriting). On Inertia v2, keep your `app.js` and do not re-publish. Merge any published `inertia/*` stubs ([#2276](https://github.com/nWidart/laravel-modules/pull/2276), [#2283](https://github.com/nWidart/laravel-modules/pull/2283))
+
+#### Behaviour changes
+
+- **New modules' `routes/web.php` no longer wraps routes in `middleware(['auth', 'verified'])`** (also with `--inertia`). Existing modules are untouched. Add the middleware yourself if you want it ([#2262](https://github.com/nWidart/laravel-modules/pull/2262))
+- **Each destructive command has its own prohibit flag** (`module:migrate-fresh`, `-refresh`, `-reset`, `-rollback`, `module:delete`). One shared flag no longer blocks all of them, nor third-party confirmable commands built on `BaseCommand`. Use `Module::prohibitDestructiveCommands()` and call `YourCommand::prohibit()` for your own ([#2264](https://github.com/nWidart/laravel-modules/pull/2264))
+- **`module:make-model --force` also overwrites the files it generates** (controller, factory, request, resource, seeder, policy) ([#2302](https://github.com/nWidart/laravel-modules/pull/2302))
+- **Module config merges in `ModuleServiceProvider::register()`.** A custom `registerConfig()` override now runs earlier, so do not use boot-only services in it ([#2292](https://github.com/nWidart/laravel-modules/pull/2292))
+- **`module:migrate-refresh --all` refreshes enabled modules only** ([#2261](https://github.com/nWidart/laravel-modules/pull/2261))
+- **`module:make`: `--web` wins over `--plain` and `--api`**, `make-migration --plain` is honoured, and test namespaces drop the app folder when the test path is under `app/` ([#2259](https://github.com/nWidart/laravel-modules/pull/2259))
+- **`module:prune --model` and `--except` resolve short names**, `--except` now applies, and unknown values or modules exit 1 ([#2279](https://github.com/nWidart/laravel-modules/pull/2279))
+- **`module:seed` output changed:** a header line, then `INFO Module [X] seeded.` or `ERROR ... seeding failed.`. Update scripts that parse it ([#2273](https://github.com/nWidart/laravel-modules/pull/2273))
+- **With `nwidart/laravel-actuator` installed, a `modules` health indicator can report DOWN** (module enabled but missing on disk). Set `modules.actuator.enabled` to `false` to opt out. A `modules` actuator endpoint is registered (not exposed by default); rename an app endpoint with the id `modules` ([#2287](https://github.com/nWidart/laravel-modules/pull/2287), [#2286](https://github.com/nWidart/laravel-modules/pull/2286))
+- **Laravel Boost guideline and skill moved to `resources/boost/`**, so `boost:install` offers them ([#2267](https://github.com/nWidart/laravel-modules/pull/2267))
+
+#### Extending the package
+
+- **`replacement.stub` generated `$this->generator->getModule()->getLowerName()`, which threw a `TypeError`.** It now uses `strtolower($this->generator->getName())`. Fix a published stub and existing replacement classes. `ModuleGenerator::getModule()` returns `?RepositoryInterface`: fix your overrides ([#2257](https://github.com/nWidart/laravel-modules/pull/2257))
+- **`UnUseCommand` no longer extends `BaseCommand`**, so `executeAction()` and `getInfo()` overrides are dead; move the logic to `handle()`. `forgetUsed()` takes no required parameter: make your repository's parameter optional. `modules.<name>.unused` now fires ([#2258](https://github.com/nWidart/laravel-modules/pull/2258))
+- **`module:install`: `modules.json` entries may set their own `path`**, and `--path` with more than one entry exits 1. `InstallCommand::install()` gains a fifth parameter `?string $path = null`: update overrides ([#2269](https://github.com/nWidart/laravel-modules/pull/2269))
+- **Protected `validateModules()` returns `bool`.** Update overrides ([#2274](https://github.com/nWidart/laravel-modules/pull/2274))
+- **Every generator gets `--dry-run` and `--json`** (a command's own same-name options keep their meaning). In custom generators, writes that bypass `FileGenerator` still happen under `--dry-run`, and your methods named `reportError`, `enterJsonMode`, `inJsonMode`, `writeJson` or `addGeneratorRunOptions` may clash. `FileGenerator::$overwriteFile` defaults to `false` ([#2299](https://github.com/nWidart/laravel-modules/pull/2299))
+
+#### Deprecated (removed in v14)
+
+- Lumen classes: `LumenModulesServiceProvider`, `Lumen\LumenFileRepository`, `Lumen\Module` ([#2278](https://github.com/nWidart/laravel-modules/pull/2278))
+- `FileRepository::getStubPath()`, `setStubPath()` and `$stubPath` never had an effect. Use `modules.stubs.path` or `Stub::setBasePath()` ([#2260](https://github.com/nWidart/laravel-modules/pull/2260))
+
+</details>
+
 ### Features
 
 - **actuator:** Add module health indicators for nwidart/laravel-actuator ([#2287](https://github.com/nWidart/laravel-modules/pull/2287)) ([ad58889](https://github.com/nWidart/laravel-modules/commit/ad588890bf070ea25a230cafcbae879327fa1432))
