@@ -222,6 +222,53 @@ class ModelMakeCommandTest extends BaseTestCase
         $this->assertSame(0, $code);
     }
 
+    public function test_all_with_force_rewrites_every_existing_file()
+    {
+        $generated = $this->generateAllAndAlter();
+        $migration = $this->migrationContents();
+
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--all' => true, '--force' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertStringNotContainsString('already exists', Artisan::output());
+
+        foreach ($generated as $path => $contents) {
+            $this->assertSame($contents, $this->finder->get($path), $path);
+        }
+
+        // module:make-migration gets --force too: its file is the same as without it.
+        foreach ($this->finder->files($this->getModuleBasePath().'/database/migrations') as $file) {
+            $this->assertSame($migration, $file->getContents(), $file->getFilename());
+        }
+    }
+
+    public function test_all_without_force_keeps_every_existing_file()
+    {
+        $generated = $this->generateAllAndAlter();
+
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--all' => true]);
+
+        $this->assertSame(E_ERROR, $code);
+
+        foreach (array_keys($generated) as $path) {
+            $this->assertSame('altered', $this->finder->get($path), $path);
+        }
+    }
+
+    public function test_controller_option_with_force_rewrites_the_existing_controller()
+    {
+        $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '-c' => true]);
+        $controller = $this->modulePath.'/Http/Controllers/PostController.php';
+        $contents = $this->finder->get($controller);
+        $this->finder->put($controller, 'altered');
+
+        $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '-c' => true, '--force' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame($contents, $this->finder->get($controller));
+        $this->assertStringNotContainsString('already exists', Artisan::output());
+    }
+
     public function test_it_does_not_generate_policy_file_without_policy_option()
     {
         $code = $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog']);
@@ -434,6 +481,46 @@ STUB);
         $this->assertStringNotContainsString('UseFactory', $file);
         $this->assertStringNotContainsString('$FACTORY', $file);
         $this->assertSame(0, $code);
+    }
+
+    /**
+     * Run module:make-model --all, then replace the contents of every file it wrote except
+     * the migration with "altered".
+     *
+     * @return array<string, string> The generated contents, keyed by path.
+     */
+    private function generateAllAndAlter(): array
+    {
+        $this->assertSame(0, $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--all' => true]));
+
+        $paths = [
+            $this->modulePath.'/Models/Post.php',
+            $this->modulePath.'/Http/Controllers/PostController.php',
+            $this->getModuleBasePath().'/database/factories/PostFactory.php',
+            $this->modulePath.'/Http/Requests/PostRequest.php',
+            $this->modulePath.'/Transformers/PostResource.php',
+            $this->getModuleBasePath().'/database/seeders/PostSeeder.php',
+            $this->modulePath.'/Policies/PostPolicy.php',
+        ];
+
+        $generated = [];
+        foreach ($paths as $path) {
+            $generated[$path] = $this->finder->get($path);
+            $this->finder->put($path, 'altered');
+        }
+
+        return $generated;
+    }
+
+    /**
+     * The contents of the only migration of the module.
+     */
+    private function migrationContents(): string
+    {
+        $migrations = $this->finder->files($this->getModuleBasePath().'/database/migrations');
+        $this->assertCount(1, $migrations);
+
+        return $migrations[0]->getContents();
     }
 
     /**
