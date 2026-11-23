@@ -177,6 +177,35 @@ class GeneratorCommandTest extends BaseTestCase
         $this->assertDirectoryDoesNotExist(base_path('modules/Escaped'));
     }
 
+    public static function currentDirectorySegmentNames(): array
+    {
+        return [
+            'middle dot segment' => ['module:make-action', 'name', 'Foo/./Bar'],
+            'leading dot segment' => ['module:make-controller', 'controller', './PostController'],
+            'trailing dot segment' => ['module:make-model', 'model', 'Foo/.'],
+            'standalone dot' => ['module:make-request', 'name', '.'],
+            'backslash dot segment' => ['module:make-action', 'name', 'Foo\\.\\Bar'],
+            'spaced dot segment' => ['module:make-action', 'name', 'Foo/ . /Bar'],
+            'hyphenated dot segment' => ['module:make-health-indicator', 'name', 'Foo/-.-/Bar'],
+            'underscored dot segment' => ['module:make-action', 'name', 'Foo/_._/Bar'],
+            'tabbed dot segment' => ['module:make-action', 'name', "Foo/.\t/Bar"],
+            'migration dot segment' => ['module:make-migration', 'name', 'Foo/./create_posts_table'],
+            'view dot segment' => ['module:make-view', 'name', 'posts/./index'],
+        ];
+    }
+
+    #[DataProvider('currentDirectorySegmentNames')]
+    public function test_it_rejects_names_with_current_directory_segments(string $command, string $argument, string $name)
+    {
+        $before = $this->moduleFiles();
+
+        $code = $this->artisan($command, [$argument => $name, 'module' => 'Blog']);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString('must not contain "." segments', Artisan::output());
+        $this->assertSame($before, $this->moduleFiles());
+    }
+
     public static function emptyNames(): array
     {
         $cases = [];
