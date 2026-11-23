@@ -106,11 +106,13 @@ class ModuleMakeCommand extends Command implements PromptsForMissingInput
             // Composer ends an error with the command synopsis ("dump-autoload [-o|--optimize] ..."): drop it.
             $output = trim((string) preg_replace('/\n\s*dump-autoload \[[^\n]*$/', '', $output));
 
-            $this->components->error('composer dump-autoload failed.');
+            $this->reportError('composer dump-autoload failed.');
 
             if ($output !== '') {
                 $this->line($output);
                 $this->newLine();
+
+                GeneratorRun::current()?->addError($output);
             }
 
             $this->components->info('Fix the module (for example its composer.json), then run [composer dump-autoload].');

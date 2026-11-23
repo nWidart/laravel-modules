@@ -20,6 +20,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  * During a dry run the command's own output (task lines, info lines, the output of the
  * commands it calls) is dropped, because it would describe writes that do not happen.
  * Errors are recorded in the run and printed after the list.
+ *
+ * A real run with --json prints as without it, to standard error (enterJsonMode()), and
+ * then the document with the result of each file on standard output.
  */
 trait PlansGeneratorRun
 {
@@ -52,7 +55,7 @@ trait PlansGeneratorRun
     }
 
     /**
-     * Run the command, as a dry run when --dry-run is given and no run is active yet.
+     * Run the command in a generator run when --dry-run or --json is given and no run is active yet.
      */
     #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -75,29 +78,44 @@ trait PlansGeneratorRun
             $this->enterJsonMode();
         }
 
-        if (! $dryRun) {
-            // --json after a real run is not supported yet: fail before anything is written.
-            $run->addError('The --json option needs --dry-run.');
-
-            return $this->reportGeneratorRun($run, E_ERROR);
-        }
-
         $outputStyle = $this->output;
         $components = $this->components;
 
-        $this->output = $this->laravel->make(OutputStyle::class, ['input' => $this->input, 'output' => new NullOutput]);
-        $this->components = $this->laravel->make(Factory::class, ['output' => $this->output]);
+        // A real run prints as usual (to standard error in JSON mode). A dry run prints
+        // nothing while it runs: its task lines would describe writes that do not happen.
+        if ($dryRun) {
+            $this->output = $this->laravel->make(OutputStyle::class, ['input' => $this->input, 'output' => new NullOutput]);
+            $this->components = $this->laravel->make(Factory::class, ['output' => $this->output]);
+        }
+
         $this->laravel->instance(GeneratorRun::class, $run);
 
         try {
             $code = parent::execute($input, $output);
+        } catch (\Throwable $e) {
+            // Still print the document for what was done; the exception ends the command as before.
+            if ($json) {
+                $run->addError($e->getMessage());
+                $this->restoreOutput($outputStyle, $components);
+                $this->writeJson($run->toArray());
+            }
+
+            throw $e;
         } finally {
             $this->laravel->forgetInstance(GeneratorRun::class);
-            $this->output = $outputStyle;
-            $this->components = $components;
+            $this->restoreOutput($outputStyle, $components);
         }
 
         return $this->reportGeneratorRun($run, $code);
+    }
+
+    /**
+     * Put back the output a dry run replaced.
+     */
+    private function restoreOutput(OutputStyle $output, Factory $components): void
+    {
+        $this->output = $output;
+        $this->components = $components;
     }
 
     /**
@@ -126,6 +144,11 @@ trait PlansGeneratorRun
         if ($this->inJsonMode()) {
             $this->writeJson($run->toArray());
 
+            return $code;
+        }
+
+        // A real run without --json is not a generator run: it printed as it went.
+        if (! $run->isDryRun()) {
             return $code;
         }
 

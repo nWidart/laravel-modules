@@ -111,7 +111,8 @@ class FileGenerator extends Generator
      * Generate the file.
      *
      * Every file a generator command writes goes through here. During a generator run
-     * (Support\GeneratorRun) the file is recorded; in a dry run it is only recorded.
+     * (Support\GeneratorRun) the file is recorded: in a dry run only recorded, in a real
+     * run recorded with its result once the write is done.
      *
      * @return int|bool The result of Filesystem::put(); true in a dry run.
      *
@@ -123,19 +124,44 @@ class FileGenerator extends Generator
         $run = GeneratorRun::current();
         $existsOnDisk = $this->filesystem->exists($path);
         $exists = $run?->existsWhenWritten($path, $existsOnDisk) ?? $existsOnDisk;
+        $existedBefore = $run?->existedBefore($path, $existsOnDisk) ?? $existsOnDisk;
 
         if ($exists && $this->overwriteFile !== true) {
-            $run?->recordFile($path, $existsOnDisk, GeneratorRun::KEEP);
+            $run?->recordFile($path, $existedBefore, GeneratorRun::KEEP, GeneratorRun::EXISTS);
 
             throw new FileAlreadyExistException('File already exists!');
         }
 
-        $run?->recordFile($path, $existsOnDisk, $exists ? GeneratorRun::REPLACE : GeneratorRun::CREATE);
+        $action = $exists ? GeneratorRun::REPLACE : GeneratorRun::CREATE;
 
-        if ($run?->isDryRun()) {
+        if ($run === null) {
+            return $this->filesystem->put($path, $this->getContents());
+        }
+
+        if ($run->isDryRun()) {
+            $run->recordFile($path, $existedBefore, $action);
+
             return true;
         }
 
-        return $this->filesystem->put($path, $this->getContents());
+        try {
+            $written = $this->filesystem->put($path, $this->getContents());
+        } catch (\Throwable $e) {
+            // The command reports the exception; the entry must not claim the file was written.
+            $run->recordFile($path, $existedBefore, $action, GeneratorRun::FAILED);
+
+            throw $e;
+        }
+
+        if ($written === false) {
+            $run->recordFile($path, $existedBefore, $action, GeneratorRun::FAILED);
+            $run->addError("Could not write file {$path}.");
+
+            return false;
+        }
+
+        $run->recordFile($path, $existedBefore, $action, $exists ? GeneratorRun::REPLACED : GeneratorRun::CREATED);
+
+        return $written;
     }
 }

@@ -1,5 +1,5 @@
 ---
-title: "--dry-run on generators: one Support\\GeneratorRun bound in the container, every write through FileGenerator, planned modules found by FileRepository::find()"
+title: "--dry-run and --json on generators: one Support\\GeneratorRun bound in the container, every write through FileGenerator, planned modules found by FileRepository::find()"
 author: Nwidart
 date: 2026-11-23
 branch: feat/generator-dry-run
@@ -13,7 +13,9 @@ touches:
   - src/Generators/FileGenerator.php
   - src/Generators/ModuleGenerator.php
   - src/FileRepository.php
+  - src/Commands/Make/ModuleMakeCommand.php
   - tests/Commands/Make/GeneratorDryRunTest.php
+  - tests/Commands/Make/GeneratorJsonResultTest.php
 ---
 
 ## Decided
@@ -23,6 +25,9 @@ touches:
 - A module that `module:make --dry-run` would create is recorded with `GeneratorRun::planModule(name, path)`. `FileRepository::find()` checks `findPlanned()` first and builds the module with `createModule()`, so `findOrFail()`, `getModulePath()`, `ModuleCommandTrait::getModuleName()` and `validateModuleArgument()` in the sub-generators all see it. The path comes from `getModulePath()` before planning, the same fallback the real run uses. No path logic is copied.
 - `--force` on an existing module records a `delete` entry for the folder; files under it then get `action: create` with `exists: true` (it is on disk now, but deleted first).
 - During a dry run the command's output is swapped to a `NullOutput` (task lines and "created successfully" would be false). Errors are recorded with `reportError()` (GeneratorCommand, ModuleGenerator, ModuleMakeCommand) or `GeneratorRun::current()?->addError()` (ResolvesInertiaFrontend) and printed after the list.
+- `--json` without `--dry-run` (feat/generator-json-result) binds a run with `dryRun: false` and does not silence the output: `enterJsonMode()` sends it to stderr. Each entry gets a `result`: `FileGenerator` records `created`/`replaced` only after `put()` returns non-false, `failed` when `put()` returns false (plus the error `Could not write file <path>.`) or throws, and `exists` in the keep branch. `ModuleGenerator` records the `--force` folder (`deleted`) right before `$this->module->delete()`, with the list of files in it, so files written again into it keep `exists: true` (existed before the run). `recordFile()` drops the result in a dry run, so dry-run entries keep their three keys.
+- When the run throws in JSON mode, `execute()` adds the exception message to `errors`, writes the document and rethrows: the exit code stays as in text mode and stdout still has the document.
+- Not in `files`: `modules_statuses.json` (activator), composer's `vendor/` files (`composer dump-autoload`), folders, and anything event listeners write. A failed `composer dump-autoload` adds `composer dump-autoload failed.` and composer's output (as a second entry) to `errors`.
 - An option the command declares itself keeps its own meaning: `PlansGeneratorRun` only acts on the options it added (see the `json-test:generator` command in `WritesJsonOutputTest`).
 
 ## Watch out
