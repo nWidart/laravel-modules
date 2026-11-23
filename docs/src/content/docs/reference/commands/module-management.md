@@ -387,7 +387,7 @@ php artisan module:list-commands Blog
 Compares the language directories of a module and reports missing files and keys.
 
 ```bash
-php artisan module:lang [<module>...] [-a|--all]
+php artisan module:lang [<module>...] [-a|--all] [--json]
 ```
 
 **Arguments**
@@ -401,6 +401,7 @@ php artisan module:lang [<module>...] [-a|--all]
 | Name | Shortcut | Default | Description |
 | --- | --- | --- | --- |
 | `--all` | `-a` | `false` | Check every module. |
+| `--json` | | `false` | Print the result as JSON. See [JSON output](#modulelang-json-output). |
 
 **Notes**
 
@@ -412,6 +413,50 @@ php artisan module:lang [<module>...] [-a|--all]
 ```bash
 php artisan module:lang Blog
 ```
+
+### module:lang JSON output
+
+With `--json`, standard output holds one JSON line and the command follows the shared [JSON output](/laravel-modules/reference/commands/#json-output) rules. The `Checking languages ...`, `No language files found` and `Only one language file found` lines go to standard error. The exit code is the same as without `--json`.
+
+```bash
+php artisan module:lang Blog --json
+```
+
+```json
+{
+  "modules": [
+    {
+      "name": "Blog",
+      "checked": true,
+      "locales": {
+        "en": {
+          "missing_files": [],
+          "missing_keys": {}
+        },
+        "fr": {
+          "missing_files": ["auth.php"],
+          "missing_keys": {
+            "messages.php": ["welcome.title", "welcome.body"]
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `modules` | One entry per selected module, in run order. |
+| `modules[].name` | The module name. |
+| `modules[].checked` | `false` when the module has fewer than two locale folders. Nothing is compared then. |
+| `modules[].locales` | Every locale folder found, sorted by name. `{}` when the module has no `lang` folder. |
+| `locales.<locale>.missing_files` | File names that another locale has and this locale lacks. |
+| `locales.<locale>.missing_keys` | Per file, the dotted keys that another locale has in its copy of the file and this locale lacks in its copy. Only files this locale has. A missing file appears in `missing_files`. |
+
+Empty lists and maps are `[]` and `{}`.
+
+When no module is found, or no module is given, standard output is `{"modules":[]}` and the exit code is non-zero. Check the exit code before you read the result.
 
 ## module:prune
 
