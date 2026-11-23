@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Generators;
 
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Exceptions\FileAlreadyExistException;
+use Nwidart\Modules\Support\GeneratorRun;
 
 class FileGenerator extends Generator
 {
@@ -25,7 +26,7 @@ class FileGenerator extends Generator
     /**
      * Overwrite File
      */
-    private bool $overwriteFile;
+    private bool $overwriteFile = false;
 
     /**
      * The constructor.
@@ -109,20 +110,32 @@ class FileGenerator extends Generator
     /**
      * Generate the file.
      *
-     * @return int|bool The result of Filesystem::put().
+     * Every file a generator command writes goes through here. During a generator run
+     * (Support\GeneratorRun) the file is recorded; in a dry run it is only recorded.
+     *
+     * @return int|bool The result of Filesystem::put(); true in a dry run.
      *
      * @throws FileAlreadyExistException
      */
     public function generate()
     {
         $path = $this->getPath();
-        if (! $this->filesystem->exists($path)) {
-            return $this->filesystem->put($path, $this->getContents());
-        }
-        if ($this->overwriteFile === true) {
-            return $this->filesystem->put($path, $this->getContents());
+        $run = GeneratorRun::current();
+        $existsOnDisk = $this->filesystem->exists($path);
+        $exists = $run?->existsWhenWritten($path, $existsOnDisk) ?? $existsOnDisk;
+
+        if ($exists && $this->overwriteFile !== true) {
+            $run?->recordFile($path, $existsOnDisk, GeneratorRun::KEEP);
+
+            throw new FileAlreadyExistException('File already exists!');
         }
 
-        throw new FileAlreadyExistException('File already exists!');
+        $run?->recordFile($path, $existsOnDisk, $exists ? GeneratorRun::REPLACE : GeneratorRun::CREATE);
+
+        if ($run?->isDryRun()) {
+            return true;
+        }
+
+        return $this->filesystem->put($path, $this->getContents());
     }
 }

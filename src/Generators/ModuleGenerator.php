@@ -14,6 +14,7 @@ use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\FileRepository;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
+use Nwidart\Modules\Support\GeneratorRun;
 use Nwidart\Modules\Support\ReplacementKeyCommand;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\PathNamespace;
@@ -391,7 +392,7 @@ class ModuleGenerator extends Generator
         $exists = $this->module->has($name);
 
         if ($exists && ! $this->force) {
-            $this->component->error("Module [{$name}] already exists!");
+            $this->reportError("Module [{$name}] already exists!");
 
             return E_ERROR;
         }
@@ -402,11 +403,26 @@ class ModuleGenerator extends Generator
             return E_ERROR;
         }
 
-        if ($exists) {
+        $run = GeneratorRun::current();
+        $dryRun = $run?->isDryRun() === true;
+
+        if ($run !== null && $dryRun) {
+            // Nothing is deleted or written. The run records the module, so the generators
+            // called below find it by name before it is on disk.
+            $path = $this->module->getModulePath($name);
+
+            if ($exists) {
+                $run->recordDeletedFolder($path);
+            }
+
+            $run->planModule($name, $path);
+        } elseif ($exists) {
             $this->module->delete($name);
         }
 
-        Event::dispatch(sprintf('modules.%s.%s', strtolower($name), ModuleEvent::CREATING));
+        if (! $dryRun) {
+            Event::dispatch(sprintf('modules.%s.%s', strtolower($name), ModuleEvent::CREATING));
+        }
 
         $this->component->info("Creating module: [$name]");
 
@@ -423,6 +439,10 @@ class ModuleGenerator extends Generator
         if ($this->type === 'plain') {
             $this->cleanModuleJsonFile();
             $this->module->resetModules();
+        }
+
+        if ($dryRun) {
+            return 0;
         }
 
         $this->activator->setActiveByName($name, $this->isActive);
@@ -476,13 +496,12 @@ class ModuleGenerator extends Generator
 
         $namespace = $this->getModuleNamespaceReplacement().'\\'.$this->getStudlyNameReplacement().'\\';
 
-        $this->component->error(sprintf(
+        $this->reportError(sprintf(
             'Generator paths must be inside paths.app_folder [%s], because the module composer.json maps %s to it. Move these paths under %s/ in config/modules.php:',
             $appFolderConfig,
             $namespace,
             $appFolder,
-        ));
-        $this->component->bulletList($outside);
+        ), $outside);
 
         return false;
     }
@@ -510,11 +529,10 @@ class ModuleGenerator extends Generator
 
         $namespace = $this->getModuleNamespaceReplacement().'\\'.$this->getStudlyNameReplacement().'\\';
 
-        $this->component->error(sprintf(
+        $this->reportError(sprintf(
             'Generator paths must match their namespaces, because paths.app_folder is empty and the module composer.json maps %s to the module root. In config/modules.php, drop the app/ prefix and use StudlyCase folders for these paths (for example app/Providers to Providers):',
             $namespace,
-        ));
-        $this->component->bulletList($mismatched);
+        ), $mismatched);
 
         return false;
     }
@@ -572,7 +590,10 @@ class ModuleGenerator extends Generator
 
             $path = $this->module->getModulePath($this->getName()).'/'.$folder->getPath();
 
-            $this->filesystem->ensureDirectoryExists($path, 0755, true);
+            if (! $this->isDryRun()) {
+                $this->filesystem->ensureDirectoryExists($path, 0755, true);
+            }
+
             if (config('modules.stubs.gitkeep')) {
                 $this->generateGitKeep($path);
             }
@@ -586,7 +607,7 @@ class ModuleGenerator extends Generator
      */
     public function generateGitKeep(string $path)
     {
-        $this->filesystem->put($path.'/.gitkeep', '');
+        $this->writeFile($path.'/.gitkeep', '');
     }
 
     /**
@@ -603,11 +624,7 @@ class ModuleGenerator extends Generator
             $contents = $this->renderedStubs[$stub] ?? $this->getStubContents($stub);
 
             $this->component->task("Generating file {$path}", function () use ($contents, $path) {
-                if (! $this->filesystem->isDirectory($dir = dirname($path))) {
-                    $this->filesystem->makeDirectory($dir, 0775, true);
-                }
-
-                $this->filesystem->put($path, $contents);
+                $this->writeFile($path, $contents);
             });
         }
     }
@@ -760,7 +777,7 @@ class ModuleGenerator extends Generator
             $contents = $this->getStubContents($stub);
 
             if ($this->rendersJson($stub) && ! json_validate($contents)) {
-                $this->component?->error(sprintf(
+                $this->reportError(sprintf(
                     'Stub [%s] renders invalid JSON for [%s]: %s. Values returned by a %s are inserted as-is, so in JSON stubs they must be JSON-escaped. Module [%s] was not %s.',
                     $stub,
                     ltrim($file, '/'),
@@ -871,6 +888,45 @@ class ModuleGenerator extends Generator
     }
 
     /**
+     * Write a file, creating its folder. In a dry run the file is only recorded.
+     *
+     * Every file module:make writes goes through FileGenerator, like the files of the
+     * other generators. Existing files are overwritten, as module:make always did.
+     */
+    protected function writeFile(string $path, string $contents): void
+    {
+        if (! $this->isDryRun() && ! $this->filesystem->isDirectory($dir = dirname($path))) {
+            $this->filesystem->makeDirectory($dir, 0775, true);
+        }
+
+        (new FileGenerator($path, $contents, $this->filesystem))->withFileOverwrite(true)->generate();
+    }
+
+    /**
+     * Whether the active generator run is a dry run.
+     */
+    protected function isDryRun(): bool
+    {
+        return GeneratorRun::current()?->isDryRun() === true;
+    }
+
+    /**
+     * Print an error, with an optional list below it, and record it in the active generator run.
+     *
+     * @param  list<string>  $items
+     */
+    protected function reportError(string $message, array $items = []): void
+    {
+        $this->component?->error($message);
+
+        if ($items !== []) {
+            $this->component?->bulletList($items);
+        }
+
+        GeneratorRun::current()?->addError($items === [] ? $message : $message.' '.implode(', ', $items));
+    }
+
+    /**
      * Write a console warning, when a console component is available.
      */
     protected function writeWarning(string $message): void
@@ -889,11 +945,7 @@ class ModuleGenerator extends Generator
         $contents = $this->renderedStubs['json'] ?? $this->getStubContents('json');
 
         $this->component->task("Generating file $path", function () use ($contents, $path) {
-            if (! $this->filesystem->isDirectory($dir = dirname($path))) {
-                $this->filesystem->makeDirectory($dir, 0775, true);
-            }
-
-            $this->filesystem->put($path, $contents);
+            $this->writeFile($path, $contents);
         });
     }
 
@@ -933,7 +985,10 @@ class ModuleGenerator extends Generator
     {
         $path = $this->module->getModulePath($this->getName()).'module.json';
 
-        $content = $this->filesystem->get($path);
+        // A dry run wrote no module.json: read what it would have written.
+        $content = $this->isDryRun()
+            ? ($this->renderedStubs['json'] ?? $this->getStubContents('json'))
+            : $this->filesystem->get($path);
         $json = json_decode($content);
 
         if (! $json instanceof \stdClass) {
@@ -956,7 +1011,7 @@ class ModuleGenerator extends Generator
 
         $encoded = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-        $this->filesystem->put($path, $encoded.(str_ends_with($content, "\n") ? "\n" : ''));
+        $this->writeFile($path, $encoded.(str_ends_with($content, "\n") ? "\n" : ''));
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Traits;
 
 use Illuminate\Support\Arr;
+use Nwidart\Modules\Support\GeneratorRun;
 
 /**
  * Resolves the Inertia frontend from the --vue, --react and --svelte options,
@@ -45,10 +46,14 @@ trait ResolvesInertiaFrontend
             return false;
         }
 
-        $this->components->error(sprintf(
+        $message = sprintf(
             'The %s options cannot be used together. Pass only one of --vue, --react or --svelte.',
             Arr::join(array_map(fn (string $frontend) => '--'.$frontend, $given), ', ', ' and '),
-        ));
+        );
+
+        $this->components->error($message);
+
+        GeneratorRun::current()?->addError($message);
 
         return true;
     }

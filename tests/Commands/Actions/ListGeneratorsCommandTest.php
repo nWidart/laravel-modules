@@ -93,8 +93,8 @@ class ListGeneratorsCommandTest extends BaseTestCase
             $options['force'],
         );
 
-        // Definition order: the constructor adds --force after the command's own options.
-        $this->assertSame('force', array_key_last($options));
+        // Definition order: the constructor adds --force, --dry-run and --json after the command's own options.
+        $this->assertSame(['force', 'dry-run', 'json'], array_slice(array_keys($options), -3));
     }
 
     public function test_json_lists_the_force_shortcut_when_it_is_free()
@@ -165,7 +165,7 @@ class ListGeneratorsCommandTest extends BaseTestCase
         $this->assertSame('other', $generators['app:make-widget']['group']);
         $this->assertSame('Create a <info>widget</info>.', $generators['app:make-widget']['description']);
         $this->assertSame(['name', 'module'], array_column($generators['app:make-widget']['arguments'], 'name'));
-        $this->assertSame(['force'], array_column($generators['app:make-widget']['options'], 'name'));
+        $this->assertSame(['force', 'dry-run', 'json'], array_column($generators['app:make-widget']['options'], 'name'));
         $this->assertStringNotContainsString("\e[", $output);
     }
 
