@@ -3,11 +3,28 @@ title: Artisan commands
 description: Every Artisan command the package registers, grouped by page, with its purpose and a link to its entry.
 ---
 
-The package registers 72 Artisan commands. Each group has one page with the arguments, options and notes of every command. Open the group page for the shared behaviour of a group.
+The package registers 73 Artisan commands. Each group has one page with the arguments, options and notes of every command. Open the group page for the shared behaviour of a group.
 
 In a synopsis, `<name>` is a required argument, `[<name>]` an optional one, and `...` marks an argument that takes several values. Options follow the arguments.
 
 `module:route-provider` is a generator even though its name has no `make-` prefix. It is listed with the generators.
+
+## JSON output
+
+A command with a `--json` option prints its result as JSON for scripts and agents. These rules hold for every such command:
+
+- Standard output holds exactly one JSON document on one line, and nothing else.
+- Every other message (progress, warnings, tables, output of called commands) goes to standard error.
+- The output has no ANSI codes, even with `--ansi`.
+- The exit code means the same as without `--json`: `0` on success, non-zero on failure.
+
+Read the result by piping standard output only:
+
+```bash
+php artisan module:generators --json | jq '.generators | length'
+```
+
+The shape of the document is documented with each command.
 
 ## Module management
 
@@ -78,6 +95,7 @@ Commands that create a module or a file inside a module. Details: [Generator com
 | [`module:make-trait`](/laravel-modules/reference/commands/generators/#modulemake-trait) | Creates a trait in a module. |
 | [`module:make-view`](/laravel-modules/reference/commands/generators/#modulemake-view) | Creates a Blade view in a module. |
 | [`module:route-provider`](/laravel-modules/reference/commands/generators/#moduleroute-provider) | Creates the `RouteServiceProvider` of a module. |
+| [`module:generators`](/laravel-modules/reference/commands/generators/#modulegenerators) | Lists every generator with its arguments and options, as a table or as JSON. |
 
 ## Database
 
