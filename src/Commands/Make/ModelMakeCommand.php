@@ -77,10 +77,16 @@ class ModelMakeCommand extends GeneratorCommand
      * Call the generator for an option and remember when it fails, so the
      * command exits with a failure status after running the other options.
      *
+     * --force is passed on, so the generator overwrites its existing file like the model.
+     *
      * @param  array<string, mixed>  $arguments
      */
     protected function callGenerator(string $command, array $arguments): void
     {
+        if ($this->option('force') === true) {
+            $arguments['--force'] = true;
+        }
+
         if ($this->call($command, $arguments) !== self::SUCCESS) {
             $this->generatorFailed = true;
         }

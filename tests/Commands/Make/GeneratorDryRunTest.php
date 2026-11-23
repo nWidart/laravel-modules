@@ -127,6 +127,33 @@ class GeneratorDryRunTest extends BaseTestCase
         $this->assertSame(E_ERROR, $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--all' => true]));
     }
 
+    public function test_model_all_force_dry_run_replaces_every_existing_file()
+    {
+        $this->createModule('Blog');
+        $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--all' => true]);
+        $before = $this->listing(base_path());
+
+        [$code, $document] = $this->dryRunJson('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--all' => true, '--force' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame($before, $this->listing(base_path()), 'The dry run wrote to the application.');
+        $this->assertSame([], $document['errors']);
+        $this->assertCount(8, $document['files']);
+
+        $replaced = array_filter($document['files'], fn (array $file) => array_key_exists($file['path'], $before));
+
+        // Every file but the migration, whose name holds the current second, exists already.
+        $this->assertGreaterThanOrEqual(7, count($replaced));
+
+        foreach ($document['files'] as $file) {
+            $expected = array_key_exists($file['path'], $before)
+                ? ['exists' => true, 'action' => 'replace']
+                : ['exists' => false, 'action' => 'create'];
+
+            $this->assertSame(['path' => $file['path']] + $expected, $file);
+        }
+    }
+
     public function test_force_replaces_an_existing_file()
     {
         $this->createModule('Blog');

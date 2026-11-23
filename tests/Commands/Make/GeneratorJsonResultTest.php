@@ -149,6 +149,32 @@ class GeneratorJsonResultTest extends BaseTestCase
         $this->assertSame([], $this->changedFiles($before, $after), 'The existing file was changed.');
     }
 
+    public function test_model_all_force_json_reports_every_existing_file_replaced()
+    {
+        $this->createModule('Blog');
+        $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--all' => true]);
+        $before = $this->listing(base_path('modules/Blog'));
+
+        [$code, $document] = $this->runJson('module:make-model', ['model' => 'Post', 'module' => 'Blog', '--all' => true, '--force' => true, '--json' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame([], $document['errors']);
+        $this->assertCount(8, $document['files']);
+
+        $replaced = array_filter($document['files'], fn (array $file) => array_key_exists($file['path'], $before));
+
+        // Every file but the migration, whose name holds the current second, exists already.
+        $this->assertGreaterThanOrEqual(7, count($replaced));
+
+        foreach ($document['files'] as $file) {
+            $expected = array_key_exists($file['path'], $before)
+                ? ['exists' => true, 'action' => 'replace', 'result' => 'replaced']
+                : ['exists' => false, 'action' => 'create', 'result' => 'created'];
+
+            $this->assertSame(['path' => $file['path']] + $expected, $file);
+        }
+    }
+
     public function test_force_reports_a_replaced_file()
     {
         $this->createModule('Blog');

@@ -1014,14 +1014,14 @@ php artisan module:make-model <model> [<module>] [-a|--all] [--attributes] [-c|-
 | `--resource` | `-R` | `false` | Also run `module:make-resource <Model>Resource`. |
 | `--policy` | `-p` | `false` | Also run `module:make-policy <Model>Policy`. |
 | `--seed` | `-s` | `false` | Also run `module:make-seed <Model>Seeder`. |
-| `--force` |  | `false` | Overwrite the model when it exists. No shortcut: `-f` is `--factory`. |
+| `--force` |  | `false` | Overwrite the model when it exists, and the files of the related generators. No shortcut: `-f` is `--factory`. |
 
 **Notes**
 
 - Writes `<Model>.php` to the `model` generator path (`paths.generator.model.path`, default `app/Models`).
 - Stub: `model.stub`, with the sections `ATTRIBUTES`, `FACTORY` and `PROPERTIES`.
-- The related commands run after the model is written, and only when the model was written. They receive no `--force`. A migration name for `BlogPost` is `create_blog_posts_table`.
-- The command runs every related command it was asked for. It exits with `1` when one of them fails, for example when the migration or controller file already exists.
+- The related commands run after the model is written, and only when the model was written. They receive `--force` when it is given. A migration name for `BlogPost` is `create_blog_posts_table`.
+- The command runs every related command it was asked for. It exits with `1` when one of them fails, for example when the controller file already exists and `--force` is not given. A migration is timestamped, so `-m` adds a new migration file with or without `--force`.
 - `--fillable=title,body` writes `['title','body']` to the model.
 
 ```bash
