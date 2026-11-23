@@ -82,6 +82,7 @@ class GeneratorJsonResultTest extends BaseTestCase
     {
         $this->createModule('Blog');
         $this->artisan('module:make-model', ['model' => 'Post', 'module' => 'Blog']);
+        $this->backdate(base_path('modules/Blog'));
         $before = $this->listing(base_path('modules/Blog'));
 
         [$code, $document] = $this->runJson('module:make', ['name' => ['Blog'], '--force' => true, '--json' => true]);
@@ -105,9 +106,11 @@ class GeneratorJsonResultTest extends BaseTestCase
 
         // Every file in the module now was written by this run: new, or deleted and written again.
         $this->assertEqualsCanonicalizing(
+            $this->files($after),
             array_merge($this->createdFiles($before, $after), $this->changedFiles($before, $after)),
-            array_column($files, 'path'),
+            'A file of the module was not written by the run.',
         );
+        $this->assertEqualsCanonicalizing($this->files($after), array_column($files, 'path'));
     }
 
     public function test_module_make_json_for_an_existing_module_reports_the_error()

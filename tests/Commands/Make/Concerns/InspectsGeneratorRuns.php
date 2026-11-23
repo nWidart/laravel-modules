@@ -112,6 +112,30 @@ trait InspectsGeneratorRuns
     }
 
     /**
+     * Set the mtime of every file below a path to a fixed time long ago, so a file the next
+     * run writes again shows up in changedFiles(). Without it, a file deleted and written
+     * again with the same contents within the same second can look unchanged: Linux
+     * filesystems such as ext4 often give the new file the inode the deleted one had.
+     */
+    protected function backdate(string $path): void
+    {
+        foreach ($this->files($this->listing($path)) as $file) {
+            touch($file, 946684800);
+        }
+    }
+
+    /**
+     * The files of a listing, without its folders.
+     *
+     * @param  array<string, string>  $listing
+     * @return list<string>
+     */
+    protected function files(array $listing): array
+    {
+        return array_keys(array_filter($listing, fn (string $entry) => $entry !== 'dir'));
+    }
+
+    /**
      * The files that are in the second listing and not in the first.
      *
      * @param  array<string, string>  $before
