@@ -16,6 +16,8 @@ use Illuminate\Support\Str;
  * In a dry run nothing is written: the run records the planned writes, the module
  * folders that --force would delete first, and the modules that module:make would
  * create, so the generators it calls can resolve a module that is not on disk yet.
+ *
+ * In a real run (--json without --dry-run) each entry also gets the result of the write.
  */
 class GeneratorRun
 {
@@ -27,12 +29,29 @@ class GeneratorRun
 
     public const DELETE = 'delete';
 
+    public const CREATED = 'created';
+
+    public const REPLACED = 'replaced';
+
+    public const EXISTS = 'exists';
+
+    public const DELETED = 'deleted';
+
+    public const FAILED = 'failed';
+
     /**
      * The recorded files, keyed by normalized path, in write order.
      *
-     * @var array<string, array{path: string, exists: bool, action: string}>
+     * @var array<string, array{path: string, exists: bool, action: string, result?: string}>
      */
     private array $files = [];
+
+    /**
+     * The files that were in a deleted folder before it was deleted, normalized, as keys.
+     *
+     * @var array<string, true>
+     */
+    private array $deletedFiles = [];
 
     /**
      * The folders deleted before anything is written, normalized.
@@ -94,24 +113,52 @@ class GeneratorRun
     }
 
     /**
-     * Record a file write. A path that is already recorded keeps its first entry.
+     * Whether a file was on disk before the run: it is on disk now, or it was in a
+     * folder this run deleted.
      */
-    public function recordFile(string $path, bool $exists, string $action): void
+    public function existedBefore(string $path, bool $existsOnDisk): bool
+    {
+        return $existsOnDisk || isset($this->deletedFiles[self::normalizePath($path)]);
+    }
+
+    /**
+     * Record a file write and, in a real run, its result. A path that is already
+     * recorded keeps its first entry. A dry run records no result.
+     */
+    public function recordFile(string $path, bool $exists, string $action, ?string $result = null): void
     {
         $path = self::normalizePath($path);
 
-        $this->files[$path] ??= ['path' => $path, 'exists' => $exists, 'action' => $action];
+        if (isset($this->files[$path])) {
+            return;
+        }
+
+        $this->files[$path] = ['path' => $path, 'exists' => $exists, 'action' => $action];
+
+        if (! $this->dryRun && $result !== null) {
+            $this->files[$path]['result'] = $result;
+        }
     }
 
     /**
      * Record that a folder is deleted before the files are written.
+     *
+     * A real run passes the files in the folder, listed before it is deleted, so the
+     * entries written into it afterwards still tell that they existed before the run.
+     *
+     * @param  list<string>  $files
      */
-    public function recordDeletedFolder(string $path): void
+    public function recordDeletedFolder(string $path, array $files = []): void
     {
         $path = self::normalizePath($path);
 
         $this->deletedFolders[] = $path;
-        $this->recordFile($path, true, self::DELETE);
+
+        foreach ($files as $file) {
+            $this->deletedFiles[self::normalizePath($file)] = true;
+        }
+
+        $this->recordFile($path, true, self::DELETE, self::DELETED);
     }
 
     /**
@@ -143,7 +190,7 @@ class GeneratorRun
     /**
      * The recorded files in write order.
      *
-     * @return list<array{path: string, exists: bool, action: string}>
+     * @return list<array{path: string, exists: bool, action: string, result?: string}>
      */
     public function files(): array
     {
@@ -163,7 +210,7 @@ class GeneratorRun
     /**
      * The run as the --json document.
      *
-     * @return array{command: string, dry_run: bool, files: list<array{path: string, exists: bool, action: string}>, errors: list<string>}
+     * @return array{command: string, dry_run: bool, files: list<array{path: string, exists: bool, action: string, result?: string}>, errors: list<string>}
      */
     public function toArray(): array
     {

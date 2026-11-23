@@ -417,6 +417,16 @@ class ModuleGenerator extends Generator
 
             $run->planModule($name, $path);
         } elseif ($exists) {
+            if ($run !== null) {
+                $path = $this->module->getModulePath($name);
+
+                // Listed before the delete: the files written again into it existed before the run.
+                $run->recordDeletedFolder($path, array_map(
+                    fn (\SplFileInfo $file) => $file->getPathname(),
+                    $this->filesystem->allFiles($path, true),
+                ));
+            }
+
             $this->module->delete($name);
         }
 

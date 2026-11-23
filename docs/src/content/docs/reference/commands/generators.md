@@ -38,44 +38,46 @@ Except for `module:make` (which creates a whole module), every command on this p
 - An existing file stops the command with `File : <path> already exists.` and exit status `1`.
 - Pass `--force` to overwrite an existing file. Every generator accepts `-f|--force`, except `module:make-model` (`-f` is `--factory`), `module:route-provider`, and `module:make`, which define `--force` without a shortcut. Per-command tables omit `--force` unless it differs.
 
-### Dry run
+### Dry run and JSON output
 
 Every generator and `module:make` accept `--dry-run` and `--json`. Per-command tables omit both, except in `module:make`.
 
 | Name | Shortcut | Default | Description |
 | --- | --- | --- | --- |
 | `--dry-run` |  | `false` | List the files the command would write, and write nothing. |
-| `--json` |  | `false` | Print the result as one JSON document. Needs `--dry-run`. |
+| `--json` |  | `false` | Print the result as one JSON document. Works with and without `--dry-run`. |
 
 ```bash
 php artisan module:make-model Post Blog --all --dry-run
+php artisan module:make-model Post Blog --all --json
 ```
 
 `--dry-run` lists every file the command would write, in write order. The list includes the files of the generators the command calls: the sub-generators of `module:make`, the related generators of `module:make-model --all`, and the view of `module:make-component`. The command writes nothing: no files, folders, `.gitkeep`, `module.json` or status file, no `composer dump-autoload`, and no deletion with `--force`. The exit status is the one the real run would return.
 
-The text output starts with `Dry run: these files would be written. Nothing was written.`, then one line per file, then the errors:
+The text output of a dry run starts with `Dry run: these files would be written. Nothing was written.`, then one line per file, then the errors:
 
 ```text
   create  /app/Modules/Blog/app/Models/Post.php
   keep  /app/Modules/Blog/app/Http/Requests/PostRequest.php (exists)
 ```
 
-With `--dry-run --json`, the command follows the [JSON output](/laravel-modules/reference/commands/#json-output) rules and prints one object:
+`--json` follows the [JSON output](/laravel-modules/reference/commands/#json-output) rules and prints one compact object. On a real run (`--json` without `--dry-run`), the command runs and writes as usual, with the same exit status. All its text output goes to stderr: task lines, `Module [X] created successfully.`, composer messages and hints. Stdout gets the JSON line at the end.
 
 | Field | Type | Description |
 | --- | --- | --- |
 | `command` | string | The command name, such as `module:make-model`. |
-| `dry_run` | boolean | Always `true`. |
-| `files` | array | The files the command would write, in write order. |
-| `errors` | array | The error messages the real run would print. Empty when the run would succeed. |
+| `dry_run` | boolean | `true` with `--dry-run`, else `false`. |
+| `files` | array | The files the command writes or would write, in write order. A run that stops early lists only the files it reached. |
+| `errors` | array | The error messages of the run, or the ones the real run would print. Empty on success. |
 
 Each item of `files`:
 
 | Field | Type | Description |
 | --- | --- | --- |
 | `path` | string | Absolute path, with forward slashes. |
-| `exists` | boolean | `true` when the file exists on disk now. |
-| `action` | string | What the real run does with the file. See below. |
+| `exists` | boolean | `true` when the file exists on disk before the run. After a `--force` delete of the module folder, the rewritten files show `true`. |
+| `action` | string | What the run does, or would do, with the file. See below. |
+| `result` | string | What the run did with the file. Real runs only. See below. |
 
 | `action` | Meaning |
 | --- | --- |
@@ -84,17 +86,36 @@ Each item of `files`:
 | `keep` | The file exists and `--force` is not given. The real run stops with `File : <path> already exists.` |
 | `delete` | The module folder that `module:make --force` deletes first. The files of the new module follow with `create`, and can show `exists: true`. |
 
+| `result` | Meaning |
+| --- | --- |
+| `created` | The command wrote the file, and it did not exist. |
+| `replaced` | The command wrote the file over an existing one (`--force`). |
+| `exists` | The command left the file because it exists and `--force` is not given. Comes with `action: keep`. |
+| `deleted` | The command deleted the module folder (`module:make --force`). |
+| `failed` | The write failed. The error is in `errors`, for example `Could not write file <path>.`. A write that throws puts the exception message in `errors`, and the exception still ends the command. |
+
+Dry run:
+
 ```json
 {"command":"module:make-model","dry_run":true,"files":[{"path":"/app/Modules/Blog/app/Models/Post.php","exists":false,"action":"create"},{"path":"/app/Modules/Blog/app/Http/Requests/PostRequest.php","exists":true,"action":"keep"}],"errors":["File : /app/Modules/Blog/app/Http/Requests/PostRequest.php already exists."]}
 ```
 
-An error that stops the run leaves `files` empty:
+Real run (exit status `1`):
+
+```json
+{"command":"module:make-model","dry_run":false,"files":[{"path":"/app/Modules/Blog/app/Models/Post.php","exists":false,"action":"create","result":"created"},{"path":"/app/Modules/Blog/app/Http/Requests/PostRequest.php","exists":true,"action":"keep","result":"exists"}],"errors":["File : /app/Modules/Blog/app/Http/Requests/PostRequest.php already exists."]}
+```
+
+`module:make Blog --force --json` starts `files` with `{"path":"/app/Modules/Blog","exists":true,"action":"delete","result":"deleted"}`.
+
+An error that stops the run before any file leaves `files` empty:
 
 ```json
 {"command":"module:make-model","dry_run":true,"files":[],"errors":["Module [Missing] does not exist."]}
 ```
 
-- `--json` alone fails with `The --json option needs --dry-run.` and exit status `1`.
+- `files` does not list `modules_statuses.json` (written by the activator), the `vendor/` files of composer, folders, or files that event listeners write.
+- A failed `composer dump-autoload` in `module:make` adds `composer dump-autoload failed.` and the composer message to `errors`.
 - A dry run does not report warnings, such as an unreplaced stub token.
 - A dry run cannot predict a `composer dump-autoload` failure.
 - A custom module repository that does not extend `FileRepository` cannot resolve a module that does not exist yet, so `module:make --dry-run` fails for it.
@@ -127,8 +148,8 @@ php artisan module:make <name>... [-p|--plain] [--api] [--web] [--inertia] [-d|-
 | `--inertia` |  | `false` | Generate an Inertia module: an Inertia controller and four Inertia pages, no Blade views. |
 | `--disabled` | `-d` | `false` | Create the module in the disabled state. |
 | `--force` |  | `false` | Recreate the module when it already exists. |
-| `--dry-run` |  | `false` | List the files the command would write, and write nothing. See [Dry run](#dry-run). |
-| `--json` |  | `false` | Print the dry run as one JSON document. Needs `--dry-run`. |
+| `--dry-run` |  | `false` | List the files the command would write, and write nothing. See [Dry run and JSON output](#dry-run-and-json-output). |
+| `--json` |  | `false` | Print the result as one JSON document. See [Dry run and JSON output](#dry-run-and-json-output). |
 | `--author-name` |  | `composer.author.name` | Author name written to `composer.json`. |
 | `--author-email` |  | `composer.author.email` | Author email written to `composer.json`. |
 | `--author-vendor` |  | `composer.vendor` | Vendor part of the package name in `composer.json`. |
