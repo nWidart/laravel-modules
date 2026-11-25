@@ -51,7 +51,7 @@ Finally, it registers `ConsoleServiceProvider` and hooks migration and translati
 2. Keeps modules that the activator marks enabled.
 3. Sorts them in ascending order by `priority` in `module.json` (a missing priority counts as `0`). Lower numbers register first. Equal priorities keep scan order: configured scan paths first, then alphabetical folder order within each path.
 
-The result is a priority-ordered list of provider classes, aliases, and files. A module found only by scanning has no status entry and stays disabled until you enable it. Its classes must autoload before you enable it; an enabled module with an unloadable provider stops every `artisan` command.
+The result is a priority-ordered list of provider classes, aliases, and files. A module found only by scanning has no status entry and stays disabled until you enable it. Its classes must autoload before you enable it; an enabled module with an unloadable provider stops every `artisan` command, unless you set [`skip_broken_modules`](#skip-broken-modules).
 
 ### 3. Aliases
 
@@ -92,6 +92,41 @@ Each module's `ModuleServiceProvider::boot()` then registers:
 The module's route provider extends Laravel's `RouteServiceProvider` and maps its route files. See [Module service provider](/laravel-modules/reference/api/module-service-provider/) for each step.
 
 For the enabled/disabled filter in step 2, see [Module status and activators](/laravel-modules/concepts/status-and-activators/).
+
+## Skip broken modules
+
+By default, a broken module stops the application while it boots, so every request and `artisan` command fails:
+
+- An invalid `module.json` throws `Nwidart\Modules\Exceptions\InvalidJsonException`.
+- A provider class that does not exist throws `Class "..." not found`.
+
+Set `skip_broken_modules` to `true` in `config/modules.php` to boot without the broken module:
+
+```php title="config/modules.php"
+'skip_broken_modules' => true,
+```
+
+An app with a published `config/modules.php` must add the key itself, or re-publish the config. The default is `false`.
+
+With the flag on:
+
+- **Invalid `module.json`:** the module is recorded under its folder name, with a reason such as `Error processing file: Modules/Shop/module.json. Error: Syntax error` (path relative to the base path).
+- **Missing provider class:** the package checks the providers of enabled modules. If one class does not exist, it skips the whole module: its providers, aliases and `files` do not load. The reason is `Provider class [X] not found.` Disabled modules are not checked.
+- **Log:** each skipped module writes one error entry per boot: `Module [Shop] was skipped because it is broken: <reason>`.
+- **Reports:** `php artisan module:list` shows `[Broken]` with the reason, and the `modules` health indicator reports `DOWN`. See [`module:list`](/laravel-modules/reference/commands/module-management/#modulelist) and [Report module health with the actuator](/laravel-modules/guides/production/health-checks/).
+- **PHP API:** `Nwidart\Modules\FileRepository::getBrokenModules()` returns module name => reason. See [Repository](/laravel-modules/reference/api/repository/#find-and-list).
+
+:::caution
+A skipped module silently loses its routes and services. Unless someone reads the logs or the health endpoint, the app runs on without it. Monitor the `modules` health indicator or the error log before you turn the flag on in production.
+:::
+
+Limits:
+
+- A module skipped for a missing provider still counts as enabled in the repository (`Module::isEnabled()`, `allEnabled()`). `module:migrate` and seeders still run for it.
+- A module with an invalid `module.json` has no readable name, so `module:enable` and `module:disable` cannot find it (`module:disable Shop` says it does not exist). Fix the JSON first.
+- A provider class that exists but throws in `register()` or `boot()` still stops the app.
+- The broken list lasts for the process. Restart long-lived processes (Octane, queue workers) after you fix a module.
+- The package autoloads every provider class of enabled modules at boot. The cost is small.
 
 ## Where module providers run among your own
 

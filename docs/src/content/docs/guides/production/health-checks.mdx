@@ -32,6 +32,20 @@ When `show_details` allows it (for example `ACTUATOR_HEALTH_SHOW_DETAILS=always`
 
 The indicator reports `UP` when every enabled module has its `module.json` on disk. It reports `DOWN` (HTTP 503) when an enabled module is missing from disk, and attaches an error to that module's entry. To resolve a `DOWN` status, restore the module folder, remove its entry from `modules_statuses.json`, or set it to `false`.
 
+With `modules.skip_broken_modules` set to `true`, the indicator also reports `DOWN` for each module the package skipped at boot, with the reason as its `error`:
+
+```json
+{
+    "modules": {
+        "Blog": { "enabled": true },
+        "Cart": { "enabled": true, "error": "Provider class [Modules\\Cart\\Providers\\DoesNotExistServiceProvider] not found." },
+        "Shop": { "enabled": true, "error": "Error processing file: Modules/Shop/module.json. Error: Syntax error" }
+    }
+}
+```
+
+This is the signal that a skipped module lost its routes and services. Alert on it. See [Skip broken modules](/laravel-modules/concepts/how-modules-boot/#skip-broken-modules).
+
 See [Actuator integration](/laravel-modules/reference/api/actuator/) for full indicator behavior, including long-lived processes and custom activators.
 
 ## Ship a health indicator from a module
@@ -100,7 +114,8 @@ Health indicators register during boot, so `php artisan config:cache` snapshots 
 
 ## Limits
 
-- An invalid `module.json` or unloadable module service provider halts application boot with HTTP 500 before `/actuator/health` can run. Monitor your application's HTTP status separately.
+- By default, an invalid `module.json` or unloadable module service provider halts application boot with HTTP 500 before `/actuator/health` can run. Monitor your application's HTTP status separately, or set `modules.skip_broken_modules` to `true` so the application boots and the indicator reports the module.
+- A provider that exists but throws in `register()` or `boot()` still halts boot.
 - A nonexistent class in `$healthIndicators` causes `/actuator/health` to fail with HTTP 500 (`BindingResolutionException`). Verify class names after registering them.
 
 ## Check the result

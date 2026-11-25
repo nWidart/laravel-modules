@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Facades\Artisan;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\ModuleManifest;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class ListCommandTest extends BaseTestCase
@@ -22,7 +23,10 @@ class ListCommandTest extends BaseTestCase
 
     protected function tearDown(): void
     {
-        $repository = $this->app[RepositoryInterface::class];
+        // Delete the invalid module.json first: has() scans the modules again.
+        $this->app['files']->deleteDirectory(base_path('modules/Broken'));
+
+        $repository = $this->app[RepositoryInterface::class]->resetModules();
 
         foreach (['Blog', 'Shop'] as $module) {
             if ($repository->has($module)) {
@@ -74,6 +78,46 @@ class ListCommandTest extends BaseTestCase
 
         $this->assertSame(0, $code);
         $this->assertModulesListedInOrder(['Blog', 'Shop'], Artisan::output());
+    }
+
+    public function test_it_lists_broken_modules_with_their_error()
+    {
+        $this->skipBrokenModules();
+
+        $code = Artisan::call('module:list');
+        $output = Artisan::output();
+
+        $this->assertSame(0, $code);
+        $this->assertMatchesRegularExpression('/\[Broken\] Blog[ .]+Provider class \[Modules\\\\Blog\\\\Providers\\\\MissingServiceProvider\] not found\./', $output);
+        $this->assertMatchesRegularExpression('/\[Broken\] Broken[ .]+Error processing file: modules\/Broken\/module\.json\. Error: Syntax error/', $output);
+        $this->assertStringNotContainsString('[Enabled] Blog', $output);
+    }
+
+    public function test_a_broken_module_json_is_left_out_when_filtering_by_status()
+    {
+        $this->skipBrokenModules();
+
+        Artisan::call('module:list', ['--only' => 'enabled']);
+        $output = Artisan::output();
+
+        $this->assertStringContainsString('[Broken] Blog', $output);
+        $this->assertStringNotContainsString('Broken] Broken', $output);
+    }
+
+    /**
+     * Boot with 'skip_broken_modules': Blog lists a provider class that does not exist, Broken has an invalid module.json.
+     */
+    private function skipBrokenModules(): void
+    {
+        config(['modules.skip_broken_modules' => true]);
+        $repository = $this->app[RepositoryInterface::class];
+        $repository->find('Blog')->json()->set('providers', ['Modules\Blog\Providers\MissingServiceProvider'])->save();
+        $this->app['files']->ensureDirectoryExists(base_path('modules/Broken'));
+        $this->app['files']->put(base_path('modules/Broken/module.json'), '{ broken');
+        $repository->resetModules();
+
+        $this->app->forgetInstance(ModuleManifest::class);
+        $this->app->make(ModuleManifest::class)->getProviders();
     }
 
     private function createModuleWithPriority(string $name, int $priority): void

@@ -56,6 +56,7 @@ This command has no arguments. It has no `--all` option.
 
 - Each row shows `[Enabled]` or `[Disabled]`, the module name, the module path and the priority in brackets.
 - `--only=priority` lists the enabled modules only, ordered by the `priority` field of `module.json`.
+- With `modules.skip_broken_modules` set to `true`, a skipped module shows `[Broken]`, its name and the reason instead of the path and priority. A module with an invalid `module.json` is listed only without `--only`. A module with a missing provider class appears with `--only=enabled`. See [Skip broken modules](/laravel-modules/concepts/how-modules-boot/#skip-broken-modules).
 - The command always exits with `0`.
 
 ```bash

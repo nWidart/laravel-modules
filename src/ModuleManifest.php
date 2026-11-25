@@ -2,11 +2,14 @@
 
 namespace Nwidart\Modules;
 
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
+use Nwidart\Modules\Exceptions\InvalidJsonException;
+use Nwidart\Modules\Support\BrokenModule;
 
 class ModuleManifest
 {
@@ -148,6 +151,10 @@ class ModuleManifest
      * files the repository already read, so each file is found and read once per application.
      * Each entry also holds the module directory under 'module_directory'.
      *
+     * When the 'skip_broken_modules' config is true, a module whose module.json is not valid
+     * JSON, or an enabled module with a provider class that does not exist, is left out and
+     * recorded as broken (see FileRepository::getBrokenModules()).
+     *
      * @return Collection<array-key, non-empty-array<string, mixed>>
      */
     public function getModulesData(): Collection
@@ -155,24 +162,23 @@ class ModuleManifest
         $repository = $this->repository();
 
         if ($repository === null) {
-            return $this->manifestData ??= $this->buildModulesData(
-                $this->paths->flatMap(function ($path) {
-                    // Filesystem::glob() returns false on error, despite its array return type.
-                    $manifests = $this->files->glob("{$path}/module.json") ?: [];
+            if ($this->manifestData !== null) {
+                return $this->manifestData;
+            }
 
-                    return collect($manifests)
-                        ->map(function ($manifest) {
-                            // Filesystem::json() is typed as a plain array; module.json holds a JSON object.
-                            /** @var array<string, mixed> $json */
-                            $json = $this->files->json($manifest);
+            $skipBroken = $this->skipsBrokenModules();
 
-                            return [
-                                'module_directory' => dirname($manifest),
-                                ...$json,
-                            ];
-                        });
-                })
-            );
+            $modules = $this->paths->flatMap(function ($path) use ($skipBroken) {
+                // Filesystem::glob() returns false on error, despite its array return type.
+                $manifests = $this->files->glob("{$path}/module.json") ?: [];
+
+                return collect($manifests)->map(fn ($manifest) => $this->readModuleJson($manifest, $skipBroken));
+            });
+
+            /** @var Collection<array-key, non-empty-array<string, mixed>> $modules */
+            $modules = $skipBroken ? $modules->filter() : $modules;
+
+            return $this->manifestData = $this->buildModulesData($modules, $skipBroken);
         }
 
         // Rebuild when the repository scanned again, for example after resetModules().
@@ -184,7 +190,8 @@ class ModuleManifest
                 collect($files)->map(fn (array $file) => [
                     'module_directory' => dirname($file['path']),
                     ...$file['json']->getAttributes(),
-                ])
+                ]),
+                $this->skipsBrokenModules()
             );
         }
 
@@ -192,16 +199,100 @@ class ModuleManifest
     }
 
     /**
+     * Read a module.json file in the manifest's own paths, with the module directory under 'module_directory'.
+     *
+     * With $skipBroken, a file that is not valid JSON is recorded as a broken module under
+     * its folder name and null is returned.
+     *
+     * @return non-empty-array<string, mixed>|null
+     */
+    private function readModuleJson(string $manifest, bool $skipBroken): ?array
+    {
+        if (! $skipBroken) {
+            // Filesystem::json() is typed as a plain array; module.json holds a JSON object.
+            /** @var array<string, mixed> $json */
+            $json = $this->files->json($manifest);
+
+            return [
+                'module_directory' => dirname($manifest),
+                ...$json,
+            ];
+        }
+
+        try {
+            $json = Json::make($manifest, $this->files)->getAttributes();
+        } catch (InvalidJsonException $exception) {
+            $this->markModuleBroken(basename(dirname($manifest)), BrokenModule::invalidJsonReason($manifest, $exception));
+
+            return null;
+        }
+
+        return [
+            'module_directory' => dirname($manifest),
+            ...$json,
+        ];
+    }
+
+    /**
      * Keep the enabled modules and sort them by priority.
+     *
+     * With $skipBroken, an enabled module with a provider class that does not exist is left
+     * out as a whole (providers, aliases and files) and recorded as broken.
      *
      * @param  Collection<array-key, non-empty-array<string, mixed>>  $modules
      * @return Collection<array-key, non-empty-array<string, mixed>>
      */
-    private function buildModulesData(Collection $modules): Collection
+    private function buildModulesData(Collection $modules, bool $skipBroken): Collection
     {
-        return $modules
-            ->filter(fn ($module) => $this->activator->hasStatus($module['name'], true))
-            ->sortBy(fn ($module) => $module['priority'] ?? 0);
+        $modules = $modules->filter(fn ($module) => $this->activator->hasStatus($module['name'], true));
+
+        if ($skipBroken) {
+            $modules = $modules->reject(fn ($module) => $this->hasMissingProvider($module));
+        }
+
+        return $modules->sortBy(fn ($module) => $module['priority'] ?? 0);
+    }
+
+    /**
+     * Determine whether a provider class of the module does not exist, and record the module as broken if so.
+     *
+     * @param  non-empty-array<string, mixed>  $module
+     */
+    private function hasMissingProvider(array $module): bool
+    {
+        foreach ((array) ($module['providers'] ?? []) as $provider) {
+            if (is_string($provider) && $provider !== '' && ! class_exists($provider)) {
+                $this->markModuleBroken((string) $module['name'], "Provider class [{$provider}] not found.");
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine whether broken modules are skipped instead of stopping the boot.
+     */
+    private function skipsBrokenModules(): bool
+    {
+        return (bool) app(ConfigRepository::class)->get('modules.skip_broken_modules', false);
+    }
+
+    /**
+     * Record a broken module in the bound FileRepository, or only log it when there is none.
+     */
+    private function markModuleBroken(string $name, string $reason): void
+    {
+        $repository = $this->fileRepository();
+
+        if ($repository !== null) {
+            $repository->markModuleBroken($name, $reason);
+
+            return;
+        }
+
+        BrokenModule::log($name, $reason);
     }
 
     /**
@@ -213,6 +304,20 @@ class ModuleManifest
      */
     private function repository(): ?FileRepository
     {
+        $repository = $this->fileRepository();
+
+        if ($repository === null || $repository->getScanPaths() !== $this->paths->values()->all()) {
+            return null;
+        }
+
+        return $repository;
+    }
+
+    /**
+     * Get the bound module repository when it extends FileRepository, whatever paths it scans.
+     */
+    private function fileRepository(): ?FileRepository
+    {
         $container = app();
 
         if (! $container->bound(RepositoryInterface::class)) {
@@ -221,10 +326,6 @@ class ModuleManifest
 
         $repository = $container->make(RepositoryInterface::class);
 
-        if (! $repository instanceof FileRepository || $repository->getScanPaths() !== $this->paths->values()->all()) {
-            return null;
-        }
-
-        return $repository;
+        return $repository instanceof FileRepository ? $repository : null;
     }
 }
