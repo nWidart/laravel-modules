@@ -1,0 +1,7 @@
+import { createInertiaApp } from '@inertiajs/vue3'
+import { resolvePage } from './inertia-pages'
+
+// Keep this call at the top level: @inertiajs/vite wraps it in the SSR server only there.
+createInertiaApp({
+    resolve: resolvePage,
+})

@@ -95,10 +95,10 @@ php artisan module:publish-config Blog --force
 
 ## module:publish-inertia
 
-Publishes the Inertia `app.js` entry file to `resources/js/app.js`.
+Publishes the Inertia `app.js` entry file to `resources/js/app.js`. With `--ssr`, publishes an SSR-ready `app.js` plus `ssr.js` and `inertia-pages.js`.
 
 ```bash
-php artisan module:publish-inertia [--vue] [--react] [--svelte] [-f|--force]
+php artisan module:publish-inertia [--vue] [--react] [--svelte] [--ssr] [-f|--force]
 ```
 
 This command does not extend `BaseCommand`.
@@ -114,13 +114,14 @@ This command has no arguments. It has no `--all` option.
 | `--vue` | | `false` | Publish the Vue version. |
 | `--react` | | `false` | Publish the React version. |
 | `--svelte` | | `false` | Publish the Svelte version. |
-| `--force` | `-f` | `false` | Overwrite an existing `resources/js/app.js` without asking. |
+| `--ssr` | | `false` | Publish an SSR-ready `app.js`, `ssr.js`, and the shared page resolver `inertia-pages.js`. |
+| `--force` | `-f` | `false` | Overwrite existing files without asking. |
 
 **Notes**
 
 - The framework comes from the flag given, else `inertia.frontend` (default `vue`). Pass at most one of `--vue`, `--react`, and `--svelte`. Passing more than one writes nothing and exits with `1`. The error lists options in vue, react, svelte order (for example `The --react and --svelte options cannot be used together. Pass only one of --vue, --react or --svelte.`). This check runs before overwrite handling and is not bypassed by `--force`.
 - The stubs target Inertia v3 (`inertiajs/inertia-laravel` ^3 and `@inertiajs/vue3`, `@inertiajs/react`, or `@inertiajs/svelte` ^3). Inertia v2 is not supported.
-- Stub: `inertia/app-vue.stub`, `inertia/app-react.stub`, or `inertia/app-svelte.stub`.
+- Stub: `inertia/app-vue.stub`, `inertia/app-react.stub`, or `inertia/app-svelte.stub`. With `--ssr`: `inertia/ssr/app.stub`, `inertia/ssr/ssr.stub`, and `inertia/ssr/inertia-pages.stub`.
 - The published `app.js` mounts only when `<div id="app">` and `<script data-page="app" type="application/json">` exist (rendered by `@inertia` in `inertiajs/inertia-laravel` 3). Other pages skip silently.
 - The React stub mounts with `createRoot(el).render(createElement(App, props))` from `react` and `react-dom/client` without JSX, because Vite parses JSX only in `.jsx` files. React pages and components stay `.jsx`.
 - The Svelte stub uses `mount(App, { target: el, props })` from `svelte` and needs Svelte 5.
@@ -128,11 +129,30 @@ This command has no arguments. It has no `--all` option.
 - Without `--force`, an existing `resources/js/app.js` behaves as follows:
   - Interactive: prompts `resources/js/app.js already exists. Overwrite?` (default no). Answering yes overwrites, prints `Published Inertia app.js to resources/js/app.js`, and exits with `0`. Answering no prints `Nothing was written. resources/js/app.js was left unchanged.` and exits with `1`.
   - Non-interactive (`--no-interaction` or no TTY): prints `resources/js/app.js already exists. Use --force to overwrite.` and exits with `1`.
-- With `--force`, the command overwrites the file without asking.
+- With `--force`, the command overwrites the files without asking.
 - On success the command prints a reminder that `vite.config.js` must include `resources/js/app.js` as an input.
+
+**With `--ssr`**
+
+`--ssr` writes three files to `resources/js/`. The default output without `--ssr` is unchanged.
+
+| File | Content |
+| --- | --- |
+| `app.js` | Client entry. It has the same page-data guard as the default `app.js` and no `setup` callback. Without `setup`, `createInertiaApp` hydrates server-rendered pages and mounts the others, so it also works while the SSR server is stopped. |
+| `ssr.js` | A top-level `createInertiaApp({ resolve: resolvePage })` call. `@inertiajs/vite` finds `resources/js/ssr.js` by name and wraps it in the SSR server. Keep the call at the top level, not inside an `if`. |
+| `inertia-pages.js` | The shared resolver `resolvePage(name)`. `Blog/Posts/Index` resolves to `Modules/Blog/resources/js/Pages/Posts/Index.<ext>` first, then to `resources/js/Pages/Blog/Posts/Index.<ext>`. An unknown name throws `Inertia page not found: <name>`. |
+
+- The framework flags and `inertia.frontend` apply as before. They change the import package (`@inertiajs/vue3`, `@inertiajs/react`, or `@inertiajs/svelte`) and the page extension (`vue`, `jsx`, or `svelte`).
+- The command checks all three destinations. If any exists and `--force` is not passed, nothing is written:
+  - Interactive: asks once, for example `resources/js/app.js and resources/js/ssr.js already exist. Overwrite?` (default no). Answering no prints `Nothing was written. ... were left unchanged.` and exits with `1`.
+  - Non-interactive: prints `<files> already exist. Use --force to overwrite.`, naming the existing files, and exits with `1`.
+- A fresh Laravel 13 application ships `resources/js/app.js`, so `--ssr` usually needs `--force` or a yes answer.
+- On success the command prints the remaining setup steps: add `resources/js/app.js` as a Vite input, run `npm install -D @inertiajs/vite`, add `inertia()` after `laravel(...)` in `vite.config.js`, set the build script to `vite build && vite build --ssr`, and run `php artisan inertia:start-ssr` in production. See [Render Inertia pages on the server](/laravel-modules/guides/frontend/inertia/#render-inertia-pages-on-the-server).
+- Running the command again without `--ssr` and with `--force` rewrites only `app.js`. It leaves `ssr.js` and `inertia-pages.js` in place.
 
 ```bash
 php artisan module:publish-inertia --react
+php artisan module:publish-inertia --react --ssr --force
 ```
 
 ## module:publish-migration

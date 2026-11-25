@@ -1,0 +1,14 @@
+const appPages = import.meta.glob('./Pages/**/*.jsx')
+const modulePages = import.meta.glob('/Modules/*/resources/js/Pages/**/*.jsx')
+
+// Resolve "Blog/Posts/Index" to Modules/Blog/resources/js/Pages/Posts/Index.jsx first,
+// then to resources/js/Pages/Blog/Posts/Index.jsx.
+export function resolvePage(name) {
+    const [module, ...rest] = name.split('/')
+    const page = modulePages[`/Modules/${module}/resources/js/Pages/${rest.join('/')}.jsx`]
+        ?? appPages[`./Pages/${name}.jsx`]
+    if (!page) {
+        throw new Error(`Inertia page not found: ${name}`)
+    }
+    return page()
+}

@@ -1,0 +1,14 @@
+import { createInertiaApp } from '@inertiajs/svelte'
+import { resolvePage } from './inertia-pages'
+
+// Inertia v3 reads the page data only from the <script data-page="app" type="application/json"> tag
+// that @inertia renders. Skip pages rendered without it, such as plain Blade pages loading this file.
+// Without a setup callback, createInertiaApp hydrates server-rendered pages and mounts the others.
+if (document.querySelector('script[data-page="app"][type="application/json"]')) {
+    createInertiaApp({
+        resolve: resolvePage,
+        progress: {
+            color: '#4B5563',
+        },
+    })
+}

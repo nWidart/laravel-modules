@@ -119,7 +119,7 @@ Commands that copy module files to the application. Details: [Publish commands](
 | --- | --- |
 | [`module:publish`](/laravel-modules/reference/commands/publish/#modulepublish) | Copies the assets of a module to the public assets path. |
 | [`module:publish-config`](/laravel-modules/reference/commands/publish/#modulepublish-config) | Publishes the configuration files of a module to the application `config` directory. |
-| [`module:publish-inertia`](/laravel-modules/reference/commands/publish/#modulepublish-inertia) | Publishes the Inertia `app.js` entry file to `resources/js/app.js`. |
+| [`module:publish-inertia`](/laravel-modules/reference/commands/publish/#modulepublish-inertia) | Publishes the Inertia `app.js` entry file to `resources/js/app.js`. With `--ssr`, also publishes `ssr.js` and `inertia-pages.js` for server-side rendering. |
 | [`module:publish-migration`](/laravel-modules/reference/commands/publish/#modulepublish-migration) | Copies the migrations of a module to the application migration path. |
 | [`module:publish-translation`](/laravel-modules/reference/commands/publish/#modulepublish-translation) | Copies the language files of a module to the application `lang` directory. |
 
