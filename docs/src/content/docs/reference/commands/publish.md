@@ -147,6 +147,7 @@ This command has no arguments. It has no `--all` option.
   - Interactive: asks once, for example `resources/js/app.js and resources/js/ssr.js already exist. Overwrite?` (default no). Answering no prints `Nothing was written. ... were left unchanged.` and exits with `1`.
   - Non-interactive: prints `<files> already exist. Use --force to overwrite.`, naming the existing files, and exits with `1`.
 - A fresh Laravel 13 application ships `resources/js/app.js`, so `--ssr` usually needs `--force` or a yes answer.
+- `--force` overwrites `app.js`, `ssr.js`, and `inertia-pages.js`. Before writing anything, the command refuses a destination that is a symbolic link, a directory, or an unwritable file, and refuses when `resources/js` is not writable and a file is missing. It writes nothing and exits with `1`. `--force` does not bypass these refusals.
 - On success the command prints the remaining setup steps: add `resources/js/app.js` as a Vite input, run `npm install -D @inertiajs/vite`, add `inertia()` after `laravel(...)` in `vite.config.js`, set the build script to `vite build && vite build --ssr`, and run `php artisan inertia:start-ssr` in production. See [Render Inertia pages on the server](/laravel-modules/guides/frontend/inertia/#render-inertia-pages-on-the-server).
 - Running the command again without `--ssr` and with `--force` rewrites only `app.js`. It leaves `ssr.js` and `inertia-pages.js` in place.
 

@@ -239,7 +239,8 @@ When using Inertia.js inside a module (the stubs target Inertia v3; pass at most
 # Publish the Inertia app.js entry point
 {{ $assist->artisanCommand('module:publish-inertia') }}
 
-# Publish an SSR-ready app.js plus ssr.js and inertia-pages.js (add --force if resources/js/app.js exists)
+# Publish an SSR-ready app.js plus ssr.js and inertia-pages.js
+# Check all three destinations and preserve any customizations before using --force.
 {{ $assist->artisanCommand('module:publish-inertia --ssr') }}
 ```
 

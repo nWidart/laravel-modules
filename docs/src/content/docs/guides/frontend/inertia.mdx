@@ -139,7 +139,7 @@ Server-side rendering (SSR) sends rendered HTML with the first response. The bro
 
 <Steps>
 
-1. Publish the SSR files. Add `--force` when `resources/js/app.js` exists, which a new Laravel 13 application includes.
+1. Publish the SSR files. Add `--force` when `resources/js/app.js` exists, which a new Laravel 13 application includes. `--force` overwrites all three files, so check `app.js`, `ssr.js` and `inertia-pages.js` and back up any customizations first.
 
    <Tabs syncKey="inertia-frontend">
      <TabItem label="Vue">
