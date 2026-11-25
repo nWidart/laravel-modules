@@ -165,7 +165,7 @@ php artisan module:make <name>... [-p|--plain] [--api] [--web] [--inertia] [-d|-
   4. `--api` -> `api`
   5. Default -> `web`
   `--inertia` has no effect on a `plain` module.
-- An existing module stops with `Module [<name>] already exists!` unless `--force` is given. With `--force`, the command deletes the existing module and creates it again.
+- An existing module stops with `Module [<name>] already exists!` unless `--force` is given. With `--force`, the command deletes the existing module and creates it again. The same error appears, without `--force`, when the destination folder holds a `module.json` that the repository could not read (invalid JSON, or a different module name). This applies whether or not `modules.skip_broken_modules` is set.
 - Before writing anything, the command renders every stub. A JSON stub that renders invalid JSON stops the command and leaves any existing module intact.
 - If `composer.json` uses the app folder, every class generator path must sit inside `paths.app_folder` (or match its namespace when `paths.app_folder` is empty). Otherwise the command prints the offending keys and stops.
 - Execution order:

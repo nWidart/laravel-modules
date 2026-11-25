@@ -110,8 +110,8 @@ An app with a published `config/modules.php` must add the key itself, or re-publ
 
 With the flag on:
 
-- **Invalid `module.json`:** the module is recorded under its folder name, with a reason such as `Error processing file: Modules/Shop/module.json. Error: Syntax error` (path relative to the base path).
-- **Missing provider class:** the package checks the providers of enabled modules. If one class does not exist, it skips the whole module: its providers, aliases and `files` do not load. The reason is `Provider class [X] not found.` Disabled modules are not checked.
+- **Invalid `module.json`:** the module is recorded under its folder name (or its directory relative to the base path, such as `extra-modules/Blog`, when a listed module already has that name), with a reason such as `Error processing file: Modules/Shop/module.json. Error: Syntax error` (path relative to the base path).
+- **Missing provider class:** the package checks the providers of enabled modules. A provider that is an alias mapped to an existing class by the module's own `aliases` counts as present. If one class does not exist, it skips the whole module: its providers, aliases and `files` do not load. The reason is `Provider class [X] not found.` Disabled modules are not checked.
 - **Log:** each skipped module writes one error entry per boot: `Module [Shop] was skipped because it is broken: <reason>`.
 - **Reports:** `php artisan module:list` shows `[Broken]` with the reason, and the `modules` health indicator reports `DOWN`. See [`module:list`](/laravel-modules/reference/commands/module-management/#modulelist) and [Report module health with the actuator](/laravel-modules/guides/production/health-checks/).
 - **PHP API:** `Nwidart\Modules\FileRepository::getBrokenModules()` returns module name => reason. See [Repository](/laravel-modules/reference/api/repository/#find-and-list).
@@ -124,6 +124,9 @@ Limits:
 
 - A module skipped for a missing provider still counts as enabled in the repository (`Module::isEnabled()`, `allEnabled()`). `module:migrate` and seeders still run for it.
 - A module with an invalid `module.json` has no readable name, so `module:enable` and `module:disable` cannot find it (`module:disable Shop` says it does not exist). Fix the JSON first.
+- A route cache built with `php artisan route:cache` or `optimize` while the module was healthy still holds its routes after the module is skipped, and they run without the module's bindings. Run `php artisan route:clear`, or `route:cache` again, after a module breaks or is fixed.
+- Skipping a module changes the provider list, so Laravel rewrites `bootstrap/cache/modules.php`, as when you enable or disable a module. `bootstrap/cache` must be writable.
+- `module:make` refuses, without `--force`, a destination folder that holds a `module.json` the repository could not read, and prints `Module [X] already exists!`. This applies with or without the flag.
 - A provider class that exists but throws in `register()` or `boot()` still stops the app.
 - The broken list lasts for the process. Restart long-lived processes (Octane, queue workers) after you fix a module.
 - The package autoloads every provider class of enabled modules at boot. The cost is small.
