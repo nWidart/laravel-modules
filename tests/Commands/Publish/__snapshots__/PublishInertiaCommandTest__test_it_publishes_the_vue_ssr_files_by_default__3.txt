@@ -1,0 +1,14 @@
+const appPages = import.meta.glob('./Pages/**/*.vue')
+const modulePages = import.meta.glob('/Modules/*/resources/js/Pages/**/*.vue')
+
+// Resolve "Blog/Posts/Index" to Modules/Blog/resources/js/Pages/Posts/Index.vue first,
+// then to resources/js/Pages/Blog/Posts/Index.vue.
+export function resolvePage(name) {
+    const [module, ...rest] = name.split('/')
+    const page = modulePages[`/Modules/${module}/resources/js/Pages/${rest.join('/')}.vue`]
+        ?? appPages[`./Pages/${name}.vue`]
+    if (!page) {
+        throw new Error(`Inertia page not found: ${name}`)
+    }
+    return page()
+}

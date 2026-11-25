@@ -51,6 +51,9 @@ The Tokens column lists the `$TOKEN$` placeholders found in the stub file.
 | `inertia/page-react.stub` | `module:make-inertia-page` `--react` | `$PAGE_NAME$` `$STUDLY_NAME$` |
 | `inertia/page-svelte.stub` | `module:make-inertia-page` `--svelte` | `$PAGE_NAME$` `$STUDLY_NAME$` |
 | `inertia/page-vue.stub` | `module:make-inertia-page` `--vue` | `$PAGE_NAME$` `$STUDLY_NAME$` |
+| `inertia/ssr/app.stub` | `module:publish-inertia` `--ssr` | `$INERTIA_PACKAGE$` |
+| `inertia/ssr/inertia-pages.stub` | `module:publish-inertia` `--ssr` | `$PAGE_EXTENSION$` |
+| `inertia/ssr/ssr.stub` | `module:publish-inertia` `--ssr` | `$INERTIA_PACKAGE$` |
 | `interface.stub` | `module:make-interface` | `$CLASS$` `$CLASS_NAMESPACE$` |
 | `job.stub` | `module:make-job` `--sync` | `$CLASS$` `$NAMESPACE$` |
 | `job-middleware.stub` | `module:make-job-middleware` | `$CLASS$` `$CLASS_NAMESPACE$` |
@@ -164,6 +167,8 @@ The `module:make-*` commands pass their own keys. These are not configurable. Th
 | `COMMAND_NAME` | The `--command` value, default `command:name`. |
 | `COMPONENT_NAME` | `components.<name in lower case>` (component-class stub); studly-case component name (Inertia component stubs). |
 | `PAGE_NAME` | Studly-case page name (Inertia page stubs). |
+| `INERTIA_PACKAGE` | Inertia client package: `@inertiajs/vue3`, `@inertiajs/react`, or `@inertiajs/svelte` (SSR stubs). |
+| `PAGE_EXTENSION` | Page file extension: `vue`, `jsx`, or `svelte` (SSR page resolver stub). |
 | `EVENTNAME`, `SHORTEVENTNAME` | Fully qualified and short name of the `--event` class. |
 | `TABLE` | Table name parsed from the migration name. |
 | `FIELDS`, `FIELDS_UP`, `FIELDS_DOWN` | Column definitions rendered from `--fields`. |

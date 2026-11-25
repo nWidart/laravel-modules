@@ -238,7 +238,19 @@ When using Inertia.js inside a module (the stubs target Inertia v3; pass at most
 
 # Publish the Inertia app.js entry point
 {{ $assist->artisanCommand('module:publish-inertia') }}
+
+# Publish an SSR-ready app.js plus ssr.js and inertia-pages.js
+# Check all three destinations and preserve any customizations before using --force.
+{{ $assist->artisanCommand('module:publish-inertia --ssr') }}
 ```
+
+`--ssr` (Inertia v3 server-side rendering) writes three files to `resources/js/`:
+
+- `app.js`: client entry that hydrates server-rendered pages.
+- `ssr.js`: server entry. Keep its `createInertiaApp` call at the top level; `@inertiajs/vite` wraps it in the SSR server.
+- `inertia-pages.js`: shared `resolvePage` that resolves `Blog/Posts/Index` to `Modules/Blog/resources/js/Pages/Posts/Index.<ext>` first, then `resources/js/Pages/Blog/Posts/Index.<ext>`.
+
+Also install `@inertiajs/vite`, add `inertia()` to the `vite.config.js` plugins after `laravel(...)`, and set the build script to `vite build && vite build --ssr`. In production run `php artisan inertia:start-ssr`. Keep browser APIs (`document`, `window`) out of server-rendered code; use them in mount hooks.
 
 ## Key Conventions
 

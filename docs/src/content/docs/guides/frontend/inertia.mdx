@@ -133,6 +133,119 @@ The file extension matches your framework (`.vue`, `.jsx`, or `.svelte`). If no 
 
 Keep `npm run dev` running or run `npm run build`, then serve the application (for example with `php artisan serve`). Open `/blogs` to verify the `Index` page renders. Run `php artisan route:list --name=blog` to inspect the generated routes.
 
+## Render Inertia pages on the server
+
+Server-side rendering (SSR) sends rendered HTML with the first response. The browser then hydrates it. This section uses Inertia v3 SSR and the `@inertiajs/vite` plugin.
+
+<Steps>
+
+1. Publish the SSR files. Add `--force` when `resources/js/app.js` exists, which a new Laravel 13 application includes. `--force` overwrites all three files, so check `app.js`, `ssr.js` and `inertia-pages.js` and back up any customizations first.
+
+   <Tabs syncKey="inertia-frontend">
+     <TabItem label="Vue">
+       ```bash
+       php artisan module:publish-inertia --vue --ssr --force
+       ```
+     </TabItem>
+     <TabItem label="React">
+       ```bash
+       php artisan module:publish-inertia --react --ssr --force
+       ```
+     </TabItem>
+     <TabItem label="Svelte">
+       ```bash
+       php artisan module:publish-inertia --svelte --ssr --force
+       ```
+     </TabItem>
+   </Tabs>
+
+   The command writes three files to `resources/js/` and writes nothing if it cannot write all of them:
+
+   - `app.js`: the client entry. It hydrates server-rendered pages and mounts the others, so it also works while the SSR server is stopped.
+   - `ssr.js`: the server entry. `@inertiajs/vite` finds it by name and wraps it in the SSR server. Keep its `createInertiaApp` call at the top level, not inside an `if`.
+   - `inertia-pages.js`: the page resolver both entries share.
+
+2. Install the Inertia Vite plugin.
+
+   ```bash
+   npm install -D @inertiajs/vite
+   ```
+
+3. Add `inertia()` to the plugins in `vite.config.js`, after `laravel(...)`. Make sure `resources/js/app.js` is in `laravel({ input: [...] })`.
+
+   <Tabs syncKey="inertia-frontend">
+     <TabItem label="Vue">
+       ```js title="vite.config.js"
+       import vue from '@vitejs/plugin-vue'
+       import inertia from '@inertiajs/vite'
+
+       // in defineConfig({ plugins: [...] }): keep laravel(...) and add the others after it
+       vue(),
+       inertia(),
+       ```
+     </TabItem>
+     <TabItem label="React">
+       ```js title="vite.config.js"
+       import react from '@vitejs/plugin-react'
+       import inertia from '@inertiajs/vite'
+
+       // in defineConfig({ plugins: [...] }): keep laravel(...) and add the others after it
+       react(),
+       inertia(),
+       ```
+     </TabItem>
+     <TabItem label="Svelte">
+       ```js title="vite.config.js"
+       import { svelte } from '@sveltejs/vite-plugin-svelte'
+       import inertia from '@inertiajs/vite'
+
+       // in defineConfig({ plugins: [...] }): keep laravel(...) and add the others after it
+       svelte(),
+       inertia(),
+       ```
+     </TabItem>
+   </Tabs>
+
+4. Build the client and the server bundle. Set the `build` script in `package.json`, then run it.
+
+   ```json title="package.json"
+   "scripts": {
+       "build": "vite build && vite build --ssr"
+   }
+   ```
+
+   ```bash
+   npm run build
+   ```
+
+   The build prints `Inertia SSR entry: resources/js/ssr.js` and writes `bootstrap/ssr/ssr.js`. `inertia-laravel` finds that file without extra configuration. `config/inertia.php` enables SSR by default (`ssr.enabled`).
+
+5. In production, start the SSR server and keep it running.
+
+   ```bash
+   php artisan inertia:start-ssr
+   ```
+
+</Steps>
+
+### SSR in development
+
+`npm run dev` renders SSR through Vite, so you do not run `inertia:start-ssr` locally. The first request right after Vite starts can come back client-rendered while Vite warms up.
+
+### Module pages with SSR
+
+`inertia-pages.js` resolves a name like `Blog/Posts/Index` to `Modules/Blog/resources/js/Pages/Posts/Index.<ext>` first, then to `resources/js/Pages/Blog/Posts/Index.<ext>`. An unknown name throws `Inertia page not found: <name>`.
+
+The package uses this resolver because the `pages` option of `@inertiajs/vite` takes one directory, so it cannot also search `Modules/*/resources/js/Pages`.
+
+<Aside type="caution" title="Browser APIs">
+The server renders pages without `document` or `window`. Use them only in mount hooks such as `onMounted` (Vue), `useEffect` (React), or `onMount` (Svelte).
+</Aside>
+
+### Stop using SSR
+
+Running `module:publish-inertia --force` without `--ssr` rewrites only `app.js`. It leaves `ssr.js` and `inertia-pages.js` in place. Delete both files, restore the `build` script to `vite build`, and remove `inertia()` from `vite.config.js` if you no longer want SSR.
+
 ## Add a page
 
 Run `module:make-inertia-page` to add a page to an existing module.
