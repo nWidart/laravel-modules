@@ -64,6 +64,7 @@ class LumenModulesServiceProvider extends ModulesServiceProvider
     #[\Override]
     protected function registerServices()
     {
+        $this->registerBrokenModules();
         $this->app->singleton(Contracts\RepositoryInterface::class, fn ($app) => new Lumen\LumenFileRepository($app));
         $this->app->singleton(Contracts\ActivatorInterface::class, function (Container $app) {
             $config = $app->make(ConfigRepository::class);

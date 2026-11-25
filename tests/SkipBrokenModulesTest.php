@@ -13,6 +13,7 @@ use Nwidart\Modules\Exceptions\InvalidJsonException;
 use Nwidart\Modules\FileRepository;
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Nwidart\Modules\ModuleManifest;
+use Nwidart\Modules\Support\BrokenModules;
 use Nwidart\Modules\Tests\Fixtures\BrokenModules\BlogServiceProvider;
 use Nwidart\Modules\Tests\Fixtures\BrokenModules\CartServiceProvider;
 
@@ -33,7 +34,9 @@ class SkipBrokenModulesTest extends BaseTestCase
 
         $this->app['files']->delete($this->app->bootstrapPath('cache/modules.php'));
         $this->app[ActivatorInterface::class]->reset();
-        $this->app[RepositoryInterface::class]->resetModules();
+        if ($this->app[RepositoryInterface::class] instanceof FileRepository) {
+            $this->app[RepositoryInterface::class]->resetModules();
+        }
 
         parent::tearDown();
     }
@@ -107,6 +110,79 @@ class SkipBrokenModulesTest extends BaseTestCase
         $this->assertSame([
             'Cart' => 'Provider class ['.self::MISSING_PROVIDER.'] not found.',
         ], $this->repository()->getBrokenModules());
+    }
+
+    public function test_a_provider_listed_by_an_alias_of_the_module_is_not_missing()
+    {
+        config(['modules.skip_broken_modules' => true]);
+        $this->writeModule('Cart', [
+            'name' => 'Cart',
+            'providers' => ['SkipBrokenModulesCartProviderAlias'],
+            'aliases' => ['SkipBrokenModulesCartProviderAlias' => CartServiceProvider::class],
+        ]);
+
+        $this->registerModules();
+
+        $this->assertSame([], $this->repository()->getBrokenModules());
+        $this->assertTrue($this->app->bound('broken-modules.cart'));
+    }
+
+    public function test_a_missing_provider_in_a_nested_providers_list_is_found()
+    {
+        config(['modules.skip_broken_modules' => true]);
+        $this->writeModule('Blog', ['name' => 'Blog', 'providers' => [BlogServiceProvider::class]]);
+        $this->writeModule('Cart', ['name' => 'Cart', 'providers' => [[self::MISSING_PROVIDER]]]);
+
+        $this->registerModules();
+
+        $this->assertTrue($this->app->bound('broken-modules.blog'));
+        $this->assertSame([
+            'Cart' => 'Provider class ['.self::MISSING_PROVIDER.'] not found.',
+        ], $this->repository()->getBrokenModules());
+    }
+
+    public function test_empty_provider_entries_are_ignored_like_the_manifest_does()
+    {
+        config(['modules.skip_broken_modules' => true]);
+        $this->writeModule('Cart', ['name' => 'Cart', 'providers' => ['0', '', CartServiceProvider::class]]);
+
+        $this->registerModules();
+
+        $this->assertSame([], $this->repository()->getBrokenModules());
+        $this->assertSame([CartServiceProvider::class], $this->app[ModuleManifest::class]->getProviders());
+        $this->assertTrue($this->app->bound('broken-modules.cart'));
+    }
+
+    public function test_an_invalid_module_json_is_labelled_by_its_directory_when_a_module_has_its_folder_name()
+    {
+        config(['modules.skip_broken_modules' => true]);
+        $location = $this->makeLocation();
+        $this->writeModule('Shop', ['name' => 'Shop', 'providers' => []], location: $location);
+        $this->writeModule('Shop', '{ broken');
+        $this->repository()->addLocation($location);
+
+        $this->registerModules();
+
+        $this->assertSame(['shop'], array_keys($this->repository()->all()));
+        $this->assertSame([
+            'modules/Shop' => 'Error processing file: modules/Shop/module.json. Error: Syntax error',
+        ], $this->repository()->getBrokenModules());
+    }
+
+    public function test_broken_modules_are_recorded_with_a_repository_that_is_not_a_file_repository()
+    {
+        config(['modules.skip_broken_modules' => true]);
+        $this->app->instance(RepositoryInterface::class, $this->createStub(RepositoryInterface::class));
+        $location = $this->makeLocation();
+        $this->writeModule('Shop', '{ broken', location: $location);
+        $this->writeModule('Cart', ['name' => 'Cart', 'providers' => [self::MISSING_PROVIDER]], location: $location);
+
+        $this->makeManifest([$location.'/*'])->getProviders();
+
+        $this->assertSame([
+            'Cart' => 'Provider class ['.self::MISSING_PROVIDER.'] not found.',
+            'Shop' => 'Error processing file: Shop/module.json. Error: Syntax error',
+        ], $this->app[BrokenModules::class]->all());
     }
 
     public function test_a_disabled_module_with_a_missing_provider_class_is_not_reported()

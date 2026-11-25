@@ -25,6 +25,7 @@ class ListCommandTest extends BaseTestCase
     {
         // Delete the invalid module.json first: has() scans the modules again.
         $this->app['files']->deleteDirectory(base_path('modules/Broken'));
+        $this->app['files']->deleteDirectory(base_path('extra-modules'));
 
         $repository = $this->app[RepositoryInterface::class]->resetModules();
 
@@ -102,6 +103,41 @@ class ListCommandTest extends BaseTestCase
 
         $this->assertStringContainsString('[Broken] Blog', $output);
         $this->assertStringNotContainsString('Broken] Broken', $output);
+    }
+
+    public function test_an_invalid_module_json_does_not_mark_a_module_with_its_folder_name_as_broken()
+    {
+        config(['modules.skip_broken_modules' => true]);
+        $this->writeInvalidModuleJson('extra-modules/Blog');
+
+        Artisan::call('module:list');
+        $output = Artisan::output();
+
+        $this->assertMatchesRegularExpression('/\[Enabled\] Blog[ .]+modules\/Blog \[0\]/', $output);
+        $this->assertMatchesRegularExpression('/\[Broken\] extra-modules\/Blog[ .]+Error processing file: extra-modules\/Blog\/module\.json\. Error: Syntax error/', $output);
+    }
+
+    public function test_it_lists_a_broken_module_found_by_its_own_scan()
+    {
+        config(['modules.skip_broken_modules' => true]);
+        $this->assertCount(1, $this->app[RepositoryInterface::class]->all());
+
+        // A location added after the boot is scanned by module:list itself.
+        $this->writeInvalidModuleJson('extra-modules/Shop');
+
+        Artisan::call('module:list');
+
+        $this->assertMatchesRegularExpression('/\[Broken\] Shop[ .]+Error processing file: extra-modules\/Shop\/module\.json/', Artisan::output());
+    }
+
+    /**
+     * Write an invalid module.json in a folder of a location the repository scans too.
+     */
+    private function writeInvalidModuleJson(string $directory): void
+    {
+        $this->app['files']->ensureDirectoryExists(base_path($directory));
+        $this->app['files']->put(base_path($directory.'/module.json'), '{ broken');
+        $this->app[RepositoryInterface::class]->addLocation(dirname(base_path($directory)));
     }
 
     /**

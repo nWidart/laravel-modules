@@ -3,8 +3,8 @@
 namespace Nwidart\Modules\Commands\Actions;
 
 use Illuminate\Console\Command;
-use Nwidart\Modules\FileRepository;
 use Nwidart\Modules\Module;
+use Nwidart\Modules\Support\BrokenModules;
 use Nwidart\Modules\Traits\InteractsWithModuleRepository;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -36,25 +36,26 @@ class ListCommand extends Command
      */
     public function handle(): int
     {
-        $broken = $this->getBrokenModules();
-
         $this->components->twoColumnDetail('<fg=gray>Status / Name</>', '<fg=gray>Path / priority</>');
-        collect($this->getRows())->each(function ($row) use (&$broken) {
-            if (isset($broken[$row[0]])) {
-                $this->components->twoColumnDetail("[{$row[1]}] {$row[0]}", $broken[$row[0]]);
-                unset($broken[$row[0]]);
 
-                return;
-            }
+        // getRows() scans the modules first, so a broken module found by that scan is listed too.
+        $rows = $this->getRows();
+        $missingProviders = $this->brokenModules()->missingProviders();
 
-            $this->components->twoColumnDetail("[{$row[1]}] {$row[0]}", "{$row[3]} [{$row[2]}]");
-        });
+        foreach ($rows as $row) {
+            $this->components->twoColumnDetail(
+                "[{$row[1]}] {$row[0]}",
+                $missingProviders[$row[0]] ?? "{$row[3]} [{$row[2]}]"
+            );
+        }
 
         // A module with an invalid module.json is not in the repository, so its status is unknown:
         // it is listed only when no --only filter is given.
         if ($this->option('only') === null) {
-            foreach ($broken as $name => $reason) {
-                $this->components->twoColumnDetail('['.self::BROKEN_STATUS."] {$name}", $reason);
+            $names = array_map(fn (Module $module) => $module->getName(), array_values($this->moduleRepository()->all()));
+
+            foreach ($this->brokenModules()->invalidJson($names) as $label => $module) {
+                $this->components->twoColumnDetail('['.self::BROKEN_STATUS."] {$label}", $module['reason']);
             }
         }
 
@@ -69,14 +70,15 @@ class ListCommand extends Command
     public function getRows()
     {
         $rows = [];
-        $broken = $this->getBrokenModules();
+        $modules = $this->getModules();
+        $missingProviders = $this->brokenModules()->missingProviders();
 
         /** @var Module $module */
-        foreach ($this->getModules() as $module) {
+        foreach ($modules as $module) {
             $rows[] = [
                 $module->getName(),
                 match (true) {
-                    isset($broken[$module->getName()]) => self::BROKEN_STATUS,
+                    isset($missingProviders[$module->getName()]) => self::BROKEN_STATUS,
                     $module->isEnabled() => '<fg=green>Enabled</>',
                     default => '<fg=red>Disabled</>',
                 },
@@ -89,15 +91,11 @@ class ListCommand extends Command
     }
 
     /**
-     * Get the modules skipped because they are broken ('skip_broken_modules' config), with the reason for each.
-     *
-     * @return array<string, string>
+     * Get the modules skipped because they are broken ('skip_broken_modules' config).
      */
-    private function getBrokenModules(): array
+    private function brokenModules(): BrokenModules
     {
-        $repository = $this->moduleRepository();
-
-        return $repository instanceof FileRepository ? $repository->getBrokenModules() : [];
+        return $this->laravel->make(BrokenModules::class);
     }
 
     /**

@@ -7,7 +7,7 @@ use Nwidart\Actuator\Health\HealthIndicator;
 use Nwidart\Modules\Activators\FileActivator;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\FileRepository;
+use Nwidart\Modules\Support\BrokenModules;
 
 /**
  * Reports the modules for the nwidart/laravel-actuator health endpoint.
@@ -21,16 +21,23 @@ use Nwidart\Modules\FileRepository;
  *
  * With the 'skip_broken_modules' config, a module skipped because it is broken (invalid
  * module.json, provider class not found) is listed with the reason as its error, and the
- * health is DOWN. The repository records these modules only when it extends FileRepository.
+ * health is DOWN, with any repository. A module with an invalid module.json has no readable
+ * name: it is listed under its folder name, or under its directory relative to the base path
+ * when a module with that name is already listed.
  */
 class ModulesHealthIndicator implements HealthIndicator
 {
     private const MISSING_ERROR = 'Enabled in the status store, not found on disk.';
 
+    private readonly BrokenModules $brokenModules;
+
     public function __construct(
         private readonly RepositoryInterface $modules,
         private readonly ActivatorInterface $activator,
-    ) {}
+        ?BrokenModules $brokenModules = null,
+    ) {
+        $this->brokenModules = $brokenModules ?? app(BrokenModules::class);
+    }
 
     #[\Override]
     public function health(): Health
@@ -56,9 +63,16 @@ class ModulesHealthIndicator implements HealthIndicator
             $details[$module->getName()] = ['enabled' => $enabled];
         }
 
-        foreach ($this->brokenModules() as $name => $reason) {
+        // Only enabled modules are checked for missing providers.
+        foreach ($this->brokenModules->missingProviders() as $name => $reason) {
             $known[strtolower($name)] = true;
-            $details[$name] = ['enabled' => $this->brokenModuleEnabled($name), 'error' => $reason];
+            $details[$name] = ['enabled' => true, 'error' => $reason];
+            $down = true;
+        }
+
+        foreach ($this->brokenModules->invalidJson(array_keys($details)) as $label => $module) {
+            $known[strtolower($module['folder'])] = true;
+            $details[$label] = ['enabled' => $this->brokenModuleEnabled($module['folder']), 'error' => $module['reason']];
             $down = true;
         }
 
@@ -76,18 +90,9 @@ class ModulesHealthIndicator implements HealthIndicator
     }
 
     /**
-     * @return array<string, string> The reason, keyed by module name.
-     */
-    private function brokenModules(): array
-    {
-        return $this->modules instanceof FileRepository ? $this->modules->getBrokenModules() : [];
-    }
-
-    /**
-     * Get the stored status of a broken module, or true when it is not known.
+     * Get the stored status of a module with an invalid module.json, or true when it is not known.
      *
-     * A module with an invalid module.json is listed under its folder name, which the
-     * repository never scanned, so its status is read from the store when it can be.
+     * Its module.json cannot be read, so its status is looked up by its folder name.
      */
     private function brokenModuleEnabled(string $name): bool
     {

@@ -9,6 +9,7 @@ use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\ModuleManifest;
+use Nwidart\Modules\Support\BrokenModules;
 use Nwidart\Modules\Tests\BaseTestCase;
 
 class ModulesHealthIndicatorTest extends BaseTestCase
@@ -28,6 +29,7 @@ class ModulesHealthIndicatorTest extends BaseTestCase
         $this->app['files']->deleteDirectory($this->getModuleBasePath('Blog'));
         $this->app['files']->deleteDirectory($this->getModuleBasePath('Shop'));
         $this->app['files']->deleteDirectory($this->getModuleBasePath('Broken'));
+        $this->app['files']->deleteDirectory(base_path('extra-modules'));
         $this->app[RepositoryInterface::class]->resetModules();
         $this->app[ActivatorInterface::class]->reset();
 
@@ -173,6 +175,42 @@ class ModulesHealthIndicatorTest extends BaseTestCase
         $this->assertSame(Status::Down, $health->status);
         $this->assertFalse($health->details['modules']['Broken']['enabled']);
         $this->assertArrayHasKey('error', $health->details['modules']['Broken']);
+    }
+
+    public function test_an_invalid_module_json_does_not_replace_a_listed_module_with_its_folder_name()
+    {
+        config(['modules.skip_broken_modules' => true]);
+        $this->app['files']->ensureDirectoryExists(base_path('extra-modules/Blog'));
+        $this->app['files']->put(base_path('extra-modules/Blog/module.json'), '{ broken');
+        $this->app[RepositoryInterface::class]->addLocation(base_path('extra-modules'));
+
+        $health = $this->app->make(ModulesHealthIndicator::class)->health();
+
+        $this->assertSame(Status::Down, $health->status);
+        $this->assertSame([
+            'modules' => [
+                'Blog' => ['enabled' => true],
+                'Shop' => ['enabled' => false],
+                'extra-modules/Blog' => ['enabled' => true, 'error' => 'Error processing file: extra-modules/Blog/module.json. Error: Syntax error'],
+            ],
+        ], $health->details);
+    }
+
+    public function test_it_reports_broken_modules_with_a_repository_that_is_not_a_file_repository()
+    {
+        $repository = $this->createStub(RepositoryInterface::class);
+        $repository->method('all')->willReturn([]);
+        $this->app[BrokenModules::class]->recordMissingProvider('Cart', 'Modules\Cart\Providers\MissingServiceProvider');
+
+        $health = (new ModulesHealthIndicator($repository, $this->app[ActivatorInterface::class]))->health();
+
+        $this->assertSame(Status::Down, $health->status);
+        $this->assertSame([
+            'modules' => [
+                'Cart' => ['enabled' => true, 'error' => 'Provider class [Modules\Cart\Providers\MissingServiceProvider] not found.'],
+                'Blog' => ['enabled' => true, 'error' => 'Enabled in the status store, not found on disk.'],
+            ],
+        ], $health->details);
     }
 
     public function test_file_activator_returns_the_stored_statuses()

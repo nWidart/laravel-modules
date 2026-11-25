@@ -391,7 +391,9 @@ class ModuleGenerator extends Generator
 
         $exists = $this->module->has($name);
 
-        if ($exists && ! $this->force) {
+        // A module.json the repository could not read (an invalid one skipped with 'skip_broken_modules',
+        // or one with another name) still marks the folder as a module: never write over it without --force.
+        if (! $this->force && ($exists || $this->filesystem->exists($this->module->getModulePath($name).'module.json'))) {
             $this->reportError("Module [{$name}] already exists!");
 
             return E_ERROR;

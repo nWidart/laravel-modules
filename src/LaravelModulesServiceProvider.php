@@ -119,6 +119,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
             return new $class($app);
         });
         $this->app->alias(RepositoryInterface::class, 'modules');
+        $this->registerBrokenModules();
 
         $this->app->singleton(
             ModuleManifest::class,

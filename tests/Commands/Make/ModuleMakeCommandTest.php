@@ -366,6 +366,41 @@ class ModuleMakeCommandTest extends BaseTestCase
         $this->assertSame(E_ERROR, $code);
     }
 
+    public function test_it_does_not_write_over_a_module_folder_with_an_invalid_module_json()
+    {
+        config(['modules.skip_broken_modules' => true]);
+        $this->writeModuleFolder('Shop', '{ broken');
+
+        $code = $this->artisan('module:make', ['name' => ['Shop']]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString('Module [Shop] already exists!', Artisan::output());
+        $this->assertSame('{ broken', $this->finder->get(base_path('modules/Shop/module.json')));
+        $this->assertSame('kept', $this->finder->get(base_path('modules/Shop/notes.txt')));
+    }
+
+    public function test_it_does_not_write_over_a_module_folder_whose_module_json_has_another_name()
+    {
+        $this->writeModuleFolder('Shop', json_encode(['name' => 'Store']));
+
+        $code = $this->artisan('module:make', ['name' => ['Shop']]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString('Module [Shop] already exists!', Artisan::output());
+        $this->assertSame(json_encode(['name' => 'Store']), $this->finder->get(base_path('modules/Shop/module.json')));
+    }
+
+    public function test_force_still_generates_a_module_over_a_folder_with_an_invalid_module_json()
+    {
+        config(['modules.skip_broken_modules' => true]);
+        $this->writeModuleFolder('Shop', '{ broken');
+
+        $code = $this->artisan('module:make', ['name' => ['Shop'], '--force' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame('Shop', json_decode($this->finder->get(base_path('modules/Shop/module.json')), true)['name']);
+    }
+
     public function test_it_still_generates_module_if_it_exists_using_force_flag()
     {
         Event::fake();
@@ -1462,5 +1497,19 @@ STUB);
         $statusesFile = $this->activator->getStatusesFilePath();
         $statuses = $this->finder->exists($statusesFile) ? $this->finder->json($statusesFile) : [];
         $this->assertArrayNotHasKey($name, $statuses);
+    }
+
+    /**
+     * Write a module folder the repository cannot find by its folder name, with a file to keep.
+     */
+    private function writeModuleFolder(string $folder, string $moduleJson): void
+    {
+        $directory = base_path('modules/'.$folder);
+        $this->beforeApplicationDestroyed(fn () => $this->finder->deleteDirectory($directory));
+
+        $this->finder->ensureDirectoryExists($directory);
+        $this->finder->put($directory.'/module.json', $moduleJson);
+        $this->finder->put($directory.'/notes.txt', 'kept');
+        $this->repository->resetModules();
     }
 }

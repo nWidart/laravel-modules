@@ -14,6 +14,7 @@ use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 use Nwidart\Modules\Facades\Module;
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Nwidart\Modules\ModuleManifest;
+use Nwidart\Modules\Support\BrokenModules;
 use Nwidart\Modules\Support\Stub;
 use Orchestra\Testbench\Attributes\DefineEnvironment;
 use Orchestra\Testbench\Attributes\ResolvesLaravel;
@@ -170,6 +171,17 @@ class LaravelModulesServiceProviderTest extends BaseTestCase
         $this->assertSame(0, Artisan::call('module:list'));
         $this->assertSame(0, Artisan::call('about', ['--only' => 'Laravel-Modules']));
         $this->assertStringContainsString('Laravel-Modules', Artisan::output());
+    }
+
+    public function test_it_shares_one_broken_modules_store_that_a_second_registration_keeps()
+    {
+        $store = $this->app->make(BrokenModules::class);
+        $this->assertSame($store, $this->app->make(BrokenModules::class));
+
+        $provider = $this->app->getProvider(LaravelModulesServiceProvider::class);
+        (fn () => $this->registerServices())->call($provider);
+
+        $this->assertSame($store, $this->app->make(BrokenModules::class));
     }
 
     public function test_it_registers_aliases_of_enabled_modules()
