@@ -364,4 +364,18 @@ return [
     'actuator' => [
         'enabled' => true,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Skip broken modules
+    |--------------------------------------------------------------------------
+    |
+    | By default a module whose module.json is not valid JSON, or that lists a
+    | provider class that does not exist, stops the application while it
+    | boots. Set this to true to boot without that module instead: its
+    | providers, aliases and files are not loaded, an error is logged, and the
+    | module is reported by "module:list" and the "modules" health indicator.
+    |
+    */
+    'skip_broken_modules' => false,
 ];

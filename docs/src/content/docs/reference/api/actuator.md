@@ -59,13 +59,14 @@ No filesystem paths, `files`, `alias`, `keywords`, extra `module.json` keys, `co
 | Status | Condition |
 | --- | --- |
 | `UP` | Every enabled module has its `module.json` on disk. Disabled modules do not affect status. |
-| `DOWN` | At least one enabled module is missing on disk. |
+| `DOWN` | At least one enabled module is missing on disk, or a module was skipped because it is broken (see below). |
 
 `health()` returns details under `['modules' => [...]]`, keyed by module name:
 
 - Present module: `['enabled' => bool]`.
 - Missing enabled module: `['enabled' => true, 'error' => 'Enabled in the status store, not found on disk.']`.
 - Missing disabled module: omitted from `details`.
+- Broken module, with `modules.skip_broken_modules` set to `true`: `['enabled' => bool, 'error' => '<reason>']`. The status is `DOWN`. The indicator reports broken modules with any repository, not only `FileRepository`. A missing-provider entry always has `'enabled' => true`. A module with an invalid `module.json` is listed under its folder name, or under its directory relative to the base path when the folder name is already taken. See [Skip broken modules](/laravel-modules/concepts/how-modules-boot/#skip-broken-modules).
 
 For every module in `RepositoryInterface::all()`, `health()` checks `is_file($module->getExtraPath('module.json'))`. This detects removed folders in long-lived processes with any activator.
 

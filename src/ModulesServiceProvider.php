@@ -8,6 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\ProviderRepository;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
+use Nwidart\Modules\Support\BrokenModules;
 
 abstract class ModulesServiceProvider extends ServiceProvider
 {
@@ -42,6 +43,16 @@ abstract class ModulesServiceProvider extends ServiceProvider
 
         $manifest->registerFiles();
 
+    }
+
+    /**
+     * Share one store of broken modules per application ('skip_broken_modules' config).
+     *
+     * Bound only when missing, so registering the provider again keeps the modules recorded so far.
+     */
+    protected function registerBrokenModules(): void
+    {
+        $this->app->singletonIf(BrokenModules::class);
     }
 
     /**

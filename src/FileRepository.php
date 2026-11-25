@@ -13,9 +13,11 @@ use Laravel\Lumen\Application;
 use Nwidart\Modules\Constants\ModuleEvent;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidAssetPath;
+use Nwidart\Modules\Exceptions\InvalidJsonException;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Process\Installer;
 use Nwidart\Modules\Process\Updater;
+use Nwidart\Modules\Support\BrokenModules;
 use Nwidart\Modules\Support\GeneratorRun;
 use Symfony\Component\Process\Process;
 
@@ -209,15 +211,66 @@ abstract class FileRepository implements Countable, RepositoryInterface
 
             foreach ($manifests as $manifest) {
                 // Overlapping scan paths can list the same file twice: read it once.
-                $jsons[$manifest] ??= Json::make($manifest, $this->getFiles());
+                if (! array_key_exists($manifest, $jsons)) {
+                    $jsons[$manifest] = $this->readModuleJson($manifest);
+                }
 
-                $files[] = ['path' => $manifest, 'json' => $jsons[$manifest]];
+                // A broken module.json is skipped when 'skip_broken_modules' is true.
+                if ($jsons[$manifest] !== null) {
+                    $files[] = ['path' => $manifest, 'json' => $jsons[$manifest]];
+                }
             }
         }
 
         $this->scannedPaths = $paths;
 
         return $this->moduleJsonFiles = $files;
+    }
+
+    /**
+     * Decode a module.json file.
+     *
+     * When 'skip_broken_modules' is true, a file that is not valid JSON is recorded in the
+     * BrokenModules store and null is returned. Otherwise the exception is thrown.
+     *
+     * @throws InvalidJsonException
+     */
+    private function readModuleJson(string $manifest): ?Json
+    {
+        try {
+            return Json::make($manifest, $this->getFiles());
+        } catch (InvalidJsonException $exception) {
+            if (! $this->config('skip_broken_modules', false)) {
+                throw $exception;
+            }
+
+            $this->app->make(BrokenModules::class)->recordInvalidJson($manifest, $exception);
+
+            return null;
+        }
+    }
+
+    /**
+     * Get the modules skipped because they are broken, with the reason for each.
+     *
+     * Filled only when the 'skip_broken_modules' config is true. An enabled module with a
+     * provider class that does not exist is listed under its name. A module whose module.json
+     * is not valid JSON has no readable name: it is listed under its folder name, or under its
+     * directory relative to the application base path when a scanned module or another broken
+     * module already has that name. The application runs without these modules, so the list
+     * keeps every module skipped since the application started.
+     *
+     * @return array<string, string> The reason, keyed by module name or label.
+     */
+    public function getBrokenModules(): array
+    {
+        $brokenModules = $this->app->make(BrokenModules::class);
+
+        if ($brokenModules->isEmpty()) {
+            return [];
+        }
+
+        return $brokenModules->all(array_map(fn (Module $module) => $module->getName(), array_values($this->all())));
     }
 
     /**

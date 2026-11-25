@@ -15,6 +15,7 @@ Keys marked **deprecated** have no effect in version 13 and are removed in versi
 | `vapor_maintenance_mode` | `env('VAPOR_MAINTENANCE_MODE', false)` | When `true`, places the `modules.php` providers manifest next to Laravel's config cache instead of its services cache (`bootstrap/cache/modules.php` by default). |
 | `activator` | `'file'` | Name of the active activator: a key of `activators`. An unknown name throws `InvalidActivatorClass`. |
 | `commands` | `ConsoleServiceProvider::defaultCommands()` merged with an empty list | List of Artisan command class names. `ConsoleServiceProvider` registers every class in the list. |
+| `skip_broken_modules` | `false` | When `true`, the application boots without a module whose `module.json` is not valid JSON or whose provider class does not exist, and logs an error. When `false`, either problem stops the application. A published `config/modules.php` does not have this key: add it yourself. See [Skip broken modules](/laravel-modules/concepts/how-modules-boot/#skip-broken-modules). |
 
 The `commands` value is an array of class names. The default `config/config.php` builds it from the default commands and a `merge()` call that takes the extra class names:
 

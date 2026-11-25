@@ -43,6 +43,7 @@ A module is an instance of `Nwidart\Modules\Module`. The repository indexes modu
 | `find(string $name)` | `Module\|null` | The module with that name, or `null`. See [Name matching](#name-matching). |
 | `findOrFail(string $name)` | `Module` | Like `find()`. Throws [`ModuleNotFoundException`](/laravel-modules/reference/api/exceptions/#modulenotfoundexception) with the message `Module [<name>] does not exist!`. |
 | `has($name)` | `bool` | `true` when `find()` returns a module. Not in the interface. |
+| `getBrokenModules()` | `array<string, string>` | The modules skipped because they are broken, as label => reason. The label is the module name, or for an invalid `module.json` its folder name (its directory relative to the base path, such as `extra-modules/Blog`, when that name is already taken by a listed module). Empty unless `modules.skip_broken_modules` is `true`. A `FileRepository` method, not in the interface. See [Skip broken modules](/laravel-modules/concepts/how-modules-boot/#skip-broken-modules). |
 | `getModuleJsonFiles()` | `list<array{path: string, json: Json}>` | Every `module.json` found in the scan paths, each decoded once, in glob order. `ModuleManifest` reads this list. Not in the interface. |
 
 ### Name matching
