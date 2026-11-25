@@ -118,7 +118,7 @@ class ActuatorIntegrationTest extends BaseTestCase
                     'details' => ['gateway' => 'adyen'],
                 ],
             ],
-        ], $response->json());
+        ], $this->withoutDuration($response->json()));
     }
 
     #[DefineEnvironment('showOnlyPing')]
@@ -126,13 +126,33 @@ class ActuatorIntegrationTest extends BaseTestCase
     {
         $this->registerModuleProvider();
 
-        $this->getJson('/actuator/health/module:blog:payments')
-            ->assertOk()
-            ->assertExactJson(['status' => 'UP', 'details' => ['gateway' => 'stripe']]);
+        $response = $this->getJson('/actuator/health/module:blog:payments')->assertOk();
+        $this->assertSame(['status' => 'UP', 'details' => ['gateway' => 'stripe']], $this->withoutDuration($response->json()));
 
-        $this->getJson('/actuator/health/module:blog:payments.eu')
-            ->assertOk()
-            ->assertExactJson(['status' => 'UP', 'details' => ['gateway' => 'adyen']]);
+        $response = $this->getJson('/actuator/health/module:blog:payments.eu')->assertOk();
+        $this->assertSame(['status' => 'UP', 'details' => ['gateway' => 'adyen']], $this->withoutDuration($response->json()));
+    }
+
+    /**
+     * The health JSON without the "duration" detail that laravel-actuator 1.4 adds to every indicator,
+     * so the assertions do not depend on timing. A "details" left empty is removed.
+     *
+     * @param  array<string, mixed>  $health
+     * @return array<string, mixed>
+     */
+    private function withoutDuration(array $health): array
+    {
+        unset($health['details']['duration']);
+
+        if (($health['details'] ?? null) === []) {
+            unset($health['details']);
+        }
+
+        foreach ($health['components'] ?? [] as $name => $component) {
+            $health['components'][$name] = $this->withoutDuration($component);
+        }
+
+        return $health;
     }
 
     /**
