@@ -394,6 +394,114 @@ class PublishInertiaCommandTest extends BaseTestCase
         $this->assertExistingSsrFilesUnchanged();
     }
 
+    public function test_it_writes_nothing_with_ssr_and_force_when_a_destination_is_a_directory()
+    {
+        $this->createExistingAppJs();
+        $this->finder->ensureDirectoryExists(resource_path('js/ssr.js'));
+
+        $code = $this->artisan('module:publish-inertia', ['--ssr' => true, '--force' => true]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString(
+            'resources/js/ssr.js is a directory. Nothing was written.',
+            preg_replace('/\s+/', ' ', Artisan::output())
+        );
+        $this->assertSame(self::EXISTING, $this->appJs());
+        $this->assertTrue($this->finder->isDirectory(resource_path('js/ssr.js')));
+        $this->assertFalse($this->finder->exists(resource_path('js/inertia-pages.js')));
+    }
+
+    public function test_it_writes_nothing_with_ssr_and_force_when_an_existing_destination_is_not_writable()
+    {
+        $this->skipUnlessPermissionsApply();
+        $this->createExistingSsrFiles();
+        chmod(resource_path('js/inertia-pages.js'), 0444);
+
+        try {
+            $code = $this->artisan('module:publish-inertia', ['--ssr' => true, '--force' => true]);
+        } finally {
+            chmod(resource_path('js/inertia-pages.js'), 0644);
+        }
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString(
+            'resources/js/inertia-pages.js is not writable. Nothing was written.',
+            preg_replace('/\s+/', ' ', Artisan::output())
+        );
+        $this->assertExistingSsrFilesUnchanged();
+    }
+
+    public function test_it_writes_nothing_when_resources_js_is_not_writable()
+    {
+        $this->skipUnlessPermissionsApply();
+        $this->finder->ensureDirectoryExists(resource_path('js'));
+        chmod(resource_path('js'), 0555);
+
+        try {
+            $code = $this->artisan('module:publish-inertia', ['--ssr' => true]);
+        } finally {
+            chmod(resource_path('js'), 0755);
+        }
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString(
+            'resources/js is not writable. Nothing was written.',
+            preg_replace('/\s+/', ' ', Artisan::output())
+        );
+        $this->assertSame([], $this->finder->files(resource_path('js')));
+    }
+
+    public function test_it_writes_nothing_with_ssr_and_force_when_a_destination_is_a_dangling_symlink()
+    {
+        $this->skipUnlessSymlinksWork();
+        $this->finder->ensureDirectoryExists(resource_path('js'));
+        symlink('missing.js', resource_path('js/ssr.js'));
+
+        $code = $this->artisan('module:publish-inertia', ['--ssr' => true, '--force' => true]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString(
+            'resources/js/ssr.js is a symbolic link. Replace it with a regular file or remove it. Nothing was written.',
+            preg_replace('/\s+/', ' ', Artisan::output())
+        );
+        $this->assertSame('missing.js', readlink(resource_path('js/ssr.js')));
+        $this->assertFalse(file_exists(resource_path('js/missing.js')));
+        $this->assertFalse($this->finder->exists(resource_path('js/app.js')));
+        $this->assertFalse($this->finder->exists(resource_path('js/inertia-pages.js')));
+    }
+
+    public function test_it_writes_nothing_with_ssr_and_force_when_a_destination_links_to_another()
+    {
+        $this->skipUnlessSymlinksWork();
+        $this->finder->ensureDirectoryExists(resource_path('js'));
+        symlink('inertia-pages.js', resource_path('js/ssr.js'));
+
+        $code = $this->artisan('module:publish-inertia', ['--ssr' => true, '--force' => true]);
+
+        $this->assertSame(E_ERROR, $code);
+        $this->assertStringContainsString(
+            'resources/js/ssr.js is a symbolic link. Replace it with a regular file or remove it. Nothing was written.',
+            preg_replace('/\s+/', ' ', Artisan::output())
+        );
+        $this->assertSame('inertia-pages.js', readlink(resource_path('js/ssr.js')));
+        $this->assertFalse(file_exists(resource_path('js/inertia-pages.js')));
+        $this->assertFalse($this->finder->exists(resource_path('js/app.js')));
+    }
+
+    private function skipUnlessPermissionsApply(): void
+    {
+        if (PHP_OS_FAMILY === 'Windows' || (function_exists('posix_geteuid') && posix_geteuid() === 0)) {
+            $this->markTestSkipped('File permissions do not restrict writes for root or on Windows.');
+        }
+    }
+
+    private function skipUnlessSymlinksWork(): void
+    {
+        if (PHP_OS_FAMILY === 'Windows') {
+            $this->markTestSkipped('Creating symlinks on Windows needs extra privileges.');
+        }
+    }
+
     private function createExistingSsrFiles(): void
     {
         foreach (['app.js', 'ssr.js', 'inertia-pages.js'] as $file) {

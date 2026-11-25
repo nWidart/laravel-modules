@@ -28,6 +28,14 @@ class PublishInertiaCommand extends Command
         $stubs = $this->option('ssr') ? $this->ssrStubs() : $this->appStubs();
         $files = $this->laravel->make(Filesystem::class);
 
+        $problems = $this->destinationProblems(array_keys($stubs));
+
+        if ($problems !== []) {
+            $this->components->error(implode(' ', $problems).' Nothing was written.');
+
+            return E_ERROR;
+        }
+
         $existing = array_values(array_filter(
             array_keys($stubs),
             fn (string $file) => $files->exists(resource_path('js/'.$file)),
@@ -113,6 +121,53 @@ class PublishInertiaCommand extends Command
             'ssr.js' => new Stub('/inertia/ssr/ssr.stub', ['INERTIA_PACKAGE' => $package]),
             'inertia-pages.js' => new Stub('/inertia/ssr/inertia-pages.stub', ['PAGE_EXTENSION' => $extension]),
         ];
+    }
+
+    /**
+     * Why the files cannot all be written to resources/js.
+     *
+     * Every destination is checked before any file is written, so a failure
+     * never leaves a partial set, such as an app.js that imports an
+     * inertia-pages.js that was never written. Symbolic links are refused
+     * outright: a write follows them, even when they dangle or point at
+     * another destination.
+     *
+     * @param  list<string>  $files
+     * @return list<string>
+     */
+    private function destinationProblems(array $files): array
+    {
+        clearstatcache();
+
+        $directory = resource_path('js');
+
+        if (file_exists($directory) && ! is_dir($directory)) {
+            return ['resources/js is not a directory.'];
+        }
+
+        $problems = [];
+        $missing = false;
+
+        foreach ($files as $file) {
+            $path = $directory.DIRECTORY_SEPARATOR.$file;
+            $name = 'resources/js/'.$file;
+
+            if (is_link($path)) {
+                $problems[] = "{$name} is a symbolic link. Replace it with a regular file or remove it.";
+            } elseif (is_dir($path)) {
+                $problems[] = "{$name} is a directory.";
+            } elseif (! file_exists($path)) {
+                $missing = true;
+            } elseif (! is_writable($path)) {
+                $problems[] = "{$name} is not writable.";
+            }
+        }
+
+        if ($missing && is_dir($directory) && ! is_writable($directory)) {
+            $problems[] = 'resources/js is not writable.';
+        }
+
+        return $problems;
     }
 
     /**
