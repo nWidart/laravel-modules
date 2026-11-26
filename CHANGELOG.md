@@ -5,6 +5,39 @@ All Notable changes to `laravel-modules` will be documented in this file.
 See https://github.com/nWidart/laravel-modules/releases for the latest releases.
 From 11.0.11 until the first automated release (made by `.github/workflows/release.yml`), this file is incomplete: those releases are documented in GitHub Releases.
 
+## 13.5.0 - 2026-11-26
+
+### Upgrade notes
+
+No changes needed. Open the block for the two behaviour changes and the new opt-in setting.
+
+<details><summary>Show upgrade notes</summary>
+
+#### Behaviour changes
+
+- **Generator names with a `.` path segment** (`Foo/./Bar`, `./Foo`, `.`) now exit 1, like `..` already did. Dotted names such as `posts.index` still work ([#2301](https://github.com/nWidart/laravel-modules/pull/2301))
+- **`--json` output replaces invalid UTF-8 bytes** (for example in a module name argument) with U+FFFD instead of failing with no output ([#2309](https://github.com/nWidart/laravel-modules/pull/2309))
+
+#### New opt-in settings
+
+- **`modules.skip_broken_modules` (default `false`)** boots the app without modules whose `module.json` is invalid or whose provider class is missing. Published `config/modules.php` files lack the key: add `'skip_broken_modules' => true,` to use it ([#2308](https://github.com/nWidart/laravel-modules/pull/2308))
+
+</details>
+
+### Features
+
+- **inertia:** Add --ssr to module:publish-inertia for Inertia v3 SSR ([#2305](https://github.com/nWidart/laravel-modules/pull/2305)) ([26669f9](https://github.com/nWidart/laravel-modules/commit/26669f90247471fc6936d36d371ea7cdc2da8db2))
+- **modules:** Add skip_broken_modules to boot without broken modules ([#2308](https://github.com/nWidart/laravel-modules/pull/2308)) ([d9139b1](https://github.com/nWidart/laravel-modules/commit/d9139b11a8d7e256e4d078d39d778dbdfe0f6ee1))
+- **commands:** Add module:surface to store a module's public surface in module.json ([#2309](https://github.com/nWidart/laravel-modules/pull/2309)) ([46d83ef](https://github.com/nWidart/laravel-modules/commit/46d83ef48c0506614491fc4b2dfdf6f2ac311d32))
+
+### Bug Fixes
+
+- **make:** Reject "." segments in generator names ([#2301](https://github.com/nWidart/laravel-modules/pull/2301)) ([d5fc7f8](https://github.com/nWidart/laravel-modules/commit/d5fc7f87db437cebb722c383e04971a796af2292))
+
+### Other
+
+- **actuator:** Ignore the duration detail added in laravel-actuator 1.4 ([#2306](https://github.com/nWidart/laravel-modules/pull/2306)) ([e95d5e0](https://github.com/nWidart/laravel-modules/commit/e95d5e046e74b6361aaa13a79ef59fe81f0d2feb))
+
 ## 13.4.0 - 2026-11-23
 
 ### Upgrade notes
