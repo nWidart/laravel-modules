@@ -77,3 +77,7 @@ When the bound activator is `FileActivator`, `health()` also checks `FileActivat
 Modules register their own health indicators through `$healthIndicators` on `ModuleServiceProvider`. See [Health indicators](/laravel-modules/reference/api/module-service-provider/#health-indicators).
 
 `Nwidart\Modules\Actuator\HealthIndicators` is marked `@internal` and is not part of the public API. `LaravelModulesServiceProvider` and `ModuleServiceProvider` call it during `boot()` to merge indicators into `actuator.health.indicators`.
+
+## Scheduled task tags
+
+With `nwidart/laravel-actuator` 1.5 or later, `LaravelModulesServiceProvider` calls `Actuator::tagScheduledTasksUsing()` so each task a module schedules has a `module` tag on the `scheduledtasks` endpoint. An older actuator gets no tags and no error. See [See the module of a task on the actuator](/laravel-modules/guides/console-and-events/schedules/#see-the-module-of-a-task-on-the-actuator).

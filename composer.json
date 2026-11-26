@@ -32,7 +32,7 @@
         "laravel/pint": "^1.16",
         "spatie/phpunit-snapshot-assertions": "^5.0",
         "larastan/larastan": "^3.9.3",
-        "nwidart/laravel-actuator": "^1.1"
+        "nwidart/laravel-actuator": "^1.5"
     },
     "suggest": {
         "nwidart/laravel-actuator": "Report module health on the actuator health endpoint and list the modules on a modules endpoint (^1.1)."

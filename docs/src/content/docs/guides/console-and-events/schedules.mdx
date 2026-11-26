@@ -46,7 +46,7 @@ $schedule->command('module:prune', ['Blog'])->daily();
 
 ## See the module of a task on the actuator
 
-With [nwidart/laravel-actuator](https://github.com/nWidart/laravel-actuator) installed, in a version that has `Actuator::tagScheduledTasksUsing()`, each task that `configureSchedules()` adds has a `module` tag on the `scheduledtasks` endpoint. The tag holds the module name, as `Module::getName()` gives it. This covers every kind of task: commands, jobs, closures and shell commands.
+With [nwidart/laravel-actuator](https://github.com/nWidart/laravel-actuator) version 1.5 or later installed (it adds `Actuator::tagScheduledTasksUsing()`), each task that `configureSchedules()` adds has a `module` tag on the `scheduledtasks` endpoint. The tag holds the module name, as `Module::getName()` gives it. This covers every kind of task: commands, jobs, closures and shell commands.
 
 ```json
 {
@@ -58,7 +58,7 @@ With [nwidart/laravel-actuator](https://github.com/nWidart/laravel-actuator) ins
 }
 ```
 
-A task scheduled outside a module, such as in `routes/console.php`, has no `module` tag, also when it runs a command of a module. Expose the endpoint with `scheduledtasks` in `exposure.include` of `config/actuator.php`. With an older actuator, the endpoint has no tags.
+A task scheduled outside a module, such as in `routes/console.php`, has no `module` tag, also when it runs a command of a module. Expose the endpoint with `scheduledtasks` in `exposure.include` of `config/actuator.php`. With an actuator before 1.5, the endpoint has no tags.
 
 ## Related
 
