@@ -7,7 +7,7 @@ This page lists the commands that manage existing modules. `module:make` and the
 
 ## Shared behaviour
 
-`BaseCommand` runs one action per selected module (see [Contracts and base classes](/laravel-modules/reference/api/contracts/#basecommand)). Eight commands here extend it: `module:enable`, `module:disable`, `module:delete`, `module:use`, `module:update`, `module:dump`, `module:lang`, and `module:list-commands`. The other five (`module:list`, `module:unuse`, `module:install`, `module:prune`, and `module:model-show`) define their own arguments.
+`BaseCommand` runs one action per selected module (see [Contracts and base classes](/laravel-modules/reference/api/contracts/#basecommand)). Eight commands here extend it: `module:enable`, `module:disable`, `module:delete`, `module:use`, `module:update`, `module:dump`, `module:lang`, and `module:list-commands`. The other six (`module:list`, `module:unuse`, `module:install`, `module:surface`, `module:prune`, and `module:model-show`) define their own arguments.
 
 ### Arguments and options of `BaseCommand` commands
 
@@ -458,6 +458,145 @@ php artisan module:lang Blog --json
 Empty lists and maps are `[]` and `{}`.
 
 When no module is found, or no module is given, standard output is `{"modules":[]}` and the exit code is non-zero. Check the exit code before you read the result.
+
+## module:surface
+
+Shows, sets or clears the `surface` key of the `module.json` of a module: the classes, routes and console commands the module offers. The file format and match rules are in [`surface`](/laravel-modules/reference/module-json/#surface).
+
+```bash
+php artisan module:surface <module> [--set [--class=CLASS]... [--route=ROUTE]... [--command=COMMAND]... [--stdin]] [--clear] [--json]
+```
+
+**Arguments**
+
+| Name | Required | Description |
+| --- | --- | --- |
+| `module` | yes | The module name. The command takes one module and does not extend `BaseCommand`. |
+
+**Options**
+
+| Name | Default | Description |
+| --- | --- | --- |
+| `--set` | `false` | Replace the surface. Lists you do not give are stored empty, so `--set` alone stores three empty lists. |
+| `--class` | none | A fully qualified class name. Repeatable. Needs `--set`. A leading backslash is removed. |
+| `--route` | none | A route URI as `route:list` shows it. Repeatable. Needs `--set`. Leading and trailing slashes are removed, and `/` stays `/`. Whitespace is an error. |
+| `--command` | none | A console command name. Repeatable. Needs `--set`. |
+| `--stdin` | `false` | With `--set`, read the surface from standard input as one JSON object. Cannot be combined with `--class`, `--route` or `--command`. |
+| `--clear` | `false` | Remove the `surface` key. Cannot be combined with `--set`. |
+| `--json` | `false` | Print the result as JSON. See [JSON output](#modulesurface-json-output). |
+
+Without `--set` and `--clear`, the command shows the stored surface and writes nothing. It checks each stored entry with the `--set` rules, and the entry must already be in the form `--set` stores: a class with a leading backslash or a route with a trailing slash is invalid. An invalid entry exits with code `1`. Valid entries are shown as stored, with their spelling, order and duplicates.
+
+**Notes**
+
+- Every entry is checked before anything is written. One invalid entry writes nothing.
+- The lists are deduplicated and sorted as described in [`surface`](/laravel-modules/reference/module-json/#surface).
+- The standard input object has the keys `classes`, `routes` and `commands`. A missing key is an empty list. An unknown key, a value that is not an array, or an entry that is not a string is an error. A leading byte order mark is ignored.
+- Use `--stdin` for long lists. `cmd.exe` limits a command line to about 8,000 characters.
+- The command edits only the `surface` member of `module.json`. It replaces the value in place, appends the member after the last one, or removes it with its comma. Every other byte of the file stays the same, including numbers PHP cannot hold exactly, escapes such as `\u00e9`, and the layout. The surface uses the indentation of the file (4 spaces when there is none), does not escape slashes, and gets CRLF line endings in a CRLF file.
+- Setting the surface that is already stored, or clearing when none is stored, does not touch the file. The result reports `changed` as `false`.
+
+**Exit codes**
+
+| Code | Meaning |
+| --- | --- |
+| `0` | Success. |
+| `1` | Unknown module, or `module.json` cannot be read, is not a JSON object, holds an invalid `surface`, changed while the command ran, or cannot be written. |
+| `2` | Usage or validation error: a bad option combination, or an invalid entry or standard input. Nothing is written. |
+
+```bash
+# Show the surface
+php artisan module:surface Blog
+
+# Set it
+php artisan module:surface Blog --set \
+    --class='Modules\Blog\Models\Post' \
+    --route='api/posts/{post}' \
+    --command='blog:publish'
+
+# Declare that the module offers nothing
+php artisan module:surface Blog --set
+
+# Remove the surface
+php artisan module:surface Blog --clear
+```
+
+Read the surface from standard input in bash:
+
+```bash
+cat <<'JSON' | php artisan module:surface Blog --set --stdin
+{
+    "classes": ["Modules\\Blog\\Models\\Post"],
+    "routes": ["api/posts", "api/posts/{post}"],
+    "commands": ["blog:publish"]
+}
+JSON
+```
+
+The same in PowerShell:
+
+```powershell
+@'
+{
+    "classes": ["Modules\\Blog\\Models\\Post"],
+    "routes": ["api/posts", "api/posts/{post}"],
+    "commands": ["blog:publish"]
+}
+'@ | php artisan module:surface Blog --set --stdin
+```
+
+### module:surface JSON output
+
+With `--json`, standard output holds one JSON line and the command follows the shared [JSON output](/laravel-modules/reference/commands/#json-output) rules. The exit code is the same as without `--json`.
+
+```bash
+php artisan module:surface Blog --json
+```
+
+Success:
+
+```json
+{
+  "module": "Blog",
+  "path": "/var/www/Modules/Blog/module.json",
+  "surface": {
+    "classes": ["Modules\\Blog\\Models\\Post"],
+    "routes": ["api/posts", "api/posts/{post}"],
+    "commands": ["blog:publish"]
+  },
+  "changed": false
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `module` | The module name as stored in `module.json`. |
+| `path` | The path of the `module.json` file. |
+| `surface` | The stored surface after the command, with the keys `classes`, `routes` and `commands`. `null` when the module has no surface: for show without a stored surface, and after `--clear`. |
+| `changed` | `true` when the command wrote the file. Always `false` when showing. |
+
+Failure:
+
+```json
+{
+  "module": "Blog",
+  "errors": [
+    {
+      "list": "routes",
+      "value": "api/my posts",
+      "message": "The route \"api/my posts\" contains whitespace."
+    }
+  ]
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `module` | The module argument as given. |
+| `errors` | One entry per problem, in the order found. |
+| `errors[].list` | `classes`, `routes` or `commands` when the problem belongs to a list, else `null`. |
+| `errors[].value` | The offending entry, or the unknown key for an unknown key in standard input, else `null`. |
+| `errors[].message` | A human-readable message. |
 
 ## module:prune
 

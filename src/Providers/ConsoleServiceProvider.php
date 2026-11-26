@@ -44,6 +44,7 @@ class ConsoleServiceProvider extends ServiceProvider
             Commands\Actions\ModelShowCommand::class,
             Commands\Actions\ModuleDeleteCommand::class,
             Commands\Actions\ModuleTestCommand::class,
+            Commands\Actions\SurfaceCommand::class,
             Commands\Actions\UnUseCommand::class,
             Commands\Actions\UpdateCommand::class,
             Commands\Actions\UseCommand::class,

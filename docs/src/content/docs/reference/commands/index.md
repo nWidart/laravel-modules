@@ -3,7 +3,7 @@ title: Artisan commands
 description: Every Artisan command the package registers, grouped by page, with its purpose and a link to its entry.
 ---
 
-The package registers 74 Artisan commands. Each group has one page with the arguments, options and notes of every command. Open the group page for the shared behaviour of a group.
+The package registers 75 Artisan commands. Each group has one page with the arguments, options and notes of every command. Open the group page for the shared behaviour of a group.
 
 In a synopsis, `<name>` is a required argument, `[<name>]` an optional one, and `...` marks an argument that takes several values. Options follow the arguments.
 
@@ -43,6 +43,7 @@ Commands that list, enable, disable, install, update and delete existing modules
 | [`module:dump`](/laravel-modules/reference/commands/module-management/#moduledump) | Runs `composer dump -o -n -q` inside each module directory. |
 | [`module:list-commands`](/laravel-modules/reference/commands/module-management/#modulelist-commands) | Lists the Artisan command classes found in each module. |
 | [`module:lang`](/laravel-modules/reference/commands/module-management/#modulelang) | Compares the language directories of a module and reports missing files and keys. |
+| [`module:surface`](/laravel-modules/reference/commands/module-management/#modulesurface) | Shows, sets or clears the classes, routes and console commands a module offers, stored in its `module.json`. |
 | [`module:prune`](/laravel-modules/reference/commands/module-management/#moduleprune) | Prunes the prunable Eloquent models of the given modules. It wraps Laravel `model:prune`. |
 | [`module:model-show`](/laravel-modules/reference/commands/module-management/#modulemodel-show) | Shows information about an Eloquent model that lives in a module. It wraps Laravel `model:show`. |
 
