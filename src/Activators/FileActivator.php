@@ -99,12 +99,13 @@ class FileActivator implements ActivatorInterface
     public function hasStatus(Module|string $module, bool $status): bool
     {
         $name = $module instanceof Module ? $module->getName() : $module;
+        $key = $this->findStatusKey($name);
 
-        if (! isset($this->modulesStatuses[$name])) {
+        if ($key === null) {
             return $status === false;
         }
 
-        return $this->modulesStatuses[$name] === $status;
+        return ($this->modulesStatuses[$key] ?? false) === $status;
     }
 
     /**
@@ -122,7 +123,16 @@ class FileActivator implements ActivatorInterface
     #[\Override]
     public function setActiveByName(string $name, bool $status): void
     {
-        $this->modulesStatuses[$name] = $status;
+        $key = $this->findStatusKey($name) ?? $name;
+
+        // Drop other case variants of the same module, so a file with duplicates converges to one entry.
+        foreach (array_keys($this->modulesStatuses) as $storedKey) {
+            if ((string) $storedKey !== $key && $this->sameModuleName((string) $storedKey, $name)) {
+                unset($this->modulesStatuses[$storedKey]);
+            }
+        }
+
+        $this->modulesStatuses[$key] = $status;
         $this->writeJson();
     }
 
@@ -132,11 +142,47 @@ class FileActivator implements ActivatorInterface
     #[\Override]
     public function delete(Module $module): void
     {
-        if (! isset($this->modulesStatuses[$module->getName()])) {
-            return;
+        $removed = false;
+
+        foreach (array_keys($this->modulesStatuses) as $storedKey) {
+            if ($this->sameModuleName((string) $storedKey, $module->getName())) {
+                unset($this->modulesStatuses[$storedKey]);
+                $removed = true;
+            }
         }
-        unset($this->modulesStatuses[$module->getName()]);
-        $this->writeJson();
+
+        if ($removed) {
+            $this->writeJson();
+        }
+    }
+
+    /**
+     * Find the key under which the status of a module is stored.
+     *
+     * The repository matches module names case-insensitively, so a status stored as "Blog" belongs to a module named
+     * "blog". An exact match wins; otherwise the first key in file order that matches case-insensitively is used.
+     */
+    private function findStatusKey(string $name): ?string
+    {
+        if (array_key_exists($name, $this->modulesStatuses)) {
+            return $name;
+        }
+
+        foreach (array_keys($this->modulesStatuses) as $storedKey) {
+            if ($this->sameModuleName((string) $storedKey, $name)) {
+                return (string) $storedKey;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Whether two module names refer to the same module, the way the repository compares them.
+     */
+    private function sameModuleName(string $first, string $second): bool
+    {
+        return strtolower($first) === strtolower($second);
     }
 
     /**

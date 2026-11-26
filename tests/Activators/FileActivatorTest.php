@@ -121,6 +121,100 @@ class FileActivatorTest extends BaseTestCase
         new FileActivator($this->app);
     }
 
+    public function test_it_finds_a_status_stored_under_a_different_case()
+    {
+        $activator = $this->activatorWithStatuses(['Recipe' => true, 'Article' => false]);
+        $lowercaseRecipe = new TestModule($this->app, 'recipe', __DIR__.'/stubs/valid/Recipe');
+        $lowercaseArticle = new TestModule($this->app, 'article', __DIR__.'/stubs/valid/Recipe');
+
+        $this->assertTrue($activator->hasStatus($lowercaseRecipe, true));
+        $this->assertFalse($activator->hasStatus($lowercaseRecipe, false));
+        $this->assertTrue($activator->hasStatus('RECIPE', true));
+        $this->assertFalse($activator->hasStatus('RECIPE', false));
+
+        $this->assertTrue($activator->hasStatus($lowercaseArticle, false));
+        $this->assertFalse($activator->hasStatus($lowercaseArticle, true));
+        $this->assertTrue($activator->hasStatus('ARTICLE', false));
+        $this->assertFalse($activator->hasStatus('ARTICLE', true));
+    }
+
+    public function test_it_updates_the_existing_key_when_enabling_or_disabling_with_a_different_case()
+    {
+        $activator = $this->activatorWithStatuses(['Article' => true, 'Recipe' => false, 'Zebra' => true]);
+        $lowercaseModule = new TestModule($this->app, 'recipe', __DIR__.'/stubs/valid/Recipe');
+
+        $activator->enable($lowercaseModule);
+
+        $this->assertSame(['Article' => true, 'Recipe' => true, 'Zebra' => true], $activator->getStatuses());
+        $this->assertSame(['Article' => true, 'Recipe' => true, 'Zebra' => true], $this->storedStatuses());
+
+        $activator->disable($lowercaseModule);
+
+        $this->assertSame(['Article' => true, 'Recipe' => false, 'Zebra' => true], $this->storedStatuses());
+
+        $activator->setActiveByName('RECIPE', true);
+
+        $this->assertSame(['Article' => true, 'Recipe' => true, 'Zebra' => true], $this->storedStatuses());
+    }
+
+    public function test_it_collapses_case_variant_duplicates_into_the_first_key_on_write()
+    {
+        $activator = $this->activatorWithStatuses(['Recipe' => true, 'Article' => true, 'RECIPE' => false]);
+
+        $activator->setActiveByName('recipe', false);
+
+        $this->assertSame(['Recipe' => false, 'Article' => true], $this->storedStatuses());
+        $this->assertTrue($activator->hasStatus('recipe', false));
+    }
+
+    public function test_it_prefers_an_exact_match_over_case_variants()
+    {
+        $activator = $this->activatorWithStatuses(['Recipe' => true, 'recipe' => false]);
+
+        $this->assertTrue($activator->hasStatus('recipe', false));
+        $this->assertTrue($activator->hasStatus('Recipe', true));
+
+        $activator->setActiveByName('recipe', true);
+
+        $this->assertSame(['recipe' => true], $this->storedStatuses());
+    }
+
+    public function test_it_deletes_every_case_variant_of_a_module()
+    {
+        $activator = $this->activatorWithStatuses(['recipe' => true, 'Article' => true, 'RECIPE' => false]);
+
+        $activator->delete($this->module);
+
+        $this->assertSame(['Article' => true], $activator->getStatuses());
+        $this->assertSame(['Article' => true], $this->storedStatuses());
+
+        // Nothing left to remove: the file is not written again.
+        $path = $this->activator->getStatusesFilePath();
+        $this->finder->put($path, '{"Article":true}');
+
+        $activator->delete($this->module);
+
+        $this->assertSame('{"Article":true}', $this->finder->get($path));
+    }
+
+    /**
+     * @param  array<string, bool>  $statuses
+     */
+    private function activatorWithStatuses(array $statuses): FileActivator
+    {
+        $this->finder->put($this->activator->getStatusesFilePath(), json_encode($statuses, JSON_PRETTY_PRINT));
+
+        return new FileActivator($this->app);
+    }
+
+    /**
+     * @return array<string, bool>
+     */
+    private function storedStatuses(): array
+    {
+        return json_decode($this->finder->get($this->activator->getStatusesFilePath()), true);
+    }
+
     #[DataProvider('emptyStatusesFiles')]
     public function test_it_reads_an_empty_statuses_file_as_no_statuses(string $contents)
     {
