@@ -7,6 +7,24 @@ From 11.0.11 until the first automated release (made by `.github/workflows/relea
 
 ## 13.6.0 - 2026-11-26
 
+### Upgrade notes
+
+Most apps need no changes. Open the block if you use the actuator or have module names whose case differs from `modules_statuses.json`.
+
+<details><summary>Show upgrade notes</summary>
+
+#### Behaviour changes
+
+- **The file activator matches `modules_statuses.json` keys regardless of case.** A module whose `module.json` name differs in case from its status key (`blog` vs `Blog`) now reads that key's status, so it may be enabled where it showed disabled. Check your statuses. `module:enable` and `module:disable` update the existing key and remove other case-variant duplicates, keeping the key that matches the module folder name ([#2313](https://github.com/nWidart/laravel-modules/pull/2313))
+- **Two `module.json` files whose names differ only in case boot only one module**: the last one scanned, the one `Module::find()` returns. Before, both could boot. Rename one of them ([#2313](https://github.com/nWidart/laravel-modules/pull/2313))
+- **Scheduled tasks registered in a module's `configureSchedules()` carry a `module` tag** on the actuator `scheduledtasks` endpoint. Update `nwidart/laravel-actuator` to `^1.5` to get the tags. Older versions keep working without them, and tasks in `routes/console.php` have no tag ([#2311](https://github.com/nWidart/laravel-modules/pull/2311))
+
+#### Extending the package
+
+- **`FileActivator::enable()`, `disable()` and `setActive()` no longer call `setActiveByName()`.** If a subclass overrides `setActiveByName()` to hook writes, override these three methods too ([#2313](https://github.com/nWidart/laravel-modules/pull/2313))
+
+</details>
+
 ### Features
 
 - **actuator:** Tag the scheduled tasks of each module on the scheduledtasks endpoint ([#2311](https://github.com/nWidart/laravel-modules/pull/2311)) ([083f06c](https://github.com/nWidart/laravel-modules/commit/083f06c783ee5ac46febc3839f6c0c2973a02e18))
