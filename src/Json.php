@@ -159,6 +159,16 @@ class Json
     }
 
     /**
+     * Remove a specific key.
+     */
+    public function forget(string $key): self
+    {
+        $this->attributes->forget($key);
+
+        return $this;
+    }
+
+    /**
      * Save the current attributes array to the file storage.
      */
     public function save(): bool

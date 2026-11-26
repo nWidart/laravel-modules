@@ -107,6 +107,14 @@ class JsonTest extends BaseTestCase
         $this->assertEquals('value', $this->json->get('key'));
     }
 
+    public function test_it_forgets_a_key()
+    {
+        $this->json->set('key', 'value');
+
+        $this->assertSame($this->json, $this->json->forget('key'));
+        $this->assertArrayNotHasKey('key', $this->json->getAttributes());
+    }
+
     public function test_it_can_be_casted_to_string()
     {
         $expected = '{
