@@ -2,12 +2,14 @@
 
 namespace Nwidart\Modules\Support;
 
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
 use Nwidart\Modules\Actuator\HealthIndicators;
 use Nwidart\Modules\Actuator\ScheduledTaskModules;
+use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -122,15 +124,43 @@ abstract class ModuleServiceProvider extends ServiceProvider
         // Wait for boot so configureSchedules() still runs after every provider has booted.
         $this->app->booted(function () {
             $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
-                $before = count($schedule->events());
+                $before = count($this->scheduledEvents($schedule));
 
                 $this->configureSchedules($schedule);
 
                 // A module provider can be registered without the package provider, as in tests.
                 $this->app->singletonIf(ScheduledTaskModules::class);
-                $this->app->make(ScheduledTaskModules::class)->claim(array_slice($schedule->events(), $before), $this->name);
+                $this->app->make(ScheduledTaskModules::class)->claim(array_slice($this->scheduledEvents($schedule), $before), $this->moduleName());
             });
         });
+    }
+
+    /**
+     * The events on the schedule, read without Schedule::events().
+     *
+     * With Schedule::alwaysOnOneServer() on, events() marks every event onOneServer(). Reading
+     * it here, at module boot, would make that permanent before schedule:run looks at the flag.
+     *
+     * @return Event[]
+     */
+    private function scheduledEvents(Schedule $schedule): array
+    {
+        return (fn (): array => $this->events)->call($schedule);
+    }
+
+    /**
+     * The module name as module.json spells it, as the actuator's modules endpoint reports it.
+     *
+     * The repository finds a module case-insensitively, so $name may differ in case. A module
+     * provider can be registered without the package provider or its module, as in tests.
+     */
+    private function moduleName(): string
+    {
+        if (! $this->app->bound(RepositoryInterface::class)) {
+            return $this->name;
+        }
+
+        return $this->app->make(RepositoryInterface::class)->find($this->name)?->getName() ?? $this->name;
     }
 
     /**

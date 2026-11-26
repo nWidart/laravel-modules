@@ -27,12 +27,15 @@ final class ScheduledTaskModules
     }
 
     /**
+     * Claim the events for the module. The first claim of an event wins: a module provider
+     * registered inside another module's configureSchedules() claims its own events first.
+     *
      * @param  iterable<Event>  $events
      */
     public function claim(iterable $events, string $module): void
     {
         foreach ($events as $event) {
-            $this->modules[$event] = $module;
+            $this->modules[$event] ??= $module;
         }
     }
 
