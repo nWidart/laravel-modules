@@ -44,6 +44,22 @@ $schedule->command('module:prune', ['Blog'])->daily();
 
 `configureSchedules()` skips web requests. It runs only when Laravel resolves `Schedule` (such as during `schedule:run` or `schedule:list`), after every service provider has booted. Disabling the module removes its scheduled tasks.
 
+## See the module of a task on the actuator
+
+With [nwidart/laravel-actuator](https://github.com/nWidart/laravel-actuator) version 1.5 or later installed (it adds `Actuator::tagScheduledTasksUsing()`), each task that `configureSchedules()` adds has a `module` tag on the `scheduledtasks` endpoint. The tag holds the module name, as `Module::getName()` gives it. This covers every kind of task: commands, jobs, closures and shell commands.
+
+```json
+{
+  "runnable": { "target": "php artisan blog:prune-old" },
+  "expression": "0 0 * * *",
+  "timezone": "UTC",
+  "nextExecution": { "time": "2026-01-02T00:00:00+00:00" },
+  "tags": { "module": "Blog" }
+}
+```
+
+A task scheduled outside a module, such as in `routes/console.php`, has no `module` tag, also when it runs a command of a module. Expose the endpoint with `scheduledtasks` in `exposure.include` of `config/actuator.php`. With an actuator before 1.5, the endpoint has no tags.
+
 ## Related
 
 - [Module service provider: methods](/laravel-modules/reference/api/module-service-provider/#methods): `registerCommandSchedules()` and `configureSchedules()`.

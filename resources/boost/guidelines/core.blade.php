@@ -7,3 +7,4 @@
 - Always place module-specific logic inside the module directory, not in the application's `app/` folder.
 - With `nwidart/laravel-actuator` installed, a module registers health indicators in the `$healthIndicators` property of its service provider. They appear as `module:{lowercase module}:{key}`. Generate one with `module:make-health-indicator`.
 - With `nwidart/laravel-actuator` 1.1.0+ installed, the package also registers the read-only `modules` actuator endpoint (`GET /actuator/modules`, `GET /actuator/modules/{name}`); add `modules` to `actuator.exposure.include` to expose it.
+- With `nwidart/laravel-actuator` 1.5+ installed, tasks a module schedules carry a `module` tag on the `scheduledtasks` endpoint.
