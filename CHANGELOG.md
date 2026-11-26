@@ -7,6 +7,23 @@ From 11.0.11 until the first automated release (made by `.github/workflows/relea
 
 ## 13.5.0 - 2026-11-26
 
+### Upgrade notes
+
+No changes needed. Open the block for the two behaviour changes and the new opt-in setting.
+
+<details><summary>Show upgrade notes</summary>
+
+#### Behaviour changes
+
+- **Generator names with a `.` path segment** (`Foo/./Bar`, `./Foo`, `.`) now exit 1, like `..` already did. Dotted names such as `posts.index` still work ([#2301](https://github.com/nWidart/laravel-modules/pull/2301))
+- **`--json` output replaces invalid UTF-8 bytes** (for example in a module name argument) with U+FFFD instead of failing with no output ([#2309](https://github.com/nWidart/laravel-modules/pull/2309))
+
+#### New opt-in settings
+
+- **`modules.skip_broken_modules` (default `false`)** boots the app without modules whose `module.json` is invalid or whose provider class is missing. Published `config/modules.php` files lack the key: add `'skip_broken_modules' => true,` to use it ([#2308](https://github.com/nWidart/laravel-modules/pull/2308))
+
+</details>
+
 ### Features
 
 - **inertia:** Add --ssr to module:publish-inertia for Inertia v3 SSR ([#2305](https://github.com/nWidart/laravel-modules/pull/2305)) ([26669f9](https://github.com/nWidart/laravel-modules/commit/26669f90247471fc6936d36d371ea7cdc2da8db2))
