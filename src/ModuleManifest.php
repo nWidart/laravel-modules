@@ -246,6 +246,9 @@ class ModuleManifest
     /**
      * Keep the enabled modules and sort them by priority.
      *
+     * Module names are matched case-insensitively, so of several module.json files with the same
+     * name only the last one in scan order is kept: the one FileRepository::scan() exposes.
+     *
      * With $skipBroken, an enabled module with a provider class that does not exist is left
      * out as a whole (providers, aliases and files) and recorded as broken.
      *
@@ -254,7 +257,10 @@ class ModuleManifest
      */
     private function buildModulesData(Collection $modules, bool $skipBroken): Collection
     {
-        $modules = $modules->filter(fn ($module) => $this->activator->hasStatus($module['name'], true));
+        $modules = $modules
+            ->keyBy(fn ($module) => strtolower((string) $module['name']))
+            ->values()
+            ->filter(fn ($module) => $this->activator->hasStatus($module['name'], true));
 
         if ($skipBroken) {
             $modules = $modules->reject(fn ($module) => $this->hasMissingProvider($module));

@@ -179,6 +179,50 @@ class FileActivatorTest extends BaseTestCase
         $this->assertSame(['recipe' => true], $this->storedStatuses());
     }
 
+    public function test_it_prefers_the_folder_name_key_for_a_module()
+    {
+        // The Vite module loader and module:update-phpunit-coverage look the status up by folder name ("Recipe").
+        $statuses = ['recipe' => false, 'RECIPE' => false, 'Recipe' => true];
+        $lowercaseModule = new TestModule($this->app, 'recipe', __DIR__.'/stubs/valid/Recipe');
+
+        $activator = $this->activatorWithStatuses($statuses);
+
+        // A read gives the same result for the Module and its name: the exact name wins.
+        $this->assertTrue($activator->hasStatus($lowercaseModule, false));
+        $this->assertTrue($activator->hasStatus('recipe', false));
+        $this->assertFalse($activator->hasStatus($lowercaseModule, true));
+        $this->assertFalse($activator->hasStatus('recipe', true));
+
+        // A write keeps the folder name key.
+        $activator->disable($lowercaseModule);
+        $this->assertSame(['Recipe' => false], $this->storedStatuses());
+
+        $activator = $this->activatorWithStatuses($statuses);
+        $activator->enable($lowercaseModule);
+        $this->assertSame(['Recipe' => true], $this->storedStatuses());
+        $this->assertTrue($activator->hasStatus($lowercaseModule, true));
+        $this->assertTrue($activator->hasStatus('recipe', true));
+
+        $activator = $this->activatorWithStatuses($statuses);
+        $activator->setActive($lowercaseModule, false);
+        $this->assertSame(['Recipe' => false], $this->storedStatuses());
+    }
+
+    public function test_it_falls_back_to_the_module_name_key_when_no_key_matches_the_folder_name()
+    {
+        $lowercaseModule = new TestModule($this->app, 'recipe', __DIR__.'/stubs/valid/Recipe');
+
+        $activator = $this->activatorWithStatuses(['RECIPE' => false, 'recipe' => true]);
+        $this->assertTrue($activator->hasStatus($lowercaseModule, true));
+        $activator->disable($lowercaseModule);
+        $this->assertSame(['recipe' => false], $this->storedStatuses());
+
+        // No stored key at all: the module name is added, not the folder name.
+        $activator = $this->activatorWithStatuses(['Article' => true]);
+        $activator->enable($lowercaseModule);
+        $this->assertSame(['Article' => true, 'recipe' => true], $this->storedStatuses());
+    }
+
     public function test_it_deletes_every_case_variant_of_a_module()
     {
         $activator = $this->activatorWithStatuses(['recipe' => true, 'Article' => true, 'RECIPE' => false]);
