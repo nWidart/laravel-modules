@@ -113,6 +113,28 @@ class ModuleManifestTest extends BaseTestCase
         ], $manifest->getModulesData()->values()->all());
     }
 
+    public function test_it_boots_only_the_module_the_repository_exposes_when_two_share_a_name_in_another_case()
+    {
+        $first = $this->makeLocation(['Blog' => ['name' => 'Blog', 'providers' => ['FirstBlogProvider'], 'files' => ['first.php']]]);
+        $second = $this->makeLocation(['blog' => ['name' => 'blog', 'providers' => ['SecondBlogProvider'], 'files' => ['second.php']]]);
+        $repository = $this->bindRepository($first)->addLocation($second);
+        $this->activator->setActiveByName('Blog', true);
+
+        $exposed = $repository->find('blog');
+        $this->assertSame($second.'/blog', $exposed->getPath());
+
+        // From the module.json files the repository read.
+        $manifest = $this->makeManifest(new Filesystem, $repository->getScanPaths());
+        $this->assertSame(['SecondBlogProvider'], $manifest->getProviders());
+        $this->assertSame([$exposed->getPath()], $manifest->getModulesData()->pluck('module_directory')->values()->all());
+
+        // From its own paths, when the repository scans other paths.
+        $this->bindRepository(__DIR__.'/stubs/valid');
+        $manifest = $this->makeManifest(new Filesystem, [$first.'/*', $second.'/*']);
+        $this->assertSame(['SecondBlogProvider'], $manifest->getProviders());
+        $this->assertSame([$exposed->getPath()], $manifest->getModulesData()->pluck('module_directory')->values()->all());
+    }
+
     private function bindRepository(string $location): LaravelFileRepository
     {
         $repository = (new LaravelFileRepository($this->app))->addLocation($location);

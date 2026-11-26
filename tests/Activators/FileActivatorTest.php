@@ -121,6 +121,144 @@ class FileActivatorTest extends BaseTestCase
         new FileActivator($this->app);
     }
 
+    public function test_it_finds_a_status_stored_under_a_different_case()
+    {
+        $activator = $this->activatorWithStatuses(['Recipe' => true, 'Article' => false]);
+        $lowercaseRecipe = new TestModule($this->app, 'recipe', __DIR__.'/stubs/valid/Recipe');
+        $lowercaseArticle = new TestModule($this->app, 'article', __DIR__.'/stubs/valid/Recipe');
+
+        $this->assertTrue($activator->hasStatus($lowercaseRecipe, true));
+        $this->assertFalse($activator->hasStatus($lowercaseRecipe, false));
+        $this->assertTrue($activator->hasStatus('RECIPE', true));
+        $this->assertFalse($activator->hasStatus('RECIPE', false));
+
+        $this->assertTrue($activator->hasStatus($lowercaseArticle, false));
+        $this->assertFalse($activator->hasStatus($lowercaseArticle, true));
+        $this->assertTrue($activator->hasStatus('ARTICLE', false));
+        $this->assertFalse($activator->hasStatus('ARTICLE', true));
+    }
+
+    public function test_it_updates_the_existing_key_when_enabling_or_disabling_with_a_different_case()
+    {
+        $activator = $this->activatorWithStatuses(['Article' => true, 'Recipe' => false, 'Zebra' => true]);
+        $lowercaseModule = new TestModule($this->app, 'recipe', __DIR__.'/stubs/valid/Recipe');
+
+        $activator->enable($lowercaseModule);
+
+        $this->assertSame(['Article' => true, 'Recipe' => true, 'Zebra' => true], $activator->getStatuses());
+        $this->assertSame(['Article' => true, 'Recipe' => true, 'Zebra' => true], $this->storedStatuses());
+
+        $activator->disable($lowercaseModule);
+
+        $this->assertSame(['Article' => true, 'Recipe' => false, 'Zebra' => true], $this->storedStatuses());
+
+        $activator->setActiveByName('RECIPE', true);
+
+        $this->assertSame(['Article' => true, 'Recipe' => true, 'Zebra' => true], $this->storedStatuses());
+    }
+
+    public function test_it_collapses_case_variant_duplicates_into_the_first_key_on_write()
+    {
+        $activator = $this->activatorWithStatuses(['Recipe' => true, 'Article' => true, 'RECIPE' => false]);
+
+        $activator->setActiveByName('recipe', false);
+
+        $this->assertSame(['Recipe' => false, 'Article' => true], $this->storedStatuses());
+        $this->assertTrue($activator->hasStatus('recipe', false));
+    }
+
+    public function test_it_prefers_an_exact_match_over_case_variants()
+    {
+        $activator = $this->activatorWithStatuses(['Recipe' => true, 'recipe' => false]);
+
+        $this->assertTrue($activator->hasStatus('recipe', false));
+        $this->assertTrue($activator->hasStatus('Recipe', true));
+
+        $activator->setActiveByName('recipe', true);
+
+        $this->assertSame(['recipe' => true], $this->storedStatuses());
+    }
+
+    public function test_it_prefers_the_folder_name_key_for_a_module()
+    {
+        // The Vite module loader and module:update-phpunit-coverage look the status up by folder name ("Recipe").
+        $statuses = ['recipe' => false, 'RECIPE' => false, 'Recipe' => true];
+        $lowercaseModule = new TestModule($this->app, 'recipe', __DIR__.'/stubs/valid/Recipe');
+
+        $activator = $this->activatorWithStatuses($statuses);
+
+        // A read gives the same result for the Module and its name: the exact name wins.
+        $this->assertTrue($activator->hasStatus($lowercaseModule, false));
+        $this->assertTrue($activator->hasStatus('recipe', false));
+        $this->assertFalse($activator->hasStatus($lowercaseModule, true));
+        $this->assertFalse($activator->hasStatus('recipe', true));
+
+        // A write keeps the folder name key.
+        $activator->disable($lowercaseModule);
+        $this->assertSame(['Recipe' => false], $this->storedStatuses());
+
+        $activator = $this->activatorWithStatuses($statuses);
+        $activator->enable($lowercaseModule);
+        $this->assertSame(['Recipe' => true], $this->storedStatuses());
+        $this->assertTrue($activator->hasStatus($lowercaseModule, true));
+        $this->assertTrue($activator->hasStatus('recipe', true));
+
+        $activator = $this->activatorWithStatuses($statuses);
+        $activator->setActive($lowercaseModule, false);
+        $this->assertSame(['Recipe' => false], $this->storedStatuses());
+    }
+
+    public function test_it_falls_back_to_the_module_name_key_when_no_key_matches_the_folder_name()
+    {
+        $lowercaseModule = new TestModule($this->app, 'recipe', __DIR__.'/stubs/valid/Recipe');
+
+        $activator = $this->activatorWithStatuses(['RECIPE' => false, 'recipe' => true]);
+        $this->assertTrue($activator->hasStatus($lowercaseModule, true));
+        $activator->disable($lowercaseModule);
+        $this->assertSame(['recipe' => false], $this->storedStatuses());
+
+        // No stored key at all: the module name is added, not the folder name.
+        $activator = $this->activatorWithStatuses(['Article' => true]);
+        $activator->enable($lowercaseModule);
+        $this->assertSame(['Article' => true, 'recipe' => true], $this->storedStatuses());
+    }
+
+    public function test_it_deletes_every_case_variant_of_a_module()
+    {
+        $activator = $this->activatorWithStatuses(['recipe' => true, 'Article' => true, 'RECIPE' => false]);
+
+        $activator->delete($this->module);
+
+        $this->assertSame(['Article' => true], $activator->getStatuses());
+        $this->assertSame(['Article' => true], $this->storedStatuses());
+
+        // Nothing left to remove: the file is not written again.
+        $path = $this->activator->getStatusesFilePath();
+        $this->finder->put($path, '{"Article":true}');
+
+        $activator->delete($this->module);
+
+        $this->assertSame('{"Article":true}', $this->finder->get($path));
+    }
+
+    /**
+     * @param  array<string, bool>  $statuses
+     */
+    private function activatorWithStatuses(array $statuses): FileActivator
+    {
+        $this->finder->put($this->activator->getStatusesFilePath(), json_encode($statuses, JSON_PRETTY_PRINT));
+
+        return new FileActivator($this->app);
+    }
+
+    /**
+     * @return array<string, bool>
+     */
+    private function storedStatuses(): array
+    {
+        return json_decode($this->finder->get($this->activator->getStatusesFilePath()), true);
+    }
+
     #[DataProvider('emptyStatusesFiles')]
     public function test_it_reads_an_empty_statuses_file_as_no_statuses(string $contents)
     {
