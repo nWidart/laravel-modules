@@ -5,6 +5,16 @@ All Notable changes to `laravel-modules` will be documented in this file.
 See https://github.com/nWidart/laravel-modules/releases for the latest releases.
 From 11.0.11 until the first automated release (made by `.github/workflows/release.yml`), this file is incomplete: those releases are documented in GitHub Releases.
 
+## 13.6.0 - 2026-11-26
+
+### Features
+
+- **actuator:** Tag the scheduled tasks of each module on the scheduledtasks endpoint ([#2311](https://github.com/nWidart/laravel-modules/pull/2311)) ([083f06c](https://github.com/nWidart/laravel-modules/commit/083f06c783ee5ac46febc3839f6c0c2973a02e18))
+
+### Bug Fixes
+
+- **activator:** Match module statuses case-insensitively ([#2313](https://github.com/nWidart/laravel-modules/pull/2313)) ([2bed858](https://github.com/nWidart/laravel-modules/commit/2bed85884ff09f44882b1160d6d4e95a9a134b00))
+
 ## 13.5.0 - 2026-11-26
 
 ### Upgrade notes
