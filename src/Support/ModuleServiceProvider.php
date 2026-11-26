@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
 use Nwidart\Modules\Actuator\HealthIndicators;
+use Nwidart\Modules\Actuator\ScheduledTaskModules;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -109,7 +110,8 @@ abstract class ModuleServiceProvider extends ServiceProvider
      * configureSchedules() runs when something resolves the Schedule (schedule:run,
      * schedule:list, ...), so web requests and other commands never build it. If the
      * Schedule is already resolved once the app has booted, it runs right away. Each new
-     * Schedule instance gets the module's events once.
+     * Schedule instance gets the module's events once. The events that configureSchedules()
+     * adds are claimed for the module, so the actuator's scheduledtasks endpoint can tag them.
      */
     protected function registerCommandSchedules(): void
     {
@@ -119,7 +121,15 @@ abstract class ModuleServiceProvider extends ServiceProvider
 
         // Wait for boot so configureSchedules() still runs after every provider has booted.
         $this->app->booted(function () {
-            $this->callAfterResolving(Schedule::class, fn (Schedule $schedule) => $this->configureSchedules($schedule));
+            $this->callAfterResolving(Schedule::class, function (Schedule $schedule) {
+                $before = count($schedule->events());
+
+                $this->configureSchedules($schedule);
+
+                // A module provider can be registered without the package provider, as in tests.
+                $this->app->singletonIf(ScheduledTaskModules::class);
+                $this->app->make(ScheduledTaskModules::class)->claim(array_slice($schedule->events(), $before), $this->name);
+            });
         });
     }
 

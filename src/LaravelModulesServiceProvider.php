@@ -3,6 +3,7 @@
 namespace Nwidart\Modules;
 
 use Composer\InstalledVersions;
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Translation\Translator as TranslatorContract;
@@ -15,6 +16,7 @@ use Nwidart\Actuator\Actuator;
 use Nwidart\Modules\Actuator\HealthIndicators;
 use Nwidart\Modules\Actuator\ModulesEndpoint;
 use Nwidart\Modules\Actuator\ModulesHealthIndicator;
+use Nwidart\Modules\Actuator\ScheduledTaskModules;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Exceptions\InvalidActivatorClass;
@@ -161,6 +163,7 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
 
     /**
      * Register the "modules" endpoint of nwidart/laravel-actuator, when a version with custom endpoints is installed.
+     * With a version that tags scheduled tasks, also add the "module" tag to the tasks of each module.
      *
      * The actuator keeps its endpoints per application and rejects a duplicate id, so a second
      * register() on the same application (a forced re-register) must not add the endpoint again.
@@ -172,6 +175,13 @@ class LaravelModulesServiceProvider extends ModulesServiceProvider
         }
 
         Actuator::endpoint('modules', ModulesEndpoint::class);
+
+        // Reflection, not method_exists(): static analysis sees one installed actuator version
+        // and would call the check always true or always false.
+        if ((new \ReflectionClass(Actuator::class))->hasMethod('tagScheduledTasksUsing')) {
+            $this->app->singletonIf(ScheduledTaskModules::class);
+            Actuator::tagScheduledTasksUsing(fn (Event $event): array => $this->app->make(ScheduledTaskModules::class)->tags($event));
+        }
     }
 
     protected function registerTranslations(): void

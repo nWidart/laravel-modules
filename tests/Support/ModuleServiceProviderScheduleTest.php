@@ -5,6 +5,7 @@ namespace Nwidart\Modules\Tests\Support;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Artisan;
+use Nwidart\Modules\Actuator\ScheduledTaskModules;
 use Nwidart\Modules\Support\ModuleServiceProvider;
 use Nwidart\Modules\Tests\BaseTestCase;
 
@@ -59,6 +60,20 @@ class ModuleServiceProviderScheduleTest extends BaseTestCase
         $this->app->forgetInstance(Schedule::class);
 
         $this->assertSame(1, $this->countInspireEvents($this->app->make(Schedule::class)));
+    }
+
+    public function test_it_claims_only_the_module_events_for_the_module()
+    {
+        $schedule = $this->app->make(Schedule::class);
+        $app = $schedule->command('migrate')->daily();
+
+        $this->app->register($this->providerWithSchedules());
+
+        $modules = $this->app->make(ScheduledTaskModules::class);
+        $events = collect($schedule->events());
+        $this->assertSame('Blog', $modules->moduleOf($events->first(fn (Event $event) => str_contains((string) $event->command, 'inspire'))));
+        $this->assertNull($modules->moduleOf($app));
+        $this->assertSame([], $modules->tags($app));
     }
 
     public function test_schedule_list_shows_the_module_events_once()
