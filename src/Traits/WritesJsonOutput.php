@@ -78,7 +78,8 @@ trait WritesJsonOutput
      */
     protected function writeJson(array $document): void
     {
-        $json = json_encode($document, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        // Input such as a module name can hold invalid UTF-8: substitute it, so the document is still written and parseable.
+        $json = json_encode($document, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR);
 
         ($this->inJsonMode() ? $this->jsonOutput : $this->output->getOutput())
             ->writeln($json, OutputInterface::OUTPUT_RAW | OutputInterface::VERBOSITY_QUIET);

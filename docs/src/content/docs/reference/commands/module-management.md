@@ -485,7 +485,7 @@ php artisan module:surface <module> [--set [--class=CLASS]... [--route=ROUTE]...
 | `--clear` | `false` | Remove the `surface` key. Cannot be combined with `--set`. |
 | `--json` | `false` | Print the result as JSON. See [JSON output](#modulesurface-json-output). |
 
-Without `--set` and `--clear`, the command shows the stored surface and writes nothing.
+Without `--set` and `--clear`, the command shows the stored surface and writes nothing. It checks each stored entry with the `--set` rules, and the entry must already be in the form `--set` stores: a class with a leading backslash or a route with a trailing slash is invalid. An invalid entry exits with code `1`. Valid entries are shown as stored, with their spelling, order and duplicates.
 
 **Notes**
 
@@ -493,7 +493,7 @@ Without `--set` and `--clear`, the command shows the stored surface and writes n
 - The lists are deduplicated and sorted as described in [`surface`](/laravel-modules/reference/module-json/#surface).
 - The standard input object has the keys `classes`, `routes` and `commands`. A missing key is an empty list. An unknown key, a value that is not an array, or an entry that is not a string is an error. A leading byte order mark is ignored.
 - Use `--stdin` for long lists. `cmd.exe` limits a command line to about 8,000 characters.
-- The command keeps the rest of `module.json`: key order, values, and `{}`. It appends `surface` at the end, or replaces it in place. It writes 4-space indentation and does not escape slashes. The trailing newline and CRLF line endings of the file stay.
+- The command edits only the `surface` member of `module.json`. It replaces the value in place, appends the member after the last one, or removes it with its comma. Every other byte of the file stays the same, including numbers PHP cannot hold exactly, escapes such as `\u00e9`, and the layout. The surface uses the indentation of the file (4 spaces when there is none), does not escape slashes, and gets CRLF line endings in a CRLF file.
 - Setting the surface that is already stored, or clearing when none is stored, does not touch the file. The result reports `changed` as `false`.
 
 **Exit codes**
@@ -501,7 +501,7 @@ Without `--set` and `--clear`, the command shows the stored surface and writes n
 | Code | Meaning |
 | --- | --- |
 | `0` | Success. |
-| `1` | Unknown module, or `module.json` cannot be read, is not a JSON object, holds an invalid `surface`, or cannot be written. |
+| `1` | Unknown module, or `module.json` cannot be read, is not a JSON object, holds an invalid `surface`, changed while the command ran, or cannot be written. |
 | `2` | Usage or validation error: a bad option combination, or an invalid entry or standard input. Nothing is written. |
 
 ```bash

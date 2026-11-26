@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Tests\Commands\Actions;
 
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
+use Nwidart\Modules\Commands\Actions\SurfaceCommand;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\Tests\BaseTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -312,6 +313,194 @@ JSON, file_get_contents($this->path()));
         $this->assertStringContainsString('Module [Blog] has no surface stored. Nothing to remove.', $output);
     }
 
+    public function test_it_keeps_every_other_byte_of_module_json()
+    {
+        // Numbers PHP cannot hold exactly, escapes, a zero fraction, {} and a two-space indent.
+        $original = <<<'JSON'
+{
+  "name": "Blog",
+  "external_id": 9223372036854775809,
+  "ratio": 0.12345678901234567890,
+  "weight": 1.0,
+  "description": "café \/ é",
+  "aliases": {},
+  "files": []
+}
+
+JSON;
+        file_put_contents($this->path(), $original);
+
+        [$code] = $this->surface(['--set' => true, '--class' => ['Modules\Blog\Models\Post']]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame(<<<'JSON'
+{
+  "name": "Blog",
+  "external_id": 9223372036854775809,
+  "ratio": 0.12345678901234567890,
+  "weight": 1.0,
+  "description": "café \/ é",
+  "aliases": {},
+  "files": [],
+  "surface": {
+    "classes": [
+      "Modules\\Blog\\Models\\Post"
+    ],
+    "routes": [],
+    "commands": []
+  }
+}
+
+JSON, file_get_contents($this->path()));
+
+        [$code] = $this->surface(['--clear' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame($original, file_get_contents($this->path()));
+    }
+
+    public function test_it_writes_crlf_line_breaks_in_a_crlf_file()
+    {
+        $original = "{\r\n    \"name\": \"Blog\",\r\n    \"files\": []\r\n}\r\n";
+        file_put_contents($this->path(), $original);
+
+        [$code] = $this->surface(['--set' => true, '--route' => ['api/posts']]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame(
+            "{\r\n    \"name\": \"Blog\",\r\n    \"files\": [],\r\n    \"surface\": {\r\n        \"classes\": [],\r\n        \"routes\": [\r\n            \"api/posts\"\r\n        ],\r\n        \"commands\": []\r\n    }\r\n}\r\n",
+            file_get_contents($this->path()),
+        );
+    }
+
+    public function test_it_sets_the_surface_in_an_empty_object()
+    {
+        file_put_contents($this->path(), "{}\n");
+
+        [$code] = $this->surface(['--set' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame(
+            "{\n    \"surface\": {\n        \"classes\": [],\n        \"routes\": [],\n        \"commands\": []\n    }\n}\n",
+            file_get_contents($this->path()),
+        );
+
+        [$code] = $this->surface(['--clear' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame("{}\n", file_get_contents($this->path()));
+    }
+
+    public function test_a_concurrent_edit_is_kept()
+    {
+        $command = new class extends SurfaceCommand
+        {
+            protected function beforeWrite(string $path): void
+            {
+                file_put_contents($path, '{"name": "Blog", "edited": true}');
+            }
+        };
+        $this->app[Kernel::class]->registerCommand($command);
+
+        [$code, $output] = $this->surface(['--set' => true, '--command' => ['blog:publish'], '--json' => true]);
+
+        $this->assertSame(1, $code);
+        $this->assertSame(
+            ['module' => 'Blog', 'errors' => [['list' => null, 'value' => null, 'message' => 'module.json changed while module:surface ran; run it again.']]],
+            json_decode($output, true),
+        );
+        $this->assertSame('{"name": "Blog", "edited": true}', file_get_contents($this->path()));
+    }
+
+    public function test_it_writes_module_json_in_place()
+    {
+        $this->skipUnlessLinksWork();
+
+        // A hard link sees the new content only when the file itself is written, not replaced.
+        $link = dirname($this->path()).'/module.link.json';
+        link($this->path(), $link);
+        $inode = fileinode($this->path());
+
+        [$code] = $this->surface(['--set' => true, '--command' => ['blog:publish']]);
+
+        clearstatcache();
+        $this->assertSame(0, $code);
+        $this->assertSame($inode, fileinode($this->path()));
+        $this->assertSame(['blog:publish'], json_decode(file_get_contents($link), true)['surface']['commands']);
+    }
+
+    public function test_a_symlinked_module_json_stays_a_symlink()
+    {
+        $this->skipUnlessLinksWork();
+
+        $target = dirname($this->path()).'/module.target.json';
+        rename($this->path(), $target);
+        symlink($target, $this->path());
+
+        [$code] = $this->surface(['--set' => true, '--route' => ['api/posts']]);
+
+        clearstatcache();
+        $this->assertSame(0, $code);
+        $this->assertTrue(is_link($this->path()));
+        $this->assertSame($target, readlink($this->path()));
+        $this->assertSame(['api/posts'], json_decode(file_get_contents($target), true)['surface']['routes']);
+    }
+
+    public static function invalidStoredEntries(): array
+    {
+        return [
+            'class with a wildcard' => ['classes', 'Modules\Blog\*'],
+            'class with a leading backslash' => ['classes', '\Modules\Blog\Post'],
+            'route with a trailing slash' => ['routes', 'api/posts/'],
+            'empty route' => ['routes', ''],
+            'route with a space' => ['routes', 'api posts'],
+            'command ending with a colon' => ['commands', 'blog:'],
+        ];
+    }
+
+    #[DataProvider('invalidStoredEntries')]
+    public function test_show_rejects_an_invalid_stored_entry(string $list, string $entry)
+    {
+        $surface = ['classes' => [], 'routes' => [], 'commands' => []];
+        $surface[$list] = [$entry];
+        $this->storeSurface($surface);
+
+        [$code, $output] = $this->surface(['--json' => true]);
+        $document = json_decode($output, true);
+
+        $this->assertSame(1, $code);
+        $this->assertSame('Blog', $document['module']);
+        $this->assertCount(1, $document['errors']);
+        $this->assertSame($list, $document['errors'][0]['list']);
+        $this->assertSame($entry, $document['errors'][0]['value']);
+    }
+
+    public function test_show_prints_valid_stored_entries_as_stored()
+    {
+        $surface = [
+            'classes' => ['Modules\Blog\Post', 'modules\blog\post'],
+            'routes' => ['b', 'a', 'a', '/'],
+            'commands' => ['blog:sync', 'blog:publish'],
+        ];
+        $this->storeSurface($surface);
+
+        [$code, $output] = $this->surface(['--json' => true]);
+
+        $this->assertSame(0, $code);
+        $this->assertSame($surface, json_decode($output, true)['surface']);
+    }
+
+    public function test_a_module_name_with_invalid_utf8_gives_a_parseable_document()
+    {
+        [$code, $output] = $this->surface(['module' => "\xB1\x31", '--json' => true]);
+
+        $document = json_decode($output, true, flags: JSON_THROW_ON_ERROR);
+
+        $this->assertSame(1, $code);
+        $this->assertSame("\u{FFFD}1", $document['module']);
+        $this->assertNull($document['errors'][0]['list']);
+    }
+
     public function test_the_module_returns_the_new_surface_in_the_same_process()
     {
         $module = $this->app[RepositoryInterface::class]->find('Blog');
@@ -516,6 +705,24 @@ JSON, file_get_contents($this->path()));
         $this->assertSame('Blog', $document['module']);
         $this->assertNull($document['errors'][0]['list']);
         $this->assertSame($before, file_get_contents($this->path()));
+    }
+
+    private function skipUnlessLinksWork(): void
+    {
+        if (PHP_OS_FAMILY === 'Windows') {
+            $this->markTestSkipped('Creating links needs extra rights on Windows.');
+        }
+    }
+
+    /**
+     * Write a surface into module.json by hand, without the command's checks.
+     */
+    private function storeSurface(array $surface): void
+    {
+        $json = json_decode(file_get_contents($this->path()), true);
+        $json['surface'] = $surface;
+
+        file_put_contents($this->path(), json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     private function skipUnlessPermissionsApply(): void

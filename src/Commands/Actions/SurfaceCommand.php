@@ -9,6 +9,7 @@ use JsonException;
 use Nwidart\Modules\Contracts\RepositoryInterface;
 use Nwidart\Modules\FileRepository;
 use Nwidart\Modules\Module;
+use Nwidart\Modules\Support\JsonObjectEditor;
 use Nwidart\Modules\Traits\WritesJsonOutput;
 use RuntimeException;
 use stdClass;
@@ -48,9 +49,9 @@ class SurfaceCommand extends Command
     private const COMMAND_PATTERN = '/^[^\s:]+(:[^\s:]+)*$/uD';
 
     /**
-     * The flags module.json is written with: the json stub's 4-space layout, slashes and unicode kept as is.
+     * The flags the surface value is encoded with: pretty printed like the json stub, slashes and unicode as is.
      */
-    private const FILE_FLAGS = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION | JSON_THROW_ON_ERROR;
+    private const SURFACE_FLAGS = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR;
 
     /**
      * The console command name.
@@ -119,7 +120,19 @@ class SurfaceCommand extends Command
 
         if ($this->option('set') || $this->option('clear')) {
             try {
-                $changed = $this->store($module, $files, $path, $contents, $document, $requested);
+                $json = $this->newContents($contents, $document, $requested);
+                $changed = $json !== null;
+
+                if ($json !== null) {
+                    $this->beforeWrite($path);
+
+                    // Another program (an editor, a tool) may have saved the file since it was read: keep its change.
+                    if ($files->get($path) !== $contents) {
+                        return $this->failWith($name, [self::problem(null, null, 'module.json changed while module:surface ran; run it again.')], self::FAILURE);
+                    }
+
+                    $this->write($module, $files, $path, $json, $requested);
+                }
             } catch (Throwable $exception) {
                 return $this->failWith($name, [self::problem(null, null, "Could not write {$path}: {$exception->getMessage()}")], self::FAILURE);
             }
@@ -390,6 +403,9 @@ class SurfaceCommand extends Command
     /**
      * Get the surface stored in a module.json document, or null when it has none.
      *
+     * Each entry must pass the --set rules and already be in its normalised form. Valid
+     * entries are returned as stored: spelling, order and duplicates unchanged.
+     *
      * @return array{0: Surface|null, 1: list<SurfaceError>}
      */
     private function storedSurface(stdClass $document): array
@@ -410,6 +426,21 @@ class SurfaceCommand extends Command
             foreach ($lists[$list] ?? [] as $index => $entry) {
                 if (! is_string($entry)) {
                     $errors[] = self::problem($list, null, sprintf('Entry %d of %s in module.json is not a string.', $index + 1, $list));
+
+                    continue;
+                }
+
+                // An entry is valid when --set would store it as it is (json_decode() only returns valid UTF-8).
+                try {
+                    $normalised = $this->normaliseEntry($list, $entry);
+                } catch (InvalidArgumentException $exception) {
+                    $errors[] = self::problem($list, $entry, $exception->getMessage());
+
+                    continue;
+                }
+
+                if ($normalised !== $entry) {
+                    $errors[] = self::problem($list, $entry, "\"{$entry}\" is not stored in its normalised form \"{$normalised}\".");
                 }
             }
 
@@ -421,17 +452,18 @@ class SurfaceCommand extends Command
     }
 
     /**
-     * Store the surface in module.json (null removes it). Returns whether the file changed.
+     * Get the module.json text with the surface stored (null removes it), or null when nothing changes.
      *
-     * The file keeps its other keys, their order and their values ({} stays {}); the surface
-     * replaces the old one in place or is appended. Nothing is written when the stored
-     * surface already is the requested one.
+     * Only the text of the "surface" member changes: it replaces the old value in place, is
+     * appended after the last member, or is removed with its comma. Every other byte of the
+     * file stays as it is (numbers PHP cannot hold exactly, escapes, layout). Nothing changes
+     * when the stored surface already is the requested one.
      *
      * @param  Surface|null  $surface
      *
      * @throws JsonException
      */
-    private function store(Module $module, Filesystem $files, string $path, string $contents, stdClass $document, ?array $surface): bool
+    private function newContents(string $contents, stdClass $document, ?array $surface): ?string
     {
         $stored = property_exists($document, 'surface');
 
@@ -440,34 +472,31 @@ class SurfaceCommand extends Command
             : $stored && json_encode($document->surface) === json_encode($surface);
 
         if ($unchanged) {
-            return false;
+            return null;
         }
 
-        if ($surface === null) {
-            unset($document->surface);
-        } else {
-            $document->surface = $surface;
+        $json = $surface === null
+            ? JsonObjectEditor::remove($contents, 'surface')
+            : JsonObjectEditor::set($contents, 'surface', $surface, self::SURFACE_FLAGS);
+
+        return $json === $contents ? null : $json;
+    }
+
+    /**
+     * Write module.json and update the decoded copy the module and the repository share.
+     *
+     * @param  Surface|null  $surface
+     *
+     * @throws RuntimeException when the file cannot be written
+     */
+    private function write(Module $module, Filesystem $files, string $path, string $json, ?array $surface): void
+    {
+        // Write in place, like the package's other module.json writes: the file keeps its owner,
+        // group, mode and ACLs, and a symlinked module.json stays a symlink.
+        if ($files->put($path, $json, true) === false) {
+            throw new RuntimeException('the file could not be written.');
         }
 
-        $json = json_encode($document, self::FILE_FLAGS);
-
-        if (str_ends_with($contents, "\n")) {
-            $json .= "\n";
-        }
-
-        // Pretty printed JSON has no raw line breaks inside strings, so this only changes the layout.
-        if (str_contains($contents, "\r\n")) {
-            $json = str_replace("\n", "\r\n", $json);
-        }
-
-        if ($json === $contents) {
-            return false;
-        }
-
-        // Write a temporary file and rename it, so a reader never sees a partly written module.json.
-        $files->replace($path, $json, fileperms($path) & 0777);
-
-        // The repository and the module share the decoded module.json: update it, so they return the new surface.
         $cached = $module->json();
 
         if ($surface === null) {
@@ -475,9 +504,13 @@ class SurfaceCommand extends Command
         } else {
             $cached->set('surface', $surface);
         }
-
-        return true;
     }
+
+    /**
+     * Runs after the new module.json is built and before the file is read again and written.
+     * Tests change the file here to check that a concurrent edit is kept.
+     */
+    protected function beforeWrite(string $path): void {}
 
     /**
      * Print the result for humans.
