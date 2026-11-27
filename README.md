@@ -113,7 +113,6 @@ Full documentation: [https://nwidart.github.io/laravel-modules/](https://nwidart
 ## Related tools
 
 - [Mortise](https://github.com/mortise-dev/mortise) is a desktop app and a command line tool that show the modules of an app and check the boundaries between them.
-- [Mortise Cloud](https://mortisecloud.com/?utm_source=laravel-modules&utm_medium=referral) keeps the history of those checks across commits.
 
 ## Credits
 
