@@ -1,0 +1,82 @@
+name: Benchmark comment
+
+# Posts the report of a Benchmark run as one sticky PR comment and removes the benchmark label.
+#
+# Benchmark runs PR code with a read-only token, so it cannot comment on fork PRs. This
+# workflow has write access instead and never checks out or runs PR code: it only reads the
+# report artifact, whose content is untrusted. workflow_run fires only for the copy of this
+# file on the default branch.
+on:
+  workflow_run:
+    workflows: [Benchmark]
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  comment:
+    name: Comment on PR
+    # Skipped runs (any other label) and cancelled runs (superseded by a newer label) leave no report.
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    permissions:
+      actions: read
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Download report
+        uses: actions/download-artifact@v8
+        with:
+          name: benchmark-report
+          path: report
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+
+      - name: Comment and remove the label
+        uses: actions/github-script@v9
+        env:
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- laravel-modules-benchmark -->';
+            const { owner, repo } = context.repo;
+
+            const prNumber = fs.readFileSync('report/pr-number', 'utf8').trim();
+            if (!/^[1-9][0-9]{0,9}$/.test(prNumber)) {
+              core.setFailed(`The artifact holds no valid PR number: ${JSON.stringify(prNumber.slice(0, 40))}`);
+              return;
+            }
+            const issue_number = Number(prNumber);
+
+            // The artifact comes from PR code: only trust the PR number when that PR's head is the commit that ran.
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: issue_number });
+            if (pr.head.sha !== process.env.HEAD_SHA) {
+              core.setFailed(`PR #${issue_number} head is ${pr.head.sha}, the benchmark ran ${process.env.HEAD_SHA}.`);
+              return;
+            }
+
+            let body = fs.readFileSync('report/report.md', 'utf8').replaceAll(marker, '').trim();
+            body = `${marker}\n${body.slice(0, 60000)}`;
+
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number, per_page: 100 });
+            const sticky = comments.find((c) => c.user?.login === 'github-actions[bot]' && c.body?.startsWith(marker));
+            if (sticky) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: sticky.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+            const label = fs.readFileSync('report/label', 'utf8').trim();
+            if (['benchmark', 'benchmark-full'].includes(label)) {
+              try {
+                await github.rest.issues.removeLabel({ owner, repo, issue_number, name: label });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+              }
+            }

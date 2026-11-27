@@ -43,6 +43,28 @@ composer check
 ```
 This runs `composer lint:check`, `composer analyse`, and `composer test`. CI runs the same checks.
 
+## Benchmarks
+
+Run the benchmark when your change touches the boot path, the repository or scan, the manifest, the providers, or the stubs. It builds two throwaway Laravel apps, one for the base and one for your checkout, each with N modules from its own `module:make`. It then times fresh processes, alternating base and head:
+
+* `boot`: HTTP boot, uncached.
+* `boot-cached`: HTTP boot after `php artisan optimize`.
+* `module-list`: `php artisan module:list`.
+
+```bash
+composer bench                                  # quick: 10, 100 and 500 modules, 10 runs, about 3 minutes
+composer bench -- --profile=heavy               # adds a table for modules with routes, views, migrations, config and lang files
+composer bench -- --full                        # every step, scenario and profile, about 12 minutes
+composer bench -- --base=v13.5.0 --steps=100    # compare against a tag, at one step
+```
+Options go after `--`. By default the base is the merge-base with `origin/master` and the head is the current checkout, uncommitted changes included. See the header of `benchmarks/bench.php` for all options.
+
+The report is Markdown on stdout. A row is `REGRESSION` or `faster` only when the median changes by at least 3% and by at least twice the larger side's IQR (as a percentage of its median). Anything else is `within noise`. Memory, included files, and providers are exact differences.
+
+Compare base and head from the same run only. Numbers differ between machines, and a busy machine widens the IQR and hides small changes.
+
+On a pull request, a maintainer adds the `benchmark` label (quick) or the `benchmark-full` label. The report appears in the job summary and as one comment on the pull request, updated in place. The workflow removes the label afterwards, so adding it again reruns the benchmark. It also runs for pull requests from forks.
+
 ## Tests
 
 Run all tests:

@@ -18,3 +18,4 @@
 /.github            export-ignore
 /art                export-ignore
 /docs               export-ignore
+/benchmarks         export-ignore

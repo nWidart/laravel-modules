@@ -20,6 +20,7 @@ composer lint                       # pint (preset: laravel), fixes files
 composer lint:check                 # pint --test, reports without changing files
 composer analyse                    # phpstan + Larastan (phpstan.neon.dist, level 6, src/)
 composer test-coverage              # HTML report in build/coverage; needs Xdebug or PCOV
+composer bench                      # benchmark this checkout against its base as the module count grows (options after --, e.g. composer bench -- --full)
 ```
 
 PHPStan has no baseline. Lumen is not installed in dev, so `phpstan.neon.dist` ignores `class.notFound` for `Laravel\Lumen\*`. The Lumen classes are deprecated and v14 removes them and this ignore. PHPStan analyses for PHP 8.3 to 8.5 (`phpVersion` in `phpstan.neon.dist`), not for the local PHP, so local results match CI. Correct vendor types in `phpstan/stubs/` (currently `Factory.stub`), not in ignores. `MigrationLoaderTrait` has a `trait.unused` ignore because it is deprecated and removed in v14. Fix new errors. Do not add a baseline or new `ignoreErrors` entries without maintainer approval.
@@ -84,6 +85,10 @@ Stubs live in `src/Commands/stubs/` and users can publish them to `stubs/nwidart
 ### Config
 
 `config/config.php` is merged as `modules.*`. Important sections are `paths.generator` (per-generator path, namespace, and `generate` flag), `stubs`, `scan`, `activators`, `auto-discover`, and `commands`.
+
+### Benchmarks
+
+`benchmarks/bench.php` (runner), `probe.php` (boot probe) and `weight.php` (module-weight files) build throwaway Laravel apps under `build/bench/` and compare this checkout with a base ref. `.github/workflows/benchmark.yml` runs it on a PR labelled `benchmark` or `benchmark-full`, and `benchmark-comment.yml` posts the report. Run one benchmark at a time per machine. See `CONTRIBUTING.md`.
 
 ## Tests
 

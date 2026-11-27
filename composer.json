@@ -91,6 +91,10 @@
             "@lint:check",
             "@analyse",
             "@test"
+        ],
+        "bench": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php benchmarks/bench.php"
         ]
     },
     "scripts-descriptions": {
@@ -100,7 +104,8 @@
         "lint": "Fix code style with Pint.",
         "lint:check": "Check code style with Pint without changing files.",
         "analyse": "Run PHPStan (config: phpstan.neon.dist).",
-        "check": "Run lint:check, analyse and test. Run this before opening a pull request."
+        "check": "Run lint:check, analyse and test. Run this before opening a pull request.",
+        "bench": "Benchmark this checkout against a base ref as the module count grows (options after --, see benchmarks/bench.php)."
     },
     "minimum-stability": "dev",
     "prefer-stable": true
