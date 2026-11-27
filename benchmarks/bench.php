@@ -101,16 +101,16 @@ function main(array $opts, string $root, string $work, int $started): int
 
     $headDir = realpath((string) ($opts['head'] ?? $root)) ?: throw new RuntimeException('--head is not a directory.');
     $baseRef = (string) ($opts['base'] ?? 'merge-base of HEAD and origin/master');
-    $baseSha = $opts['base'] ?? trim(run(['git', 'merge-base', 'HEAD', 'origin/master'], $root)['out']);
-    $baseSha = trim(run(['git', 'rev-parse', '--verify', $baseSha.'^{commit}'], $root)['out']);
+    $baseSha = $opts['base'] ?? trim(git(['merge-base', 'HEAD', 'origin/master'], $root)['out']);
+    $baseSha = trim(git(['rev-parse', '--verify', $baseSha.'^{commit}'], $root)['out']);
     $baseDir = checkoutBase($root, $work, $baseSha);
 
     $sides = [
         'base' => ['dir' => $baseDir, 'sha' => $baseSha, 'dirty' => false],
         'head' => [
             'dir' => $headDir,
-            'sha' => trim(run(['git', 'rev-parse', 'HEAD'], $headDir)['out']),
-            'dirty' => trim(run(['git', 'status', '--porcelain'], $headDir)['out']) !== '',
+            'sha' => trim(git(['rev-parse', 'HEAD'], $headDir)['out']),
+            'dirty' => trim(git(['status', '--porcelain'], $headDir)['out']) !== '',
         ],
     ];
 
@@ -180,11 +180,11 @@ function main(array $opts, string $root, string $work, int $started): int
     echo $markdown;
 
     if (isset($opts['markdown'])) {
-        file_put_contents((string) $opts['markdown'], $markdown);
+        writeFile((string) $opts['markdown'], $markdown);
     }
 
     if (isset($opts['json'])) {
-        file_put_contents((string) $opts['json'], json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
+        writeFile((string) $opts['json'], json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)."\n");
     }
 
     return 0;
@@ -250,6 +250,8 @@ function scenarios(bool $full, int $largest): array
             'at' => $always,
             'cmd' => $probe,
             'before' => fn (array $side) => artisanSetup($side, 'optimize'),
+            // `optimize` exits 0 even when one of its cache commands fails: check what it wrote.
+            'expect' => ['bootstrap/cache/config.php', 'bootstrap/cache/routes-v7.php', 'bootstrap/cache/events.php', 'bootstrap/cache/modules.php'],
             'after' => fn (array $side) => artisanSetup($side, 'optimize:clear'),
         ],
         'artisan-list' => [
@@ -354,7 +356,18 @@ function measure(string $label, array $scenario, array $sides, int $runs): array
     }
 
     if (isset($scenario['before'])) {
-        parallel(perSide($sides, $scenario['before']));
+        $results = array_combine(array_keys($sides), parallel(perSide($sides, $scenario['before'])));
+
+        foreach ($sides as $key => $side) {
+            foreach ($scenario['expect'] ?? [] as $file) {
+                if (! is_file("{$side['app']}/{$file}")) {
+                    $hook = $scenario['before']($side);
+                    $output = trim($results[$key]['out']."\n".$results[$key]['err']);
+
+                    throw new RuntimeException("{$key} app: `php artisan {$hook[array_key_last($hook)]}` exited 0 but did not write {$file}:\n{$output}");
+                }
+            }
+        }
     }
 
     $started = hrtime(true);
@@ -690,7 +703,7 @@ function checkoutBase(string $root, string $work, string $sha): string
 
     removeWorktree($root, $dir);
     progress('checking out base '.substr($sha, 0, 12));
-    run(['git', 'worktree', 'add', '--detach', '--quiet', $dir, $sha], $root);
+    git(['worktree', 'add', '--detach', '--quiet', $dir, $sha], $root);
 
     register_shutdown_function(fn () => removeWorktree($root, $dir));
 
@@ -706,11 +719,11 @@ function checkoutBase(string $root, string $work, string $sha): string
 function removeWorktree(string $root, string $dir): void
 {
     if (is_dir($dir)) {
-        run(['git', 'worktree', 'remove', '--force', $dir], $root, check: false);
+        git(['worktree', 'remove', '--force', $dir], $root, check: false);
         removeDir($dir);
     }
 
-    run(['git', 'worktree', 'prune'], $root, check: false);
+    git(['worktree', 'prune'], $root, check: false);
 }
 
 /**
@@ -720,10 +733,12 @@ function skeleton(string $work): string
 {
     $dir = $work.'/skeleton';
 
-    if (! is_file($dir.'/artisan')) {
+    // Written only after create-project succeeded, so a half-created skeleton is never reused.
+    if (! is_file($dir.'/.bench-ready')) {
         progress('creating the laravel/laravel ^13 skeleton (cached in build/bench/skeleton)');
         removeDir($dir);
-        run([...composer(), 'create-project', 'laravel/laravel', $dir, '^13.0', '--prefer-dist', '--no-interaction', '--quiet'], $work);
+        run([...composer(), 'create-project', 'laravel/laravel', $dir, '^13.0', '--prefer-dist', '--no-interaction', '--quiet'], $work, app: $dir);
+        writeFile($dir.'/.bench-ready', date(DATE_ATOM)."\n");
     }
 
     return $dir;
@@ -757,11 +772,11 @@ function buildApps(string $work, array $sides, string $skeleton, array $names): 
         $composer['repositories'] = [['type' => 'path', 'url' => $side['dir'], 'options' => ['symlink' => true]]];
         $composer['config']['allow-plugins']['wikimedia/composer-merge-plugin'] = true;
         $composer['extra']['merge-plugin'] = ['include' => ['Modules/*/composer.json']];
-        file_put_contents($side['app'].'/composer.json', json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
+        writeFile($side['app'].'/composer.json', json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)."\n");
 
         // The session is not under test: keep the sqlite writes of the database driver out of the timings.
         $env = preg_replace('/^SESSION_DRIVER=.*$/m', 'SESSION_DRIVER=array', file_get_contents($side['app'].'/.env'));
-        file_put_contents($side['app'].'/.env', $env);
+        writeFile($side['app'].'/.env', $env);
     }
 
     parallel(perSide($sides, fn () => [...composer(), 'require', 'nwidart/laravel-modules:*@dev', '--no-interaction', '--quiet']));
@@ -802,7 +817,7 @@ function fillModules(array $sides, array $names, int $count): void
         }
 
         $statuses = $wanted === [] ? new stdClass : array_fill_keys($wanted, true);
-        file_put_contents($side['app'].'/modules_statuses.json', json_encode($statuses, JSON_PRETTY_PRINT)."\n");
+        writeFile($side['app'].'/modules_statuses.json', json_encode($statuses, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR)."\n");
         resetDir($side['setup_opcache']);
     }
 
@@ -839,7 +854,7 @@ function php(): array
     $ini = preg_replace('/^\s*zend_extension\s*=.*xdebug.*$/mi', ';$0', $ini);
 
     $path = dirname(__DIR__).'/build/bench/php.ini';
-    file_put_contents($path, $ini);
+    writeFile($path, $ini);
 
     return $command = [PHP_BINARY, '-n', '-c', $path];
 }
@@ -903,14 +918,13 @@ function perSide(array $sides, Closure $command): array
  * Run the jobs at the same time and wait for all of them. Setup only: never while measuring.
  *
  * @param  list<array{0: list<string>, 1: string}>  $jobs
+ * @return list<array{out: string, err: string, code: int, ms: float}>
  */
-function parallel(array $jobs): void
+function parallel(array $jobs): array
 {
     $started = array_map(fn ($job) => start($job[0], $job[1]), $jobs);
 
-    foreach ($started as $job) {
-        finish($job);
-    }
+    return array_map(fn ($job) => finish($job), $started);
 }
 
 /**
@@ -919,22 +933,36 @@ function parallel(array $jobs): void
  * @param  list<string>  $command
  * @return array{out: string, err: string, code: int, ms: float}
  */
-function run(array $command, string $cwd, bool $check = true): array
+function run(array $command, string $cwd, bool $check = true, ?string $app = null): array
 {
-    return finish(start($command, $cwd), $check);
+    return finish(start($command, $cwd, $app), $check);
 }
 
 /**
+ * A git command. It keeps this process's environment, for the git config and credentials of CI.
+ *
+ * @param  list<string>  $args
+ * @return array{out: string, err: string, code: int, ms: float}
+ */
+function git(array $args, string $cwd, bool $check = true): array
+{
+    return finish(start(['git', ...$args], $cwd, inheritEnv: true), $check);
+}
+
+/**
+ * Start a command. Unless $inheritEnv, it gets childEnv() for $app, or for $cwd when that is a Laravel app.
+ *
  * @param  list<string>  $command
  * @return array<string, mixed>
  */
-function start(array $command, string $cwd): array
+function start(array $command, string $cwd, ?string $app = null, bool $inheritEnv = false): array
 {
     $out = tempnam(sys_get_temp_dir(), 'bench');
     $err = tempnam(sys_get_temp_dir(), 'bench');
+    $env = $inheritEnv ? null : childEnv($app ?? (is_file("{$cwd}/artisan") ? $cwd : null));
     $started = hrtime(true);
 
-    $process = proc_open($command, [0 => ['file', '/dev/null', 'r'], 1 => ['file', $out, 'w'], 2 => ['file', $err, 'w']], $pipes, $cwd)
+    $process = proc_open($command, [0 => ['file', '/dev/null', 'r'], 1 => ['file', $out, 'w'], 2 => ['file', $err, 'w']], $pipes, $cwd, $env)
         ?: throw new RuntimeException('Cannot start `'.implode(' ', $command).'`.');
 
     return compact('command', 'cwd', 'out', 'err', 'started', 'process');
@@ -960,6 +988,42 @@ function finish(array $job, bool $check = true): array
     }
 
     return $result;
+}
+
+/**
+ * The environment of child processes: a few variables of this process, then the app settings forced.
+ *
+ * Exported variables beat an app's .env, so a DB_CONNECTION or CACHE_STORE from the caller's
+ * shell would otherwise send migrate or cache:clear to another app's database or cache.
+ *
+ * @return array<string, string>
+ */
+function childEnv(?string $app): array
+{
+    $keep = '/^(PATH|HOME|USER|LOGNAME|TMPDIR|TMP|TEMP|LANG|LC_[A-Z_]+|TZ|XDG_[A-Z_]+|SSL_CERT_(FILE|DIR)'
+        .'|COMPOSER_(HOME|CACHE_DIR|AUTH)|(HTTPS?|NO)_PROXY|(https?|no)_proxy)$/';
+
+    $env = array_filter(getenv(), fn ($name) => preg_match($keep, $name) === 1, ARRAY_FILTER_USE_KEY);
+
+    return [
+        ...$env,
+        'APP_ENV' => 'local',
+        'DB_CONNECTION' => 'sqlite',
+        'CACHE_STORE' => 'file',
+        'SESSION_DRIVER' => 'array',
+        'QUEUE_CONNECTION' => 'sync',
+        'MAIL_MAILER' => 'array',
+        'LOG_CHANNEL' => 'single',
+        'BROADCAST_CONNECTION' => 'log',
+        ...($app === null ? [] : ['DB_DATABASE' => "{$app}/database/database.sqlite"]),
+    ];
+}
+
+function writeFile(string $path, string $contents): void
+{
+    if (file_put_contents($path, $contents) === false) {
+        throw new RuntimeException("Cannot write {$path}.");
+    }
 }
 
 function resetDir(string $dir): void

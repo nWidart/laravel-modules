@@ -49,7 +49,9 @@ function applyWeight(string $dir, string $name, array $profile): void
         $routes .= "Route::get('/{$lower}/weight-{$i}', fn () => '{$lower} weight {$i}')->name('{$lower}.weight.{$i}');\n";
     }
 
-    file_put_contents("{$dir}/routes/web.php", $routes);
+    if (file_put_contents("{$dir}/routes/web.php", $routes) === false) {
+        throw new RuntimeException("Cannot write {$dir}/routes/web.php.");
+    }
 
     for ($i = 1; $i <= $profile['views']; $i++) {
         write("{$dir}/resources/views/weight/view-{$i}.blade.php", VIEW, ['{title}' => "{$name} view {$i}", '{class}' => "{$lower}-{$i}"]);
@@ -77,7 +79,10 @@ function applyWeight(string $dir, string $name, array $profile): void
 function write(string $file, string $template, array $replace): void
 {
     @mkdir(dirname($file), 0777, true);
-    file_put_contents($file, strtr($template, $replace));
+
+    if (file_put_contents($file, strtr($template, $replace)) === false) {
+        throw new RuntimeException("Cannot write {$file}.");
+    }
 }
 
 const VIEW = <<<'BLADE'

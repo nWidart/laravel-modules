@@ -21,6 +21,7 @@ concurrency:
 
 jobs:
   benchmark:
+    # benchmark-comment.yml reads the label back from this name: keep the `Benchmark (<label>)` format.
     name: Benchmark (${{ github.event.label.name }})
     if: github.event.label.name == 'benchmark' || github.event.label.name == 'benchmark-full'
     runs-on: ubuntu-latest
@@ -45,15 +46,21 @@ jobs:
           echo "composer-cache=$(composer config --global cache-dir)" >> "$GITHUB_OUTPUT"
           echo "week=$(date +%G-%V)" >> "$GITHUB_OUTPUT"
 
-      # The Laravel skeleton (with vendor) and Composer's download cache. Renewed weekly to follow Laravel releases.
-      - name: Cache skeleton and Composer downloads
+      # The installed Laravel skeleton, rebuilt each week to follow Laravel releases. No restore-keys:
+      # an older skeleton restored here would be saved again under the new key and never renewed.
+      - name: Cache Laravel skeleton
         uses: actions/cache@v6
         with:
-          path: |
-            build/bench/skeleton
-            ${{ steps.key.outputs.composer-cache }}
-          key: bench-${{ runner.os }}-php8.4-${{ steps.key.outputs.week }}
-          restore-keys: bench-${{ runner.os }}-php8.4-
+          path: build/bench/skeleton
+          key: bench-skeleton-${{ runner.os }}-php8.4-${{ steps.key.outputs.week }}
+
+      # Composer's download cache only speeds up installs, so an older one is fine to start from.
+      - name: Cache Composer downloads
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.key.outputs.composer-cache }}
+          key: bench-composer-${{ runner.os }}-php8.4-${{ steps.key.outputs.week }}
+          restore-keys: bench-composer-${{ runner.os }}-php8.4-
 
       - name: Run benchmark
         env:
@@ -70,17 +77,16 @@ jobs:
             echo "Benchmark failed: see the Run benchmark step log." >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      # The comment workflow reads these files. It has no other way to know the PR of a fork run.
+      # The comment workflow posts report.md. It resolves the PR and the label from trusted run
+      # metadata, and only checks that pr-number agrees.
       - name: Prepare report artifact
         if: ${{ !cancelled() }}
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          LABEL: ${{ github.event.label.name }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           mkdir -p build/bench/artifact
           echo "$PR_NUMBER" > build/bench/artifact/pr-number
-          echo "$LABEL" > build/bench/artifact/label
           if [[ -f build/bench/report.md ]]; then
             cp build/bench/report.md build/bench/report.json build/bench/artifact/
           else
