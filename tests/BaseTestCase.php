@@ -3,6 +3,10 @@
 namespace Nwidart\Modules\Tests;
 
 use Illuminate\Foundation\Application;
+use Illuminate\Process\Factory;
+use Illuminate\Process\FakeProcessResult;
+use Illuminate\Process\PendingProcess;
+use Illuminate\Support\Facades\Process;
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
@@ -13,10 +17,37 @@ abstract class BaseTestCase extends OrchestraTestCase
     {
         parent::setUp();
 
+        $this->fakeComposerDumpAutoload();
+
         if (method_exists($this, 'withoutMockingConsoleOutput')) {
             $this->withoutMockingConsoleOutput();
         }
         // $this->setUpDatabase();
+    }
+
+    /**
+     * Fake `composer dump-autoload`, which module:make runs in base_path(), the Testbench skeleton.
+     * A real dump there is slow, and it can overwrite the package's own autoloader: Testbench's
+     * CLI links the skeleton's vendor/ to the package's vendor/ and can leave that link behind.
+     *
+     * Process::fake() would not do: it records every process (so assertNothingRan() would see the
+     * dumps of a setUp()'s createModule()), and the first matching pattern wins (so it would shadow
+     * a test's own Process::fake(['*dump-autoload*' => ...])). This factory adds the dump fake after
+     * the test's fakes, without recording. Other commands still run for real.
+     * Override this method with an empty body in a test that needs a real dump.
+     */
+    protected function fakeComposerDumpAutoload(): void
+    {
+        Process::swap(new class extends Factory
+        {
+            #[\Override]
+            public function newPendingProcess()
+            {
+                return (new PendingProcess($this))->withFakeHandlers($this->fakeHandlers + [
+                    'composer dump-autoload*' => fn () => new FakeProcessResult,
+                ]);
+            }
+        });
     }
 
     private function resetDatabase()
