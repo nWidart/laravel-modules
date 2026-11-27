@@ -1,0 +1,102 @@
+name: Benchmark
+
+# Add the `benchmark` label (quick: 10, 100, 500 modules; boot, boot-cached, module:list) or the
+# `benchmark-full` label (every step, scenario and module-weight profile) to a PR to benchmark it
+# against its base branch. benchmark-comment.yml posts the report on the PR
+# and removes the label, so adding the label again reruns it.
+#
+# This workflow runs PR code, also from forks: it gets a read-only token and no secrets.
+on:
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: read
+
+# One benchmark per PR: a new benchmark label cancels the running one. Other labels get a
+# group of their own, so labelling a PR for triage never cancels a benchmark.
+concurrency:
+  group: benchmark-${{ github.event.pull_request.number }}-${{ (github.event.label.name == 'benchmark' || github.event.label.name == 'benchmark-full') && 'bench' || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    # benchmark-comment.yml reads the label back from this name: keep the `Benchmark (<label>)` format.
+    name: Benchmark (${{ github.event.label.name }})
+    if: github.event.label.name == 'benchmark' || github.event.label.name == 'benchmark-full'
+    runs-on: ubuntu-latest
+    # A quick run takes 3 minutes on an Apple M3 Max; expect up to twice that on this runner.
+    timeout-minutes: ${{ github.event.label.name == 'benchmark-full' && 60 || 15 }}
+
+    steps:
+      # The default checkout is the PR merge commit: the PR's changes on top of the base SHA it is compared with.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - name: Cache key
+        id: key
+        run: |
+          echo "composer-cache=$(composer config --global cache-dir)" >> "$GITHUB_OUTPUT"
+          echo "week=$(date +%G-%V)" >> "$GITHUB_OUTPUT"
+
+      # The installed Laravel skeleton, rebuilt each week to follow Laravel releases. No restore-keys:
+      # an older skeleton restored here would be saved again under the new key and never renewed.
+      - name: Cache Laravel skeleton
+        uses: actions/cache@v6
+        with:
+          path: build/bench/skeleton
+          key: bench-skeleton-${{ runner.os }}-php8.4-${{ steps.key.outputs.week }}
+
+      # Composer's download cache only speeds up installs, so an older one is fine to start from.
+      - name: Cache Composer downloads
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.key.outputs.composer-cache }}
+          key: bench-composer-${{ runner.os }}-php8.4-${{ steps.key.outputs.week }}
+          restore-keys: bench-composer-${{ runner.os }}-php8.4-
+
+      - name: Run benchmark
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          MODE: ${{ github.event.label.name == 'benchmark-full' && '--full' || '--quick' }}
+        run: php benchmarks/bench.php "$MODE" --base="$BASE_SHA" --markdown=build/bench/report.md --json=build/bench/report.json
+
+      - name: Write job summary
+        if: ${{ !cancelled() }}
+        run: |
+          if [[ -f build/bench/report.md ]]; then
+            cat build/bench/report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Benchmark failed: see the Run benchmark step log." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # The comment workflow posts report.md. It resolves the PR and the label from trusted run
+      # metadata, and only checks that pr-number agrees.
+      - name: Prepare report artifact
+        if: ${{ !cancelled() }}
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          mkdir -p build/bench/artifact
+          echo "$PR_NUMBER" > build/bench/artifact/pr-number
+          if [[ -f build/bench/report.md ]]; then
+            cp build/bench/report.md build/bench/report.json build/bench/artifact/
+          else
+            printf '<!-- laravel-modules-benchmark -->\n## laravel-modules benchmark\n\nThe benchmark failed. See the [run log](%s).\n' "$RUN_URL" > build/bench/artifact/report.md
+          fi
+
+      - name: Upload report artifact
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-report
+          path: build/bench/artifact/
+          retention-days: 7

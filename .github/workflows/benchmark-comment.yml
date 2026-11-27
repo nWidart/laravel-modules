@@ -1,0 +1,102 @@
+name: Benchmark comment
+
+# Posts the report of a Benchmark run as one sticky PR comment and removes the benchmark label,
+# so adding the label again reruns the benchmark.
+#
+# Benchmark runs PR code with a read-only token, so it cannot comment on fork PRs. This
+# workflow has write access instead and never checks out or runs PR code. The report artifact
+# is untrusted: the PR and the label come from the workflow_run metadata, and the artifact's
+# PR number must agree with them. workflow_run fires only for the copy of this file on the
+# default branch.
+on:
+  workflow_run:
+    workflows: [Benchmark]
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  comment:
+    name: Comment on PR
+    # Skipped runs (any other label) are ignored. A cancelled run (superseded by a newer label)
+    # posts nothing, but its label is still removed.
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      (github.event.workflow_run.conclusion == 'success' ||
+       github.event.workflow_run.conclusion == 'failure' ||
+       github.event.workflow_run.conclusion == 'cancelled')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    permissions:
+      actions: read
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Download report
+        if: github.event.workflow_run.conclusion != 'cancelled'
+        uses: actions/download-artifact@v8
+        with:
+          name: benchmark-report
+          path: report
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+
+      - name: Comment and remove the label
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- laravel-modules-benchmark -->';
+            const { owner, repo } = context.repo;
+            const run = context.payload.workflow_run;
+
+            // The label: GitHub names the job `Benchmark (<label>)` from the labeled event.
+            const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, { owner, repo, run_id: run.id, per_page: 100 });
+            const labels = [...new Set(jobs.map((job) => /^Benchmark \((benchmark|benchmark-full)\)$/.exec(job.name)?.[1]).filter(Boolean))];
+            if (labels.length !== 1) {
+              core.setFailed(`Run ${run.id} has no single benchmark job to read the label from (jobs: ${jobs.map((job) => job.name).join(', ') || 'none'}).`);
+              return;
+            }
+            const label = labels[0];
+
+            // The PR: the one open PR from the run's head repository and branch, at the commit that ran.
+            if (!run.head_repository) {
+              core.setFailed(`Run ${run.id} has no head repository (deleted fork?): cannot find its PR.`);
+              return;
+            }
+            const head = `${run.head_repository.owner.login}:${run.head_branch}`;
+            const prs = await github.paginate(github.rest.pulls.list, { owner, repo, state: 'open', head, per_page: 100 });
+            const matches = prs.filter((pr) => pr.head.sha === run.head_sha && pr.base.repo.full_name === `${owner}/${repo}`);
+            if (matches.length !== 1) {
+              core.setFailed(`Expected one open PR from ${head} at ${run.head_sha}, found ${matches.length}${matches.length ? ': #' + matches.map((pr) => pr.number).join(', #') : ''}.`);
+              return;
+            }
+            const issue_number = matches[0].number;
+
+            if (run.conclusion !== 'cancelled') {
+              const prNumber = fs.readFileSync('report/pr-number', 'utf8').trim();
+              if (!/^[1-9][0-9]{0,9}$/.test(prNumber) || Number(prNumber) !== issue_number) {
+                core.setFailed(`The artifact names PR ${JSON.stringify(prNumber.slice(0, 40))}, the run belongs to #${issue_number}.`);
+                return;
+              }
+
+              let body = fs.readFileSync('report/report.md', 'utf8').replaceAll(marker, '').trim();
+              body = `${marker}\n${body.slice(0, 60000)}`;
+
+              const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number, per_page: 100 });
+              const sticky = comments.find((c) => c.user?.login === 'github-actions[bot]' && c.body?.startsWith(marker));
+              if (sticky) {
+                await github.rest.issues.updateComment({ owner, repo, comment_id: sticky.id, body });
+              } else {
+                await github.rest.issues.createComment({ owner, repo, issue_number, body });
+              }
+            }
+
+            try {
+              await github.rest.issues.removeLabel({ owner, repo, issue_number, name: label });
+              core.info(`Removed the ${label} label from #${issue_number}.`);
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
