@@ -110,6 +110,10 @@ Full documentation: [https://nwidart.github.io/laravel-modules/](https://nwidart
 - [Your first module](https://nwidart.github.io/laravel-modules/start-here/first-module/)
 - [Artisan commands](https://nwidart.github.io/laravel-modules/reference/commands/)
 
+## Related tools
+
+- [Mortise](https://github.com/mortise-dev/mortise) is a desktop app and a command line tool that show the modules of an app and check the boundaries between them.
+
 ## Credits
 
 - [Nicolas Widart](https://github.com/nwidart)
