@@ -4,6 +4,7 @@ namespace Nwidart\Modules\Commands\Make;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
 use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 use Nwidart\Modules\Generators\FileGenerator;
@@ -186,13 +187,34 @@ abstract class GeneratorCommand extends Command
     }
 
     /**
+     * The name argument as a path of StudlyCase segments: "api/v2/payments" becomes
+     * "Api/V2/Payments", and a backslash separates segments like a slash. The file path,
+     * the class name and the namespace all come from it, so they agree.
+     */
+    protected function getClassPath(): string
+    {
+        return $this->studly_path(str_replace('\\', '/', (string) $this->argument($this->argumentName)));
+    }
+
+    /**
+     * The folders of the name argument, in StudlyCase ("Api/V2" for "api/v2/payments"),
+     * or an empty string for a name without folders.
+     */
+    protected function getClassFolder(): string
+    {
+        $path = $this->getClassPath();
+
+        return str_contains($path, '/') ? Str::beforeLast($path, '/') : '';
+    }
+
+    /**
      * Get class name.
      *
      * @return string
      */
     public function getClass()
     {
-        return class_basename($this->argument($this->argumentName));
+        return class_basename($this->getClassPath());
     }
 
     /**
@@ -211,9 +233,9 @@ abstract class GeneratorCommand extends Command
      */
     public function getClassNamespace($module)
     {
-        $path_namespace = $this->path_namespace(str_replace($this->getClass(), '', $this->argument($this->argumentName)));
+        $folder = $this->getClassFolder();
 
-        return $this->module_namespace($module->getStudlyName(), $this->getDefaultNamespace().($path_namespace ? '\\'.$path_namespace : ''));
+        return $this->module_namespace($module->getStudlyName(), $this->getDefaultNamespace().($folder !== '' ? '\\'.$this->path_namespace($folder) : ''));
     }
 
     public function module(?string $name = null): Module

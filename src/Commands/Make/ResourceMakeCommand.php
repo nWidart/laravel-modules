@@ -81,7 +81,7 @@ class ResourceMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name'));
+        return $this->getClassPath();
     }
 
     /**

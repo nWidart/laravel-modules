@@ -78,22 +78,24 @@ class ObserverMakeCommand extends GeneratorCommand
             $path = substr($path, strlen($appFolder)); // has 'Models'
         }
 
-        $nsPart = trim(str_replace('/', '\\', $path), '\\'); // 'Models'
+        $folder = $this->getClassFolder();
+
+        $nsPart = trim(str_replace('/', '\\', $path.($folder !== '' ? '/'.$folder : '')), '\\'); // 'Models', or 'Models\Admin' for 'Admin/User'
 
         return $moduleNamespace.'\\'.$moduleName.'\\'.$nsPart; // Modules\Core\Models
     }
 
     /**
-     * @return mixed|string
+     * The model's class name, without its folders.
      */
-    private function getModelName()
+    private function getModelName(): string
     {
-        return Str::studly($this->argument('name'));
+        return $this->getClass();
     }
 
     private function getModelVariable(): string
     {
-        return '$'.Str::lower($this->argument('name'));
+        return '$'.Str::lower($this->getModelName());
     }
 
     /**
@@ -114,7 +116,7 @@ class ObserverMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name')).'Observer.php';
+        return $this->getClassPath().'Observer.php';
     }
 
     #[\Override]

@@ -2,7 +2,6 @@
 
 namespace Nwidart\Modules\Commands\Make;
 
-use Illuminate\Support\Str;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -80,15 +79,15 @@ class FactoryMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name')).'Factory.php';
+        return $this->getClassPath().'Factory.php';
     }
 
     /**
-     * @return mixed|string
+     * The model's class name, without its folders.
      */
-    private function getModelName()
+    private function getModelName(): string
     {
-        return Str::studly($this->argument('name'));
+        return $this->getClass();
     }
 
     /**
@@ -102,13 +101,15 @@ class FactoryMakeCommand extends GeneratorCommand
     }
 
     /**
-     * Get model namespace.
+     * Get model namespace: the models' namespace, with the folders of the name argument.
      */
     public function getModelNamespace(): string
     {
         $path = $this->strip_app_folder(config('modules.paths.generator.model.path', 'Entities'));
 
-        $path = str_replace('/', '\\', $path);
+        $folder = $this->getClassFolder();
+
+        $path = str_replace('/', '\\', $path.($folder !== '' ? '/'.$folder : ''));
 
         return $this->moduleRepository()->config('namespace').'\\'.$this->moduleRepository()->findOrFail($this->getModuleName()).'\\'.$path;
     }

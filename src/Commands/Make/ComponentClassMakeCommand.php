@@ -112,6 +112,6 @@ class ComponentClassMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name')).'.php';
+        return $this->getClassPath().'.php';
     }
 }

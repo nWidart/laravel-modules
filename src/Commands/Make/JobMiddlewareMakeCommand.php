@@ -2,7 +2,6 @@
 
 namespace Nwidart\Modules\Commands\Make;
 
-use Illuminate\Support\Str;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -63,7 +62,7 @@ class JobMiddlewareMakeCommand extends GeneratorCommand
 
     protected function getJobMiddlewareName(): string
     {
-        return Str::studly($this->argument('name'));
+        return $this->getClassPath();
     }
 
     private function getClassNameWithoutNamespace(): string

@@ -2,7 +2,6 @@
 
 namespace Nwidart\Modules\Commands\Make;
 
-use Illuminate\Support\Str;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -82,7 +81,7 @@ class RuleMakeCommand extends GeneratorCommand
 
         return (new Stub($stub, [
             'NAMESPACE' => $this->getClassNamespace($module),
-            'CLASS' => $this->getFileName(),
+            'CLASS' => $this->getClass(),
         ]))->render();
     }
 
@@ -104,6 +103,6 @@ class RuleMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name'));
+        return $this->getClassPath();
     }
 }

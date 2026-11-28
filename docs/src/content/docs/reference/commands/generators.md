@@ -21,7 +21,7 @@ Except for `module:make` (which creates a whole module), every command on this p
 
 ### Name handling
 
-- Class names are converted to studly case. A `name` with `/` or `\` places the file in a sub-directory and matching sub-namespace (`Admin/Report` creates `Report` under `Admin`).
+- Class names are converted to studly case, one segment at a time. A `name` with `/` or `\` places the file in a sub-directory and the matching sub-namespace, both built from the same segments: `admin/v2/Report` creates `Admin/V2/Report.php` in the namespace `...\Admin\V2`.
 - An empty name, an absolute path, or a `.` or `..` segment fails with exit status `1`. Segments that reduce to `.` or `..` after removing whitespace, hyphens, and underscores (such as `. .` or `-.-`) are also rejected.
 - Missing directories are created automatically.
 
@@ -610,7 +610,7 @@ This command has no options besides `--force`.
 **Notes**
 
 - Writes `<Name>Factory.php` to the `factory` generator path (`paths.generator.factory.path`, default `database/factories`).
-- Stub: `factory.stub`. The model namespace comes from the `model` generator path.
+- Stub: `factory.stub`. The model namespace comes from the `model` generator path. A nested name refers to the model in the same sub-namespace: `Admin/Post` gives `database/factories/Admin/PostFactory.php` for the model `Modules\Blog\Models\Admin\Post`.
 
 ```bash
 php artisan module:make-factory Post Blog
@@ -670,7 +670,6 @@ This command has no options besides `--force`.
 **Notes**
 
 - Writes `<Name>.php` to `paths.generator.health.path` when set, otherwise `<paths.app_folder>Health` (default `app/Health`, namespace `Modules\<Module>\Health`). See [Configuration](/laravel-modules/reference/configuration/#default-entries).
-- Each segment of a nested name is converted to StudlyCase, for the folder and for the namespace: `api/v2/Payments` gives `app/Health/Api/V2/Payments.php` in the namespace `Modules\Blog\Health\Api\V2`.
 - Stub: `health-indicator.stub`.
 - The command works without the actuator installed, but the generated class needs the actuator to be used.
 - The command does not edit the module service provider. It prints the line to add to the `$healthIndicators` property. The suggested key is the class name without a trailing `HealthIndicator`, in camel case. See [Report module health with the actuator](/laravel-modules/guides/production/health-checks/).
@@ -1080,7 +1079,7 @@ This command has no options besides `--force`.
 **Notes**
 
 - Writes `<Name>Observer.php` to the `observer` generator path (`paths.generator.observer.path`, default `app/Observers`).
-- Stub: `observer.stub`. The model namespace comes from the `model` generator path.
+- Stub: `observer.stub`. The model namespace comes from the `model` generator path. A nested name refers to the model in the same sub-namespace: `Admin/Post` gives `app/Observers/Admin/PostObserver.php` for the model `Modules\Blog\Models\Admin\Post`.
 
 ```bash
 php artisan module:make-observer Post Blog

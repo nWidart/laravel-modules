@@ -2,7 +2,6 @@
 
 namespace Nwidart\Modules\Commands\Make;
 
-use Illuminate\Support\Str;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\CanClearModulesCache;
@@ -81,7 +80,7 @@ class SeedMakeCommand extends GeneratorCommand
         $module = $this->moduleRepository()->findOrFail($this->getModuleName());
 
         return (new Stub('/seeder.stub', [
-            'NAME' => $this->getSeederName(),
+            'NAME' => class_basename($this->getSeederName()),
             'MODULE' => $this->getModuleName(),
             'NAMESPACE' => $this->getClassNamespace($module),
 
@@ -113,7 +112,7 @@ class SeedMakeCommand extends GeneratorCommand
             $string .= $suffix;
         }
 
-        return Str::studly($string);
+        return $this->studly_path(str_replace('\\', '/', $string));
     }
 
     /**

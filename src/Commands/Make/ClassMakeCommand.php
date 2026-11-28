@@ -61,7 +61,7 @@ class ClassMakeCommand extends GeneratorCommand
 
     protected function getFileName(): string
     {
-        $file = Str::studly($this->argument('name'));
+        $file = $this->getClassPath();
 
         if ($this->option('suffix') === true) {
             $names = [Str::plural($this->type()), Str::singular($this->type())];

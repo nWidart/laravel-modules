@@ -2,7 +2,6 @@
 
 namespace Nwidart\Modules\Commands\Make;
 
-use Illuminate\Support\Str;
 use Nwidart\Modules\Support\Config\GenerateConfigReader;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
@@ -95,6 +94,6 @@ class TestMakeCommand extends GeneratorCommand
      */
     private function getFileName()
     {
-        return Str::studly($this->argument('name'));
+        return $this->getClassPath();
     }
 }
