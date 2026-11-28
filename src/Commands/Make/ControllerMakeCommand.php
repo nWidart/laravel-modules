@@ -104,7 +104,7 @@ class ControllerMakeCommand extends GeneratorCommand
      */
     protected function getControllerName()
     {
-        $controller = Str::studly($this->argument('controller'));
+        $controller = $this->getClassPath();
 
         if (Str::contains(strtolower($controller), 'controller') === false) {
             $controller .= 'Controller';

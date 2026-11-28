@@ -303,7 +303,7 @@ class ModelMakeCommand extends GeneratorCommand
 
     private function getModelName(): string
     {
-        return Str::studly($this->argument('model'));
+        return $this->getClassPath();
     }
 
     private function getFillable(): string

@@ -35,5 +35,5 @@ touches:
 
 ## Watch out
 - `config:cache` bakes the registered indicators into the cached config, since registration happens during the boot that `config:cache` runs. With a cached config a cached entry counts as an application entry and wins: a changed definition, a removed indicator or `modules.actuator.enabled => false` only take effect after `config:cache` again. New names are still added at boot (registration does not skip cached config).
-- Other generators still run `Str::studly()` on the whole name (`api/v2/x` gives folder `Api/v2`, namespace `Api\V2`), and the base `getClassNamespace()` strips the class name with `str_replace` everywhere in the argument (`Payments/Payments` loses the folder). Not changed in this PR.
+- Other generators still run `Str::studly()` on the whole name (`api/v2/x` gives folder `Api/v2`, namespace `Api\V2`), and the base `getClassNamespace()` strips the class name with `str_replace` everywhere in the argument (`Payments/Payments` loses the folder). Not changed in this PR; fixed for every generator on `fix/generator-nested-names` (see the 2026-11-28 learning), and the health indicator now uses the shared helpers.
 - Testbench ignores package discovery here, so the actuator provider is absent in `BaseTestCase`; tests that need it add `ActuatorServiceProvider` to `getPackageProviders()`.
